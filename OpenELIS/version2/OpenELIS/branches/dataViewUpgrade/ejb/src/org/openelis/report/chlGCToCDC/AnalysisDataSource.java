@@ -138,7 +138,8 @@ public class AnalysisDataSource implements JRRewindableDataSource {
                     for (j = 0; j < sm.analysis.count(siVDO); j++) {
                         aVDO = sm.analysis.get(siVDO, j);
                         aOverride = sm.qaEvent.hasType(aVDO, Constants.dictionary().QAEVENT_OVERRIDE);
-                        if ("chl-gc cbss".equals(aVDO.getTestName())) {
+                        if ("chl-gc cbss".equals(aVDO.getTestName()) && "Y".equals(aVDO.getIsReportable()) &&
+                            !Constants.dictionary().ANALYSIS_CANCELLED.equals(aVDO.getStatusId())) {
                             row = new HashMap<String, Object>();
                             row.put("accession_number", sm.getSample().getAccessionNumber());
                             if (sDO.getCollectionDate() != null)

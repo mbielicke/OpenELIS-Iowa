@@ -30,7 +30,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -171,8 +173,9 @@ public class KitTrackingReportBean {
         JasperPrint jprint;
         JRExporter jexport;
         OutputStream out;
-
-        String dir, frDate, tDate, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
+        Date fromDate, toDate;
+        String dir, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
+        
         /*
          * push status into session so we can query it while the report is
          * running
@@ -187,17 +190,17 @@ public class KitTrackingReportBean {
 
         userName = User.getName(ctx);
 
-        frDate = ReportUtil.getSingleParameter(param, "FROM_DATE");
-        tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
+        fromDate = ReportUtil.getDateParameter(param, "FROM_DATE");
+        toDate = ReportUtil.getDateParameter(param, "TO_DATE");
         section = ReportUtil.getListParameter(param, "SECTION_ID");
         shipFrom = ReportUtil.getListParameter(param, OrderMeta.getShipFromId());
-        shipTo = ReportUtil.getSingleParameter(param, "SHIP_TO");
-        reportTo = ReportUtil.getSingleParameter(param, "REPORT_TO");
-        description = ReportUtil.getSingleParameter(param, OrderMeta.getDescription());
-        orderStatus = ReportUtil.getSingleParameter(param, OrderMeta.getStatusId());
-        sortBy = ReportUtil.getSingleParameter(param, "SORT_BY");
+        shipTo = ReportUtil.getStringParameter(param, "SHIP_TO");
+        reportTo = ReportUtil.getStringParameter(param, "REPORT_TO");
+        description = ReportUtil.getStringParameter(param, OrderMeta.getDescription());
+        orderStatus = ReportUtil.getStringParameter(param, OrderMeta.getStatusId());
+        sortBy = ReportUtil.getStringParameter(param, "SORT_BY");
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
+        if (fromDate == null || toDate == null)
             throw new InconsistencyException("You must specify From Date and To Date for this report");
 
         if ( !DataBaseUtil.isEmpty(section))
@@ -258,8 +261,8 @@ public class KitTrackingReportBean {
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-            jparam.put("FROM_DATE", frDate);
-            jparam.put("TO_DATE", tDate);
+            jparam.put("FROM_DATE", fromDate);
+            jparam.put("TO_DATE", toDate);
             jparam.put("USER_NAME", userName);
             jparam.put("SECTION", section);
             jparam.put("SHIP_FROM", shipFrom);

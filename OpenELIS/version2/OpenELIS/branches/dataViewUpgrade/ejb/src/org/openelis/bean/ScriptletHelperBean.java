@@ -30,6 +30,8 @@ import static org.openelis.manager.SampleManager1Accessor.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -48,6 +50,7 @@ import org.openelis.manager.TestManager;
 import org.openelis.scriptlet.SampleSO;
 import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.scriptlet.ScriptletFactory;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletRunner;
@@ -73,9 +76,11 @@ public class ScriptletHelperBean {
     @EJB
     private DictionaryCacheBean      dictionaryCache;
 
-    private static final String      NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_ia_scriptlet_1",
-                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_ia_scriptlet_1",
-                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_ia_scriptlet_1";
+    private static final String      NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
+                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_scriptlet",
+                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_scriptlet";
+
+    private static final Logger      log                           = Logger.getLogger("openelis");
 
     /**
      * creates and returns the cache of objects like TestManager that are used
@@ -112,6 +117,7 @@ public class ScriptletHelperBean {
             for (AuxDataViewDO data : getAuxiliary(sm))
                 if ( !data.getAuxFieldGroupId().equals(prevId)) {
                     ids.add(data.getAuxFieldGroupId());
+
                     prevId = data.getAuxFieldGroupId();
                 }
 
@@ -135,19 +141,30 @@ public class ScriptletHelperBean {
 
         /*
          * add the scriptlet for the domain, which is the value of the system
-         * variable
+         * variable; it's not an error if the system variable is not found
+         * because the scritplet is optional
          */
         data = null;
-        if (Constants.domain().ENVIRONMENTAL.equals(getSample(sm).getDomain()))
-            data = systemVariable.fetchByName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
-        else if (Constants.domain().SDWIS.equals(getSample(sm).getDomain()))
-            data = systemVariable.fetchByName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
-        else if (Constants.domain().NEONATAL.equals(getSample(sm).getDomain()))
-            data = systemVariable.fetchByName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+        try {
+            if (Constants.domain().ENVIRONMENTAL.equals(getSample(sm).getDomain()))
+                data = systemVariable.fetchByName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+            else if (Constants.domain().SDWIS.equals(getSample(sm).getDomain()))
+                data = systemVariable.fetchByName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+            else if (Constants.domain().NEONATAL.equals(getSample(sm).getDomain()))
+                data = systemVariable.fetchByName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+        } catch (NotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
 
         if (data != null) {
-            id = dictionaryCache.getIdBySystemName(data.getValue());
-            addScriptlet(id, null, sr);
+            try {
+                id = dictionaryCache.getIdBySystemName(data.getValue());
+                addScriptlet(id, null, sr);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
 
         /*

@@ -111,7 +111,6 @@ public class HoldRefuseOrganizationReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
         String printer, dir, printstat, userName;
 
         /*
@@ -125,7 +124,7 @@ public class HoldRefuseOrganizationReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
         userName = User.getName(ctx);
 
         /*

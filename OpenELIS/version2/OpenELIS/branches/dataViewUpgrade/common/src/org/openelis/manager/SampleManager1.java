@@ -80,7 +80,7 @@ public class SampleManager1 implements Serializable {
      */
     public enum Load {
         ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT,
-        WORKSHEET, ATTACHMENT
+        WORKSHEET, ATTACHMENT, EORDER, PROVIDER
     };
 
     /**

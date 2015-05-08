@@ -41,18 +41,13 @@ public class DataView1VO implements Serializable {
     private static final long                  serialVersionUID = 1L;
 
     protected String                           excludeResultOverride, excludeResults,
-                    includeOnlyReportableResults, excludeAuxData, includeOnlyReportableAuxData;
+                    includeNotReportableResults, excludeAuxData, includeNotReportableAuxData;
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<String>                columns;
-    protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
-    protected ArrayList<AuxFieldDataViewVO>    auxFields;
+    protected ArrayList<TestAnalyteDataView1VO> testAnalytes;
+    protected ArrayList<AuxFieldDataView1VO>    auxFields;
     
-    public DataView1VO() {
-        excludeResultOverride = "N";
-        excludeResults = "N";
-        includeOnlyReportableResults = "Y";
-        excludeAuxData = "N";
-        includeOnlyReportableAuxData = "Y";        
+    public DataView1VO() {       
     }
 
     public String getExcludeResultOverride() {
@@ -71,12 +66,12 @@ public class DataView1VO implements Serializable {
         this.excludeResults = DataBaseUtil.trim(excludeResults);
     }
 
-    public String getIncludeOnlyReportableResults() {
-        return includeOnlyReportableResults;
+    public String getIncludeNotReportableResults() {
+        return includeNotReportableResults;
     }
 
-    public void setIncludeOnlyReportableResults(String includeOnlyReportableResults) {
-        this.includeOnlyReportableResults = DataBaseUtil.trim(includeOnlyReportableResults);
+    public void setIncludeNotReportableResults(String includeNotReportableResults) {
+        this.includeNotReportableResults = DataBaseUtil.trim(includeNotReportableResults);
     }
 
     public String getExcludeAuxData() {
@@ -87,12 +82,12 @@ public class DataView1VO implements Serializable {
         this.excludeAuxData = DataBaseUtil.trim(excludeAuxData);
     }
 
-    public String getIncludeOnlyReportableAuxData() {
-        return includeOnlyReportableAuxData;
+    public String getIncludeNotReportableAuxData() {
+        return includeNotReportableAuxData;
     }
 
-    public void setIncludeOnlyReportableAuxData(String includeOnlyReportableAuxData) {
-        this.includeOnlyReportableAuxData = DataBaseUtil.trim(includeOnlyReportableAuxData);
+    public void setIncludeNotReportableAuxData(String includeNotReportableAuxData) {
+        this.includeNotReportableAuxData = DataBaseUtil.trim(includeNotReportableAuxData);
     }
 
     public ArrayList<QueryData> getQueryFields() {
@@ -111,19 +106,19 @@ public class DataView1VO implements Serializable {
         this.columns = columns;
     }
 
-    public ArrayList<TestAnalyteDataViewVO> getTestAnalytes() {
+    public ArrayList<TestAnalyteDataView1VO> getTestAnalytes() {
         return testAnalytes;
     }
 
-    public void setTestAnalytes(ArrayList<TestAnalyteDataViewVO> testAnalytes) {
+    public void setTestAnalytes(ArrayList<TestAnalyteDataView1VO> testAnalytes) {
         this.testAnalytes = testAnalytes;
     }
 
-    public ArrayList<AuxFieldDataViewVO> getAuxFields() {
+    public ArrayList<AuxFieldDataView1VO> getAuxFields() {
         return auxFields;
     }
 
-    public void setAuxFields(ArrayList<AuxFieldDataViewVO> auxFields) {
+    public void setAuxFields(ArrayList<AuxFieldDataView1VO> auxFields) {
         this.auxFields = auxFields;
     }
 }

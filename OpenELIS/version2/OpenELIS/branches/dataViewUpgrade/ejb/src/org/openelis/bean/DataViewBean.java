@@ -1814,6 +1814,7 @@ public class DataViewBean {
                 anadd = new TestAnalyteDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyte());
+                anadd.setTestAnalyteId(res.getTestAnalyteId());
                 anadd.setIsIncluded("N");
                 resddList = new ArrayList<ResultDataViewVO>();
                 anadd.setResults(resddList);
@@ -1876,6 +1877,7 @@ public class DataViewBean {
                 anadd = new AuxFieldDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyteName());
+                anadd.setAuxFieldId(res.getAuxFieldId());
                 anadd.setIsIncluded("N");
                 resddList = new ArrayList<AuxDataDataViewVO>();
                 anadd.setValues(resddList);
@@ -2148,6 +2150,12 @@ public class DataViewBean {
             headers.add(Messages.get().race());
         if ("Y".equals(data.getSampleClinicalPatientEthnicity()))
             headers.add(Messages.get().ethnicity());
+        if ("Y".equals(data.getSampleClinicalPatientPhoneNumber()))
+            headers.add(Messages.get().patient_phone());
+        if ("Y".equals(data.getSampleClinicalProviderLastName()))
+            headers.add(Messages.get().provider_lastName());
+        if ("Y".equals(data.getSampleClinicalProviderFirstName()))
+            headers.add(Messages.get().provider_firstName());
 
         return headers;
     }
@@ -2744,6 +2752,22 @@ public class DataViewBean {
             cell = row.createCell(startCol++ );
             if (clinical != null && clinical.getPatient() != null)
                 cell.setCellValue(dictEntryMap.get(clinical.getPatient().getEthnicityId()));
+        }
+        if ("Y".equals(data.getSampleClinicalPatientPhoneNumber())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getPatient() != null &&
+                clinical.getPatient().getAddress() != null)
+                cell.setCellValue(clinical.getPatient().getAddress().getHomePhone());
+        }
+        if ("Y".equals(data.getSampleClinicalProviderLastName())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getProvider() != null)
+                cell.setCellValue(clinical.getProvider().getLastName());
+        }
+        if ("Y".equals(data.getSampleClinicalProviderFirstName())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getProvider() != null)
+                cell.setCellValue(clinical.getProvider().getFirstName());
         }
     }
 

@@ -81,11 +81,18 @@ public class EOrderBean {
     @SuppressWarnings("unchecked")
     public ArrayList<EOrderDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<EOrderDO> e;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("EOrder.FetchByIds");
-        query.setParameter("ids", ids);
+        e = new ArrayList<EOrderDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            e.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(e);
     }
 
     @SuppressWarnings("unchecked")

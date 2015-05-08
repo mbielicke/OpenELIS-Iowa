@@ -129,10 +129,11 @@ public class BuildKitsReportBean {
     }
 
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int i, j, startNum, endNum, numLabels;
+        int i, j;
+        Integer startNum, endNum, numLabels, orderId;
         ReportStatus status;
         HashMap<String, QueryData> param;
-        String lotNumber, orderId, createdDate, expiredDate, kitDesc, specInstr, printer, printstat;
+        String lotNumber, createdDate, expiredDate, kitDesc, specInstr, printer, printstat;
         PrintStream ps;
         Path path;
 
@@ -147,24 +148,25 @@ public class BuildKitsReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        lotNumber = ReportUtil.getSingleParameter(param, "LOT_NUMBER");
-        orderId = ReportUtil.getSingleParameter(param, "ORDER_ID");
-        createdDate = ReportUtil.getSingleParameter(param, "CREATED_DATE");
-        expiredDate = ReportUtil.getSingleParameter(param, "EXPIRED_DATE");
-        kitDesc = ReportUtil.getSingleParameter(param, "KIT_DESCRIPTION");
-        specInstr = ReportUtil.getSingleParameter(param, "SPECIAL_INSTRUCTIONS");
-        printer = ReportUtil.getSingleParameter(param, "BARCODE");
-        startNum = 0;
-        numLabels = 0;
+        lotNumber = ReportUtil.getStringParameter(param, "LOT_NUMBER");
+        orderId = ReportUtil.getIntegerParameter(param, "ORDER_ID");
+        createdDate = ReportUtil.getStringParameter(param, "CREATED_DATE");
+        expiredDate = ReportUtil.getStringParameter(param, "EXPIRED_DATE");
+        kitDesc = ReportUtil.getStringParameter(param, "KIT_DESCRIPTION");
+        specInstr = ReportUtil.getStringParameter(param, "SPECIAL_INSTRUCTIONS");
+        printer = ReportUtil.getStringParameter(param, "BARCODE");
+        startNum = ReportUtil.getIntegerParameter(param, "STARTING_NUMBER");
+        endNum = ReportUtil.getIntegerParameter(param, "ENDING_NUMBER");
+        numLabels = ReportUtil.getIntegerParameter(param, "NUMBER_OF_LABELS_PER_KIT");
 
-        if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer))
+        if (orderId == null || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the order id and printer for this report");
 
         //
         // find the order record
         //
         try {
-            order.fetchById(Integer.parseInt(orderId));
+            order.fetchById(orderId);
         } catch (NotFoundException e) {
             throw new NotFoundException("An order record with id " + orderId + " does not exist");
         } catch (Exception e) {
@@ -172,30 +174,16 @@ public class BuildKitsReportBean {
             throw e;
         }
 
-        try {
-            startNum = Integer.parseInt(ReportUtil.getSingleParameter(param, "STARTING_NUMBER"));
-        } catch (Exception e) {
-            throw new InconsistencyException("You must specify a valid starting number");
-        } finally {
-            if (startNum < 1)
-                throw new InconsistencyException("Starting number must be at least 1");
-        }
+        if (startNum == null || startNum < 1)
+            throw new InconsistencyException("You must specify a valid starting number of at least 1");
 
-        try {
-            numLabels = Integer.parseInt(ReportUtil.getSingleParameter(param,
-                                                                       "NUMBER_OF_LABELS_PER_KIT"));
-        } catch (Exception e) {
-            throw new InconsistencyException("You must specify a valid number of labels per kit");
-        } finally {
-            if (numLabels < 1)
-                throw new InconsistencyException("Number of labels per kit must be at least 1");
-        }
-
-        endNum = Integer.parseInt(ReportUtil.getSingleParameter(param, "ENDING_NUMBER"));
+        if (numLabels == null || numLabels < 1)
+            throw new InconsistencyException("You must specify a valid number of labels per kit of at least 1");
 
         log.info("Printing labels for order # " + orderId + " starting at " + startNum);
 
         status.setPercentComplete(50);
+
         /*
          * print the labels and send it to printer
          */

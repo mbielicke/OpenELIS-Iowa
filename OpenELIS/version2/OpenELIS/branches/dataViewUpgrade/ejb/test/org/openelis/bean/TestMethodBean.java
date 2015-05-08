@@ -1,14 +1,10 @@
 package org.openelis.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static org.openelis.ui.util.TestingUtil.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -136,14 +132,14 @@ public class TestMethodBean {
         
         mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, results);
         
-        assertEquals(results,bean.fetchByIds(mock(Collection.class)));
+        assertEquals(results,bean.fetchByIds(mock(ArrayList.class)));
     }
     
     @Test
     public void testFetchByIdsNoResult() throws Exception {        
         mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, new ArrayList<MethodDO>());
         
-        assertTrue(bean.fetchByIds(mock(Collection.class)).isEmpty());
+        assertTrue(bean.fetchByIds(mock(ArrayList.class)).isEmpty());
     }
     
     @Test

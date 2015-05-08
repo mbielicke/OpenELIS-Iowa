@@ -39,14 +39,16 @@ public class DataViewAuxDataFetch1VO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, auxFieldAnalyteId, typeId;
+    protected Integer         sampleId, sampleAccessionNumber, auxFieldAnalyteId, typeId;
 
-    protected String          value;
+    protected String          auxFieldAnalyteName, value;
 
-    public DataViewAuxDataFetch1VO(Integer sampleId, Integer auxFieldAnalyteId, Integer typeId,
-                                   String value) {
+    public DataViewAuxDataFetch1VO(Integer sampleId, Integer sampleAccessionNumber, Integer auxFieldAnalyteId,
+                                   String auxFieldAnalyteName, Integer typeId, String value) {
         setSampleId(sampleId);
+        setSampleAccessionNumber(sampleAccessionNumber);
         setAuxFieldAnalyteId(auxFieldAnalyteId);
+        setAuxFieldAnalyteName(auxFieldAnalyteName);
         setTypeId(typeId);
         setValue(value);
     }
@@ -59,12 +61,28 @@ public class DataViewAuxDataFetch1VO implements Serializable {
         this.sampleId = sampleId;
     }
 
-    public Integer getAnalyteId() {
+    public Integer getSampleAccessionNumber() {
+        return sampleAccessionNumber;
+    }
+
+    public void setSampleAccessionNumber(Integer sampleAccessionNumber) {
+        this.sampleAccessionNumber = sampleAccessionNumber;
+    }
+    
+    public Integer getAuxFieldAnalyteId() {
         return auxFieldAnalyteId;
     }
 
     public void setAuxFieldAnalyteId(Integer analyteId) {
         this.auxFieldAnalyteId = analyteId;
+    }
+
+    public String getAuxFieldAnalyteName() {
+        return auxFieldAnalyteName;
+    }
+
+    public void setAuxFieldAnalyteName(String auxFieldAnalyteName) {
+        this.auxFieldAnalyteName = auxFieldAnalyteName;
     }
 
     public Integer getTypeId() {

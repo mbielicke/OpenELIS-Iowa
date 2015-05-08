@@ -71,11 +71,18 @@ public class WorksheetResultBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetResultViewDO> fetchByWorksheetAnalysisIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<WorksheetResultViewDO> w;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("WorksheetResult.FetchByWorksheetAnalysisIds");
-        query.setParameter("ids", ids);
+        w = new ArrayList<WorksheetResultViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            w.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(w);
     }
 
     public WorksheetResultDO add(WorksheetResultDO data) throws Exception {

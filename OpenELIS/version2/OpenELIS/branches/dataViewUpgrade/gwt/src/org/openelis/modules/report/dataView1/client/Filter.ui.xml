@@ -52,9 +52,9 @@
                     <g:layer bottom="0px" height="25px">
                       <g:VerticalPanel>
                         <g:HorizontalPanel>
-                          <w:Button ui:field="selectAllAnalyteButton" leftIcon="{uiRes.checkbox.Checked}"
+                          <w:Button ui:field="selectAllTestAnalyteButton" leftIcon="{uiRes.checkbox.Checked}"
                             text="{msg.gen_selectAll}" />
-                          <w:Button ui:field="unselectAllAnalyteButton" leftIcon="{uiRes.checkbox.Unchecked}"
+                          <w:Button ui:field="unselectAllTestAnalyteButton" leftIcon="{uiRes.checkbox.Unchecked}"
                             text="{msg.gen_unselectAll}" />
                         </g:HorizontalPanel>
                       </g:VerticalPanel>
@@ -123,9 +123,9 @@
                     <g:layer bottom="0px" height="25px">
                       <g:VerticalPanel>
                         <g:HorizontalPanel>
-                          <w:Button ui:field="selectAllAuxDataButton" leftIcon="{uiRes.checkbox.Checked}"
+                          <w:Button ui:field="selectAllAuxFieldButton" leftIcon="{uiRes.checkbox.Checked}"
                             text="{msg.gen_selectAll}" />
-                          <w:Button ui:field="unselectAllAuxDataButton" leftIcon="{uiRes.checkbox.Unchecked}"
+                          <w:Button ui:field="unselectAllAuxFieldButton" leftIcon="{uiRes.checkbox.Unchecked}"
                             text="{msg.gen_unselectAll}" />
                         </g:HorizontalPanel>
                       </g:VerticalPanel>

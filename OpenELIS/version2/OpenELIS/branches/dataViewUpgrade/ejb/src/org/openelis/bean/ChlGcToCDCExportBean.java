@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,7 +129,8 @@ public class ChlGcToCDCExportBean {
         JasperReport jreport;
         QueryData field;
         ReportStatus status;
-        String dir, exportDirectory, fromDate, toDate;
+        Date fromDate, toDate;
+        String dir, exportDirectory;
         URL url;
         ZipOutputStream out;
 
@@ -143,8 +145,8 @@ public class ChlGcToCDCExportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        fromDate = ReportUtil.getSingleParameter(param, "BEGIN_COLLECTION");
-        toDate = ReportUtil.getSingleParameter(param, "END_COLLECTION");
+        fromDate = ReportUtil.getDateParameter(param, "BEGIN_COLLECTION");
+        toDate = ReportUtil.getDateParameter(param, "END_COLLECTION");
 
         try {
             exportDirectory = systemVariable.fetchByName("chlgc_cdc_directory").getValue();
@@ -246,7 +248,7 @@ public class ChlGcToCDCExportBean {
             fields.add(field);
 
             sms = new ArrayList<SampleManager1>();
-            sms = sampleManager.fetchByQuery(fields, 0, 1000, SampleManager1.Load.ORGANIZATION,
+            sms = sampleManager.fetchByQuery(fields, 0, 10000, SampleManager1.Load.ORGANIZATION,
                                              SampleManager1.Load.QA, SampleManager1.Load.RESULT);
             ds = AnalysisDataSource.getInstance(sms, con);
             

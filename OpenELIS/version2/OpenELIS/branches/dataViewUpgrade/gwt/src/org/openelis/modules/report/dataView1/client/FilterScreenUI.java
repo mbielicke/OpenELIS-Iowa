@@ -31,10 +31,11 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.AuxFieldDataViewVO;
+import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.ResultDataViewVO;
-import org.openelis.domain.TestAnalyteDataViewVO;
+import org.openelis.domain.TestAnalyteDataView1VO;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -42,6 +43,8 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
+import org.openelis.ui.widget.table.event.CellEditedEvent;
+import org.openelis.ui.widget.table.event.CellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -71,9 +74,9 @@ public abstract class FilterScreenUI extends Screen {
     protected Table                     testAnalyteTable, resultTable, auxFieldTable, auxDataTable;
 
     @UiField
-    protected Button                    selectAllAnalyteButton, unselectAllAnalyteButton,
-                    selectAllResultButton, unselectAllResultButton, selectAllAuxDataButton,
-                    unselectAllAuxDataButton, runReportButton, selectAllValueButton,
+    protected Button                    selectAllTestAnalyteButton, unselectAllTestAnalyteButton,
+                    selectAllResultButton, unselectAllResultButton, selectAllAuxFieldButton,
+                    unselectAllAuxFieldButton, runReportButton, selectAllValueButton,
                     unselectAllValueButton, cancelButton;
 
     public FilterScreenUI() {
@@ -81,7 +84,7 @@ public abstract class FilterScreenUI extends Screen {
         initialize();
         setState(DEFAULT);
         fireDataChange();
-        
+
         logger.fine("Filter Screen Opened");
     }
 
@@ -89,7 +92,7 @@ public abstract class FilterScreenUI extends Screen {
         addScreenHandler(testAnalyteTable, "testAnalyteTable", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<Row> model;
-                
+
                 model = getTestAnalyteTableModel();
                 testAnalyteTable.setModel(model);
                 if (model != null && model.size() > 0)
@@ -101,10 +104,10 @@ public abstract class FilterScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? selectAllAnalyteButton : cancelButton;
+                return forward ? selectAllTestAnalyteButton : cancelButton;
             }
         });
-        
+
         testAnalyteTable.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
@@ -112,11 +115,38 @@ public abstract class FilterScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(selectAllAnalyteButton,
+        testAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
+            @Override
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                TestAnalyteDataView1VO data;
+                String val;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = testAnalyteTable.getValueAt(r, c);
+                data = (TestAnalyteDataView1VO)testAnalyteTable.getRowAt(r).getData();
+                switch (c) {
+                    case 0:
+                        /*
+                         * when the checkbox for an analyte is checked or
+                         * unchecked the checkboxes for all the results
+                         * asscoiated with it need to be checked or unchecked
+                         * too; also, the analyte and the result need to be
+                         * flagged as "included" or not, appropriately
+                         */
+                        updateResultsForAnalyte(data, val);
+                        data.setIsIncluded(val);
+                        break;
+                }
+            }
+        });
+
+        addScreenHandler(selectAllTestAnalyteButton,
                          "selectAllAnalyteButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 selectAllAnalyteButton.setEnabled(isState(DEFAULT));
+                                 selectAllTestAnalyteButton.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -124,21 +154,21 @@ public abstract class FilterScreenUI extends Screen {
                              }
                          });
 
-        addScreenHandler(unselectAllAnalyteButton,
+        addScreenHandler(unselectAllTestAnalyteButton,
                          "unselectAllAnalyteButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 unselectAllAnalyteButton.setEnabled(isState(DEFAULT));
+                                 unselectAllTestAnalyteButton.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? resultTable : selectAllAnalyteButton;
+                                 return forward ? resultTable : selectAllTestAnalyteButton;
                              }
                          });
 
         addScreenHandler(resultTable, "resultTable", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                resultTable.setModel(getResultTableModel(-1));
+                resultTable.setModel(getResultTableModel( -1));
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -146,7 +176,26 @@ public abstract class FilterScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? selectAllAnalyteButton : cancelButton;
+                return forward ? selectAllTestAnalyteButton : cancelButton;
+            }
+        });
+
+        resultTable.addCellEditedHandler(new CellEditedHandler() {
+            @Override
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                String val;
+                ResultDataViewVO data;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = resultTable.getValueAt(r, c);
+                data = (ResultDataViewVO)resultTable.getRowAt(r).getData();
+                switch (c) {
+                    case 0:
+                        data.setIsIncluded(val);
+                        break;
+                }
             }
         });
 
@@ -177,7 +226,7 @@ public abstract class FilterScreenUI extends Screen {
         addScreenHandler(auxFieldTable, "auxFieldTable", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<Row> model;
-                
+
                 model = getAuxFieldTableModel();
                 auxFieldTable.setModel(model);
                 if (model != null && model.size() > 0)
@@ -189,10 +238,10 @@ public abstract class FilterScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? selectAllAuxDataButton : unselectAllResultButton;
+                return forward ? selectAllAuxFieldButton : unselectAllResultButton;
             }
         });
-        
+
         auxFieldTable.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
@@ -200,33 +249,60 @@ public abstract class FilterScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(selectAllAuxDataButton,
+        auxFieldTable.addCellEditedHandler(new CellEditedHandler() {
+            @Override
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                AuxFieldDataView1VO data;
+                String val;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = auxFieldTable.getValueAt(r, c);
+                data = (AuxFieldDataView1VO)auxFieldTable.getRowAt(r).getData();
+                switch (c) {
+                    case 0:
+                        /*
+                         * when the checkbox for an analyte is checked or
+                         * unchecked the checkboxes for all the aux data
+                         * asscoiated with it need to be checked or unchecked
+                         * too; also, the analyte and the aux data need to be
+                         * flagged as "included" or not, appropriately
+                         */
+                        updateAuxDataForAnalyte(data, val);
+                        data.setIsIncluded(val);
+                        break;
+                }
+            }
+        });
+
+        addScreenHandler(selectAllAuxFieldButton,
                          "selectAllAuxDataButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 selectAllAuxDataButton.setEnabled(isState(DEFAULT));
+                                 selectAllAuxFieldButton.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? unselectAllAuxDataButton : auxFieldTable;
+                                 return forward ? unselectAllAuxFieldButton : auxFieldTable;
                              }
                          });
 
-        addScreenHandler(unselectAllAuxDataButton,
+        addScreenHandler(unselectAllAuxFieldButton,
                          "unselectAllAuxDataButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 unselectAllAuxDataButton.setEnabled(isState(DEFAULT));
+                                 unselectAllAuxFieldButton.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? auxDataTable : selectAllAuxDataButton;
+                                 return forward ? auxDataTable : selectAllAuxFieldButton;
                              }
                          });
 
         addScreenHandler(auxDataTable, "auxDataTable", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                auxDataTable.setModel(getAuxDataTableModel(-1));
+                auxDataTable.setModel(getAuxDataTableModel( -1));
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -235,6 +311,25 @@ public abstract class FilterScreenUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? selectAllValueButton : cancelButton;
+            }
+        });
+
+        auxDataTable.addCellEditedHandler(new CellEditedHandler() {
+            @Override
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                String val;
+                AuxDataDataViewVO data;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = auxDataTable.getValueAt(r, c);
+                data = (AuxDataDataViewVO)auxDataTable.getRowAt(r).getData();
+                switch (c) {
+                    case 0:
+                        data.setIsIncluded(val);
+                        break;
+                }
             }
         });
 
@@ -307,93 +402,221 @@ public abstract class FilterScreenUI extends Screen {
         cancel();
     }
 
+    @UiHandler("selectAllTestAnalyteButton")
+    protected void selectAllTestAnalyte(ClickEvent event) {
+        updateAllTestAnalyte("Y");
+    }
+
+    @UiHandler("unselectAllTestAnalyteButton")
+    protected void unselectAllTestAnalyte(ClickEvent event) {
+        updateAllTestAnalyte("N");
+    }
+
+    @UiHandler("selectAllAuxFieldButton")
+    protected void selectAllAuxField(ClickEvent event) {
+        updateAllAuxField("Y");
+    }
+
+    @UiHandler("unselectAllAuxFieldButton")
+    protected void unselectAllAuxField(ClickEvent event) {
+        updateAllAuxField("N");
+    }
+
     private ArrayList<Row> getTestAnalyteTableModel() {
         ArrayList<Row> model;
-        ArrayList<TestAnalyteDataViewVO> analytes;        
-        Row row;              
-        
+        ArrayList<TestAnalyteDataView1VO> analytes;
+        Row row;
+
         model = new ArrayList<Row>();
         if (data == null)
             return model;
-        
-        analytes =  data.getTestAnalytes();
-        for (TestAnalyteDataViewVO ana : analytes) {
-            row = new Row(2);
-            row.setCell(0,"N");
-            row.setCell(1,ana.getAnalyteName());
-            row.setData(ana);
-            model.add(row);
+
+        analytes = data.getTestAnalytes();
+        if (analytes != null) {
+            for (TestAnalyteDataView1VO ana : analytes) {
+                row = new Row(2);
+                row.setCell(0, "N");
+                row.setCell(1, ana.getAnalyteName());
+                row.setData(ana);
+                model.add(row);
+            }
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<Row> getResultTableModel(int index) {
         ArrayList<Row> model;
         ArrayList<ResultDataViewVO> results;
-        TestAnalyteDataViewVO data;
+        TestAnalyteDataView1VO data;
         Row row;
 
         model = new ArrayList<Row>();
         if (index == -1)
-            return null;
+            return model;
 
-        model = new ArrayList<Row>();
         row = testAnalyteTable.getRowAt(index);
-        data = (TestAnalyteDataViewVO) row.getData();
+        data = (TestAnalyteDataView1VO)row.getData();
         results = data.getResults();
         for (ResultDataViewVO res : results) {
             row = new Row(2);
-            row.setCell(0,res.getIsIncluded());
-            row.setCell(1,res.getValue());
+            row.setCell(0, res.getIsIncluded());
+            row.setCell(1, res.getValue());
             row.setData(res);
             model.add(row);
         }
         return model;
     }
-    
+
     private ArrayList<Row> getAuxFieldTableModel() {
         ArrayList<Row> model;
-        ArrayList<AuxFieldDataViewVO> auxFields;        
+        ArrayList<AuxFieldDataView1VO> auxFields;
         Row row;
 
         model = new ArrayList<Row>();
         if (data == null)
             return model;
-        
-        auxFields =  data.getAuxFields();
-        model = new ArrayList<Row>();
-        for (AuxFieldDataViewVO aux : auxFields) {
-            row = new Row(2);
-            row.setCell(0,"N");
-            row.setCell(1,aux.getAnalyteName());
-            row.setData(aux);
-            model.add(row);
+
+        auxFields = data.getAuxFields();
+        if (auxFields != null) {
+            for (AuxFieldDataView1VO aux : auxFields) {
+                row = new Row(2);
+                row.setCell(0, "N");
+                row.setCell(1, aux.getAnalyteName());
+                row.setData(aux);
+                model.add(row);
+            }
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<Row> getAuxDataTableModel(int index) {
         ArrayList<Row> model;
         ArrayList<AuxDataDataViewVO> auxiliary;
-        AuxFieldDataViewVO data;
+        AuxFieldDataView1VO data;
         Row row;
 
-        if (index == -1)
-            return null;
-
         model = new ArrayList<Row>();
+        if (index == -1)
+            return model;
+
         row = auxFieldTable.getRowAt(index);
-        data = (AuxFieldDataViewVO) row.getData();
+        data = (AuxFieldDataView1VO)row.getData();
         auxiliary = data.getValues();
         for (AuxDataDataViewVO aux : auxiliary) {
             row = new Row(2);
-            row.setCell(0,aux.getIsIncluded());
-            row.setCell(1,aux.getValue());
+            row.setCell(0, aux.getIsIncluded());
+            row.setCell(1, aux.getValue());
             row.setData(aux);
             model.add(row);
         }
         return model;
+    }
+
+    /**
+     * Sets the passed value as the "include" flag for all test analytes and
+     * their results
+     */
+    private void updateAllTestAnalyte(String newVal) {
+        TestAnalyteDataView1VO data;
+        Object val;
+        Row row;
+        ArrayList<Row> model;
+
+        model = testAnalyteTable.getModel();
+        for (int i = 0; i < model.size(); i++ ) {
+            val = (String)testAnalyteTable.getValueAt(i, 0);
+            if ( !DataBaseUtil.isSame(newVal, val)) {
+                row = model.get(i);
+                data = (TestAnalyteDataView1VO)row.getData();
+                data.setIsIncluded(newVal);
+                testAnalyteTable.setValueAt(i, 0, newVal);
+                updateResultsForAnalyte(data, newVal);
+            }
+        }
+    }
+
+    /**
+     * Sets the passed value as the "include" flag for all results of the passed
+     * test analyte
+     */
+    private void updateResultsForAnalyte(TestAnalyteDataView1VO data, String val) {
+        int r;
+        TestAnalyteDataView1VO sel;
+        ResultDataViewVO res;
+        ArrayList<ResultDataViewVO> list;
+
+        list = data.getResults();
+        r = testAnalyteTable.getSelectedRow();
+        sel = r > -1 ? (TestAnalyteDataView1VO)testAnalyteTable.getRowAt(r).getData() : null;
+        for (int i = 0; i < list.size(); i++ ) {
+            res = list.get(i);
+            /*
+             * this method can be called when all test analytes are
+             * selected/unselected; at that time, no results may be shown if no
+             * analyte is selected or the results being shown may be of a
+             * different analyte than the passed one; this check makes sure that
+             * an exception is not thrown on trying to check/uncheck a row's
+             * checkbox if the table doesn't have as many rows as the number of
+             * results for the passed analyte
+             */
+            if (data == sel)
+                resultTable.setValueAt(i, 0, val);
+            res.setIsIncluded(val);
+        }
+    }
+
+    /**
+     * Sets the passed value as the "include" flag for all aux fields and their
+     * aux data
+     */
+    private void updateAllAuxField(String newVal) {
+        ArrayList<Row> model;
+        Row row;
+        AuxFieldDataView1VO data;
+        Object val;
+
+        model = auxFieldTable.getModel();
+        for (int i = 0; i < model.size(); i++ ) {
+            val = (String)auxFieldTable.getValueAt(i, 0);
+            if ( !DataBaseUtil.isSame(newVal, val)) {
+                row = model.get(i);
+                data = (AuxFieldDataView1VO)row.getData();
+                data.setIsIncluded(newVal);
+                auxFieldTable.setValueAt(i, 0, newVal);
+                updateAuxDataForAnalyte(data, newVal);
+            }
+        }
+    }
+
+    /**
+     * Sets the passed value as the "include" flag for all aux data of the
+     * passed aux field
+     */
+    private void updateAuxDataForAnalyte(AuxFieldDataView1VO data, String val) {
+        int r;
+        AuxFieldDataView1VO sel;
+        AuxDataDataViewVO aux;
+        ArrayList<AuxDataDataViewVO> list;
+
+        list = data.getValues();
+        r = auxFieldTable.getSelectedRow();
+        sel = r > -1 ? (AuxFieldDataView1VO)auxFieldTable.getRowAt(r).getData() : null;
+        for (int i = 0; i < list.size(); i++ ) {
+            aux = list.get(i);
+            /*
+             * this method can be called when all aux fields are
+             * selected/unselected; at that time, no aux data may be shown if no
+             * aux field is selected or the aux data being shown may be of a
+             * different aux field than the passed one; this check makes sure
+             * that an exception is not thrown on trying to check/uncheck a
+             * row's checkbox if the table doesn't have as many rows as the
+             * number of results for the passed aux field
+             */
+            if (data == sel)
+                auxDataTable.setValueAt(i, 0, val);
+            aux.setIsIncluded(val);
+        }
     }
 }

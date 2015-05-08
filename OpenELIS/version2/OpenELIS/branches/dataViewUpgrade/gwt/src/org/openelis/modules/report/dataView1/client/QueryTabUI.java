@@ -88,17 +88,19 @@ public class QueryTabUI extends Screen {
     protected MultiDropdown<Integer> projectId;
 
     @UiField
-    protected Dropdown<String>       domain, analysisIsReportable;
+    protected Dropdown<String>       domain, analysisIsReportable, result, auxData;
 
     @UiField
-    protected CheckBox               excludeResultOverride, excludeResults,
-                    includeOnlyReportableResults, excludeAuxData, includeOnlyReportableAuxData;
+    protected CheckBox               excludeResultOverride;
 
     protected Screen                 parentScreen;
 
     protected EventBus               parentBus;
 
     protected DataView1VO            data;
+
+    private static final String      EXCLUDE_ALL = "excludeAll",
+                    INCLUDE_NOT_REPORTABLE = "includeNotReportable";
 
     public QueryTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -130,7 +132,7 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumberTo : includeOnlyReportableAuxData;
+                                 return forward ? accessionNumberTo : auxData;
                              }
                          });
 
@@ -276,19 +278,21 @@ public class QueryTabUI extends Screen {
             }
         });
 
-        addScreenHandler(reportTo, "reportTo", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                reportTo.setValue(null);
-            }
+        addScreenHandler(reportTo,
+                         SampleWebMeta.getSampleOrgOrganizationName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 reportTo.setValue(null);
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                reportTo.setEnabled(isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportTo.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? domain : projectId;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? domain : projectId;
+                             }
+                         });
 
         addScreenHandler(domain, SampleWebMeta.getDomain(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -457,85 +461,45 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? excludeResults : analysisReleasedDateTo;
+                                 return forward ? result : analysisReleasedDateTo;
                              }
                          });
 
-        addScreenHandler(excludeResults, "excludeResults", new ScreenHandler<String>() {
+        addScreenHandler(result, "results", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                excludeResults.setValue(getExcludeResults());
+                result.setValue(getResults());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setExcludeResults(event.getValue());
+                setResults(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                excludeResults.setEnabled(isState(DEFAULT));
+                result.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? includeOnlyReportableResults : excludeResultOverride;
+                return forward ? auxData : excludeResultOverride;
             }
         });
 
-        addScreenHandler(includeOnlyReportableResults,
-                         "includeOnlyReportableResults",
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 includeOnlyReportableResults.setValue(getIncludeOnlyReportableResults());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setIncludeOnlyReportableResults(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 includeOnlyReportableResults.setEnabled(isState(DEFAULT));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? excludeAuxData : excludeResults;
-                             }
-                         });
-
-        addScreenHandler(excludeAuxData, "excludeAuxData", new ScreenHandler<String>() {
+        addScreenHandler(auxData, "auxData", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                excludeAuxData.setValue(getExcludeAuxData());
+                auxData.setValue(getAuxData());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setExcludeAuxData(event.getValue());
+                setAuxData(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                excludeAuxData.setEnabled(isState(DEFAULT));
+                auxData.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? includeOnlyReportableAuxData : includeOnlyReportableResults;
+                return forward ? accessionNumberFrom : result;
             }
         });
-
-        addScreenHandler(includeOnlyReportableAuxData,
-                         "includeOnlyReportableAuxData",
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 includeOnlyReportableAuxData.setValue(getIncludeOnlyReportableAuxData());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setIncludeOnlyReportableAuxData(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 includeOnlyReportableAuxData.setEnabled(isState(DEFAULT));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumberFrom : excludeAuxData;
-                             }
-                         });
 
         model = new ArrayList<Item<Integer>>();
         try {
@@ -589,6 +553,14 @@ public class QueryTabUI extends Screen {
         stmodel.add(new Item<String>("N", Messages.get().gen_no()));
 
         analysisIsReportable.setModel(stmodel);
+
+        stmodel = new ArrayList<Item<String>>();
+        stmodel.add(new Item<String>(EXCLUDE_ALL, Messages.get().dataView_excludeAll()));
+        stmodel.add(new Item<String>(INCLUDE_NOT_REPORTABLE,
+                                     Messages.get().dataView_includeNotReportable()));
+
+        result.setModel(stmodel);
+        auxData.setModel(stmodel);
     }
 
     public void setData(DataView1VO data) {
@@ -604,6 +576,7 @@ public class QueryTabUI extends Screen {
      * QueryData is created for a pair of "from" and "to" widgets
      */
     public ArrayList<QueryData> getQueryFields() {
+        QueryData field;
         ArrayList<QueryData> fields;
 
         fields = new ArrayList<QueryData>();
@@ -634,7 +607,23 @@ public class QueryTabUI extends Screen {
 
         addQueryData(clientReference, SampleWebMeta.getClientReference(), fields);
         addQueryData(projectId, SampleWebMeta.getProjectId(), fields);
-        addQueryData(reportTo, "reportTo", fields);
+
+        /*
+         * if the user is querying by report-to, add a query field for it; also
+         * add a field for organization type to restrict the query to report-to
+         * organizations only
+         */
+        field = getQueryData(reportTo, SampleWebMeta.getSampleOrgOrganizationName());
+        if (field != null) {
+            fields.add(field);
+
+            field = new QueryData();
+            field.setQuery(Constants.dictionary().ORG_REPORT_TO.toString());
+            field.setKey(SampleWebMeta.getSampleOrgTypeId());
+            field.setType(QueryData.Type.INTEGER);
+            fields.add(field);
+        }
+
         addQueryData(domain, SampleWebMeta.getDomain(), fields);
         addQueryData(analysisTestName, SampleWebMeta.getAnalysisTestName(), fields);
         addQueryData(analysisMethodName, SampleWebMeta.getAnalysisMethodName(), fields);
@@ -689,48 +678,54 @@ public class QueryTabUI extends Screen {
         data.setExcludeResultOverride(excludeResultOverride);
     }
 
-    private String getExcludeResults() {
-        if (data == null || DataBaseUtil.isEmpty(data.getExcludeResults()))
-            return "N";
-        else
-            return data.getExcludeResults();
+    private String getResults() {
+        if (data != null) {
+            if ("Y".equals(data.getExcludeResults()))
+                return EXCLUDE_ALL;
+            else if ("Y".equals(data.getIncludeNotReportableResults()))
+                return INCLUDE_NOT_REPORTABLE;
+        }
+
+        return null;
     }
 
-    private void setExcludeResults(String excludeResults) {
-        data.setExcludeResults(excludeResults);
+    private void setResults(String results) {
+        String exc, inc;
+        
+        exc = "N";
+        inc = "N";
+        if (EXCLUDE_ALL.equals(results))
+            exc = "Y";
+        else if (INCLUDE_NOT_REPORTABLE.equals(results))
+            inc = "Y";
+        
+        data.setExcludeResults(exc);
+        data.setIncludeNotReportableResults(inc);
     }
 
-    private String getIncludeOnlyReportableResults() {
-        if (data == null || DataBaseUtil.isEmpty(data.getIncludeOnlyReportableResults()))
-            return "Y";
-        else
-            return data.getIncludeOnlyReportableResults();
+    private String getAuxData() {
+        if (data != null) {
+            if ("Y".equals(data.getExcludeAuxData()))
+                return EXCLUDE_ALL;
+            else if ("Y".equals(data.getIncludeNotReportableAuxData()))
+                return INCLUDE_NOT_REPORTABLE;
+        }
+
+        return null;
     }
 
-    private void setIncludeOnlyReportableResults(String includeOnlyReportableResults) {
-        data.setIncludeOnlyReportableResults(includeOnlyReportableResults);
-    }
-
-    private String getExcludeAuxData() {
-        if (data == null || DataBaseUtil.isEmpty(data.getExcludeAuxData()))
-            return "N";
-        else
-            return data.getExcludeAuxData();
-    }
-
-    private void setExcludeAuxData(String excludeAuxData) {
-        data.setExcludeAuxData(excludeAuxData);
-    }
-
-    private String getIncludeOnlyReportableAuxData() {
-        if (data == null || DataBaseUtil.isEmpty(data.getIncludeOnlyReportableAuxData()))
-            return "Y";
-        else
-            return data.getIncludeOnlyReportableAuxData();
-    }
-
-    private void setIncludeOnlyReportableAuxData(String includeOnlyReportableAuxData) {
-        data.setIncludeOnlyReportableAuxData(includeOnlyReportableAuxData);
+    private void setAuxData(String auxData) {
+        String exc, inc;
+        
+        exc = "N";
+        inc = "N";
+        if (EXCLUDE_ALL.equals(result))
+            exc = "Y";
+        else if (INCLUDE_NOT_REPORTABLE.equals(result))
+            inc = "Y";
+        
+        data.setExcludeAuxData(exc);
+        data.setIncludeNotReportableAuxData(inc);
     }
 
     /**
@@ -739,29 +734,9 @@ public class QueryTabUI extends Screen {
      * passed values; doesn't create the query data if the value of either
      * widget is null or empty
      */
-    /*private void addQueryData(HasValue<?> fromWidget, HasValue<?> toWidget, String key,
-                              QueryData.Type type, ArrayList<QueryData> fields) {
-        QueryData field;
-        Object fromValue, toValue;
-
-        field = null;
-        fromValue = fromWidget.getValue();
-        toValue = toWidget.getValue();
-
-        if ( !DataBaseUtil.isEmpty(fromValue) && !DataBaseUtil.isEmpty(toValue)) {
-            field = new QueryData();
-            field.setKey(key);
-            field.setQuery(DataBaseUtil.concatWithSeparator(fromValue, "..", toValue));
-            field.setType(type);
-        }
-
-        if (field != null)
-            fields.add(field);
-    }*/
-    
     private void addQueryData(Queryable fromWidget, Queryable toWidget, String key,
                               QueryData.Type type, ArrayList<QueryData> fields) {
-        
+
         QueryData fromField, toField, field;
         Object fromQuery, toQuery;
 
@@ -786,16 +761,29 @@ public class QueryTabUI extends Screen {
     private void addQueryData(Queryable widget, String key, ArrayList<QueryData> fields) {
         QueryData field;
 
+        field = getQueryData(widget, key);
+        if (field != null)
+            fields.add(field);
+    }
+
+    /**
+     * Returns a query data created from the passed widget; a query data is
+     * created only if there's a query string specified in the widget; sets the
+     * passed key in the query data
+     */
+    private QueryData getQueryData(Queryable widget, String key) {
+        QueryData field;
+
         field = (QueryData)widget.getQuery();
         /*
          * the key is set here because it's not set when the query data is
          * created; this is because, the widget doesn't know what its key is;
          * the key is set in the hashmap for handlers
          */
-        if (field != null) {
+        if (field != null)
             field.setKey(key);
-            fields.add(field);
-        }
+
+        return field;
     }
 
     /**

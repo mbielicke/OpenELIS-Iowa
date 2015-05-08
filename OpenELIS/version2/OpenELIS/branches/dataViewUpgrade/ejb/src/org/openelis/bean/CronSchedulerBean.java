@@ -72,11 +72,11 @@ public class CronSchedulerBean {
             minute = now.get(Calendar.MINUTE);
             dayOfWeek = now.get(Calendar.DAY_OF_WEEK) - 1;
 
-            cronTabs = cron.fetchActive();
-            log.finest("Evaluating " + cronTabs.size() + " entries");
+            //cronTabs = cron.fetchActive();
+            //log.finest("Evaluating " + cronTabs.size() + " entries");
 
-            for (Cron cronTab : cronTabs)
-                checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
+            //for (Cron cronTab : cronTabs)
+              //  checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not execute cron job(s)", e);
         }

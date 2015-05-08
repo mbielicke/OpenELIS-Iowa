@@ -31,10 +31,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.scriptlet.ChlGcWorksheetScriptlet1Proxy;
+import org.openelis.ui.common.SectionPermission;
 
 /**
  * This class is used for providing the front-end functionality for the 
@@ -50,6 +56,25 @@ public class ChlGcWorksheetScriptletProxy1 implements ChlGcWorksheetScriptlet1Pr
     @Override
     public ArrayList<SampleManager1> fetchSampleManagersByAnalyses(ArrayList<Integer> analysisIds) throws Exception {
         return SampleService1.get().fetchByAnalyses(analysisIds, (SampleManager1.Load[]) null);
+    }
+
+    @Override
+    public boolean canEdit(WorksheetAnalysisViewDO waVDO) {
+        SectionPermission perm;
+        
+        perm = UserCache.getPermission().getSection(waVDO.getSectionName());
+        if (Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId()))
+            return false;
+        else if (perm == null || !perm.hasCompletePermission())
+            return false;
+
+        return true;
+    }
+    
+    @Override
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        return WorksheetService1.get().getColumnNames(formatId);
     }
 
     @Override
