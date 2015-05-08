@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +43,15 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
+
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
@@ -61,15 +69,6 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.Counter;
 import org.openelis.utils.ReportUtil;
 import org.openelis.utils.User;
-
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -173,11 +172,8 @@ public class SDWISExportCountReportBean {
         SampleDO sDO;
         SampleSDWISViewDO ssVDO;
         SectionViewDO secVDO;
-        SimpleDateFormat format;
         String location, printer, printstat;
         URL url;
-
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         /*
          * push status into session so we can query it while the report is
@@ -194,9 +190,9 @@ public class SDWISExportCountReportBean {
         printer = null;
         if (paramList != null) {
             param = ReportUtil.getMapParameter(paramList);
-            beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
-            endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
-            printer = ReportUtil.getSingleParameter(param, "PRINTER");
+            beginReleased = ReportUtil.getTimestampParameter(param, "BEGIN_RELEASED");
+            endReleased = ReportUtil.getTimestampParameter(param, "END_RELEASED");
+            printer = ReportUtil.getStringParameter(param, "PRINTER");
         }
 
         if (beginReleased == null || endReleased == null) {

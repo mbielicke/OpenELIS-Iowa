@@ -165,31 +165,25 @@ public class ShippingReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        shippingIdStr = ReportUtil.getSingleParameter(param, "SHIPPING_ID");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        barcodePrinter = ReportUtil.getSingleParameter(param, "BARCODE");
-        manifest = ReportUtil.getSingleParameter(param, "MANIFEST");
-        shippingLabel = ReportUtil.getSingleParameter(param, "SHIPPING_LABEL");
-        requestForm = ReportUtil.getSingleParameter(param, "REQUESTFORM");
-        instruction = ReportUtil.getSingleParameter(param, "INSTRUCTION");
+        shippingId = ReportUtil.getIntegerParameter(param, "SHIPPING_ID");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
+        barcodePrinter = ReportUtil.getStringParameter(param, "BARCODE");
+        printManifest = ReportUtil.getBooleanParameter(param, "MANIFEST");
+        printLabel = ReportUtil.getBooleanParameter(param, "SHIPPING_LABEL");
+        printReqform = ReportUtil.getBooleanParameter(param, "REQUESTFORM");
+        printInstr = ReportUtil.getBooleanParameter(param, "INSTRUCTION");
 
-        if (DataBaseUtil.isEmpty(shippingIdStr) || DataBaseUtil.isEmpty(printer) ||
+        if (shippingId == null || DataBaseUtil.isEmpty(printer) ||
             DataBaseUtil.isEmpty(barcodePrinter))
             throw new InconsistencyException("You must specify the shipping id, printer and barcode printer for this report");
-
-        printManifest = printOption(manifest);
-        printLabel = printOption(shippingLabel);
-        printReqform = printOption(requestForm);
-        printInstr = printOption(instruction);
 
         //
         // find the shipping record
         //
         try {
-            shippingId = Integer.parseInt(shippingIdStr);
             shipData = shipping.fetchById(shippingId);
         } catch (NotFoundException e) {
-            throw new NotFoundException("A shipping record with id " + shippingIdStr +
+            throw new NotFoundException("A shipping record with id " + shippingId +
                                         " does not exist");
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,7 +204,7 @@ public class ShippingReportBean {
                 dir = ReportUtil.getResourcePath(url);
 
                 jparam = new HashMap<String, Object>();
-                jparam.put("SHIPPING_ID", shippingIdStr);
+                jparam.put("SHIPPING_ID", shippingId);
                 jparam.put("SUBREPORT_DIR", dir);
 
                 status.setMessage("Outputing report").setPercentComplete(20);
@@ -283,7 +277,7 @@ public class ShippingReportBean {
                                                          method,
                                                          costCenter,
                                                          shipFromAddr.getMultipleUnit(),
-                                                         "SH" + shippingIdStr,
+                                                         "SH" + shippingId,
                                                          shipFromAddr.getStreetAddress(),
                                                          shipFromAddr.getCity(),
                                                          shipFromAddr.getState(),
@@ -359,7 +353,7 @@ public class ShippingReportBean {
 
         list = new ArrayList<QueryData>();
         field = new QueryData();
-        field.setKey("ORDERID");
+        field.setKey("ORDER_ID");
         field.setQuery(orderId.toString());
         field.setType(QueryData.Type.INTEGER);
         list.add(field);
@@ -373,21 +367,12 @@ public class ShippingReportBean {
         field = new QueryData();
         field.setKey("USE_NUM_FORMS");
         field.setType(QueryData.Type.STRING);
-        /*
-         * query needs to be specified even if it's redundant because otherwise
-         * ReportUtil.getSingleParameter() for this parameter in the other bean
-         * will return null and this parameter won't have any effect on the
-         * report
-         */
-        field.setQuery("USE_NUM_FORMS");
+        field.setQuery("Y");
         list.add(field);
 
         requestFormReport.runReport(list);
     }
 
-    private boolean printOption(String option) {
-        return DataBaseUtil.trim(option) != null && "Y".equals(option);
-    }
 
     /*
      * Exports the filled report to a temp file for printing or faxing.

@@ -98,11 +98,16 @@ public class WorksheetAnalysisBean {
         Query query;
         WorksheetAnalysisViewDO waVDO;
         WorksheetAnalysisViewVO waVVO;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("WorksheetAnalysisView.FetchByWorksheetIds");
-        query.setParameter("worksheetIds", ids);
+        list = new ArrayList<WorksheetAnalysisViewVO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("worksheetIds", ids.subList(r.get(i), r.get(i + 1)));
+            list.addAll(query.getResultList());
+        }
 
-        list = query.getResultList();
 //        if (list.isEmpty())
 //            throw new NotFoundException();
 
@@ -135,11 +140,16 @@ public class WorksheetAnalysisBean {
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemIds(ArrayList<Integer> ids) throws Exception {
         Query query;
         List<WorksheetAnalysisDO> list;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemIds");
-        query.setParameter("ids", ids);
+        list = new ArrayList<WorksheetAnalysisDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            list.addAll(query.getResultList());
+        }
         
-        list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
 

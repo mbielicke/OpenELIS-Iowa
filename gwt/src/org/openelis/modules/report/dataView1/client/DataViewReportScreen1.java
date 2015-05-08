@@ -23,11 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.dataView.client;
+package org.openelis.modules.report.dataView1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DataViewVO;
+import org.openelis.domain.DataView1VO;
 import org.openelis.modules.report.client.ReportScreen;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Prompt;
@@ -40,11 +40,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * This class is used to execute reports on behalf of those screens that don't 
  * implement ReportScreen like Data View
  */
-public class DataViewReportScreen extends ReportScreen<DataViewVO> {
+public class DataViewReportScreen1 extends ReportScreen<DataView1VO> {
 
-    String reportMethod;
+    private String reportMethod;
     
-    public DataViewReportScreen(String reportMethod, WindowInt window, String attachment) throws Exception {
+    public DataViewReportScreen1(String reportMethod, WindowInt window, String attachment) throws Exception {
         this.reportMethod = reportMethod;
         this.window = window;
         if (!DataBaseUtil.isEmpty(attachment))
@@ -69,10 +69,8 @@ public class DataViewReportScreen extends ReportScreen<DataViewVO> {
     }
 
     @Override
-    public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
+    public void runReport(DataView1VO data, AsyncCallback<ReportStatus> callback) {
         if(reportMethod.equals("runReport"))
-            DataViewReportService.get().runReport(data, callback);
-        else if(reportMethod.equals("saveQuery"))
-            DataViewReportService.get().saveQuery(data, callback);
+            DataViewReportService1.get().runReport(data, callback);
     }
 }

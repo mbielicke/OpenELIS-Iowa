@@ -51,10 +51,12 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.EOrderDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleClinicalViewDO;
@@ -205,6 +207,15 @@ public class SampleManager1Bean {
     @EJB
     private SamplePTBean                 samplePT;
 
+    @EJB
+    private EOrderBean                   eorder;
+
+    @EJB
+    private PatientBean                  patient;
+
+    @EJB
+    private ProviderBean                 provider;
+
     private static final Logger          log = Logger.getLogger("openelis");
 
     /**
@@ -251,12 +262,19 @@ public class SampleManager1Bean {
      */
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
                                                 SampleManager1.Load... elements) throws Exception {
+        SampleDO s;
+        SampleNeonatalViewDO sn;
+        SampleClinicalViewDO sc;
         SampleManager1 sm;
-        ArrayList<Integer> ids1, ids2;
+        ArrayList<Integer> ids1, ids2, ids3, ids4, ids5;
         ArrayList<SampleManager1> sms;
         HashMap<Integer, SampleManager1> map1, map2;
+        HashMap<Integer, EOrderDO> map3;
+        HashMap<Integer, PatientDO> map4;
+        HashMap<Integer, ProviderDO> map5;
         EnumSet<SampleManager1.Load> el;
 
+        log.log(Level.INFO, "In fetchByIds");
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
@@ -272,7 +290,14 @@ public class SampleManager1Bean {
          */
         ids1 = new ArrayList<Integer>();
         map1 = new HashMap<Integer, SampleManager1>();
+        ids3 = new ArrayList<Integer>();
+        map3 = new HashMap<Integer, EOrderDO>();
+        ids4 = new ArrayList<Integer>();
+        map4 = new HashMap<Integer, PatientDO>();
+        ids5 = new ArrayList<Integer>();
+        map5 = new HashMap<Integer, ProviderDO>();
 
+        log.log(Level.INFO, "Fetching samples");
         for (SampleDO data : sample.fetchByIds(sampleIds)) {
             sm = new SampleManager1();
             setSample(sm, data);
@@ -280,8 +305,12 @@ public class SampleManager1Bean {
 
             ids1.add(data.getId()); // for fetch
             map1.put(data.getId(), sm); // for linking
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
+                data.getOrderId() != null)
+                ids3.add(data.getOrderId());
         }
 
+        log.log(Level.INFO, "Fetching domains");
         /*
          * additional domains for each sample
          */
@@ -303,11 +332,18 @@ public class SampleManager1Bean {
         for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
+            ids4.add(data.getPatientId());
+            ids4.add(data.getNextOfKinId());
+            if (data.getProviderId() != null)
+                ids5.add(data.getProviderId());
         }
 
         for (SampleClinicalViewDO data : sampleClinical.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleClinical(sm, data);
+            ids4.add(data.getPatientId());
+            if (data.getProviderId() != null)
+                ids5.add(data.getProviderId());
         }
 
         for (SamplePTDO data : samplePT.fetchBySampleIds(ids1)) {
@@ -315,6 +351,54 @@ public class SampleManager1Bean {
             setSamplePT(sm, data);
         }
 
+        log.log(Level.INFO, "Fetching eorders, patients and providers");
+        /*
+         * fetch e-orders, patients and providers and set them for clinical and
+         * neonatal samples
+         */
+        if (el.contains(SampleManager1.Load.EORDER) && ids3.size() > 0) {
+            for (EOrderDO data : eorder.fetchByIds(ids3))
+                map3.put(data.getId(), data);
+        }
+
+        if (ids4.size() > 0) {
+            for (PatientDO data : patient.fetchByIds(ids4))
+                map4.put(data.getId(), data);
+        }
+
+        if (el.contains(SampleManager1.Load.PROVIDER) && ids5.size() > 0) {
+            for (ProviderDO data : provider.fetchByIds(ids5))
+                map5.put(data.getId(), data);
+        }
+        
+        for (SampleManager1 sm1 : sms) {
+            s = getSample(sm1);
+            sn = getSampleNeonatal(sm1);
+            sc = getSampleClinical(sm1);
+            if (sn != null) {
+                if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
+                    sn.setPaperOrderValidator(map3.get(s.getOrderId())
+                                                .getPaperOrderValidator());
+                sn.setPatient(map4.get(sn.getPatientId()));
+                sn.setNextOfKin(map4.get(sn.getNextOfKinId()));
+                if (sn.getProviderId() != null)
+                    sn.setProvider(map5.get(sn.getProviderId()));
+            } else if ( sc != null) {
+                if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
+                    sc.setPaperOrderValidator(map3.get(s.getOrderId())
+                                                       .getPaperOrderValidator());
+                sc.setPatient(map4.get(sc.getPatientId()));
+                if (sc.getProviderId() != null)
+                    sc.setProvider(map5.get(sc.getProviderId()));
+            }
+        }
+        
+        ids3 = ids4 = ids5 = null;
+        map3 = null;
+        map4 = null;
+        map5 = null;
+
+        log.log(Level.INFO, "Fetching orgs, projects, sample qas, notes, aux, attachments");
         /*
          * various lists for each sample
          */
@@ -325,6 +409,7 @@ public class SampleManager1Bean {
             }
         }
 
+        log.log(Level.INFO, "Fetching projects");
         if (el.contains(SampleManager1.Load.PROJECT)) {
             for (SampleProjectViewDO data : sampleProject.fetchBySampleIds(ids1)) {
                 sm = map1.get(data.getSampleId());
@@ -332,6 +417,7 @@ public class SampleManager1Bean {
             }
         }
 
+        log.log(Level.INFO, "Fetching sample qas");
         if (el.contains(SampleManager1.Load.QA)) {
             for (SampleQaEventViewDO data : sampleQA.fetchBySampleIds(ids1)) {
                 sm = map1.get(data.getSampleId());
@@ -339,6 +425,7 @@ public class SampleManager1Bean {
             }
         }
 
+        log.log(Level.INFO, "Fetching aux");
         if (el.contains(SampleManager1.Load.AUXDATA)) {
             for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
@@ -364,6 +451,7 @@ public class SampleManager1Bean {
             }
         }
 
+        log.log(Level.INFO, "Fetching sample items");
         /*
          * build level 2, everything is based on item ids
          */
@@ -377,12 +465,14 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
+            log.log(Level.INFO, "Fetching sample item storages");
             for (StorageViewDO data : storage.fetchByIds(ids2, Constants.table().SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
         }
 
+        log.log(Level.INFO, "Fetching analyses");
         /*
          * build level 3, everything is based on analysis ids
          */
@@ -398,6 +488,7 @@ public class SampleManager1Bean {
         ids2 = null;
         map2 = null;
 
+        log.log(Level.INFO, "Fetching analysis notes, qas, storages, users, results, worksheets");
         /*
          * it is possible for a sample to have no analyses before it's verified
          */
@@ -419,6 +510,7 @@ public class SampleManager1Bean {
                 }
             }
 
+            log.log(Level.INFO, "Fetched analysis qas");
             if (el.contains(SampleManager1.Load.STORAGE)) {
                 for (StorageViewDO data : storage.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                     sm = map1.get(data.getReferenceId());
@@ -458,10 +550,16 @@ public class SampleManager1Bean {
      */
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
+        SampleDO s;
+        SampleNeonatalViewDO sn;
+        SampleClinicalViewDO sc;
         SampleManager1 sm;
-        ArrayList<Integer> ids1, ids2;
+        ArrayList<Integer> ids1, ids2, ids3, ids4, ids5;
         ArrayList<SampleManager1> sms;
         HashMap<Integer, SampleManager1> map1, map2;
+        HashMap<Integer, EOrderDO> map3;
+        HashMap<Integer, PatientDO> map4;
+        HashMap<Integer, ProviderDO> map5;
         EnumSet<SampleManager1.Load> el;
 
         /*
@@ -481,6 +579,13 @@ public class SampleManager1Bean {
         map1 = new HashMap<Integer, SampleManager1>();
         ids2 = new ArrayList<Integer>(); // sample item ids
         map2 = new HashMap<Integer, SampleManager1>();
+        ids3 = new ArrayList<Integer>(); // eorder ids
+        map3 = new HashMap<Integer, EOrderDO>();
+        ids4 = new ArrayList<Integer>(); // patient ids
+        map4 = new HashMap<Integer, PatientDO>();
+        ids5 = new ArrayList<Integer>(); // provider ids
+        map5 = new HashMap<Integer, ProviderDO>();
+        
         for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds)) {
             sm = map1.get(data.getSampleId());
             if (sm == null) {
@@ -509,6 +614,9 @@ public class SampleManager1Bean {
         for (SampleDO data : sample.fetchByIds(ids1)) {
             sm = map1.get(data.getId());
             setSample(sm, data);
+            if ((Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
+                data.getOrderId() != null)
+                ids3.add(data.getOrderId());
         }
 
         /*
@@ -532,17 +640,72 @@ public class SampleManager1Bean {
         for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
+            ids4.add(data.getPatientId());
+            ids4.add(data.getNextOfKinId());
+            if (ids5 != null && data.getProviderId() != null)
+                ids5.add(data.getProviderId());
         }
 
         for (SampleClinicalViewDO data : sampleClinical.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleClinical(sm, data);
+            ids4.add(data.getPatientId());
+            if (ids5 != null && data.getProviderId() != null)
+                ids5.add(data.getProviderId());
         }
 
         for (SamplePTDO data : samplePT.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSamplePT(sm, data);
         }
+
+        /*
+         * fetch e-orders, patients and providers and set them for clinical and
+         * neonatal samples
+         */
+        if (el.contains(SampleManager1.Load.EORDER) && ids3.size() > 0) {
+            for (EOrderDO data : eorder.fetchByIds(ids3))
+                map3.put(data.getId(), data);
+        }
+
+        if (ids4.size() > 0) {
+            map4 = new HashMap<Integer, PatientDO>();
+            for (PatientDO data : patient.fetchByIds(ids4))
+                map4.put(data.getId(), data);
+        }
+
+        if (el.contains(SampleManager1.Load.PROVIDER) && ids5.size() > 0) {
+            map5 = new HashMap<Integer, ProviderDO>();
+            for (ProviderDO data : provider.fetchByIds(ids5))
+                map5.put(data.getId(), data);
+        }
+        
+        for (SampleManager1 sm1 : sms) {
+            s = getSample(sm1);
+            sn = getSampleNeonatal(sm1);
+            sc = getSampleClinical(sm1);
+            if (sn != null) {
+                if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
+                    sn.setPaperOrderValidator(map3.get(s.getOrderId())
+                                                .getPaperOrderValidator());
+                sn.setPatient(map4.get(sn.getPatientId()));
+                sn.setNextOfKin(map4.get(sn.getNextOfKinId()));
+                if (sn.getProviderId() != null)
+                    sn.setProvider(map5.get(sn.getProviderId()));
+            } else if ( sc != null) {
+                if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
+                    sc.setPaperOrderValidator(map3.get(s.getOrderId())
+                                                       .getPaperOrderValidator());
+                sc.setPatient(map4.get(sc.getPatientId()));
+                if (sc.getProviderId() != null)
+                    sc.setProvider(map5.get(sc.getProviderId()));
+            }
+        }
+        
+        ids3 = ids4 = ids5 = null;
+        map3 = null;
+        map4 = null;
+        map5 = null;
 
         /*
          * various lists for each sample
@@ -759,7 +922,7 @@ public class SampleManager1Bean {
                 else
                     addSampleInternalNote(sm, data);
         }
-        
+
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
             setAttachments(sm, null);
             for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids,

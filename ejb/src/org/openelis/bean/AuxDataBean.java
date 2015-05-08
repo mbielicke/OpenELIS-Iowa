@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,8 +45,10 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
@@ -63,7 +66,13 @@ public class AuxDataBean {
     private EntityManager       manager;
 
     @EJB
+    private AuxFieldBean        auxField;
+
+    @EJB
     private DictionaryCacheBean dictionaryCache;
+
+    @EJB
+    private DictionaryBean      dictionary;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -96,51 +105,55 @@ public class AuxDataBean {
 
     public ArrayList<AuxDataViewDO> fetchByIds(ArrayList<Integer> referenceIds,
                                                Integer referenceTableId) {
-        Integer dictId;
-        String value;
+        Integer id;
         Query query;
-        ArrayList<AuxDataViewDO> list;
-        AuxDataViewDO data;
-        DictionaryDO dict;
-        HashMap<String, DictionaryDO> dictMap;
+        DictionaryDO d;
+        List<AuxDataViewDO> ads;
+        ArrayList<DictionaryViewDO> ds;
+        ArrayList<Integer> r;
+        HashSet<Integer> ids;
+        HashMap<Integer, DictionaryViewDO> map;
 
         query = manager.createNamedQuery("AuxData.FetchByIds");
-        query.setParameter("ids", referenceIds);
         query.setParameter("tableId", referenceTableId);
-        list = DataBaseUtil.toArrayList(query.getResultList());
+        ads = new ArrayList<AuxDataViewDO>();
+        r = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", referenceIds.subList(r.get(i), r.get(i + 1)));
+            ads.addAll(query.getResultList());
+        }
 
-        dictMap = new HashMap<String, DictionaryDO>();
+        ids = new HashSet<Integer>();
+        for (AuxDataDO data : ads) {
+            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
+                ids.add(Integer.valueOf(data.getValue()));
+        }
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
+        map = new HashMap<Integer, DictionaryViewDO>();
+        if (ids.size() > 0) {
+            log.log(Level.INFO, "Fetching dictionaries for aux data");
+            ds = dictionary.fetchByIds(DataBaseUtil.toArrayList(ids));
+            for (DictionaryViewDO data : ds)
+                map.put(data.getId(), data);
+        }
 
-            value = data.getValue();
-            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()) && value != null) {
-                dict = dictMap.get(value);
+        for (AuxDataViewDO data : ads) {
+            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId())) {
+                id = Integer.valueOf(data.getValue());
+                d = map.get(id);
                 /*
-                 * the following helps avoid creating new integers from the same
-                 * string over and over again potentially hundreds or thousands
-                 * of times and also trying to fetch a dictionary record even if
-                 * fetching it failed previously
+                 * this is to make sure that the code doesn't fail if the aux
+                 * field value linked to this aux data was removed and then the
+                 * dictionary entry linked to the aux field value was removed
                  */
-                if (dict == null) {
-                    dictId = Integer.valueOf(value);
-
-                    try {
-                        dict = dictionaryCache.getById(dictId);
-                        dictMap.put(value, dict);
-                        data.setDictionary(dict.getEntry());
-                    } catch (Exception e) {
-                        log.log(Level.SEVERE, "Failed to lookup dictionary entry with id: " +
-                                              dictId, e);
-                    }
-                } else {
-                    data.setDictionary(dict.getEntry());
-                }
+                if (d != null)
+                    data.setDictionary(d.getEntry());
+                else
+                    log.log(Level.SEVERE, "Failed to lookup dictionary entry with id: " + id);
             }
         }
 
-        return list;
+        return DataBaseUtil.toArrayList(ads);
     }
 
     public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId,

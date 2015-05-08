@@ -131,7 +131,7 @@
             </w:Dropdown>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.analysis_revision}:" />
+              <ui:text from="{msg.gen_revision}:" />
             </td>
             <td>
               <w:TextBox ui:field="revision" width="60px" field="Integer" />

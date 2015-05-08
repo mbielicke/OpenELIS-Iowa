@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -43,6 +42,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -50,9 +50,9 @@ import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
@@ -63,10 +63,10 @@ public class QaEventBean {
     private EntityManager            manager;
 
     @EJB
-    private LockBean                   lock;
-    
+    private LockBean                 lock;
+
     @EJB
-    private UserCacheBean               userCache;
+    private UserCacheBean            userCache;
 
     private static final QaEventMeta meta = new QaEventMeta();
 
@@ -87,12 +87,20 @@ public class QaEventBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<QaEventViewDO> fetchByIds(Collection<Integer> ids) {
+    public ArrayList<QaEventViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<QaEventViewDO> q;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("QaEvent.FetchByIds");
-        query.setParameter("ids", ids);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        q = new ArrayList<QaEventViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            q.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(q);
     }
 
     @SuppressWarnings("unchecked")
@@ -103,7 +111,7 @@ public class QaEventBean {
         query.setParameter("name", name);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
         Query query;
@@ -129,7 +137,7 @@ public class QaEventBean {
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchAll() throws Exception {
         Query query;
@@ -182,9 +190,8 @@ public class QaEventBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          QaEventMeta.getId() + "," + QaEventMeta.getName() + "," +
-                          QaEventMeta.getTestName() + ")");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + QaEventMeta.getId() + "," +
+                          QaEventMeta.getName() + "," + QaEventMeta.getTestName() + ")");
         builder.constructWhere(fields);
         builder.setOrderBy(QaEventMeta.getName() + "," + QaEventMeta.getTestName());
 

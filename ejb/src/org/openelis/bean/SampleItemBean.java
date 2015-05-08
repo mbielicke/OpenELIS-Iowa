@@ -26,8 +26,11 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -37,6 +40,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
@@ -50,7 +54,7 @@ import org.openelis.ui.common.NotFoundException;
 public class SampleItemBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager  manager;
 
     public SampleItemViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -83,12 +87,7 @@ public class SampleItemBean {
     }
 
     public ArrayList<SampleItemViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
-        Query query;
-
-        query = manager.createNamedQuery("SampleItem.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return fetchByIds("SampleItem.FetchBySampleIds", sampleIds);
     }
 
     /**
@@ -97,12 +96,7 @@ public class SampleItemBean {
      * linked to those analysis
      */
     public ArrayList<SampleItemViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
-        Query query;
-
-        query = manager.createNamedQuery("SampleItem.FetchByAnalysisIds");
-        query.setParameter("ids", analysisIds);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return fetchByIds("SampleItem.FetchByAnalysisIds", analysisIds);
     }
 
     public SampleItemDO add(SampleItemDO data) throws Exception {
@@ -163,6 +157,24 @@ public class SampleItemBean {
 
     public void validate(SampleItemViewDO data, Integer accession) throws Exception {
         if (data.getTypeOfSampleId() == null)
-            throw new FormErrorException(Messages.get().sampleItem_typeMissing(accession, data.getItemSequence()));
+            throw new FormErrorException(Messages.get()
+                                                 .sampleItem_typeMissing(accession,
+                                                                         data.getItemSequence()));
+    }
+
+    private ArrayList<SampleItemViewDO> fetchByIds(String queryName, ArrayList<Integer> ids) {
+        Query query;
+        List<SampleItemViewDO> is;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery(queryName);
+        is = new ArrayList<SampleItemViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            is.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(is);
     }
 }

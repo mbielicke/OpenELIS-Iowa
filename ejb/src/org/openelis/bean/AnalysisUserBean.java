@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -47,7 +48,7 @@ import org.openelis.ui.common.SystemUserVO;
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisUserBean  { //implements AnalysisUserLocal {
+public class AnalysisUserBean  {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -106,18 +107,23 @@ public class AnalysisUserBean  { //implements AnalysisUserLocal {
     }        
     
     public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception {
+        int i;
         Query query;
-        ArrayList<AnalysisUserViewDO> list;
         AnalysisUserViewDO data;
         SystemUserVO user;
-
+        List<AnalysisUserViewDO> u;
+        ArrayList<Integer> r;
+        
         query = manager.createNamedQuery("AnalysisUser.FetchByAnalysisIds");
-        query.setParameter("ids", analysisIds);
+        u = new ArrayList<AnalysisUserViewDO>(); 
+        r = DataBaseUtil.createSubsetRange(analysisIds.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", analysisIds.subList(r.get(i), r.get(i + 1)));
+            u.addAll(query.getResultList());
+        }
 
-        list = DataBaseUtil.toArrayList(query.getResultList());
-
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
+        for (i = 0; i < u.size(); i++ ) {
+            data = u.get(i);
 
             if (data.getSystemUserId() != null) {
                 user = userCache.getSystemUser(data.getSystemUserId());
@@ -125,7 +131,8 @@ public class AnalysisUserBean  { //implements AnalysisUserLocal {
                     data.setSystemUser(user.getLoginName());
             }
         }
-        return list;
+        
+        return DataBaseUtil.toArrayList(u);
     }
 
     public AnalysisUserDO add(AnalysisUserDO data) throws Exception {

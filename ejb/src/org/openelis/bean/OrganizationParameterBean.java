@@ -72,16 +72,21 @@ public class OrganizationParameterBean {
 
     public ArrayList<OrganizationParameterDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List list;
+        List<OrganizationParameterDO> o;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("OrganizationParameter.FetchByOrganizationIds");
-        query.setParameter("ids", ids);
+        o = new ArrayList<OrganizationParameterDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
 
-        list = query.getResultList();
-        if (list.isEmpty())
+        if (o.isEmpty())
             throw new NotFoundException();
 
-        return DataBaseUtil.toArrayList(list);
+        return DataBaseUtil.toArrayList(o);
     }
 
     public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id,

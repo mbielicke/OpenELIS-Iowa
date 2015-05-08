@@ -43,6 +43,14 @@ public class TestAnalyteDataViewVO implements Serializable {
     protected ArrayList<ResultDataViewVO> results;
     protected String                      isIncluded;
 
+    public Integer getTestAnalyteId() {
+        return testAnalyteId;
+    }
+
+    public void setTestAnalyteId(Integer testAnalyteId) {
+        this.testAnalyteId = testAnalyteId;
+    }
+
     public String getAnalyteName() {
         return analyteName;
     }

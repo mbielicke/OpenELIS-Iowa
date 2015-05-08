@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -67,22 +68,36 @@ public class AttachmentItemBean {
     public ArrayList<AttachmentItemViewDO> fetchByIds(ArrayList<Integer> referenceIds,
                                                   Integer referenceTableId) {
         Query query;
+        List<AttachmentItemViewDO> a;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("AttachmentItem.FetchByIds");
-        query.setParameter("ids", referenceIds);
         query.setParameter("tableId", referenceTableId);
+        a = new ArrayList<AttachmentItemViewDO>();
+        r = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", referenceIds.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(a);
     }
     
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentItemViewDO> fetchByAttachmentIds(ArrayList<Integer> attachmentIds) {
         Query query;
+        List<AttachmentItemViewDO> a;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("AttachmentItem.FetchByAttachmentIds");
-        query.setParameter("ids", attachmentIds);
+        a = new ArrayList<AttachmentItemViewDO>();
+        r = DataBaseUtil.createSubsetRange(attachmentIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", attachmentIds.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(a);
     }
 
     public AttachmentItemDO add(AttachmentItemDO data) throws Exception {

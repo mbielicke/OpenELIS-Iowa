@@ -183,11 +183,18 @@ public class SampleBean {
 
     public ArrayList<SampleDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<SampleDO> s;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Sample.FetchByIds");
-        query.setParameter("ids", ids);
+        s = new ArrayList<SampleDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            s.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(s);
     }
 
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
@@ -206,11 +213,18 @@ public class SampleBean {
 
     public ArrayList<SampleDO> fetchByAccessionNumbers(ArrayList<Integer> accessionNumbers) throws Exception {
         Query query;
+        List<SampleDO> s;
+        ArrayList<Integer> range;
 
         query = manager.createNamedQuery("Sample.FetchByAccessionNumbers");
-        query.setParameter("accessions", accessionNumbers);
+        s = new ArrayList<SampleDO>();
+        range = DataBaseUtil.createSubsetRange(accessionNumbers.size());
+        for (int i = 0; i < range.size() - 1; i++ ) {
+            query.setParameter("accessions", accessionNumbers.subList(range.get(i), range.get(i + 1)));
+            s.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(s);
     }
 
     public ArrayList<SampleDO> fetchByEOrderId(Integer eorderId) {
@@ -548,10 +562,10 @@ public class SampleBean {
                 col = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
             } else {
                 e.add(new FormErrorException(Messages.get()
-                                             .sample_collectedTimeWithoutDateException(accession)));
+                                                     .sample_collectedTimeWithoutDateException(accession)));
             }
         }
-        
+
         if (col != null) {
             if (rec != null && col.after(rec))
                 e.add(new FormErrorException(Messages.get()
@@ -559,9 +573,9 @@ public class SampleBean {
             if (col.before(minEnt))
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedTooOldWarning(accession)));
-            if (ent != null && col.after(ent)) 
+            if (ent != null && col.after(ent))
                 e.add(new FormErrorException(Messages.get()
-                                             .sample_collectedDateAfterEnteredException(accession)));
+                                                     .sample_collectedDateAfterEnteredException(accession)));
         }
 
         if (e.size() > 0)

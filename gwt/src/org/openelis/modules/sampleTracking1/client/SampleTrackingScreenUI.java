@@ -102,6 +102,7 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -192,7 +193,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected ClinicalTabUI                              clinicalTab;
-    
+
     @UiField(provided = true)
     protected PTTabUI                                    ptTab;
 
@@ -230,7 +231,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1>           managers;
 
-    protected boolean                                    canEdit, isBusy, unrelease;
+    protected boolean                                    canEdit, isBusy, unrelease,
+                    hasEnvScriptlet, hasNeonatalScriptlet, hasSDWISScriptlet;
 
     protected ModulePermission                           userPermission, unreleasePermission,
                     changeDomainPermission;
@@ -275,7 +277,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT,
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
 
     protected static final String                        SAMPLE_LEAF   = "sample",
                     SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis",
@@ -284,14 +287,14 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM,
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
-        ATTACHMENT, BLANK
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT, BLANK
     };
 
-    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_ia_scriptlet_1",
-                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_ia_scriptlet_1",
-                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_ia_scriptlet_1";
+    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
+                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_scriptlet",
+                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_scriptlet";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -435,6 +438,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         initialize();
         manager = null;
         managers = null;
+        hasEnvScriptlet = true;
+        hasSDWISScriptlet = true;
+        hasNeonatalScriptlet = true;
         showTabs(Tab.BLANK);
         setData();
         evaluateEdit();
@@ -988,7 +994,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * screens
          */
         clinicalTab.setCanQuery(true);
-        
+
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 ptTab.onDataChange();
@@ -1590,7 +1596,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
-        
+
         if (ptTab.getQueryFields().size() > 0) {
             domain = Constants.domain().PT;
             numDomains++ ;
@@ -2368,7 +2374,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         Node selNode;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -2483,28 +2489,102 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     /**
      * Returns the id of the scriptlet for the selected sample's domain; returns
-     * null if the domain is quick entry
+     * null if a scriptlet is not defined for the domain
      */
-    private Integer getDomainScriptlet() throws Exception {
+    private Integer getDomainScriptlet() {
         SystemVariableDO data;
 
+        data = null;
+        /*
+         * add the scriptlet for the domain, which is the value of this system
+         * variable; don't try to look up the system variable again if it's not
+         * found the first time because the scriptlet is optional
+         */
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
-            if (envScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
-                envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasEnvScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on trying
+                 * to look up the dictionary, the user must be informed of it
+                 * even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasEnvScriptlet = false;
             }
             return envScriptletId;
-        } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
-            if (sdwisScriptletId == null) {
-                data = SystemVariableService.get()
-                                            .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
-                sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+        } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {            
+            if (hasSDWISScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on trying
+                 * to look up the dictionary, the user must be informed of it
+                 * even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasSDWISScriptlet = false;
             }
             return sdwisScriptletId;
-        } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
-            if (neonatalScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
-                neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+        } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {            
+            if (hasNeonatalScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on trying
+                 * to look up the dictionary, the user must be informed of it
+                 * even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasNeonatalScriptlet = false;
             }
             return neonatalScriptletId;
         }
@@ -3773,13 +3853,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             reloadSample(findAncestorByType(SAMPLE_LEAF));
 
             clearStatus();
-            
+
             /*
              * add scriptlets for any newly added tests and aux data
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -3850,7 +3930,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
              * add scriptlets for the changed test
              */
             addTestScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests

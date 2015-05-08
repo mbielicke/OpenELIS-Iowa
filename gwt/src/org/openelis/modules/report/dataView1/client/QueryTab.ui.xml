@@ -105,7 +105,7 @@
                   <ui:text from="{msg.sampleOrganization_reportTo}:" />
                 </td>
                 <td colspan="3">
-                  <w:TextBox ui:field="reportTo" field="String" width="305px"  case = "UPPER" />
+                  <w:TextBox ui:field="reportTo" field="String" width="305px" case="UPPER" />
                 </td>
               </tr>
               <tr>
@@ -219,6 +219,7 @@
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
+              
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.dataView_excludeResultOverride}:" />
                 </td>
@@ -228,36 +229,18 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.dataView_excludeResults}:" />
+                  <ui:text from="{msg.result_result}:" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="excludeResults" />
-                </td>
-                <td>
-                  <g:HorizontalPanel width="63px" />
-                </td>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.dataView_reportableOnly}:" />
-                </td>
-                <td>
-                  <w:CheckBox ui:field="includeOnlyReportableResults" />
+                  <w:Dropdown ui:field="result" field="String" width="150px" />
                 </td>
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.dataView_excludeAuxData}:" />
+                  <ui:text from="{msg.aux_data}:" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="excludeAuxData" />
-                </td>
-                <td>
-                  <g:HorizontalPanel width="63px" />
-                </td>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.dataView_reportableOnly}:" />
-                </td>
-                <td>
-                  <w:CheckBox ui:field="includeOnlyReportableAuxData" />
+                  <w:Dropdown ui:field="auxData" field="String" width="150px" />
                 </td>
               </tr>
             </table>

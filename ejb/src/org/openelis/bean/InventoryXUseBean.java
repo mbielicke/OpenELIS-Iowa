@@ -70,11 +70,18 @@ public class InventoryXUseBean {
     
     public ArrayList<InventoryXUseViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
         Query query;
+        List<InventoryXUseViewDO> x;
+        ArrayList<Integer> r;
         
         query = manager.createNamedQuery("InventoryXUse.FetchByOrderIds");
-        query.setParameter("ids", ids);
+        x = new ArrayList<InventoryXUseViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            x.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(x);
     }
 
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception {

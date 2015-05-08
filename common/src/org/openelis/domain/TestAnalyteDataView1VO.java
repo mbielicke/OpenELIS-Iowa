@@ -34,23 +34,14 @@ import org.openelis.ui.common.DataBaseUtil;
  * This class is used for managing the analytes and results that will be part of
  * the spreadsheet delivered as a result of executing a data dump
  */
-public class AuxFieldDataViewVO implements Serializable {
+public class TestAnalyteDataView1VO implements Serializable {
 
     private static final long             serialVersionUID = 1L;
 
-    protected Integer                     auxFieldId, analyteId;
-    protected String                      analyteName;   
-    protected ArrayList<AuxDataDataViewVO>    values;
+    protected Integer                     analyteId;
+    protected String                      analyteName;
+    protected ArrayList<ResultDataViewVO> results;
     protected String                      isIncluded;
-    
-
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-    }
 
     public String getAnalyteName() {
         return analyteName;
@@ -59,7 +50,7 @@ public class AuxFieldDataViewVO implements Serializable {
     public void setAnalyteName(String analyteName) {
         this.analyteName = DataBaseUtil.trim(analyteName);
     }
-    
+
     public Integer getAnalyteId() {
         return analyteId;
     }
@@ -67,7 +58,7 @@ public class AuxFieldDataViewVO implements Serializable {
     public void setAnalyteId(Integer analyteId) {
         this.analyteId = analyteId;
     }
-    
+
     public String getIsIncluded() {
         return isIncluded;
     }
@@ -76,11 +67,11 @@ public class AuxFieldDataViewVO implements Serializable {
         this.isIncluded = DataBaseUtil.trim(isIncluded);
     }
 
-    public ArrayList<AuxDataDataViewVO> getValues() {
-        return values;
+    public ArrayList<ResultDataViewVO> getResults() {
+        return results;
     }
 
-    public void setValues(ArrayList<AuxDataDataViewVO> values) {
-        this.values = values;
+    public void setResults(ArrayList<ResultDataViewVO> results) {
+        this.results = results;
     }
 }

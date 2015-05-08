@@ -106,11 +106,16 @@ public class WorksheetReagentBean {
         List<WorksheetReagentViewDO> list;
         Query query;
         SystemUserVO user;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("WorksheetReagent.FetchByWorksheetIds");
-        query.setParameter("ids", ids);
-
-        list = query.getResultList();
+        list = new ArrayList<WorksheetReagentViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            list.addAll(query.getResultList());
+        }
+        
         if (!list.isEmpty()) {
             for (WorksheetReagentViewDO data : list) {
                 if (data.getPreparedById() != null) {
@@ -120,6 +125,7 @@ public class WorksheetReagentBean {
                 }
             }
         }
+        
         return DataBaseUtil.toArrayList(list);
     }
     

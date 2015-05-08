@@ -67,9 +67,12 @@ public class RequestformReportBean {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("ORDERID", Prompt.Type.INTEGER).setPrompt("Order #:")
+            p.add(new Prompt("ORDER_ID", Prompt.Type.INTEGER).setPrompt("Order #:")
                                                             .setWidth(100)
                                                             .setRequired(true));
+
+            p.add(new Prompt("USE_NUM_FORMS", Prompt.Type.CHECK).setPrompt("Use # of forms:")
+                                                                .setDefaultValue("N"));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
@@ -90,7 +93,9 @@ public class RequestformReportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int copies;
-        String orderId, printer, dir, printstat, useNumForms;
+        boolean useNumForms;
+        Integer orderId;
+        String printer, dir, printstat;
         URL url;
         Path path;
         HashMap<String, QueryData> param;
@@ -114,14 +119,14 @@ public class RequestformReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        orderId = ReportUtil.getSingleParameter(param, "ORDERID");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        useNumForms = ReportUtil.getSingleParameter(param, "USE_NUM_FORMS");
-        if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer)) {
+        orderId = ReportUtil.getIntegerParameter(param, "ORDER_ID");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
+        useNumForms = ReportUtil.getBooleanParameter(param, "USE_NUM_FORMS");
+        if (orderId == null || DataBaseUtil.isEmpty(printer)) {
             throw new InconsistencyException("You must specify the order # and printer for this report");
         } else {
             try {
-                data = order.fetchById(Integer.parseInt(orderId));
+                data = order.fetchById(orderId);
                 if ( !"S".equals(data.getType()))
                     throw new InconsistencyException("You must specify a valid Send-out order #");
             } catch (NumberFormatException e) {
@@ -159,7 +164,7 @@ public class RequestformReportBean {
 
             if (ReportUtil.isPrinter(printer)) {
                 copies = 1;
-                if (useNumForms != null)
+                if (useNumForms)
                     copies = data.getNumberOfForms();
                 if (copies > 0) {
                     printstat = ReportUtil.print(path, User.getName(ctx), printer, copies, true);

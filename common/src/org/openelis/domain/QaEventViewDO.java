@@ -38,7 +38,6 @@ public class QaEventViewDO extends QaEventDO {
     private static final long serialVersionUID = 1L;
 
     protected String          testName, methodName;
-    protected String          typeName;
 
     public QaEventViewDO() {
     }

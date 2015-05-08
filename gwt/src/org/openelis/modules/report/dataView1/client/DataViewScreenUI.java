@@ -32,9 +32,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
+import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.DataView1VO;
+import org.openelis.domain.TestAnalyteDataView1VO;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
@@ -97,6 +98,8 @@ public class DataViewScreenUI extends Screen {
     protected PTTabUI                      ptTab;
 
     protected FilterScreenUI               filterScreen;
+
+    private DataViewReportScreen1          reportScreen;
 
     protected AsyncCallbackUI<DataView1VO> fetchTestAnalyteAndAuxFieldCall;
 
@@ -364,8 +367,9 @@ public class DataViewScreenUI extends Screen {
                 };
             }
 
-            DataViewReportService1.get().fetchTestAnalyteAndAuxField(data,
-                                                                 fetchTestAnalyteAndAuxFieldCall);
+            DataViewReportService1.get()
+                                  .fetchTestAnalyteAndAuxField(data,
+                                                               fetchTestAnalyteAndAuxFieldCall);
         }
     }
 
@@ -376,19 +380,66 @@ public class DataViewScreenUI extends Screen {
             filterScreen = new FilterScreenUI() {
                 @Override
                 public void runReport() {
-                    // TODO Auto-generated method stub
+                    int numTA, numAux;
+                    ArrayList<TestAnalyteDataView1VO> testAnas;
+                    ArrayList<AuxFieldDataView1VO> auxFields;
+
+                    numTA = 0;
+                    numAux = 0;
+                    testAnas = data.getTestAnalytes();
+                    if (testAnas != null) {
+                        for (TestAnalyteDataView1VO ta : testAnas) {
+                            if ("Y".equals(ta.getIsIncluded()))
+                                numTA++ ;
+                        }
+                    }
+
+                    /*
+                     * don't allow the report to be run if there are no test
+                     * analytes or aux fields selected
+                     */
+                    if (numTA == 0) {
+                        auxFields = data.getAuxFields();
+                        if (auxFields != null) {
+                            for (AuxFieldDataView1VO af : auxFields) {
+                                if ("Y".equals(af.getIsIncluded()))
+                                    numAux++ ;
+                            }
+                        }
+                        if (numAux == 0) {
+                            window.setError(Messages.get().filter_selectOneAnaOrAux());
+                            return;
+                        }
+                    }
+
+                    try {
+                        if (reportScreen == null)
+                            reportScreen = new DataViewReportScreen1("runReport", window, null);
+                        else
+                            /*
+                             * since Filter screen can be reused by DataView
+                             * Screen and inserted into a new window, the window
+                             * needs to be reset
+                             */
+                            reportScreen.setWindow(window);
+
+                        reportScreen.runReport(data);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
 
                 @Override
                 public void cancel() {
-                    // TODO Auto-generated method stub
+                    // ignore
                 }
             };
         }
 
         modal = new ModalWindow();
         modal.setSize("620px", "687px");
-        modal.setName(Messages.get().filterScreen_testAnalyteAuxDataFilter());
+        modal.setName(Messages.get().filter_testAnalyteAuxDataFilter());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(filterScreen);
 
