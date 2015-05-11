@@ -25,10 +25,13 @@
  */
 package org.openelis.scriptlet;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -45,7 +48,17 @@ public class SerogroupResultScriptletProxy1 implements SerogroupResultScriptlet1
     }
 
     @Override
+    public ArrayList<DictionaryViewDO> getDictionaryByEntry(String entry) throws Exception {
+        return EJBFactory.getDictionary().fetchByEntry(entry, 1);
+    }
+
+    @Override
     public void log(Level level, String message, Exception e) {
         log.log(level, message, e);
+    }
+    
+    @Override
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        return EJBFactory.getWorksheetManager1().getColumnNames(formatId);
     }
 }

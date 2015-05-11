@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.worksheetBuilder.client;
+package org.openelis.modules.worksheet1.client;
 
 import java.util.ArrayList;
 

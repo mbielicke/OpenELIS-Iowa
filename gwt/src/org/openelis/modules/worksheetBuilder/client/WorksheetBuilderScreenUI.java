@@ -72,6 +72,7 @@ import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;

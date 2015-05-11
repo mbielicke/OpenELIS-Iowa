@@ -37,6 +37,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
@@ -119,6 +120,20 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     @Override
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
+    }
+
+    @Override
+    public ArrayList<WorksheetViewDO> queryForLookup(Query query) throws Exception {
+        Callback<ArrayList<WorksheetViewDO>> callback;
+
+        callback = new Callback<ArrayList<WorksheetViewDO>>();
+        service.queryForLookup(query, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void queryForLookup(Query query, AsyncCallback<ArrayList<WorksheetViewDO>> callback) {
+        service.queryForLookup(query, callback);
     }
 
     @Override
