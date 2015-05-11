@@ -65,13 +65,18 @@ import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.qc.client.QcLookupScreen;
+import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell.Value;
+import org.openelis.scriptlet.WorksheetSO;
+import org.openelis.scriptlet.WorksheetSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
@@ -80,6 +85,8 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -108,6 +115,7 @@ public class WorksheetItemTabUI extends Screen {
     private static WorksheetItemTabUiBinder               uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
     private boolean                                       canEdit, isVisible, redraw;
+    private WorksheetItemTabUI                            screen;
     private WorksheetManager1                             manager;
 
     @UiField
@@ -132,17 +140,19 @@ public class WorksheetItemTabUI extends Screen {
     protected HashMap<Integer, Integer>                   transferRowMap;
     protected HashMap<Integer, TestManager>               testManagers;
     protected HashMap<Integer, HashMap<Integer, Integer>> resultGroupMap;
+    protected HashMap<Integer, HashSet<Integer>>          scriptlets;
     protected HashMap<MenuItem, Integer>                  templateMap;
     protected HashMap<String, ArrayList<QcLotViewDO>>     qcChoices;
     protected HashMap<String, ArrayList<Item<Integer>>>   unitModels;
     protected HashMap<String, ArrayList<Item<String>>>    dictionaryResultMap;
     protected QcLookupScreen                              qcLookupScreen;
     protected Screen                                      parentScreen;
+    protected ScriptletRunner<WorksheetSO>                scriptletRunner;
     protected TestWorksheetDO                             testWorksheetDO;
     protected TestWorksheetManager                        twManager;
     protected WorksheetEditMultiplePopupUI                editMultiplePopup;
     protected WorksheetLookupScreenUI                     wLookupScreen;
-    
+
     /**
      * Flags that specifies what type of data is in each row
      */
@@ -159,6 +169,7 @@ public class WorksheetItemTabUI extends Screen {
         manager = null;
         dictionaryResultMap = new HashMap<String, ArrayList<Item<String>>>();
         resultGroupMap = new HashMap<Integer, HashMap<Integer, Integer>>();
+        scriptlets = new HashMap<Integer, HashSet<Integer>>();
         templateMap = new HashMap<MenuItem, Integer>();
         testManagers = new HashMap<Integer, TestManager>();
         transferRowMap = new HashMap<Integer, Integer>();
@@ -171,6 +182,8 @@ public class WorksheetItemTabUI extends Screen {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
         Item item;
+
+        screen = this;
 
         addScreenHandler(worksheetItemTable, "worksheetItemTable", new ScreenHandler<ArrayList<Item<String>>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -302,9 +315,12 @@ public class WorksheetItemTabUI extends Screen {
                 Integer rowIndex;
                 Object val;
                 Row row;
+                TestManager tm;
+                ValidationErrorsList errors;
                 Value value;
                 WorksheetAnalysisViewDO waVDO;
                 WorksheetResultViewDO wrVDO;
+                WorksheetSO scriptletData;
                 WorksheetQcResultViewDO wqrVDO;
 
                 r = event.getRow();
@@ -387,10 +403,32 @@ public class WorksheetItemTabUI extends Screen {
                     case 39:
                     case 40:
                         value = (Value)val;
-                        if (wrVDO != null)
+                        if (wrVDO != null) {
                             wrVDO.setValueAt(c - 11, value.getDisplay());
-                        else if (wqrVDO != null)
+                            if (scriptletRunner != null) {
+                                tm = testManagers.get(waVDO.getTestId());
+                                if (tm != null && tm.getTest().getScriptletId() != null) {
+                                    scriptletData = new WorksheetSO();
+                                    scriptletData.addActionBefore(Action_Before.RESULT);
+                                    scriptletData.setChanged(String.valueOf(c));
+                                    scriptletData.setUid(manager.getUid(wrVDO));
+                                    scriptletData.setManager(manager);
+                                    scriptletData = scriptletRunner.run(scriptletData);
+                                    if (scriptletData.getExceptions() != null &&
+                                        scriptletData.getExceptions().size() > 0) {
+                                        errors = new ValidationErrorsList();
+                                        for (Exception e : scriptletData.getExceptions())
+                                            errors.add(e);
+                                        showErrors(errors);
+                                    }
+                                    
+                                    manager = scriptletData.getManager();
+                                    parentBus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
+                                }
+                            }
+                        } else if (wqrVDO != null) {
                             wqrVDO.setValueAt(c - 11, value.getDisplay());
+                        }
                         break;
                 }
             }
@@ -441,6 +479,7 @@ public class WorksheetItemTabUI extends Screen {
                 HashMap<Integer, AnalyteDO> analytes;
                 HashMap<Integer, Integer> rgRow;
                 HashMap<String, Integer> colMap;
+                HashSet<Integer> scriptletIds;
                 TestAnalyteViewDO taVDO;
                 TestManager tMan;
                 WorksheetAnalysisViewDO waDO;
@@ -451,6 +490,8 @@ public class WorksheetItemTabUI extends Screen {
                 unselectAllButton.setEnabled(false);
                 dictionaryResultMap.clear();
                 resultGroupMap.clear();
+                scriptlets.clear();
+                scriptletRunner = null;
                 testManagers.clear();
                 transferRowMap.clear();
                 
@@ -479,6 +520,26 @@ public class WorksheetItemTabUI extends Screen {
                                     if (tMan == null) {
                                         tMan = TestService.get().fetchWithAnalytesAndResults(waDO.getTestId());
                                         testManagers.put(waDO.getTestId(), tMan);
+                                        
+                                        if (tMan.getTest().getScriptletId() != null) {
+                                            if (scriptletRunner == null)
+                                                scriptletRunner = new ScriptletRunner<WorksheetSO>();
+                                            
+                                            scriptletIds = scriptlets.get(tMan.getTest().getScriptletId());
+                                            if (scriptletIds == null) {
+                                                scriptletIds = new HashSet<Integer>();
+                                                scriptlets.put(tMan.getTest().getScriptletId(), scriptletIds);
+                                            }
+                                            
+                                            if (!scriptletIds.contains(tMan.getTest().getId())) {
+                                                scriptletRunner.add((ScriptletInt<WorksheetSO>)ScriptletFactory.get(tMan.getTest()
+                                                                                                                        .getScriptletId(),
+                                                                                                                    tMan.getTest()
+                                                                                                                        .getId()));
+                                                scriptletIds.add(tMan.getTest().getId());
+                                            }
+                                        }
+                                        
                                         testAnalytes = tMan.getTestAnalytes().getAnalytes();
                                         for (ArrayList<TestAnalyteViewDO> taRow : testAnalytes) {
                                             rgRow = new HashMap<Integer, Integer>();

@@ -93,6 +93,7 @@ import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
@@ -768,6 +769,14 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
 
+        bus.addHandler(WorksheetManagerModifiedEvent.getType(), new WorksheetManagerModifiedEvent.Handler() {
+            public void onManagerModified(WorksheetManagerModifiedEvent event) {
+                manager = event.getManager();
+                setData();
+                fireDataChange();
+            }
+        });
+        
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(UPDATE)) {
