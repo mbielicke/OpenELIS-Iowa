@@ -4898,20 +4898,23 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = ret.getErrors();
                         if (errors != null && errors.size() > 0) {
                             if (errors.hasWarnings())
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
-                                screen.showErrors(errors);
-                            isBusy = false;
-                        } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                                showErrors(errors);
+                        }
+
+                        if (ret.getTests() == null || ret.getTests().size() == 0) {
                             isBusy = false;
                         } else {
+                            /*
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import
+                             */
                             showTests(ret);
                         }
                     } catch (Exception e) {
@@ -6351,26 +6354,17 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -6383,6 +6377,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -6427,9 +6425,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -6437,12 +6433,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

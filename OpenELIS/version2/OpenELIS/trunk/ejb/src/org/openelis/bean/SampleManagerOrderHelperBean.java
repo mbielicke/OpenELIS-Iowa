@@ -696,6 +696,7 @@ public class SampleManagerOrderHelperBean {
                                   ValidationErrorsList e) throws Exception {
         Integer orgId;
         OrganizationDO orgDO;
+        SampleOrganizationViewDO sorgDO;
         String orgCode;
 
         orgCode = dataMap.get("organization.name");
@@ -709,11 +710,12 @@ public class SampleManagerOrderHelperBean {
                 try {
                     orgDO = organization.fetchById(orgId);
                     if ("Y".equals(orgDO.getIsActive())) {
-                        addOrganization(sm,
-                                        createSampleOrganization(orgDO,
-                                                                 sm.getNextUID(),
-                                                                 dataMap.get("organization.attention"),
-                                                                 Constants.dictionary().ORG_REPORT_TO));
+                        sorgDO = createSampleOrganization(orgDO,
+                                                          sm.getNextUID(),
+                                                          dataMap.get("organization.attention"),
+                                                          Constants.dictionary().ORG_REPORT_TO);
+                        addOrganization(sm, sorgDO);
+                        checkIsHoldRefuseSample(orgDO, e);
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
                                                            .eorderImport_inactiveOrgWarning(orgCode,
