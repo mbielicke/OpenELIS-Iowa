@@ -453,6 +453,9 @@ public class MCLViolationReportBean {
         resultLines = new StringBuilder();
         for (ArrayList<ResultViewDO> resultRow : results) {
             rowResult = resultRow.get(0);
+            if ("N".equals(rowResult.getIsReportable()))
+                continue;
+            
             resultLines.append(rowResult.getAnalyte()).append(" Result ");
             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rowResult.getTypeId()))
                 resultLines.append(dictionaryCache.getById(Integer.valueOf(rowResult.getValue()))
@@ -461,13 +464,15 @@ public class MCLViolationReportBean {
                 resultLines.append(rowResult.getValue());
             resultLines.append("<br>\r\n");
             
-            try {
-                trVDO = testResultBean.fetchById(rowResult.getTestResultId());
-                if (Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR.equals(trVDO.getFlagsId()))
-                    positive = true;
-            } catch (Exception anyE) {
-                log.severe(anyE.getMessage());
-                throw anyE;
+            if (rowResult.getTestResultId() != null) {
+                try {
+                    trVDO = testResultBean.fetchById(rowResult.getTestResultId());
+                    if (Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR.equals(trVDO.getFlagsId()))
+                        positive = true;
+                } catch (Exception anyE) {
+                    log.severe(anyE.getMessage());
+                    throw anyE;
+                }
             }
         }
         
