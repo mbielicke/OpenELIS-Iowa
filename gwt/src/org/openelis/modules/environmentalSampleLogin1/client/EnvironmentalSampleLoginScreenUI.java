@@ -172,6 +172,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -289,7 +290,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
-    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
+
+    protected AsyncCallback<SampleTestReturnVO>         setOrderIdCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
@@ -3157,8 +3160,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             /*
              * if the system variable was found, its value must point to an
              * existing dictionary entry; so if an exception is thrown on trying
-             * to look up the dictionary, the user must be informed of it
-             * even if it's a NotFoundException
+             * to look up the dictionary, the user must be informed of it even
+             * if it's a NotFoundException
              */
             if (domainScriptletVariable != null) {
                 try {
@@ -3686,8 +3689,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         setBusy(Messages.get().gen_fetching());
 
         if (setOrderIdCall == null) {
-            setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
-                public void success(SampleTestReturnVO result) {
+            setOrderIdCall = new AsyncCallback<SampleTestReturnVO>() {
+                public void onSuccess(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
 
                     manager = result.getManager();
@@ -3702,9 +3705,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         addAuxScriptlets();
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = result.getErrors();
                         if (errors != null && errors.size() > 0) {
@@ -3712,14 +3713,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
                                 showErrors(errors);
-                            isBusy = false;
-                        } else if (result.getTests() == null || result.getTests().size() == 0) {
+                        }
+
+                        if (result.getTests() == null || result.getTests().size() == 0) {
                             isBusy = false;
                         } else {
                             /*
-                             * this will make sure that the focus gets set to
-                             * the field next in the tabbing order after this
-                             * field after the tests have been added
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import;
+                             * setting focusedWidget makes sure that after the
+                             * tests have been added, the focus gets set to the
+                             * field next to this field in the tabbing order
                              */
                             focusedWidget = orderId;
                             showTests(result);
@@ -3730,7 +3734,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     }
                 }
 
-                public void failure(Throwable error) {
+                public void onFailure(Throwable error) {
                     manager.getSample().setOrderId(null);
                     orderId.setValue(null);
                     Window.alert(error.getMessage());
@@ -4349,9 +4353,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4359,16 +4361,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -4381,6 +4376,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -4425,9 +4424,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4435,12 +4432,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

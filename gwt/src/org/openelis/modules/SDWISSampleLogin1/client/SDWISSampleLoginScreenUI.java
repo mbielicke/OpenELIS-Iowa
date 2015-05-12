@@ -177,6 +177,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -292,7 +293,9 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
-    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
+
+    protected AsyncCallback<SampleTestReturnVO>         setOrderIdCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
@@ -3639,8 +3642,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_fetching());
 
         if (setOrderIdCall == null) {
-            setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
-                public void success(SampleTestReturnVO result) {
+            setOrderIdCall = new AsyncCallback<SampleTestReturnVO>() {
+                public void onSuccess(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
 
                     manager = result.getManager();
@@ -3653,12 +3656,9 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                          */
                         addTestScriptlets();
                         addAuxScriptlets();
-
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = result.getErrors();
                         if (errors != null && errors.size() > 0) {
@@ -3666,14 +3666,17 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
                                 showErrors(errors);
-                            isBusy = false;
-                        } else if (result.getTests() == null || result.getTests().size() == 0) {
+                        }
+
+                        if (result.getTests() == null || result.getTests().size() == 0) {
                             isBusy = false;
                         } else {
                             /*
-                             * this will make sure that the focus gets set to
-                             * the field next in the tabbing order after this
-                             * field after the tests have been added
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import;
+                             * setting focusedWidget makes sure that after the
+                             * tests have been added, the focus gets set to the
+                             * field next to this field in the tabbing order
                              */
                             focusedWidget = orderId;
                             showTests(result);
@@ -3684,7 +3687,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     }
                 }
 
-                public void failure(Throwable error) {
+                public void onFailure(Throwable error) {
                     manager.getSample().setOrderId(null);
                     orderId.setValue(null);
                     Window.alert(error.getMessage());
@@ -4303,9 +4306,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             addAuxScriptlets();
             
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4313,16 +4314,9 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -4335,6 +4329,10 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -4377,11 +4375,9 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              * add scriptlets for the changed test
              */
             addTestScriptlets();
-            
+
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4389,12 +4385,16 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
