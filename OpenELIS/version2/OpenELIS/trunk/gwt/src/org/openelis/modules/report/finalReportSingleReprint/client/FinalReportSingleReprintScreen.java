@@ -737,7 +737,7 @@ public class FinalReportSingleReprintScreen extends Screen {
              * return the parameter of type "final report fax number" if this 
              * organization has one
              */
-            om = OrganizationService1Impl.INSTANCE.fetchById(orgId, OrganizationManager1.Load.PARAMETERS);
+            om = OrganizationService1Impl.INSTANCE.fetchById(orgId, new OrganizationManager1.Load[]{OrganizationManager1.Load.PARAMETERS});
             for (int i = 0; i < om.parameter.count(); i++ ) {
                 op = om.parameter.get(i);
                 if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId())) {
