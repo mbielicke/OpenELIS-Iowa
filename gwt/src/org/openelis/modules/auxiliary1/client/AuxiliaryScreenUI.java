@@ -428,7 +428,7 @@ public class AuxiliaryScreenUI extends Screen {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
                 valueTable.setModel(getAuxFieldValueModel(manager.field.get(event.getSelectedItem())));
-                addValueButton.setEnabled(true);
+                addValueButton.setEnabled(isState(ADD, UPDATE));
             }
         });
 
@@ -625,12 +625,12 @@ public class AuxiliaryScreenUI extends Screen {
                     }
                 }
 
-                addValueButton.setEnabled(true);
+                addValueButton.setEnabled(isState(ADD, UPDATE));
                 if (valueTable.getRowCount() > 1)
-                    removeValueButton.setEnabled(true);
+                    removeValueButton.setEnabled(isState(ADD, UPDATE));
                 else
                     removeValueButton.setEnabled(false);
-                dictionaryLookupButton.setEnabled(true);
+                dictionaryLookupButton.setEnabled(isState(ADD, UPDATE));
             }
 
         });
@@ -789,7 +789,7 @@ public class AuxiliaryScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(16);
+                query.setRowsPerPage(28);
                 service.query(query, queryCall);
             }
 

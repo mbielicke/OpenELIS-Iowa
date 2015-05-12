@@ -31,7 +31,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.OrganizationBean;
-import org.openelis.bean.OrganizationManagerBean;
+import org.openelis.bean.OrganizationManager1Bean;
 import org.openelis.bean.OrganizationParameterBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
@@ -48,7 +48,7 @@ public class EmailNotificationServlet extends RemoteServlet implements EmailNoti
     private static final long         serialVersionUID = 1L;
 
     @EJB
-    private OrganizationManagerBean   organizationManager;
+    private OrganizationManager1Bean  organizationManager1;
 
     @EJB
     private OrganizationBean          organization;
@@ -118,7 +118,7 @@ public class EmailNotificationServlet extends RemoteServlet implements EmailNoti
 
     public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
         try {
-            return organizationManager.updateForNotify(parameters);
+            return organizationManager1.updateForNotify(parameters);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

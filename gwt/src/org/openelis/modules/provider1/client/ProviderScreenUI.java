@@ -461,7 +461,7 @@ public class ProviderScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(18);
+                query.setRowsPerPage(21);
                 ProviderService1.get().query(query, queryCall);
             }
 

@@ -33,17 +33,10 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.IOrderViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -68,8 +61,15 @@ import org.openelis.manager.IOrderItemManager;
 import org.openelis.manager.IOrderManager;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -392,7 +392,7 @@ public class VendorOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

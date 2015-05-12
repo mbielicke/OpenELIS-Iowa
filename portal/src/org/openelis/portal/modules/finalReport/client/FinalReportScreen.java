@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.eclipse.jdt.internal.core.util.ReferenceInfoAdapter;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
@@ -391,35 +392,12 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientFirst() : ui.getSdwisCollector();
+                                 return forward ? ui.getPatientLast() : ui.getSdwisCollector();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getPwsId().getQuery();
-                             }
-                         });
-
-        addScreenHandler(ui.getPatientFirst(),
-                         SampleViewMeta.getPatientFirstName(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientFirst().setValue(form.getPatientFirst());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setPatientFirstError(null);
-                                 ui.getPatientFirst().clearExceptions();
-                                 form.setPatientFirst(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientLast() : ui.getPwsId();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getPatientFirst().getQuery();
                              }
                          });
 
@@ -437,12 +415,35 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientFirst();
+                                 return forward ? ui.getPatientFirst() : ui.getPwsId();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getPatientLast().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientFirst(),
+                         SampleViewMeta.getPatientFirstName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirst().setValue(form.getPatientFirst());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
+                                 ui.getPatientFirst().clearExceptions();
+                                 form.setPatientFirst(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientLast();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientFirst().getQuery();
                              }
                          });
 
@@ -461,7 +462,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthTo() : ui.getPatientLast();
+                                 return forward ? ui.getPatientBirthTo() : ui.getPatientFirst();
                              }
 
                              @Override
@@ -632,7 +633,7 @@ public class FinalReportScreen extends Screen {
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         String completed, inProgress;
-        StringBuffer additional;
+        StringBuffer additional, referenceInfo;
         SampleViewVO sample;
         DateHelper dh;
         CheckBox check;
@@ -665,6 +666,7 @@ public class FinalReportScreen extends Screen {
         ui.getTable().getElement().getStyle().setFontSize(12, Unit.PX);
 
         additional = new StringBuffer();
+        referenceInfo = new StringBuffer();
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
         completed = Messages.get().sampleStatus_completed();
@@ -700,11 +702,18 @@ public class FinalReportScreen extends Screen {
             if ( !DataBaseUtil.isDifferent(sample.getDomain(), "E") ||
                 !DataBaseUtil.isDifferent(sample.getDomain(), "S") ||
                 !DataBaseUtil.isDifferent(sample.getDomain(), "W")) {
-                if (sample.getCollector() != null)
-                    ui.getTable().setText(j, 3, "[collector] " + sample.getCollector());
+                if (sample.getCollector() != null) {
+                    referenceInfo.append("[collector] ").append(sample.getCollector());
+                }
             } else if ( !DataBaseUtil.isDifferent(sample.getDomain(), "C") &&
                        sample.getPatientLastName() != null) {
-                ui.getTable().setText(j, 3, "[patient] " + sample.getPatientLastName());
+                referenceInfo.append("[patient] ").append(sample.getPatientLastName());
+                if (sample.getPatientFirstName() != null)
+                    referenceInfo.append(", ").append(sample.getPatientFirstName());
+            }
+            if (referenceInfo.length() > 0) {
+                ui.getTable().setText(j, 3, referenceInfo.toString());
+                referenceInfo.setLength(0);
             }
 
             //@formatter:off

@@ -24,15 +24,14 @@
 		<g:layer top="0px" bottom="25px">
 			<t:Table ui:field="table" visibleRows="10" verticalScroll="ALWAYS"
 				horizontalScroll="ALWAYS" header="true">
-				<t:Column width="300" label="{msg.type}">
+				<t:Column width="300" label="{msg.type}" required="true">
 					<t:DropdownCell>
-						<w:Dropdown width="300" field="Integer" ui:field="type"
-							required="true" />
+						<w:Dropdown width="300" field="Integer" ui:field="type" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="287" label="{msg.value}">
+				<t:Column width="287" label="{msg.value}" required="true">
 					<t:TextBoxCell>
-						<w:TextBox maxLength="80" required="true" />
+						<w:TextBox maxLength="80" />
 					</t:TextBoxCell>
 				</t:Column>
 			</t:Table>

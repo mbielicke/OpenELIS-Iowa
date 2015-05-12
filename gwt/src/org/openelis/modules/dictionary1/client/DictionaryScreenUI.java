@@ -669,7 +669,7 @@ public class DictionaryScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(16);
+                query.setRowsPerPage(23);
                 service.query(query, queryCall);
             }
 

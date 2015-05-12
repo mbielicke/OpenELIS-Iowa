@@ -466,7 +466,7 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getEnvCollector() : ui.getAccessionFrom();
+                                 return forward ? ui.getClientReference() : ui.getAccessionFrom();
                              }
 
                              @Override
@@ -590,7 +590,7 @@ public class DataViewScreen extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? ui.getPatientFirst() : ui.getSdwisCollector();
+                return forward ? ui.getPatientLast() : ui.getSdwisCollector();
             }
 
             @Override
@@ -598,30 +598,6 @@ public class DataViewScreen extends Screen {
                 return ui.getPwsId().getQuery();
             }
         });
-
-        addScreenHandler(ui.getPatientFirst(),
-                         SampleWebMeta.getClinPatientFirstName(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientFirst()
-                                   .setValue(data.getSampleClinicalPatientFirstName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setPatientFirstError(null);
-                                 ui.getPatientFirst().clearExceptions();
-                                 data.setSampleClinicalPatientFirstName(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientLast() : ui.getPwsId();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getPatientFirst().getQuery();
-                             }
-                         });
 
         addScreenHandler(ui.getPatientLast(),
                          SampleWebMeta.getClinPatientLastName(),
@@ -638,12 +614,36 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientFirst();
+                                 return forward ? ui.getPatientFirst() : ui.getPwsId();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getPatientLast().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientFirst(),
+                         SampleWebMeta.getClinPatientFirstName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirst()
+                                   .setValue(data.getSampleClinicalPatientFirstName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
+                                 ui.getPatientFirst().clearExceptions();
+                                 data.setSampleClinicalPatientFirstName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientLast();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientFirst().getQuery();
                              }
                          });
 
@@ -669,7 +669,7 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthTo() : ui.getPatientLast();
+                                 return forward ? ui.getPatientBirthTo() : ui.getPatientFirst();
                              }
 
                              @Override
@@ -1452,7 +1452,7 @@ public class DataViewScreen extends Screen {
 
         addScreenHandler(ui.getContinueButton(), "continueButton", new ScreenHandler<Integer>() {
             public Widget onTab(boolean forward) {
-                return forward ? ui.getResetButton() : ui.getProjectCode();
+                return forward ? ui.getResetButton() : ui.getPatientBirthTo();
             }
         });
 

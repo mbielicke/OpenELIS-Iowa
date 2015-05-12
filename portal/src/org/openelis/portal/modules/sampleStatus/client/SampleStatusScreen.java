@@ -354,35 +354,12 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientFirst() : ui.getSdwisCollector();
+                                 return forward ? ui.getPatientLast() : ui.getSdwisCollector();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getPwsId().getQuery();
-                             }
-                         });
-
-        addScreenHandler(ui.getPatientFirst(),
-                         SampleViewMeta.getPatientFirstName(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientFirst().setValue(form.getPatientFirst());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setPatientFirstError(null);
-                                 ui.getPatientFirst().clearExceptions();
-                                 form.setPatientFirst(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientLast() : ui.getPwsId();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getPatientFirst().getQuery();
                              }
                          });
 
@@ -400,12 +377,35 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientFirst();
+                                 return forward ? ui.getPatientFirst() : ui.getPwsId();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getPatientLast().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientFirst(),
+                         SampleViewMeta.getPatientFirstName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirst().setValue(form.getPatientFirst());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
+                                 ui.getPatientFirst().clearExceptions();
+                                 form.setPatientFirst(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientLast();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientFirst().getQuery();
                              }
                          });
 
@@ -424,7 +424,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPatientBirthTo() : ui.getPatientLast();
+                                 return forward ? ui.getPatientBirthTo() : ui.getPatientFirst();
                              }
 
                              @Override

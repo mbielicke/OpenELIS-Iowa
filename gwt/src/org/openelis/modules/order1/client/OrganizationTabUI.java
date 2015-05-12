@@ -40,7 +40,7 @@ import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -108,7 +108,7 @@ public class OrganizationTabUI extends Screen {
 
     protected boolean                      isVisible, redraw;
 
-    protected IOrderManager1                manager;
+    protected IOrderManager1               manager;
 
     public OrganizationTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -452,8 +452,7 @@ public class OrganizationTabUI extends Screen {
 
         parentScreen.getWindow().setBusy();
         try {
-            list = OrganizationService.get()
-                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new Item<Integer>(5);

@@ -80,7 +80,7 @@ import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
 import org.openelis.modules.order.client.ShipNoteTab;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
@@ -520,7 +520,7 @@ public class InventoryReceiptScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

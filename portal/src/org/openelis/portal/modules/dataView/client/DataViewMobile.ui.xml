@@ -220,21 +220,6 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_patientFirst}:" />
-						</td>
-						<td colspan="3">
-							<w:TextBox ui:field="patientFirst" width="180px" field="String"
-								enabled="true" case="UPPER" />
-						</td>
-						<td>
-							<w:Help css="{res.help}" text="{msg.dataView_help_patientFirst}"
-								placement="LEFT" balloonWidth="200px" />
-							<w:Help ui:field="patientFirstError" css="{res.errorCss}"
-								text="" placement="LEFT" balloonWidth="200px" visible="false" />
-						</td>
-					</tr>
-					<tr>
-						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.finalReport_patientLast}:" />
 						</td>
 						<td colspan="3">
@@ -245,6 +230,21 @@
 							<w:Help css="{res.help}" text="{msg.dataView_help_patientLast}"
 								placement="LEFT" balloonWidth="200px" />
 							<w:Help ui:field="patientLastError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientFirst}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientFirst" width="180px" field="String"
+								enabled="true" case="UPPER" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_patientFirst}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientFirstError" css="{res.errorCss}"
 								text="" placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
