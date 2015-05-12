@@ -205,19 +205,6 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_patientFirst}:" />
-								</td>
-								<td colspan="3">
-									<w:TextBox ui:field="patientFirst" width="241px"
-										field="String" enabled="true" case="UPPER" />
-								</td>
-								<td>
-									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
-										placement="RIGHT" balloonWidth="250px" />
-								</td>
-							</tr>
-							<tr>
-								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.finalReport_patientLast}:" />
 								</td>
 								<td colspan="3">
@@ -226,6 +213,19 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_patientFirst}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="patientFirst" width="241px"
+										field="String" enabled="true" case="UPPER" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
 										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>

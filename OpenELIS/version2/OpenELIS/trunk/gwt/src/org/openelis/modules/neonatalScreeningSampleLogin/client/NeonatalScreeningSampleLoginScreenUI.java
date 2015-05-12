@@ -87,7 +87,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.project.client.ProjectService;
@@ -2150,7 +2150,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 setBusy();
                 try {
                     list = ProviderService1.get()
-                                          .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);
@@ -2299,8 +2299,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -2382,8 +2381,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);

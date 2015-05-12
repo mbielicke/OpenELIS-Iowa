@@ -84,7 +84,7 @@ import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -680,7 +680,7 @@ public class ExchangeDataSelectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -1001,7 +1001,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
-            params = OrganizationService.get().fetchParametersByDictionarySystemName("org_electronic_format");
+            params = OrganizationService1Impl.INSTANCE.fetchParametersByDictionarySystemName("org_electronic_format");
             values = new HashSet<String>();
             for (OrganizationParameterDO p : params) {
                 /*
@@ -1300,7 +1300,7 @@ public class ExchangeDataSelectionScreen extends Screen {
              * fetch the names of the organizations selected by the user in the 
              * past since they are not stored with the ids in the query   
              */
-            orgList = OrganizationService.get().query(query);
+            orgList = OrganizationService1Impl.INSTANCE.query(query);
             
             for (IdNameVO org: orgList) {
                 row = new TableDataRow(org.getId(), org.getName());

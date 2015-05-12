@@ -50,7 +50,7 @@ import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -1104,8 +1104,7 @@ public class VendorOrderScreenUI extends Screen {
 
         setBusy();
         try {
-            list = OrganizationService.get()
-                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new Item<Integer>(4);

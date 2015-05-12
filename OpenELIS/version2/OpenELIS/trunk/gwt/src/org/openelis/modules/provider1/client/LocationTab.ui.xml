@@ -34,7 +34,7 @@
 						<w:TextBox maxLength="10" case="UPPER" field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="130" label="{msg.address_aptSuite}">
+				<t:Column width="73" label="{msg.address_aptSuite}">
 					<t:TextBoxCell>
 						<w:TextBox maxLength="30" case="UPPER" field="String" />
 					</t:TextBoxCell>
@@ -49,13 +49,13 @@
 						<w:TextBox maxLength="30" case="UPPER" field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="60" label="{msg.address_state}">
+				<t:Column width="38" label="{msg.address_state}">
 					<t:DropdownCell>
 						<w:Dropdown ui:field="locationState" case="UPPER"
 							width="60" field="String" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="100" label="{msg.address_zipcode}">
+				<t:Column width="73" label="{msg.address_zipcode}">
 					<t:TextBoxCell>
 						<w:TextBox mask="99999-9999" maxLength="10" field="String" />
 					</t:TextBoxCell>
@@ -66,25 +66,25 @@
 							width="130" field="String" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.organization_workNumber}">
+				<t:Column width="117" label="{msg.organization_workNumber}">
 					<t:TextBoxCell>
 						<w:TextBox mask="{msg.phoneWithExtensionPattern}"
 							maxLength="21" field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.organization_homeNumber}">
+				<t:Column width="85" label="{msg.organization_homeNumber}">
 					<t:TextBoxCell>
 						<w:TextBox mask="{msg.phonePattern}" maxLength="16"
 							field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.organization_cellNumber}">
+				<t:Column width="85" label="{msg.organization_cellNumber}">
 					<t:TextBoxCell>
 						<w:TextBox mask="{msg.phonePattern}" maxLength="16"
 							field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="150" label="{msg.organization_faxNumber}">
+				<t:Column width="85" label="{msg.organization_faxNumber}">
 					<t:TextBoxCell>
 						<w:TextBox mask="{msg.phonePattern}" maxLength="16"
 							field="String" />

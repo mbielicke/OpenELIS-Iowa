@@ -61,7 +61,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.report.client.RequestFormReportService;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -1821,8 +1821,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         setBusy();
         try {
-            list = OrganizationService.get()
-                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new Item<Integer>(5);

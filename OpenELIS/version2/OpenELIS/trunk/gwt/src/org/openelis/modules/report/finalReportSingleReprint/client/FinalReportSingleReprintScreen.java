@@ -55,11 +55,12 @@ import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.OrganizationParameterManager;
+import org.openelis.manager.OrganizationManager1;
 import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.ui.widget.WindowInt;
 
@@ -727,7 +728,7 @@ public class FinalReportSingleReprintScreen extends Screen {
     }
     
     private OrganizationParameterDO getOrganizationFax(Integer orgId) {
-        OrganizationParameterManager opm;
+        OrganizationManager1 om;
         OrganizationParameterDO op, faxOp;
 
         faxOp = null;
@@ -736,9 +737,9 @@ public class FinalReportSingleReprintScreen extends Screen {
              * return the parameter of type "final report fax number" if this 
              * organization has one
              */
-            opm = OrganizationParameterManager.fetchByOrganizationId(orgId);
-            for (int i = 0; i < opm.count(); i++ ) {
-                op = opm.getParameterAt(i);
+            om = OrganizationService1Impl.INSTANCE.fetchById(orgId, OrganizationManager1.Load.PARAMETERS);
+            for (int i = 0; i < om.parameter.count(); i++ ) {
+                op = om.parameter.get(i);
                 if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId())) {
                     faxOp = op;
                     break;

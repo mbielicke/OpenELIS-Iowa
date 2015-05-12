@@ -24,33 +24,32 @@
 		<g:layer top="0px" bottom="25px">
 			<t:Table ui:field="table" header="true"
 				styleName="{res.table.ScreenTableWithSides}">
-				<t:Column width="106" label="{msg.type}">
+				<t:Column width="106" label="{msg.type}" required="true">
 					<t:DropdownCell>
-						<w:Dropdown width="90" required="true" field="Integer"
-							ui:field="type" />
+						<w:Dropdown width="90" field="Integer" ui:field="type" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="130" label="{msg.contactName}">
+				<t:Column width="130" label="{msg.contactName}" required="true">
 					<t:TextBoxCell>
-						<w:TextBox maxLength="40" required="true" />
+						<w:TextBox maxLength="40" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="100" label="{msg.workNumber}">
+				<t:Column width="117" label="{msg.workNumber}">
 					<t:TextBoxCell>
 						<w:TextBox maxLength="21" mask="{msg.phoneWithExtensionPattern}" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.homeNumber}">
+				<t:Column width="85" label="{msg.homeNumber}">
 					<t:TextBoxCell>
 						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.cellNumber}">
+				<t:Column width="85" label="{msg.cellNumber}">
 					<t:TextBoxCell>
 						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="90" label="{msg.faxNumber}">
+				<t:Column width="85" label="{msg.faxNumber}">
 					<t:TextBoxCell>
 						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
 					</t:TextBoxCell>
@@ -60,7 +59,7 @@
 						<w:TextBox maxLength="80" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="130" label="{msg.aptSuite}">
+				<t:Column width="73" label="{msg.aptSuite}">
 					<t:TextBoxCell>
 						<w:TextBox case="UPPER" maxLength="30" />
 					</t:TextBoxCell>
@@ -75,12 +74,12 @@
 						<w:TextBox case="UPPER" maxLength="30" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="56" label="{msg.state}">
+				<t:Column width="38" label="{msg.state}">
 					<t:DropdownCell>
 						<w:Dropdown width="40" case="UPPER" ui:field="stateDrop" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="68" label="{msg.zipcode}">
+				<t:Column width="73" label="{msg.zipcode}">
 					<t:TextBoxCell>
 						<w:TextBox mask="99999-9999" />
 					</t:TextBoxCell>

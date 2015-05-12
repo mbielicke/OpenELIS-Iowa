@@ -68,6 +68,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
@@ -121,6 +122,7 @@ public class OrganizationScreenUI extends Screen {
     protected InternalNotesTabUI                    notesTab;
 
     protected OrganizationScreenUI                  screen;
+
     @UiField
     protected Button                                query, previous, next, add, update, commit,
                     abort, optionsButton, loadResults;
@@ -175,7 +177,7 @@ public class OrganizationScreenUI extends Screen {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        manager = new OrganizationManager1();
+        manager = null;
 
         try {
             CategoryCache.getBySystemNames("country", "state", "contact_type", "parameter_type");
@@ -522,10 +524,12 @@ public class OrganizationScreenUI extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 AutoCompleteValue row;
+
+                                 row = parentName.getValue();
+                                 manager.getOrganization().setParentOrganizationId(row.getId());
                                  manager.getOrganization()
-                                        .setParentOrganizationId(event.getValue());
-                                 manager.getOrganization()
-                                        .setParentOrganizationName(parentName.getDisplay());
+                                        .setParentOrganizationName(row.getDisplay());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -667,7 +671,7 @@ public class OrganizationScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(14);
+                query.setRowsPerPage(23);
                 service.query(query, queryCall);
             }
 
@@ -791,6 +795,8 @@ public class OrganizationScreenUI extends Screen {
         setBusy();
 
         manager = new OrganizationManager1();
+        manager.getOrganization().setIsActive("N");
+
         setData();
         setState(ADD);
         fireDataChange();

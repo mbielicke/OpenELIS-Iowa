@@ -32,7 +32,6 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceiptService"/>
   <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
   <inherits name="org.openelis.modules.test.TestService"/>
-  <inherits name="org.openelis.modules.organization.OrganizationService"/>
   <inherits name="org.openelis.modules.history.History"/>
   <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   <inherits name="org.openelis.modules.auxData.AuxData"/>
