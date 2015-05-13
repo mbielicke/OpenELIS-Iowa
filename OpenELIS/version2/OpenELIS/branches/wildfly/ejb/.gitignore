@@ -1,1 +1,2 @@
 /bin/
+/${env.M2_REPO}
