@@ -1,28 +1,23 @@
 package org.openelis.bean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openelis.bean.Lock.Key;
+import org.openelis.bean.LockCacheBean.Lock;
 import org.openelis.deployment.Deployments;
 import org.openelis.ui.common.EntityLockedException;
-import org.openelis.utils.EJBFactory;
 
 @RunWith(Arquillian.class)
 public class TestLockBeanArq {
@@ -51,7 +46,10 @@ public class TestLockBeanArq {
 	
 	@Before
 	public void clearLocks() {
-		lockCache.removeAll();
+		/*
+		 * Pass negative value below default_lock_time so cache is cleared between test.
+		 */
+		lockCache.clearCache(-(LockBean.DEFAULT_LOCK_TIME+100000));
 	}
 	
 	@Test
@@ -68,25 +66,30 @@ public class TestLockBeanArq {
 	
 	@Test
 	public void testValidateLock_expired() throws Exception {
-		setExpiredLock(1,1);
+		setExpiredLock(1,1,userCache.getSystemUser().getLoginName(),userCache.getSessionId());
 		lockBean.validateLock(1,1);
 		assertNotEquals(new Long(0l),new Long(lockCache.get(new Lock.Key(1,1)).expires));
 	}
 	
 	@Test(expected=EntityLockedException.class)
 	public void testValidateLock_diffSession() throws Exception {
-		Lock lock = createLock(1,1);
-		lock.sessionId = "session";
+		Lock lock = createLock(1,1,userCache.getSystemUser().getLoginName(),"session");
 		setLock(lock);
 		lockBean.validateLock(1, 1);
 	}
 	
 	@Test(expected=EntityLockedException.class)
 	public void testValidateLock_diffUser() throws Exception {
-		Lock lock = createLock(1,1);
-		lock.systemUserId = -1;
+		Lock lock = createLock(1,1,"demo",userCache.getSessionId());
 		setLock(lock);
 		lockBean.validateLock(1, 1);
+	}
+	
+	@Test
+	public void testStolen() throws Exception {
+		setExpiredLock(1,1,"demo","session");
+		lockBean.lock(1, 1);
+		assertEquals(1,lockCache.getAll().size());
 	}
 	
 	@Test
@@ -128,24 +131,24 @@ public class TestLockBeanArq {
 	}
 		
 	private void setLock(Integer tableId, Integer id) {
-		setLock(createLock(tableId,id));
+		setLock(createLock(tableId,id,userCache.getSystemUser().getLoginName(),userCache.getSessionId()));
 	}
 	
 	private void setLock(Lock lock) {
 		lockCache.add(lock);
 	}
 	
-	private void setExpiredLock(Integer tableId, Integer id) {
-		Lock lock = createLock(tableId,id);
+	private void setExpiredLock(Integer tableId, Integer id, String user, String session) {
+		Lock lock = createLock(tableId,id,user,session);
 		lock.expires = 0l;
 		lockCache.add(lock);
 	}
 	
-	private Lock createLock(Integer tableId, Integer id) {
+	private Lock createLock(Integer tableId, Integer id, String user, String session) {
 		Lock lock = new Lock(tableId,id);
-		lock.expires = new Date().getTime() + lockBean.DEFAULT_LOCK_TIME;
-		lock.systemUserId =  userCache.getId();
-		lock.sessionId = userCache.getSessionId();
+		lock.expires = System.currentTimeMillis() + LockBean.DEFAULT_LOCK_TIME;
+		lock.username =  user;
+		lock.sessionId = session;
 		return lock;
 	}
 
