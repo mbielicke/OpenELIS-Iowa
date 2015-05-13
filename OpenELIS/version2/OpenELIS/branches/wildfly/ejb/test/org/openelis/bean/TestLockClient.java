@@ -27,7 +27,7 @@ public class TestLockClient {
 	@Deployment(testable=false)
 	public static WebArchive deploy() {
 		return Deployments.createBaseWithApplication()
-				.addClasses(LockBean.class,LockCacheBean.class,UserCacheBean.class,Lock.class,TestLockServlet.class);
+				.addClasses(LockBean.class,LockCacheBean.class,UserCacheBean.class,TestLockServlet.class);
 	}
 	
 	@Test
