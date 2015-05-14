@@ -64,7 +64,8 @@ public interface WorksheetServiceInt1 extends XsrfProtectedService {
     public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception;
 
     public WorksheetResultsTransferVO transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                                      ArrayList<SampleManager1> sampleMans) throws Exception;
+                                                      ArrayList<SampleManager1> sampleMans,
+                                                      boolean ignoreWarnings) throws Exception;
 
     public ArrayList<AnalysisViewVO> fetchAnalysesByView(Query query) throws Exception;
 

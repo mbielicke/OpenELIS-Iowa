@@ -66,7 +66,8 @@ public interface WorksheetServiceInt1Async {
                        AsyncCallback<WorksheetManager1> callback);
 
     public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetResultsTransferVO> callback);
+                                ArrayList<SampleManager1> sampleMans, boolean ignoreWarnings,
+                                AsyncCallback<WorksheetResultsTransferVO> callback);
 
     public void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback);
 
