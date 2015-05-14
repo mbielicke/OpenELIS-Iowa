@@ -29,11 +29,11 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
 /**
@@ -69,6 +69,7 @@ public class LockCacheBean {
     public void add(Lock lock) {
         locks.put(lock.key, lock);
         maxLocks = Math.max(maxLocks, locks.size());
+        log.info("Added - "+lock.toString());
     }
 
     /**
@@ -76,6 +77,8 @@ public class LockCacheBean {
      */
     @javax.ejb.Lock(LockType.WRITE)
     public void remove(Lock.Key key) {
+    	Lock lock = locks.get(key);
+    	log.info("Removed - "+lock.toString());
         locks.remove(key);
     }
 
@@ -128,6 +131,21 @@ public class LockCacheBean {
         }
     }
 
+    @javax.ejb.Lock(LockType.WRITE)
+    public void rollback(int transaction) {
+    	ArrayList<Lock> userLocks;
+    	
+    	userLocks = new ArrayList<Lock>();
+    	for (Lock l : locks.values()) {
+    		if (l.transaction == transaction) {
+    			userLocks.add(l);
+    		}
+    	}
+    	
+    	for (Lock l : userLocks) {
+    		locks.remove(l.key);
+    	}
+    }
     /**
      * A simple class to manage lock records. The class is used internally by
      * LockCacheBean and LockBean.
@@ -137,17 +155,19 @@ public class LockCacheBean {
         protected Key  key;
         protected Long expires;
         protected String username, sessionId;
+        protected int transaction;
 
         public Lock(Integer tableId, Integer id) {
             this.key = new Key(tableId, id);
         }
 
         public Lock(Integer tableId, Integer id, String username, Long expires,
-                    String sessionId) {
+                    String sessionId, int transaction) {
             this(tableId, id);
             this.username = username;
             this.expires = expires;
             this.sessionId = sessionId;
+            this.transaction = transaction;
         }
 
         @Override
@@ -175,6 +195,8 @@ public class LockCacheBean {
             sb.append(username);
             sb.append(":");
             sb.append(sessionId);
+            sb.append(":");
+            sb.append(transaction);
             return sb.toString();
         }
 

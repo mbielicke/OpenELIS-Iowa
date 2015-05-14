@@ -26,20 +26,20 @@
 package org.openelis.bean;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.ejb.Remove;
 import javax.ejb.SessionContext;
 import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.jboss.security.plugins.TransactionManagerLocator;
 import org.openelis.bean.LockCacheBean.Lock;
 import org.openelis.constants.Messages;
 import org.openelis.ui.common.EntityLockedException;
@@ -59,17 +59,9 @@ public class LockBean implements SessionSynchronization {
                                                                 // 1000 Millis
                     GRACE_LOCK_TIME = 2 * 60 * 1000;
 
-    protected List<Lock>    setLocks;
-
-    protected String        username, sessionId;
-
-    @PostConstruct
-    public void init() {
-        setLocks = new ArrayList<Lock>();
-        username = User.getName(ctx);
-        sessionId = User.getSessionId(ctx);
-    }
-
+    
+    protected Logger log = Logger.getLogger("openelis");
+    
     /**
      * Method creates new lock entries for the specified table reference and
      * ids. If a valid lock currently exist for any of the ids, a
@@ -132,9 +124,8 @@ public class LockBean implements SessionSynchronization {
     private void createLock(Integer tableId, Integer id, long expires) throws Exception {
         Lock lock;
 
-        lock = new Lock(tableId, id, username, expires, sessionId);
+        lock = new Lock(tableId, id, User.getName(ctx), expires, User.getSessionId(ctx), getTransactionId());
         lockCache.add(lock);
-        setLocks.add(lock);
     }
 
     /*
@@ -167,8 +158,8 @@ public class LockBean implements SessionSynchronization {
 
     private boolean ownsLock(Lock lock) {
         return lock != null && lock.username != null &&
-               lock.username.equals(username) &&
-               lock.sessionId.equals(sessionId);
+               lock.username.equals(User.getName(ctx)) &&
+               lock.sessionId.equals(User.getSessionId(ctx));
     }
 
     /**
@@ -217,7 +208,7 @@ public class LockBean implements SessionSynchronization {
      * from logout.
      */
     public void removeLocks() {
-        removeLocks(sessionId);
+        removeLocks(User.getSessionId(ctx));
     }
 
     public void removeLocks(String sessionId) {
@@ -243,17 +234,16 @@ public class LockBean implements SessionSynchronization {
     @Override
     public void afterCompletion(boolean committed) throws EJBException, RemoteException {
         if (!committed) {
-            for (Lock lock : setLocks) {
-                lockCache.remove(lock.key);
-            }
+        	lockCache.rollback(getTransactionId());
         }
-        setLocks.clear();
     }
-
-    @Remove
-    public void destroy() {
-        setLocks = null;
-        username = null;
-        sessionId = null;
+    
+    private int getTransactionId() {
+    	try {
+    		return new TransactionManagerLocator().getTM("java:/TransactionManager").getTransaction().hashCode();
+    	} catch (Exception e) {
+    		log.log(Level.SEVERE,"Transaction Locator failed",e);
+    		return -1;
+    	}
     }
 }
