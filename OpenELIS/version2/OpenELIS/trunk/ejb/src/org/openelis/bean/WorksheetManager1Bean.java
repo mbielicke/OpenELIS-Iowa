@@ -2083,7 +2083,8 @@ public class WorksheetManager1Bean {
 
     public WorksheetResultsTransferVO transferResults(WorksheetManager1 manager,
                                                       ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
+                                                      ArrayList<SampleManager1> sampleMans,
+                                                      boolean ignoreWarnings) throws Exception {
         boolean update;
         int i, c;
         AnalysisUserViewDO auVDO;
@@ -2391,7 +2392,7 @@ public class WorksheetManager1Bean {
             }
         }
 
-        sampleMan.update(sampleMans, true);
+        sampleMan.update(sampleMans, ignoreWarnings);
         
         if (unlockIds.size() > 0)
             lock.unlock(Constants.table().SAMPLE, unlockIds);
