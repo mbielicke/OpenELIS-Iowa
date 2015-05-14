@@ -7,23 +7,31 @@
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
-     p.name
+     p.name, sp.is_permanent
 FROM
      project p
-     join sample_project sp on sp.project_id = p.id and sp.is_permanent = 'Y'
+     join sample_project sp on sp.project_id = p.id
 WHERE
      sp.sample_id = $P{SAMPLE_ID}
 ORDER BY p.name]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
+	<field name="is_permanent" class="java.lang.String"/>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement key="projectName" x="0" y="0" width="250" height="12"/>
+				<reportElement key="projectName" x="0" y="0" width="160" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="isPermanent" x="160" y="0" width="90" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Y".equals($F{is_permanent}) ? "Permanent" : ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
