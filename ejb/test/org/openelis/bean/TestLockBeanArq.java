@@ -93,6 +93,18 @@ public class TestLockBeanArq {
 	}
 	
 	@Test
+	public void testUnlock() throws Exception {
+		lockBean.lock(1, 1);
+		lockBean.unlock(1, 1);
+		assertEquals(0,lockCache.getAll().size());
+	}
+	
+	@Test(expected=EntityLockedException.class)
+	public void testValidateNoLock() throws Exception {
+		lockBean.validateLock(1,1);
+	}
+	
+	@Test
 	public void testRollback() {
 		try {
 			rollback.setAndRollBack(1,1);
