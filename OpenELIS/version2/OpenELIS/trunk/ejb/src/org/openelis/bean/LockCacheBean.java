@@ -26,13 +26,14 @@
 
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
 /**
@@ -44,11 +45,11 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 @SecurityDomain("openelis")
 public class LockCacheBean {
 
-    private int maxLocks = 0;
-    
-    private HashMap<Lock.Key, Lock> locks = new HashMap<Lock.Key, Lock>();
+    private int                     maxLocks = 0;
 
-    private static final Logger     log   = Logger.getLogger("openelis");
+    private HashMap<Lock.Key, Lock> locks    = new HashMap<Lock.Key, Lock>();
+
+    private static final Logger     log      = Logger.getLogger("openelis");
 
     /**
      * Returns a lock a record specified by key
@@ -68,6 +69,7 @@ public class LockCacheBean {
     public void add(Lock lock) {
         locks.put(lock.key, lock);
         maxLocks = Math.max(maxLocks, locks.size());
+        log.fine("Added - " + lock.toString());
     }
 
     /**
@@ -75,14 +77,37 @@ public class LockCacheBean {
      */
     @javax.ejb.Lock(LockType.WRITE)
     public void remove(Lock.Key key) {
+        Lock lock;
+        
+        lock = locks.get(key);
         locks.remove(key);
+        log.fine("Removed - " + lock.toString());
+    }
+
+    /**
+     * Removes all the locks for specified transaction
+     */
+    @javax.ejb.Lock(LockType.WRITE)
+    public void rollback(int transaction) {
+        ArrayList<Lock> userLocks;
+
+        userLocks = new ArrayList<Lock>();
+        for (Lock l : locks.values()) {
+            if (l.transaction == transaction) {
+                userLocks.add(l);
+                log.fine("Rollback lock " + l.toString());
+            }
+        }
+
+        for (Lock l : userLocks)
+            locks.remove(l.key);
     }
 
     /**
      * 
      */
     public void printStatistics() {
-        log.info("Lock size " + locks.size() + " with max of "+maxLocks);
+        log.fine("Lock size " + locks.size() + " with max of " + maxLocks);
     }
 
     /**
@@ -91,14 +116,19 @@ public class LockCacheBean {
     @javax.ejb.Lock(LockType.WRITE)
     public void clearCache(long timeMillis) {
         long expired;
+        ArrayList<Lock> expiredLocks;
 
         expired = System.currentTimeMillis() - timeMillis;
+        expiredLocks = new ArrayList<Lock>();
         for (Lock l : locks.values()) {
             if (l.expires < expired) {
-                locks.remove(l.key);
-                log.info("Cleared lock " + l.toString());
+                expiredLocks.add(l);
+                log.fine("Cleared lock " + l.toString());
             }
         }
+
+        for (Lock l : expiredLocks)
+            locks.remove(l.key);
     }
 
     /**
@@ -106,12 +136,18 @@ public class LockCacheBean {
      */
     @javax.ejb.Lock(LockType.WRITE)
     public void clearCache(String username) {
+        ArrayList<Lock> userLocks;
+
+        userLocks = new ArrayList<Lock>();
         for (Lock l : locks.values()) {
             if (l.username.equals(username)) {
-                locks.remove(l.key);
-                log.info("Cleared lock " + l.toString());
+                userLocks.add(l);
+                log.fine("Cleared lock " + l.toString());
             }
         }
+
+        for (Lock l : userLocks)
+            locks.remove(l.key);
     }
 
     /**
@@ -121,19 +157,21 @@ public class LockCacheBean {
     public static class Lock {
 
         protected Key  key;
-        protected Long expires;
+        protected long expires;
         protected String username, sessionId;
+        protected int    transaction;
 
         public Lock(Integer tableId, Integer id) {
             this.key = new Key(tableId, id);
         }
 
-        public Lock(Integer tableId, Integer id, String username, Long expires,
-                    String sessionId) {
+        public Lock(Integer tableId, Integer id, String username, long expires,
+                    String sessionId, int transaction) {
             this(tableId, id);
             this.username = username;
             this.expires = expires;
             this.sessionId = sessionId;
+            this.transaction = transaction;
         }
 
         @Override
@@ -161,6 +199,8 @@ public class LockCacheBean {
             sb.append(username);
             sb.append(":");
             sb.append(sessionId);
+            sb.append(":");
+            sb.append(transaction);
             return sb.toString();
         }
 

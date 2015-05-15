@@ -26,18 +26,18 @@
 package org.openelis.bean;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.ejb.Remove;
 import javax.ejb.SessionContext;
 import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
+import javax.transaction.TransactionManager;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.bean.LockCacheBean.Lock;
@@ -50,25 +50,18 @@ import org.openelis.utils.User;
 public class LockBean implements SessionSynchronization {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext     ctx;
+
+    @Resource(lookup = "java:/TransactionManager")
+    private TransactionManager transactionManager;
 
     @EJB
-    protected LockCacheBean lockCache;
+    protected LockCacheBean    lockCache;
 
-    protected static int    DEFAULT_LOCK_TIME = 15 * 60 * 1000, // 15 M * 60 S *
-                                                                // 1000 Millis
-                    GRACE_LOCK_TIME = 2 * 60 * 1000;
+    protected static int       DEFAULT_LOCK_TIME = 15 * 60 * 1000, // 15 minutes
+                               GRACE_LOCK_TIME = 2 * 60 * 1000;
 
-    protected List<Lock>    setLocks;
-
-    protected String        username, sessionId;
-
-    @PostConstruct
-    public void init() {
-        setLocks = new ArrayList<Lock>();
-        username = User.getName(ctx);
-        sessionId = User.getSessionId(ctx);
-    }
+    protected Logger           log               = Logger.getLogger("openelis");
 
     /**
      * Method creates new lock entries for the specified table reference and
@@ -85,9 +78,16 @@ public class LockBean implements SessionSynchronization {
      * any of the ids, a EntityLockedException is thrown.
      */
     public void lock(int tableId, List<Integer> ids, long lockTimeMillis) throws Exception {
-        for (Integer id : ids) {
-            lock(tableId, id, lockTimeMillis);
-        }
+        long expires;
+        int transaction;
+        String user, session;
+
+        expires = System.currentTimeMillis() + lockTimeMillis;
+        user = User.getName(ctx);
+        session = User.getSessionId(ctx);
+        transaction = getTransactionId();
+        for (Integer id : ids)
+            lock(tableId, id, expires, user, session, transaction);
     }
 
     /**
@@ -104,48 +104,48 @@ public class LockBean implements SessionSynchronization {
      * a EntityLockedException is thrown.
      */
     public void lock(int tableId, Integer id, long lockTimeMillis) throws Exception {
-        long now;
+        long expires;
 
-        now = System.currentTimeMillis();
-        checkIfLockedByOther(tableId, id, now);
-        createLock(tableId, id, now + lockTimeMillis);
+        expires = System.currentTimeMillis() + lockTimeMillis;
+        lock(tableId,
+             id,
+             expires,
+             User.getName(ctx),
+             User.getSessionId(ctx),
+             getTransactionId());
     }
 
-    /*
-     * Check for lock and if expired, remove it.
-     */
-    private void checkIfLockedByOther(Integer tableId, Integer id, long time) throws Exception {
+    private void lock(int tableId, Integer id, long expires, String user,
+                      String session, int transaction) throws Exception {
         Lock lock;
 
         lock = lockCache.get(new Lock.Key(tableId, id));
-        if (lock != null) {
-            if (lock.expires >= time)
-                throw lockedByOtherException(lock);
-            else
-                lockCache.remove(lock.key);
+        if (lock == null) {
+            lock = new Lock(tableId, id, user, expires, session, transaction);
+            lockCache.add(lock);
+            return;
         }
-    }
 
-    /*
-     * Add a lock record
-     */
-    private void createLock(Integer tableId, Integer id, long expires) throws Exception {
-        Lock lock;
-
-        lock = new Lock(tableId, id, username, expires, sessionId);
-        lockCache.add(lock);
-        setLocks.add(lock);
+        checkIfLockedByOther(lock, user, session);
+        // if exception not thrown take over lock;
+        lock.username = user;
+        lock.sessionId = session;
+        lock.expires = expires;
+        lock.transaction = transaction;
     }
 
     /*
      * create a lock exception message
      */
-    private EntityLockedException lockedByOtherException(Lock lock) throws Exception {
+    private void checkIfLockedByOther(Lock lock, String user, String session) throws Exception {
         String expires, msg;
 
-        expires = new Date(lock.expires).toString();
-        msg = Messages.get().entityLockException(lock.username, expires);
-        return new EntityLockedException(msg);
+        if (lock.expires > System.currentTimeMillis() &&
+            !ownsLock(lock, user, session)) {
+            expires = new Date(lock.expires).toString();
+            msg = Messages.get().entityLockException(lock.username, expires);
+            throw new EntityLockedException(msg);
+        }
     }
 
     /**
@@ -153,22 +153,35 @@ public class LockBean implements SessionSynchronization {
      * id. The lock record must be owned by the user before the lock is removed.
      */
     public void unlock(int tableId, List<Integer> ids) {
-        for (Integer id : ids)
-            unlock(tableId, id);
+        String user, session;
+
+        user = User.getName(ctx);
+        session = User.getSessionId(ctx);
+        for (Integer id : ids) {
+            unlock(tableId, id, user, session);
+        }
     }
 
+    /**
+     * This method removes the lock entry for the specified reference table and
+     * id. The lock record must be owned by the user before the lock is removed.
+     */
     public void unlock(int tableId, Integer id) {
+        unlock(tableId, id, User.getName(ctx), User.getSessionId(ctx));
+    }
+
+    private void unlock(int tableId, Integer id, String user, String session) {
         Lock lock;
 
         lock = lockCache.get(new Lock.Key(tableId, id));
-        if (ownsLock(lock))
+        if (ownsLock(lock, user, session)) {
             lockCache.remove(lock.key);
+        }
     }
 
-    private boolean ownsLock(Lock lock) {
+    private boolean ownsLock(Lock lock, String user, String session) {
         return lock != null && lock.username != null &&
-               lock.username.equals(username) &&
-               lock.sessionId.equals(sessionId);
+               lock.username.equals(user) && lock.sessionId.equals(session);
     }
 
     /**
@@ -181,8 +194,13 @@ public class LockBean implements SessionSynchronization {
      * constant grace time.
      */
     public void validateLock(int tableId, List<Integer> ids) throws Exception {
-        for (Integer id : ids)
-            validateLock(tableId, id);
+        String user, session;
+
+        user = User.getName(ctx);
+        session = User.getSessionId(ctx);
+        for (Integer id : ids) {
+            validateLock(tableId, id, user, session);
+        }
     }
 
     /**
@@ -195,18 +213,20 @@ public class LockBean implements SessionSynchronization {
      * time.
      */
     public void validateLock(int tableId, Integer id) throws Exception {
+        validateLock(tableId, id, User.getName(ctx), User.getSessionId(ctx));
+    }
+
+    private void validateLock(int tableId, Integer id, String user,
+                              String session) throws Exception {
         Lock lock;
         Lock.Key key;
         long time;
 
         key = new Lock.Key(tableId, id);
         lock = lockCache.get(key);
-        if (lock == null)
+        if (!ownsLock(lock, user, session))
             throw new EntityLockedException(Messages.get()
-                                                    .expiredLockException());
-        if (!ownsLock(lock))
-            throw lockedByOtherException(lock);
-
+                                            .expiredLockException());
         time = System.currentTimeMillis();
         if (lock.expires < time - GRACE_LOCK_TIME)
             lock.expires = time + GRACE_LOCK_TIME;
@@ -217,7 +237,7 @@ public class LockBean implements SessionSynchronization {
      * from logout.
      */
     public void removeLocks() {
-        removeLocks(sessionId);
+        removeLocks(User.getSessionId(ctx));
     }
 
     public void removeLocks(String sessionId) {
@@ -232,29 +252,25 @@ public class LockBean implements SessionSynchronization {
 
     @Override
     public void afterBegin() throws EJBException, RemoteException {
-
     }
 
     @Override
     public void beforeCompletion() throws EJBException, RemoteException {
-
     }
 
     @Override
     public void afterCompletion(boolean committed) throws EJBException,
                     RemoteException {
-        if (!committed) {
-            for (Lock lock : setLocks) {
-                lockCache.remove(lock.key);
-            }
-        }
-        setLocks.clear();
+        if (!committed)
+            lockCache.rollback(getTransactionId());
     }
 
-    @Remove
-    public void destroy() {
-        setLocks = null;
-        username = null;
-        sessionId = null;
+    private int getTransactionId() {
+        try {
+            return transactionManager.getTransaction().hashCode();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get Transaction", e);
+            return -1;
+        }
     }
 }
