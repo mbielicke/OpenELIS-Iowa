@@ -153,7 +153,7 @@ public class LockCacheBean {
     public static class Lock {
 
         protected Key  key;
-        protected Long expires;
+        protected long expires;
         protected String username, sessionId;
         protected int transaction;
 
@@ -161,7 +161,7 @@ public class LockCacheBean {
             this.key = new Key(tableId, id);
         }
 
-        public Lock(Integer tableId, Integer id, String username, Long expires,
+        public Lock(Integer tableId, Integer id, String username, long expires,
                     String sessionId, int transaction) {
             this(tableId, id);
             this.username = username;

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openelis.bean.LockCacheBean.Lock;
+import org.openelis.bean.LockCacheBean.Lock.Key;
 import org.openelis.deployment.Deployments;
 import org.openelis.ui.common.EntityLockedException;
 
@@ -58,6 +60,59 @@ public class TestLockBeanArq {
 		assertNotNull(lockCache.get(new Lock.Key(1, 1)));
 	}
 	
+	@Test 
+	public void testListLock() throws Exception {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		lockBean.lock(1, ids);
+		assertEquals(3,lockCache.getAll().size());
+	}
+	
+	@Test(expected=EntityLockedException.class)
+	public void testLockedByOther() throws Exception {
+		setLock(createLock(1,3,"demo","session"));
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		lockBean.lock(1, ids);
+	}
+	
+	@Test(expected=EntityLockedException.class)
+	public void testLockedByOtherList() throws Exception {
+		setLock(createLock(1,1,"demo","session"));
+		lockBean.lock(1,1);
+	}
+	
+	@Test
+	public void testLockedExpiredByOtherList() throws Exception {
+		setExpiredLock(1,1,"demo","session");
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		lockBean.lock(1, ids);
+		assertNotNull(lockCache.get(new Lock.Key(1, 1)));
+		assertEquals("system",lockCache.get(new Lock.Key(1,1)).username);
+		assertEquals(3,lockCache.getAll().size());
+	}
+	
+	@Test
+	public void testLockedExpiredByOther() throws Exception {
+		setExpiredLock(1,1,"demo","session");
+		lockBean.lock(1,1);
+		assertNotNull(lockCache.get(new Lock.Key(1, 1)));
+		assertEquals("system",lockCache.get(new Lock.Key(1,1)).username);
+	}
+	
 	@Test
 	public void testValidateLock() throws Exception {
 		setLock(1,1);
@@ -86,6 +141,61 @@ public class TestLockBeanArq {
 	}
 	
 	@Test
+	public void testValidateLockList() throws Exception {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		setLock(1,1);
+		setLock(1,2);
+		setLock(1,3);
+		lockBean.validateLock(1, ids);
+	}
+	
+	@Test
+	public void testValidateLock_expiredList() throws Exception {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		setExpiredLock(1,1,userCache.getSystemUser().getLoginName(),userCache.getSessionId());
+		setExpiredLock(1,2,userCache.getSystemUser().getLoginName(),userCache.getSessionId());
+		setExpiredLock(1,3,userCache.getSystemUser().getLoginName(),userCache.getSessionId());
+		lockBean.validateLock(1,ids);
+		assertNotEquals(new Long(0l),new Long(lockCache.get(new Lock.Key(1,1)).expires));
+	}
+	
+	@Test(expected=EntityLockedException.class)
+	public void testValidateLock_diffSessionList() throws Exception {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		Lock lock = createLock(1,1,userCache.getSystemUser().getLoginName(),"session");
+		setLock(lock);
+		lockBean.validateLock(1, ids);
+	}
+	
+	@Test(expected=EntityLockedException.class)
+	public void testValidateLock_diffUserList() throws Exception {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		Lock lock = createLock(1,1,"demo",userCache.getSessionId());
+		setLock(lock);
+		lockBean.validateLock(1, ids);
+	}
+	
+	@Test
 	public void testStolen() throws Exception {
 		setExpiredLock(1,1,"demo","session");
 		lockBean.lock(1, 1);
@@ -97,6 +207,13 @@ public class TestLockBeanArq {
 		lockBean.lock(1, 1);
 		lockBean.unlock(1, 1);
 		assertEquals(0,lockCache.getAll().size());
+	}
+	
+	@Test
+	public void testUnlockNotOwned() throws Exception {
+		setLock(createLock(1,1,"demo","session"));
+		lockBean.unlock(1, 1);
+		assertNotNull(lockCache.get(new Lock.Key(1,1)));
 	}
 	
 	@Test(expected=EntityLockedException.class)
@@ -112,6 +229,22 @@ public class TestLockBeanArq {
 			
 		}	
 		assertNull(lockCache.get(new Lock.Key(1,1)));
+	}
+	
+	@Test
+	public void testRollbackList() {
+		ArrayList<Integer> ids;
+		
+		ids = new ArrayList<Integer>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		try {
+			rollback.setAndRollBackList(1, ids);
+		} catch (Exception e) {
+			
+		}
+		assertEquals(0,lockCache.getAll().size());
 	}
 	
 	@Test 

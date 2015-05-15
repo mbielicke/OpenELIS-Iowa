@@ -1,5 +1,7 @@
 package org.openelis.bean;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionManagement;
@@ -32,6 +34,11 @@ public class RollbackLockBean {
 	
 	public void setAndRollBack(Integer tableId, Integer id) throws Exception {
 		setLock(tableId,id);
+		rollback();
+	}
+	
+	public void setAndRollBackList(Integer tableId, List<Integer> ids) throws Exception {
+		lock.lock(tableId, ids);
 		rollback();
 	}
 
