@@ -1,0 +1,39 @@
+.Button {
+	font-family: inherit;
+	font-size: 12px;
+	color: #444444;
+	border: 1px solid #ababab;
+	display: flex;
+	background: #fdfdfd;
+}
+
+.Button>div {
+	
+}
+
+.Button:hover {
+	cursor: pointer;
+	background: #e1662f;
+	color: white;
+}
+
+.Button.Disabled:hover {
+	cursor: default;
+	border-color: lightgray;
+	background: inherit;
+	color: gray;
+}
+
+.Focus {
+	
+}
+
+.Pressed {
+	
+}
+
+.Disabled {
+	color: gray;
+	border-color: lightgray;
+	cursor: default;
+}
