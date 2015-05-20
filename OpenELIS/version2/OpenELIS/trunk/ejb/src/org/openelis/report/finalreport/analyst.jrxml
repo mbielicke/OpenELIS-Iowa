@@ -23,7 +23,9 @@ WHERE
 	<detail>
 		<band splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="120" height="0"/>
+				<reportElement x="0" y="0" width="120" height="0">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} <= 5]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -34,9 +36,7 @@ WHERE
 	<summary>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="120" height="12">
-					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.equals(5)]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="0" width="120" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
