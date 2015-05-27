@@ -1,9 +1,8 @@
 create table "dba".application
 (
     id                        serial not null,
-    name                      char(18) not null,
-    description               char(60),
-    primary                   key (id)
+    name                      varchar(18) not null,
+    description               varchar(60)
 );
 
 create table "dba".lock
@@ -12,17 +11,15 @@ create table "dba".lock
     reference_id              integer not null,
     expires                   int8 not null,
     system_user_id            integer not null,
-    session_id                varchar(80,1),
-    primary                   key (reference_table_id,reference_id)
+    session_id                varchar(80,1)
 );
 
 create table "dba".section
 (
     id                        serial not null,
     application_id            integer not null,
-    name                      char(20) not null,
-    description               char(60),
-    primary                   key (id)
+    name                      varchar(20) not null,
+    description               varchar(60)
 );
 
 create table "dba".system_module
@@ -35,22 +32,20 @@ create table "dba".system_module
     has_add_flag              char(1),
     has_update_flag           char(1),
     has_delete_flag           char(1),
-    clause                    varchar(255,1),
-    primary                   key (id)
+    clause                    varchar(255,1)
 );
 
 create table "dba".system_user
 (
     id                        serial not null,
     external_id               varchar(80,1),
-    login_name                char(20) not null,
+    login_name                varchar(20) not null,
     last_name                 varchar(30,1),
     first_name                varchar(20,1),
     initials                  char(3),
     is_employee               char(1) not null,
     is_active                 char(1) not null,
-    is_template               char(1) not null,
-    primary                   key (id)
+    is_template               char(1) not null
 );
 
 create table "dba".system_user_module
@@ -62,8 +57,7 @@ create table "dba".system_user_module
     has_add                   char(1),
     has_update                char(1),
     has_delete                char(1),
-    clause                    varchar(255,1),
-    primary                   key (id)
+    clause                    varchar(255,1)
 );
 
 create table "dba".system_user_section
@@ -75,6 +69,5 @@ create table "dba".system_user_section
     has_assign                char(1),
     has_complete              char(1),
     has_release               char(1),
-    has_cancel                char(1),
-    primary                   key (id)
+    has_cancel                char(1)
 );

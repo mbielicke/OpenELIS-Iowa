@@ -160,7 +160,7 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
                                                            from dictionary
                                                           where dictionary.system_name = 'org_report_to')
        left join organization o on so.organization_id = o.id
-       left join sample_project sp) on s.id = sp.sample_id and
+       left join sample_project sp on s.id = sp.sample_id and
                                        sp.is_permanent = 'Y'
        left join project p on sp.project_id = p.id
        left join sample_qaevent sqa on s.id = sqa.sample_id and
@@ -517,7 +517,7 @@ select wa.id, wi.id, wi.position, w.id, w.format_id, w.description,
        left join sample_clinical scl on s.id = scl.sample_id
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
-       left join dictionary ptp on scl.pt_provider_id = ptp.id
+       left join dictionary ptp on spt.pt_provider_id = ptp.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select dictionary.id
                                                            from dictionary
