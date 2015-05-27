@@ -338,7 +338,7 @@ public class WorksheetAnalysisBean {
                                             waVVO.getTestId(), waVVO.getTestName(),
                                             waVVO.getMethodName(), waVVO.getSectionName(),
                                             waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
-                                            waVVO.getStatusId(), collectionDate,
+                                            waVVO.getAnalysisStatusId(), collectionDate,
                                             receivedDate, (Integer)null, (Date)null);
         if (waVVO.getAnalysisId() != null) {
             //
