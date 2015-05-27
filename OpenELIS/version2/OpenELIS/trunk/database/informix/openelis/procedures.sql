@@ -1,4 +1,4 @@
-CREATE PROCEDURE "dba".instrument_get_analytes(worksheet int, position int)
+create procedure "dba".instrument_get_analytes(worksheet int, position int)
        returning varchar(60) as analyte,
                  float as p1, float as p2, float as p3,
                  varchar(60) as c1_analyte, varchar(30) as c1_type,
