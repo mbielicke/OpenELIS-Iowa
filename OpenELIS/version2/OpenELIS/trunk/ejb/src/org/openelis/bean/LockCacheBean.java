@@ -107,14 +107,14 @@ public class LockCacheBean {
      * 
      */
     public void printStatistics() {
-        log.fine("Lock size " + locks.size() + " with max of " + maxLocks);
+        log.info("Lock size " + locks.size() + " with max of " + maxLocks);
     }
 
     /**
-     * Clear the cache if the locks are expired
+     * Clear locks from the cache that are past the expiration time specified
      */
     @javax.ejb.Lock(LockType.WRITE)
-    public void clearCache(long timeMillis) {
+    public void clearCacheByTime(long timeMillis) {
         long expired;
         ArrayList<Lock> expiredLocks;
 
@@ -132,15 +132,34 @@ public class LockCacheBean {
     }
 
     /**
-     * Clear the cache if the locks are expired
+     * Clear locks from the cache that are owned by the specified user
      */
     @javax.ejb.Lock(LockType.WRITE)
-    public void clearCache(String username) {
+    public void clearCacheByUser(String username) {
         ArrayList<Lock> userLocks;
 
         userLocks = new ArrayList<Lock>();
         for (Lock l : locks.values()) {
             if (l.username.equals(username)) {
+                userLocks.add(l);
+                log.fine("Cleared lock " + l.toString());
+            }
+        }
+
+        for (Lock l : userLocks)
+            locks.remove(l.key);
+    }
+
+    /**
+     * Clear locks from the cache that are owned by the specified session
+     */
+    @javax.ejb.Lock(LockType.WRITE)
+    public void clearCacheBySession(String sessionId) {
+        ArrayList<Lock> userLocks;
+
+        userLocks = new ArrayList<Lock>();
+        for (Lock l : locks.values()) {
+            if (l.sessionId.equals(sessionId)) {
                 userLocks.add(l);
                 log.fine("Cleared lock " + l.toString());
             }

@@ -237,17 +237,18 @@ public class LockBean implements SessionSynchronization {
      * from logout.
      */
     public void removeLocks() {
-        removeLocks(User.getSessionId(ctx));
+        lockCache.clearCacheBySession(User.getSessionId(ctx));
     }
 
+    /**
+     * Removes all the locks for a user's session. This action is often called
+     * from logout.
+     */
     public void removeLocks(String sessionId) {
         if (sessionId.trim().length() == 0)
             return;
 
-        for (Lock lock : lockCache.getAll()) {
-            if (sessionId.equals(lock.sessionId))
-                lockCache.remove(lock.key);
-        }
+        lockCache.clearCacheBySession(sessionId);
     }
 
     @Override
