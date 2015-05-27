@@ -39,15 +39,16 @@ public class SecondaryLabelVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, analysisId;
+    protected Integer         sampleId, analysisId, labelQty;
     protected String          printer;
 
     public SecondaryLabelVO() {
     }
 
-    public SecondaryLabelVO(Integer sampleId, Integer analysisId, String printer) {
+    public SecondaryLabelVO(Integer sampleId, Integer analysisId, Integer labelQty, String printer) {
         setSampleId(sampleId);
         setAnalysisId(analysisId);
+        setLabelQty(labelQty);
     }
 
     public Integer getSampleId() {
@@ -64,6 +65,14 @@ public class SecondaryLabelVO implements Serializable {
 
     public void setAnalysisId(Integer analysisId) {
         this.analysisId = analysisId;
+    }
+
+    public Integer getLabelQty() {
+        return labelQty;
+    }
+
+    public void setLabelQty(Integer labelQty) {
+        this.labelQty = labelQty;
     }
 
     public String getPrinter() {

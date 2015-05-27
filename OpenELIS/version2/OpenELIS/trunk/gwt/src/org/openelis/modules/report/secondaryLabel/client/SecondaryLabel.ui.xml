@@ -75,17 +75,26 @@
                 <w:Label />
               </t:LabelCell>
             </t:Column>
-            <t:Column width="20" label="{msg.gen_qty}">
-              <t:LabelCell>
-                <w:Label />
-              </t:LabelCell>
+            <t:Column width="20" label="{msg.gen_qty}" required="true">
+              <t:TextBoxCell>
+                <w:TextBox maxLength="4" field="Integer"/>
+              </t:TextBoxCell>
             </t:Column>
           </t:Table>
         </g:layer>
         <g:layer bottom="0px" height="25px">
-          <g:HorizontalPanel>
-            <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
-            <w:Button ui:field="printButton" leftIcon="" text="{msg.gen_print}" />
+          <g:HorizontalPanel width="100%">
+            <g:HorizontalPanel>
+              <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
+              <w:Button ui:field="printButton" leftIcon="" text="{msg.gen_print}" />
+            </g:HorizontalPanel>
+            <g:HorizontalPanel width="100%" horizontalAlignment="ALIGN_RIGHT">
+              <g:HorizontalPanel>
+                <w:Button ui:field="add1Button" leftIcon="" text="+1" />
+                <w:Button ui:field="set1Button" leftIcon="" text="1" />
+                <w:Button ui:field="remove1Button" leftIcon="" text="-1" />
+              </g:HorizontalPanel>
+            </g:HorizontalPanel>
           </g:HorizontalPanel>
         </g:layer>
       </g:LayoutPanel>

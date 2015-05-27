@@ -170,7 +170,7 @@ public class SecondaryLabelReportBean {
                         }
                     }
                     if (t != null)
-                        printLabel(ps, sm, t, e);
+                        printLabel(ps, sm, t, data.getLabelQty(), e);
                     break;
                 }
             }
@@ -196,7 +196,7 @@ public class SecondaryLabelReportBean {
      * Print the label defined for the passed test by obtaining the required
      * data from the manager and the test
      */
-    private void printLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, ValidationErrorsList e) {
+    private void printLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty, ValidationErrorsList e) {
         Integer accession;
 
         accession = getSample(sm).getAccessionNumber();
@@ -206,7 +206,7 @@ public class SecondaryLabelReportBean {
                                                                                               t.getName(),
                                                                                               t.getMethodName())));
             return;
-        } else if (t.getLabelQty() == null || t.getLabelQty() <= 0) {
+        } else if (labelQty == null || labelQty <= 0) {
             e.add(new InconsistencyException(Messages.get()
                                                      .secondaryLabel_labelQtyLessThanOneException(accession,
                                                                                                   t.getName(),
@@ -219,16 +219,16 @@ public class SecondaryLabelReportBean {
          */
         switch (t.getLabelName()) {
             case "1x2 acc+rec":
-                accessionReceivedLabel(ps, sm, t);
+                accessionReceivedLabel(ps, sm, t, labelQty);
                 break;
             case "1x2 acc+rec+test":
-                accessionReceivedTestLabel(ps, sm, t);
+                accessionReceivedTestLabel(ps, sm, t, labelQty);
                 break;
             case "1x2 acc+rec+test+method":
-                accessionReceivedTestMethodLabel(ps, sm, t);
+                accessionReceivedTestMethodLabel(ps, sm, t, labelQty);
                 break;
             case "1x2 acc+pat+rec+test":
-                accessionPatientReceivedTestLabel(ps, sm, t, e);
+                accessionPatientReceivedTestLabel(ps, sm, t, labelQty, e);
                 break;
             default:
                 /*
@@ -246,7 +246,7 @@ public class SecondaryLabelReportBean {
      * and test name
      */
     private void accessionPatientReceivedTestLabel(PrintStream ps, SampleManager1 sm, TestViewDO t,
-                                                   ValidationErrorsList e) {
+                                                   Integer labelQty, ValidationErrorsList e) {
         Integer accession;
         String received, patientName;
         PatientDO pat;
@@ -273,13 +273,13 @@ public class SecondaryLabelReportBean {
                                                       patientName,
                                                       received,
                                                       t.getName(),
-                                                      t.getLabelQty());
+                                                      labelQty);
     }
 
     /**
      * Prints the label showing accession number and received date
      */
-    private void accessionReceivedLabel(PrintStream ps, SampleManager1 sm, TestViewDO t) {
+    private void accessionReceivedLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty) {
         String received;
 
         received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()
@@ -287,13 +287,13 @@ public class SecondaryLabelReportBean {
         labelReport.accessionReceivedLabel(ps,
                                            getSample(sm).getAccessionNumber(),
                                            received,
-                                           t.getLabelQty());
+                                           labelQty);
     }
 
     /**
      * Prints the label showing accession number, received date and test name
      */
-    private void accessionReceivedTestLabel(PrintStream ps, SampleManager1 sm, TestViewDO t) {
+    private void accessionReceivedTestLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty) {
         String received;
 
         received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()
@@ -302,14 +302,14 @@ public class SecondaryLabelReportBean {
                                                getSample(sm).getAccessionNumber(),
                                                received,
                                                t.getName(),
-                                               t.getLabelQty());
+                                               labelQty);
     }
 
     /**
      * Prints the label showing accession number, received date and test and
      * method names
      */
-    private void accessionReceivedTestMethodLabel(PrintStream ps, SampleManager1 sm, TestViewDO t) {
+    private void accessionReceivedTestMethodLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty) {
         String received;
 
         received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()
@@ -319,6 +319,6 @@ public class SecondaryLabelReportBean {
                                                      received,
                                                      t.getName(),
                                                      t.getMethodName(),
-                                                     t.getLabelQty());
+                                                     labelQty);
     }
 }

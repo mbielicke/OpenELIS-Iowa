@@ -2,9 +2,9 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
-public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
+public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
   /**
    * Translated "QA Event".
@@ -17105,6 +17105,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}")
   @Key("secondaryLabel.failedToFetchTestException")
   String secondaryLabel_failedToFetchTestException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Label quantity must be at least one".
+   * 
+   * @return translated "Label quantity must be at least one"
+   */
+  @DefaultMessage("Label quantity must be at least one")
+  @Key("secondaryLabel.invalidQtyException")
+  String secondaryLabel_invalidQtyException();
 
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - No label type defined".
