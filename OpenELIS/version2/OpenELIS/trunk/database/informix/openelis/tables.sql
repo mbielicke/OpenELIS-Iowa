@@ -1,4 +1,4 @@
-create table "dba".address
+create table address
 (
     id                        serial not null,
     multiple_unit             varchar(30),
@@ -14,7 +14,7 @@ create table "dba".address
     country                   varchar(30)
 );
 
-create table "dba".analysis
+create table analysis
 (
     id                        serial not null,
     sample_item_id            integer not null,
@@ -36,7 +36,7 @@ create table "dba".analysis
     printed_date              datetime year to second
 );
 
-create table "dba".analysis_qaevent
+create table analysis_qaevent
 (
     id                        serial not null,
     analysis_id               integer not null,
@@ -45,7 +45,7 @@ create table "dba".analysis_qaevent
     is_billable               char(1) not null
 );
 
-create table "dba".analysis_report_flags
+create table analysis_report_flags
 (
     analysis_id               integer not null,
     notified_received         char(1),
@@ -55,7 +55,7 @@ create table "dba".analysis_report_flags
     billed_override           decimal(8,2)
 );
 
-create table "dba".analysis_user
+create table analysis_user
 (
     id                        serial not null,
     analysis_id               integer not null,
@@ -63,7 +63,7 @@ create table "dba".analysis_user
     action_id                 integer
 );
 
-create table "dba".analyte
+create table analyte
 (
     id                        serial not null,
     name                      varchar(60) not null,
@@ -72,7 +72,7 @@ create table "dba".analyte
     external_id               varchar(20)
 );
 
-create table "dba".analyte_parameter
+create table analyte_parameter
 (
     id                        serial not null,
     reference_id              integer not null,
@@ -87,7 +87,7 @@ create table "dba".analyte_parameter
     p3                        float
 );
 
-create table "dba".attachment
+create table attachment
 (
     id                        serial not null,
     created_date              datetime year to minute not null,
@@ -97,7 +97,7 @@ create table "dba".attachment
     storage_reference         varchar(255) not null
 );
 
-create table "dba".attachment_item
+create table attachment_item
 (
     id                        serial not null,
     reference_id              integer not null,
@@ -105,7 +105,7 @@ create table "dba".attachment_item
     attachment_id             integer not null
 );
 
-create table "dba".aux_data
+create table aux_data
 (
     id                        serial not null,
     sort_order                integer not null,
@@ -117,7 +117,7 @@ create table "dba".aux_data
     value                     varchar(80)
 );
 
-create table "dba".aux_field
+create table aux_field
 (
     id                        serial not null,
     aux_field_group_id        integer not null,
@@ -132,7 +132,7 @@ create table "dba".aux_field
     scriptlet_id              integer
 );
 
-create table "dba".aux_field_group
+create table aux_field_group
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -142,7 +142,7 @@ create table "dba".aux_field_group
     active_end                date not null
 );
 
-create table "dba".aux_field_value
+create table aux_field_value
 (
     id                        serial not null,
     aux_field_id              integer not null,
@@ -150,7 +150,7 @@ create table "dba".aux_field_value
     value                     varchar(80)
 );
 
-create table "dba".category
+create table category
 (
     id                        serial not null,
     system_name               varchar(30) not null,
@@ -160,7 +160,7 @@ create table "dba".category
     is_system                 char(1) not null
 );
 
-create table "dba".cron
+create table cron
 (
     id                        serial not null,
     name                      varchar(30) not null,
@@ -172,7 +172,7 @@ create table "dba".cron
     last_run                  datetime year to second
 );
 
-create table "dba".dictionary
+create table dictionary
 (
     id                        serial not null,
     category_id               integer not null,
@@ -184,32 +184,32 @@ create table "dba".dictionary
     entry                     varchar(255) not null
 );
 
-create table "dba".eorder
+create table eorder
 (
     id                        serial not null,
     entered_date              datetime year to second not null,
-    paper_order_validator     varchar(40),
+    paper_order_validator     varchar(40) not null,
     description               varchar(60)
 );
 
-create table "dba".eorder_body
+create table eorder_body
 (
     id                        serial not null,
     eorder_id                 integer not null,
     xml                       text
 );
 
-create table "dba".eorder_link
+create table eorder_link
 (
     id                        serial not null,
     eorder_id                 integer not null,
     reference                 varchar(40),
     sub_id                    varchar(20),
-    name                      varchar(20),
+    name                      varchar(20) not null,
     value                     varchar(255)
 );
 
-create table "dba".event_log
+create table event_log
 (
     id                        serial not null,
     type_id                   integer not null,
@@ -222,7 +222,7 @@ create table "dba".event_log
     text                      text
 );
 
-create table "dba".exchange_criteria
+create table exchange_criteria
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -232,14 +232,7 @@ create table "dba".exchange_criteria
     query                     text
 );
 
-create table "dba".exchange_local_term
-(
-    id                        serial not null,
-    reference_table_id        integer not null,
-    reference_id              integer not null
-);
-
-create table "dba".exchange_external_term
+create table exchange_external_term
 (
     id                        serial not null,
     exchange_local_term_id    integer not null,
@@ -251,7 +244,14 @@ create table "dba".exchange_external_term
     version                   varchar(60)
 );
 
-create table "dba".exchange_profile
+create table exchange_local_term
+(
+    id                        serial not null,
+    reference_table_id        integer not null,
+    reference_id              integer not null
+);
+
+create table exchange_profile
 (
     id                        serial not null,
     exchange_criteria_id      integer not null,
@@ -259,7 +259,7 @@ create table "dba".exchange_profile
     sort_order                integer not null
 );
 
-create table "dba".history
+create table history
 (
     id                        serial not null,
     reference_id              integer not null,
@@ -270,7 +270,7 @@ create table "dba".history
     changes                   text
 );
 
-create table "dba".instrument
+create table instrument
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -285,7 +285,7 @@ create table "dba".instrument
     scriptlet_id              integer
 );
 
-create table "dba".instrument_log
+create table instrument_log
 (
     id                        serial not null,
     instrument_id             integer not null,
@@ -296,7 +296,7 @@ create table "dba".instrument_log
     text                      text
 );
 
-create table "dba".inventory_adjustment
+create table inventory_adjustment
 (
     id                        serial not null,
     description               varchar(60),
@@ -304,7 +304,7 @@ create table "dba".inventory_adjustment
     adjustment_date           datetime year to minute not null
 );
 
-create table "dba".inventory_component
+create table inventory_component
 (
     id                        serial not null,
     inventory_item_id         integer not null,
@@ -312,7 +312,7 @@ create table "dba".inventory_component
     quantity                  integer not null
 );
 
-create table "dba".inventory_item
+create table inventory_item
 (
     id                        serial not null,
     name                      varchar(30) not null,
@@ -340,7 +340,7 @@ create table "dba".inventory_item
     parent_ratio              integer
 );
 
-create table "dba".inventory_location
+create table inventory_location
 (
     id                        serial not null,
     inventory_item_id         integer not null,
@@ -350,7 +350,7 @@ create table "dba".inventory_location
     expiration_date           date
 );
 
-create table "dba".inventory_receipt
+create table inventory_receipt
 (
     id                        serial not null,
     inventory_item_id         integer not null,
@@ -364,14 +364,14 @@ create table "dba".inventory_receipt
     upc                       varchar(15)
 );
 
-create table "dba".inventory_receipt_iorder_item
+create table inventory_receipt_iorder_item
 (
     id                        serial not null,
     inventory_receipt_id      integer not null,
     iorder_item_id            integer not null
 );
 
-create table "dba".inventory_x_adjust
+create table inventory_x_adjust
 (
     id                        serial not null,
     inventory_adjustment_id   integer not null,
@@ -380,7 +380,7 @@ create table "dba".inventory_x_adjust
     physical_count            integer not null
 );
 
-create table "dba".inventory_x_put
+create table inventory_x_put
 (
     id                        serial not null,
     inventory_receipt_id      integer not null,
@@ -388,7 +388,7 @@ create table "dba".inventory_x_put
     quantity                  integer not null
 );
 
-create table "dba".inventory_x_use
+create table inventory_x_use
 (
     id                        serial not null,
     inventory_location_id     integer not null,
@@ -396,7 +396,7 @@ create table "dba".inventory_x_use
     quantity                  integer not null
 );
 
-create table "dba".iorder
+create table iorder
 (
     id                        serial not null,
     parent_iorder_id          integer,
@@ -414,7 +414,7 @@ create table "dba".iorder
     number_of_forms           integer
 );
 
-create table "dba".iorder_container
+create table iorder_container
 (
     id                        serial not null,
     iorder_id                 integer not null,
@@ -423,7 +423,7 @@ create table "dba".iorder_container
     type_of_sample_id         integer
 );
 
-create table "dba".iorder_item
+create table iorder_item
 (
     id                        serial not null,
     iorder_id                 integer not null,
@@ -433,7 +433,7 @@ create table "dba".iorder_item
     unit_cost                 float
 );
 
-create table "dba".iorder_organization
+create table iorder_organization
 (
     id                        serial not null,
     iorder_id                 integer not null,
@@ -442,7 +442,7 @@ create table "dba".iorder_organization
     type_id                   integer not null
 );
 
-create table "dba".iorder_recurrence
+create table iorder_recurrence
 (
     id                        serial not null,
     iorder_id                 integer not null,
@@ -453,7 +453,7 @@ create table "dba".iorder_recurrence
     unit_id                   integer
 );
 
-create table "dba".iorder_test
+create table iorder_test
 (
     id                        serial not null,
     iorder_id                 integer not null,
@@ -462,14 +462,14 @@ create table "dba".iorder_test
     test_id                   integer not null
 );
 
-create table "dba".iorder_test_analyte
+create table iorder_test_analyte
 (
     id                        serial not null,
     iorder_test_id            integer not null,
     analyte_id                integer not null
 );
 
-create table "dba".label
+create table label
 (
     id                        serial not null,
     name                      varchar(30) not null,
@@ -478,7 +478,7 @@ create table "dba".label
     scriptlet_id              integer
 );
 
-create table "dba".lock
+create table lock
 (
     reference_table_id        integer not null,
     reference_id              integer not null,
@@ -487,7 +487,7 @@ create table "dba".lock
     session_id                varchar(80)
 );
 
-create table "dba".method
+create table method
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -498,7 +498,7 @@ create table "dba".method
     active_end                date not null
 );
 
-create table "dba".note
+create table note
 (
     id                        serial not null,
     reference_id              integer not null,
@@ -510,7 +510,7 @@ create table "dba".note
     text                      text
 );
 
-create table "dba".organization
+create table organization
 (
     id                        serial not null,
     parent_organization_id    integer,
@@ -519,7 +519,7 @@ create table "dba".organization
     address_id                integer
 );
 
-create table "dba".organization_contact
+create table organization_contact
 (
     id                        serial not null,
     organization_id           integer not null,
@@ -528,7 +528,7 @@ create table "dba".organization_contact
     address_id                integer
 );
 
-create table "dba".organization_parameter
+create table organization_parameter
 (
     id                        serial not null,
     organization_id           integer not null,
@@ -536,14 +536,14 @@ create table "dba".organization_parameter
     value                     varchar(80)
 );
 
-create table "dba".panel
+create table panel
 (
     id                        serial not null,
     name                      varchar(20) not null,
     description               varchar(60)
 );
 
-create table "dba".panel_item
+create table panel_item
 (
     id                        serial not null,
     panel_id                  integer not null,
@@ -553,7 +553,7 @@ create table "dba".panel_item
     method_name               varchar(20)
 );
 
-create table "dba".patient
+create table patient
 (
     id                        serial not null,
     last_name                 varchar(30),
@@ -568,7 +568,7 @@ create table "dba".patient
     national_id               varchar(20)
 );
 
-create table "dba".patient_relation
+create table patient_relation
 (
     id                        serial not null,
     relation_id               integer not null,
@@ -576,13 +576,13 @@ create table "dba".patient_relation
     related_patient_id        integer not null
 );
 
-create table "dba".preferences
+create table preferences
 (
     system_user_id            integer not null,
     text                      text
 );
 
-create table "dba".project
+create table project
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -595,7 +595,7 @@ create table "dba".project
     scriptlet_id              integer
 );
 
-create table "dba".project_parameter
+create table project_parameter
 (
     id                        serial not null,
     project_id                integer not null,
@@ -604,7 +604,7 @@ create table "dba".project_parameter
     value                     varchar(255) not null
 );
 
-create table "dba".provider
+create table provider
 (
     id                        serial not null,
     reference_id              varchar(40),
@@ -616,7 +616,7 @@ create table "dba".provider
     npi                       varchar(10)
 );
 
-create table "dba".provider_location
+create table provider_location
 (
     id                        serial not null,
     location                  varchar(50) not null,
@@ -625,7 +625,7 @@ create table "dba".provider_location
     address_id                integer
 );
 
-create table "dba".pws
+create table pws
 (
     id                        serial not null,
     tinwsys_is_number         integer not null,
@@ -646,7 +646,7 @@ create table "dba".pws
     eff_end_dt                date
 );
 
-create table "dba".pws_address
+create table pws_address
 (
     tinwslec_is_number        integer not null,
     tinlgent_is_number        integer not null,
@@ -663,7 +663,7 @@ create table "dba".pws_address
     phone_number              char(12)
 );
 
-create table "dba".pws_facility
+create table pws_facility
 (
     tinwsf_is_number          integer not null,
     tsasmppt_is_number        integer not null,
@@ -679,7 +679,7 @@ create table "dba".pws_facility
     source_type_code          char(2)
 );
 
-create table "dba".pws_monitor
+create table pws_monitor
 (
     tiamrtask_is_number       integer not null,
     tinwsys_is_number         integer not null,
@@ -693,7 +693,7 @@ create table "dba".pws_monitor
     period_name               varchar(20)
 );
 
-create table "dba".pws_violation
+create table pws_violation
 (
     id                        serial not null,
     tinwsys_is_number         integer not null,
@@ -703,7 +703,7 @@ create table "dba".pws_violation
     sample_id                 integer
 );
 
-create table "dba".qaevent
+create table qaevent
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -715,17 +715,17 @@ create table "dba".qaevent
     reporting_text            text not null
 );
 
-create table "dba".qc
+create table qc
 (
     id                        serial not null,
     name                      varchar(30) not null,
     type_id                   integer,
     inventory_item_id         integer,
     source                    varchar(30) not null,
-    is_active                 char(1)
+    is_active                 char(1) not null
 );
 
-create table "dba".qc_analyte
+create table qc_analyte
 (
     id                        serial not null,
     qc_id                     integer not null,
@@ -736,7 +736,7 @@ create table "dba".qc_analyte
     is_trendable              char(1)
 );
 
-create table "dba".qc_lot
+create table qc_lot
 (
     id                        serial not null,
     qc_id                     integer not null,
@@ -751,7 +751,7 @@ create table "dba".qc_lot
     is_active                 char(1) not null
 );
 
-create table "dba".result
+create table result
 (
     id                        serial not null,
     analysis_id               integer not null,
@@ -765,7 +765,7 @@ create table "dba".result
     value                     varchar(80)
 );
 
-create table "dba".sample
+create table sample
 (
     id                        serial not null,
     next_item_sequence        integer,
@@ -784,7 +784,7 @@ create table "dba".sample
     released_date             datetime year to second
 );
 
-create table "dba".sample_animal
+create table sample_animal
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -796,7 +796,7 @@ create table "dba".sample_animal
     address_id                integer
 );
 
-create table "dba".sample_clinical
+create table sample_clinical
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -805,7 +805,7 @@ create table "dba".sample_clinical
     provider_phone            varchar(21)
 );
 
-create table "dba".sample_environmental
+create table sample_environmental
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -818,7 +818,7 @@ create table "dba".sample_environmental
     location_address_id       integer
 );
 
-create table "dba".sample_item
+create table sample_item
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -833,7 +833,7 @@ create table "dba".sample_item
     unit_of_measure_id        integer
 );
 
-create table "dba".sample_neonatal
+create table sample_neonatal
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -855,7 +855,7 @@ create table "dba".sample_neonatal
     form_number               varchar(20,8)
 );
 
-create table "dba".sample_organization
+create table sample_organization
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -864,7 +864,7 @@ create table "dba".sample_organization
     type_id                   integer not null
 );
 
-create table "dba".sample_private_well
+create table sample_private_well
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -879,7 +879,7 @@ create table "dba".sample_private_well
     well_number               integer
 );
 
-create table "dba".sample_project
+create table sample_project
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -887,7 +887,7 @@ create table "dba".sample_project
     is_permanent              char(1) not null
 );
 
-create table "dba".sample_pt
+create table sample_pt
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -897,7 +897,7 @@ create table "dba".sample_pt
     additional_domain         char(1)
 );
 
-create table "dba".sample_qaevent
+create table sample_qaevent
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -906,7 +906,7 @@ create table "dba".sample_qaevent
     is_billable               char(1) not null
 );
 
-create table "dba".sample_sdwis
+create table sample_sdwis
 (
     id                        serial not null,
     sample_id                 integer not null,
@@ -921,7 +921,7 @@ create table "dba".sample_sdwis
     collector                 varchar(20)
 );
 
-create table "dba".scriptlet
+create table scriptlet
 (
     id                        serial not null,
     name                      varchar(40) not null,
@@ -931,7 +931,7 @@ create table "dba".scriptlet
     active_end                date not null
 );
 
-create table "dba".section
+create table section
 (
     id                        serial not null,
     parent_section_id         integer,
@@ -941,7 +941,7 @@ create table "dba".section
     organization_id           integer
 );
 
-create table "dba".section_parameter
+create table section_parameter
 (
     id                        serial not null,
     section_id                integer not null,
@@ -949,7 +949,7 @@ create table "dba".section_parameter
     value                     varchar(80)
 );
 
-create table "dba".shipping
+create table shipping
 (
     id                        serial not null,
     status_id                 integer not null,
@@ -964,7 +964,7 @@ create table "dba".shipping
     cost                      decimal(9,2)
 );
 
-create table "dba".shipping_item
+create table shipping_item
 (
     id                        serial not null,
     shipping_id               integer not null,
@@ -974,14 +974,14 @@ create table "dba".shipping_item
     description               varchar(80) not null
 );
 
-create table "dba".shipping_tracking
+create table shipping_tracking
 (
     id                        serial not null,
     shipping_id               integer not null,
     tracking_number           varchar(30) not null
 );
 
-create table "dba".standard_note
+create table standard_note
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -990,7 +990,7 @@ create table "dba".standard_note
     text                      text
 );
 
-create table "dba".storage
+create table storage
 (
     id                        serial not null,
     reference_id              integer,
@@ -1001,7 +1001,7 @@ create table "dba".storage
     system_user_id            integer
 );
 
-create table "dba".storage_location
+create table storage_location
 (
     id                        serial not null,
     sort_order                integer,
@@ -1012,7 +1012,7 @@ create table "dba".storage_location
     is_available              char(1) not null
 );
 
-create table "dba".storage_unit
+create table storage_unit
 (
     id                        serial not null,
     category_id               integer not null,
@@ -1020,14 +1020,14 @@ create table "dba".storage_unit
     is_singular               char(1) not null
 );
 
-create table "dba".system_variable
+create table system_variable
 (
     id                        serial not null,
     name                      varchar(30) not null,
     value                     varchar(255)
 );
 
-create table "dba".test
+create table test
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -1054,7 +1054,7 @@ create table "dba".test
     reporting_sequence        integer
 );
 
-create table "dba".test_analyte
+create table test_analyte
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1068,7 +1068,7 @@ create table "dba".test_analyte
     scriptlet_id              integer
 );
 
-create table "dba".test_prep
+create table test_prep
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1076,7 +1076,7 @@ create table "dba".test_prep
     is_optional               char(1)
 );
 
-create table "dba".test_reflex
+create table test_reflex
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1086,7 +1086,7 @@ create table "dba".test_reflex
     add_test_id               integer not null
 );
 
-create table "dba".test_result
+create table test_result
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1100,7 +1100,7 @@ create table "dba".test_result
     flags_id                  integer
 );
 
-create table "dba".test_section
+create table test_section
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1108,7 +1108,7 @@ create table "dba".test_section
     flag_id                   integer
 );
 
-create table "dba".test_trailer
+create table test_trailer
 (
     id                        serial not null,
     name                      varchar(20) not null,
@@ -1116,7 +1116,7 @@ create table "dba".test_trailer
     text                      text
 );
 
-create table "dba".test_type_of_sample
+create table test_type_of_sample
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1124,7 +1124,7 @@ create table "dba".test_type_of_sample
     unit_of_measure_id        integer
 );
 
-create table "dba".test_worksheet
+create table test_worksheet
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1134,7 +1134,7 @@ create table "dba".test_worksheet
     scriptlet_id              integer
 );
 
-create table "dba".test_worksheet_analyte
+create table test_worksheet_analyte
 (
     id                        serial not null,
     test_id                   integer not null,
@@ -1143,7 +1143,7 @@ create table "dba".test_worksheet_analyte
     flag_id                   integer
 );
 
-create table "dba".test_worksheet_item
+create table test_worksheet_item
 (
     id                        serial not null,
     test_worksheet_id         integer not null,
@@ -1153,7 +1153,7 @@ create table "dba".test_worksheet_item
     qc_name                   varchar(30)
 );
 
-create table "dba".worksheet
+create table worksheet
 (
     id                        serial not null,
     created_date              datetime year to minute not null,
@@ -1166,7 +1166,7 @@ create table "dba".worksheet
     description               varchar(60)
 );
 
-create table "dba".worksheet_analysis
+create table worksheet_analysis
 (
     id                        serial not null,
     worksheet_item_id         integer not null,
@@ -1181,14 +1181,14 @@ create table "dba".worksheet_analysis
     change_flags_id           integer
 );
 
-create table "dba".worksheet_item
+create table worksheet_item
 (
     id                        serial not null,
     worksheet_id              integer not null,
     position                  integer
 );
 
-create table "dba".worksheet_qc_result
+create table worksheet_qc_result
 (
     id                        serial not null,
     worksheet_analysis_id     integer not null,
@@ -1226,7 +1226,7 @@ create table "dba".worksheet_qc_result
     value_30                  varchar(80)
 );
 
-create table "dba".worksheet_reagent
+create table worksheet_reagent
 (
     id                        serial not null,
     worksheet_id              integer not null,
@@ -1234,7 +1234,7 @@ create table "dba".worksheet_reagent
     qc_lot_id                 integer not null
 );
 
-create table "dba".worksheet_result
+create table worksheet_result
 (
     id                        serial not null,
     worksheet_analysis_id     integer not null,

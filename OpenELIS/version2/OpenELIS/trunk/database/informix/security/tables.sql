@@ -1,11 +1,11 @@
-create table "dba".application
+create table application
 (
     id                        serial not null,
     name                      varchar(18) not null,
     description               varchar(60)
 );
 
-create table "dba".lock
+create table lock
 (
     reference_table_id        integer not null,
     reference_id              integer not null,
@@ -14,7 +14,7 @@ create table "dba".lock
     session_id                varchar(80,1)
 );
 
-create table "dba".section
+create table section
 (
     id                        serial not null,
     application_id            integer not null,
@@ -22,7 +22,7 @@ create table "dba".section
     description               varchar(60)
 );
 
-create table "dba".system_module
+create table system_module
 (
     id                        serial not null,
     application_id            integer not null,
@@ -35,7 +35,7 @@ create table "dba".system_module
     clause                    varchar(255,1)
 );
 
-create table "dba".system_user
+create table system_user
 (
     id                        serial not null,
     external_id               varchar(80,1),
@@ -48,7 +48,7 @@ create table "dba".system_user
     is_template               char(1) not null
 );
 
-create table "dba".system_user_module
+create table system_user_module
 (
     id                        serial not null,
     system_user_id            integer not null,
@@ -60,7 +60,7 @@ create table "dba".system_user_module
     clause                    varchar(255,1)
 );
 
-create table "dba".system_user_section
+create table system_user_section
 (
     id                        serial not null,
     system_user_id            integer not null,

@@ -1,4 +1,4 @@
-create procedure "dba".ejb_roles(user_name varchar(30), application_name varchar(30))
+create procedure ejb_roles(user_name varchar(30), application_name varchar(30))
        returning varchar(50), char(5);
 --
 --  procedure returns:
@@ -44,7 +44,7 @@ create procedure "dba".ejb_roles(user_name varchar(30), application_name varchar
 
 end procedure;
 
-create procedure "dba".getgroups(username char(30), databasename char(18))
+create procedure getgroups(username char(30), databasename char(18))
                  returning char(20), char(5);
 --
 -- returns the group.name/group.permission list for the
@@ -106,7 +106,7 @@ create procedure "dba".getgroups(username char(30), databasename char(18))
 
 end procedure;
 
-create procedure "dba".getmodules(username char(30), databasename char(18))
+create procedure getmodules(username char(30), databasename char(18))
                  returning char(32), char(4);
 --
 -- returns the modules.name/modules.permission list for the
@@ -164,7 +164,7 @@ create procedure "dba".getmodules(username char(30), databasename char(18))
 
 end procedure;
 
-create procedure "dba".getsqls(username char(30), databasename char(18))
+create procedure getsqls(username char(30), databasename char(18))
                  returning char(32), char(255);
 --
 -- returns the modules.name/modules.permission list for the
