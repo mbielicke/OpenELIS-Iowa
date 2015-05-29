@@ -33,7 +33,7 @@ import org.openelis.ui.common.MetaMap;
 
 public class SampleWebMeta implements Meta, MetaMap {
 
-    private static final String    ID = "_sample.id",
+    public static final String    ID = "_sample.id",
                     DOMAIN = "_sample.domain",
                     ACCESSION_NUMBER = "_sample.accessionNumber",
                     ACCESSION_NUMBER_FROM = "_display.accessionNumberFrom",
@@ -992,7 +992,6 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getNeonatalNextOfKinAddrHomePhone() {
         return NEO_NEXT_OF_KIN_ADDR_HOME_PHONE;
     }
-    
 
     public static String getClinicalPatientId() {
         return CLIN_PATIENT_ID;

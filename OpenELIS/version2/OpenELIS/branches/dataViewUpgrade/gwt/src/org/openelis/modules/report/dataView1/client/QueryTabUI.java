@@ -29,6 +29,7 @@ import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
@@ -40,6 +41,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -67,39 +69,41 @@ public class QueryTabUI extends Screen {
     interface QueryTabUIBinder extends UiBinder<Widget, QueryTabUI> {
     };
 
-    private static QueryTabUIBinder  uiBinder = GWT.create(QueryTabUIBinder.class);
+    private static QueryTabUIBinder   uiBinder = GWT.create(QueryTabUIBinder.class);
 
     @UiField
-    protected TextBox<Integer>       accessionNumberFrom, accessionNumberTo;
+    protected TextBox<Integer>        accessionNumberFrom, accessionNumberTo;
 
     @UiField
-    protected Calendar               collectionDateFrom, collectionDateTo, receivedDateFrom,
+    protected Calendar                collectionDateFrom, collectionDateTo, receivedDateFrom,
                     receivedDateTo, enteredDateFrom, enteredDateTo, analysisCompletedDateFrom,
                     analysisCompletedDateTo, analysisReleasedDateFrom, analysisReleasedDateTo;
 
     @UiField
-    protected TextBox<String>        clientReference, reportTo, analysisTestName,
+    protected TextBox<String>         clientReference, reportTo, analysisTestName,
                     analysisMethodName;
 
     @UiField
-    protected Dropdown<Integer>      analysisStatusId;
+    protected Dropdown<Integer>       analysisStatusId;
 
     @UiField
-    protected MultiDropdown<Integer> projectId;
+    protected MultiDropdown<Integer>  projectId;
 
     @UiField
-    protected Dropdown<String>       domain, analysisIsReportable, result, auxData;
+    protected Dropdown<String>        domain, analysisIsReportable, result, auxData;
 
     @UiField
-    protected CheckBox               excludeResultOverride;
+    protected CheckBox                excludeResultOverride;
 
-    protected Screen                 parentScreen;
+    protected Screen                  parentScreen;
 
-    protected EventBus               parentBus;
+    protected EventBus                parentBus;
 
-    protected DataView1VO            data;
+    protected DataView1VO             data;
 
-    private static final String      EXCLUDE_ALL = "excludeAll",
+    protected HashMap<String, String> fieldValues;
+
+    private static final String       EXCLUDE_ALL = "excludeAll",
                     INCLUDE_NOT_REPORTABLE = "includeNotReportable";
 
     public QueryTabUI(Screen parentScreen) {
@@ -122,9 +126,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(accessionNumberFrom,
                          SampleWebMeta.getAccessionNumberFrom(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 accessionNumberFrom.setValue(null);
+                                 accessionNumberFrom.setValue(getAccessionNumberFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -138,9 +142,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(accessionNumberTo,
                          SampleWebMeta.getAccessionNumberTo(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 accessionNumberTo.setValue(null);
+                                 accessionNumberTo.setValue(getAccessionNumberTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -154,9 +158,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(collectionDateFrom,
                          SampleWebMeta.getCollectionDateFrom(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 collectionDateFrom.setValue(null);
+                                 collectionDateFrom.setValue(getCollectionDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -170,9 +174,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(collectionDateTo,
                          SampleWebMeta.getCollectionDateTo(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 collectionDateTo.setValue(null);
+                                 collectionDateTo.setValue(getCollectionDateTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -186,9 +190,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(receivedDateFrom,
                          SampleWebMeta.getReceivedDateFrom(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 receivedDateFrom.setValue(null);
+                                 receivedDateFrom.setValue(getReceivedDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -202,9 +206,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(receivedDateTo,
                          SampleWebMeta.getReceivedDateTo(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 receivedDateTo.setValue(null);
+                                 receivedDateTo.setValue(getReceivedDateTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -218,9 +222,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(enteredDateFrom,
                          SampleWebMeta.getEnteredDateFrom(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 enteredDateFrom.setValue(null);
+                                 enteredDateFrom.setValue(getEnteredDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -234,9 +238,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(enteredDateTo,
                          SampleWebMeta.getEnteredDateTo(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 enteredDateTo.setValue(null);
+                                 enteredDateTo.setValue(getEnteredDateTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -252,7 +256,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getClientReference(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 clientReference.setValue(null);
+                                 clientReference.setValue(getClientReference());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -264,25 +268,27 @@ public class QueryTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(projectId, SampleWebMeta.getProjectId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                projectId.setValue(null);
-            }
+        addScreenHandler(projectId,
+                         SampleWebMeta.getProjectId(),
+                         new ScreenHandler<ArrayList<Integer>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 projectId.setValue(getProjectId());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                projectId.setEnabled(isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 projectId.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? reportTo : clientReference;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportTo : clientReference;
+                             }
+                         });
 
         addScreenHandler(reportTo,
                          SampleWebMeta.getSampleOrgOrganizationName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 reportTo.setValue(null);
+                                 reportTo.setValue(getSampleOrgOrganizationName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -296,7 +302,7 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(domain, SampleWebMeta.getDomain(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                domain.setValue(null);
+                domain.setValue(getDomain());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -320,7 +326,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisTestName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisTestName.setValue(null);
+                                 analysisTestName.setValue(getAnalysisTestName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -336,7 +342,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisMethodName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisMethodName.setValue(null);
+                                 analysisMethodName.setValue(getAnalysisMethodName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -352,7 +358,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisIsReportable(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisIsReportable.setValue(null);
+                                 analysisIsReportable.setValue(getAnalysisIsReportable());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -366,9 +372,9 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(analysisStatusId,
                          SampleWebMeta.getAnalysisStatusId(),
-                         new ScreenHandler<String>() {
+                         new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisStatusId.setValue(null);
+                                 analysisStatusId.setValue(getAnalysisStatusId());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -384,7 +390,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisCompletedDateFrom(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisCompletedDateFrom.setValue(null);
+                                 analysisCompletedDateFrom.setValue(getAnalysisCompletedDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -400,7 +406,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisCompletedDateTo(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisCompletedDateTo.setValue(null);
+                                 analysisCompletedDateTo.setValue(getAnalysisCompletedDateTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -414,10 +420,10 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisReleasedDateFrom,
-                         SampleWebMeta.getReleasedDateFrom(),
+                         SampleWebMeta.getAnalysisReleasedDateFrom(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisReleasedDateFrom.setValue(null);
+                                 analysisReleasedDateFrom.setValue(getReleasedDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -433,7 +439,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisReleasedDateTo(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisReleasedDateTo.setValue(null);
+                                 analysisReleasedDateTo.setValue(getAnalysisReleasedDateTo());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -467,11 +473,11 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(result, "results", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                result.setValue(getResults());
+                result.setValue(getResult());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setResults(event.getValue());
+                setResult(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -565,6 +571,43 @@ public class QueryTabUI extends Screen {
 
     public void setData(DataView1VO data) {
         this.data = data;
+        fieldValues = new HashMap<String, String>();
+        if (data == null || data.getQueryFields() == null)
+            return;
+        /*
+         * set query fields' query strings in a map, so that the widgets can be
+         * filled from them without repeatedly iterating over the fields; the
+         * values of some fields like accession number are split into "from" and
+         * "to" values before being set in the map
+         */
+        for (QueryData f : data.getQueryFields()) {
+            if (SampleWebMeta.getAccessionNumber().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getAccessionNumberFrom(),
+                                SampleWebMeta.getAccessionNumberTo(),
+                                f.getQuery());
+            else if (SampleWebMeta.getCollectionDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getCollectionDateFrom(),
+                                SampleWebMeta.getCollectionDateTo(),
+                                f.getQuery());
+            else if (SampleWebMeta.getReceivedDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getReceivedDateFrom(),
+                                SampleWebMeta.getReceivedDateTo(),
+                                f.getQuery());
+            else if (SampleWebMeta.getEnteredDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getEnteredDateFrom(),
+                                SampleWebMeta.getEnteredDateTo(),
+                                f.getQuery());
+            else if (SampleWebMeta.getAnalysisCompletedDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getAnalysisCompletedDateFrom(),
+                                SampleWebMeta.getAnalysisCompletedDateTo(),
+                                f.getQuery());
+            else if (SampleWebMeta.getAnalysisReleasedDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getAnalysisReleasedDateFrom(),
+                                SampleWebMeta.getAnalysisReleasedDateTo(),
+                                f.getQuery());
+            else
+                fieldValues.put(f.getKey(), f.getQuery());
+        }
     }
 
     public void onDataChange() {
@@ -667,8 +710,103 @@ public class QueryTabUI extends Screen {
         return validation;
     }
 
+    private Integer getAccessionNumberFrom() {
+        return getInteger(SampleWebMeta.getAccessionNumberFrom());
+    }
+
+    private Integer getAccessionNumberTo() {
+        return getInteger(SampleWebMeta.getAccessionNumberTo());
+    }
+
+    private Datetime getCollectionDateFrom() {
+        return getDatetime(SampleWebMeta.getCollectionDateFrom(), collectionDateFrom);
+    }
+
+    private Datetime getCollectionDateTo() {
+        return getDatetime(SampleWebMeta.getCollectionDateTo(), collectionDateTo);
+    }
+
+    private Datetime getReceivedDateFrom() {
+        return getDatetime(SampleWebMeta.getReceivedDateFrom(), receivedDateFrom);
+    }
+
+    private Datetime getReceivedDateTo() {
+        return getDatetime(SampleWebMeta.getReceivedDateTo(), receivedDateTo);
+    }
+
+    private Datetime getEnteredDateFrom() {
+        return getDatetime(SampleWebMeta.getEnteredDateFrom(), enteredDateFrom);
+    }
+
+    private Datetime getEnteredDateTo() {
+        return getDatetime(SampleWebMeta.getEnteredDateTo(), enteredDateTo);
+    }
+
+    private String getClientReference() {
+        return fieldValues.get(SampleWebMeta.getClientReference());
+    }
+
+    private ArrayList<Integer> getProjectId() {
+        String value, projs[];
+        ArrayList<Integer> ids;
+
+        value = fieldValues.get(SampleWebMeta.getProjectId());
+        ids = null;
+        if (DataBaseUtil.isEmpty(value))
+            return ids;
+
+        projs = value.split("\\|");
+        if (projs.length > 0) {
+            ids = new ArrayList<Integer>();
+            for (String p : projs)
+                ids.add(Integer.valueOf(p.trim()));
+        }
+
+        return ids;
+    }
+
+    private String getSampleOrgOrganizationName() {
+        return fieldValues.get(SampleWebMeta.getSampleOrgOrganizationName());
+    }
+
+    private String getDomain() {
+        return fieldValues.get(SampleWebMeta.getDomain());
+    }
+
+    private String getAnalysisTestName() {
+        return fieldValues.get(SampleWebMeta.getAnalysisTestName());
+    }
+
+    private String getAnalysisMethodName() {
+        return fieldValues.get(SampleWebMeta.getAnalysisMethodName());
+    }
+
+    private String getAnalysisIsReportable() {
+        return fieldValues.get(SampleWebMeta.getAnalysisIsReportable());
+    }
+
+    private Integer getAnalysisStatusId() {
+        return getInteger(SampleWebMeta.getAnalysisStatusId());
+    }
+
+    private Datetime getAnalysisCompletedDateFrom() {
+        return getDatetime(SampleWebMeta.getAnalysisCompletedDateFrom(), analysisCompletedDateFrom);
+    }
+
+    private Datetime getAnalysisCompletedDateTo() {
+        return getDatetime(SampleWebMeta.getAnalysisCompletedDateTo(), analysisCompletedDateTo);
+    }
+
+    private Datetime getReleasedDateFrom() {
+        return getDatetime(SampleWebMeta.getAnalysisReleasedDateFrom(), analysisReleasedDateFrom);
+    }
+
+    private Datetime getAnalysisReleasedDateTo() {
+        return getDatetime(SampleWebMeta.getAnalysisReleasedDateTo(), analysisReleasedDateTo);
+    }
+
     private String getExcludeResultOverride() {
-        if (data == null || DataBaseUtil.isEmpty(data.getExcludeResultOverride()))
+        if (data == null)
             return "N";
         else
             return data.getExcludeResultOverride();
@@ -678,7 +816,7 @@ public class QueryTabUI extends Screen {
         data.setExcludeResultOverride(excludeResultOverride);
     }
 
-    private String getResults() {
+    private String getResult() {
         if (data != null) {
             if ("Y".equals(data.getExcludeResults()))
                 return EXCLUDE_ALL;
@@ -689,16 +827,16 @@ public class QueryTabUI extends Screen {
         return null;
     }
 
-    private void setResults(String results) {
+    private void setResult(String result) {
         String exc, inc;
-        
+
         exc = "N";
         inc = "N";
-        if (EXCLUDE_ALL.equals(results))
+        if (EXCLUDE_ALL.equals(result))
             exc = "Y";
-        else if (INCLUDE_NOT_REPORTABLE.equals(results))
+        else if (INCLUDE_NOT_REPORTABLE.equals(result))
             inc = "Y";
-        
+
         data.setExcludeResults(exc);
         data.setIncludeNotReportableResults(inc);
     }
@@ -716,16 +854,37 @@ public class QueryTabUI extends Screen {
 
     private void setAuxData(String auxData) {
         String exc, inc;
-        
+
         exc = "N";
         inc = "N";
-        if (EXCLUDE_ALL.equals(result))
+        if (EXCLUDE_ALL.equals(auxData))
             exc = "Y";
-        else if (INCLUDE_NOT_REPORTABLE.equals(result))
+        else if (INCLUDE_NOT_REPORTABLE.equals(auxData))
             inc = "Y";
-        
+
         data.setExcludeAuxData(exc);
         data.setIncludeNotReportableAuxData(inc);
+    }
+
+    private Integer getInteger(String key) {
+        String value;
+
+        value = fieldValues.get(key);
+        return !DataBaseUtil.isEmpty(value) ? Integer.valueOf(value) : null;
+    }
+
+    private Datetime getDatetime(String key, Calendar calendar) {
+        String value;
+
+        value = fieldValues.get(key);
+        try {
+            return !DataBaseUtil.isEmpty(value) ? calendar.getHelper().getValue(value) : null;
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return null;
     }
 
     /**
@@ -881,5 +1040,23 @@ public class QueryTabUI extends Screen {
         }
 
         return pairsFilled;
+    }
+
+    /**
+     * splits the query into "from" and "to" values; sets "from" as the value
+     * for "fromKey" and "to" as the value for "toKey" in the map used to
+     * populate the widgets on the tab
+     */
+    private void setFromToValues(String fromKey, String toKey, String query) {
+        String value[];
+
+        if (DataBaseUtil.isEmpty(query))
+            return;
+
+        value = query.split("\\..");
+        if (value.length == 2) {
+            fieldValues.put(fromKey, value[0]);
+            fieldValues.put(toKey, value[1]);
+        }
     }
 }

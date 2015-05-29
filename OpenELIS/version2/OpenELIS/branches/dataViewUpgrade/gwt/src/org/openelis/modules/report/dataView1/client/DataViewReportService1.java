@@ -10,18 +10,18 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class DataViewReportService1 implements DataViewServiceInt1, DataViewServiceInt1Async {
-    
+
     static DataViewReportService1 instance;
-    
-    DataViewServiceInt1Async service;
-    
+
+    DataViewServiceInt1Async      service;
+
     public static DataViewReportService1 get() {
-        if(instance == null)
+        if (instance == null)
             instance = new DataViewReportService1();
-        
+
         return instance;
     }
-    
+
     private DataViewReportService1() {
         service = (DataViewServiceInt1Async)GWT.create(DataViewServiceInt1.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
@@ -31,14 +31,14 @@ public class DataViewReportService1 implements DataViewServiceInt1, DataViewServ
     public void fetchTestAnalyteAndAuxField(DataView1VO data, AsyncCallback<DataView1VO> callback) {
         service.fetchTestAnalyteAndAuxField(data, callback);
     }
-    
+
     @Override
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
         Callback<DataView1VO> callback;
-        
+
         callback = new Callback<DataView1VO>();
         service.fetchTestAnalyteAndAuxField(data, callback);
-        return callback.getResult();  
+        return callback.getResult();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DataViewReportService1 implements DataViewServiceInt1, DataViewServ
     @Override
     public DataView1VO openQuery() throws Exception {
         Callback<DataView1VO> callback;
-        
+
         callback = new Callback<DataView1VO>();
         service.openQuery(callback);
         return callback.getResult();
@@ -63,7 +63,7 @@ public class DataViewReportService1 implements DataViewServiceInt1, DataViewServ
     @Override
     public ReportStatus saveQuery(DataView1VO data) throws Exception {
         Callback<ReportStatus> callback;
-        
+
         callback = new Callback<ReportStatus>();
         service.saveQuery(data, callback);
         return callback.getResult();
@@ -77,9 +77,36 @@ public class DataViewReportService1 implements DataViewServiceInt1, DataViewServ
     @Override
     public ReportStatus runReport(DataView1VO data) throws Exception {
         Callback<ReportStatus> callback;
-        
+
         callback = new Callback<ReportStatus>();
         service.runReport(data, callback);
         return callback.getResult();
+    }
+
+    @Override
+    public void getStatus(AsyncCallback<ReportStatus> callback) {
+        service.getStatus(callback);
+    }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getStatus(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void stopReport(AsyncCallback<Void> callback) {
+        service.stopReport(callback);
+    }
+
+    @Override
+    public void stopReport() {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.stopReport(callback);
     }
 }

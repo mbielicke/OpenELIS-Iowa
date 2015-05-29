@@ -4138,6 +4138,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_executeQuery();
 
   /**
+   * Translated "Fetching Data...".
+   * 
+   * @return translated "Fetching Data..."
+   */
+  @DefaultMessage("Fetching Data...")
+  @Key("dataView.fetchingData")
+  String dataView_fetchingData();
+
+  /**
    * Translated "Filters".
    * 
    * @return translated "Filters"
@@ -4210,6 +4219,114 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_messageOnTopOfSpreadsheet();
 
   /**
+   * Translated "Next Of Kin Address".
+   * 
+   * @return translated "Next Of Kin Address"
+   */
+  @DefaultMessage("Next Of Kin Address")
+  @Key("dataView.nextOfKinAddress")
+  String dataView_nextOfKinAddress();
+
+  /**
+   * Translated "Next Of Kin Apt/Suite #".
+   * 
+   * @return translated "Next Of Kin Apt/Suite #"
+   */
+  @DefaultMessage("Next Of Kin Apt/Suite #")
+  @Key("dataView.nextOfKinAptSuite")
+  String dataView_nextOfKinAptSuite();
+
+  /**
+   * Translated "Next Of Kin Birth Date".
+   * 
+   * @return translated "Next Of Kin Birth Date"
+   */
+  @DefaultMessage("Next Of Kin Birth Date")
+  @Key("dataView.nextOfKinBirthDate")
+  String dataView_nextOfKinBirthDate();
+
+  /**
+   * Translated "Next Of Kin City".
+   * 
+   * @return translated "Next Of Kin City"
+   */
+  @DefaultMessage("Next Of Kin City")
+  @Key("dataView.nextOfKinCity")
+  String dataView_nextOfKinCity();
+
+  /**
+   * Translated "Next Of Kin First Name".
+   * 
+   * @return translated "Next Of Kin First Name"
+   */
+  @DefaultMessage("Next Of Kin First Name")
+  @Key("dataView.nextOfKinFirstName")
+  String dataView_nextOfKinFirstName();
+
+  /**
+   * Translated "Next Of Kin Gender".
+   * 
+   * @return translated "Next Of Kin Gender"
+   */
+  @DefaultMessage("Next Of Kin Gender")
+  @Key("dataView.nextOfKinGender")
+  String dataView_nextOfKinGender();
+
+  /**
+   * Translated "Next Of Kin Id".
+   * 
+   * @return translated "Next Of Kin Id"
+   */
+  @DefaultMessage("Next Of Kin Id")
+  @Key("dataView.nextOfKinId")
+  String dataView_nextOfKinId();
+
+  /**
+   * Translated "Next Of Kin Last Name".
+   * 
+   * @return translated "Next Of Kin Last Name"
+   */
+  @DefaultMessage("Next Of Kin Last Name")
+  @Key("dataView.nextOfKinLastName")
+  String dataView_nextOfKinLastName();
+
+  /**
+   * Translated "Next Of Kin Maiden Name".
+   * 
+   * @return translated "Next Of Kin Maiden Name"
+   */
+  @DefaultMessage("Next Of Kin Maiden Name")
+  @Key("dataView.nextOfKinMaidenName")
+  String dataView_nextOfKinMaidenName();
+
+  /**
+   * Translated "Next Of Kin Phone Number".
+   * 
+   * @return translated "Next Of Kin Phone Number"
+   */
+  @DefaultMessage("Next Of Kin Phone Number")
+  @Key("dataView.nextOfKinPhone")
+  String dataView_nextOfKinPhone();
+
+  /**
+   * Translated "Next Of Kin State".
+   * 
+   * @return translated "Next Of Kin State"
+   */
+  @DefaultMessage("Next Of Kin State")
+  @Key("dataView.nextOfKinState")
+  String dataView_nextOfKinState();
+
+  /**
+   * Translated "Next Of Kin Zip Code".
+   * 
+   * @return translated "Next Of Kin Zip Code"
+   */
+  @DefaultMessage("Next Of Kin Zip Code")
+  @Key("dataView.nextOfKinZipcode")
+  String dataView_nextOfKinZipcode();
+
+  /**
    * Translated "Open Query".
    * 
    * @return translated "Open Query"
@@ -4219,6 +4336,132 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_openQuery();
 
   /**
+   * Translated "Patient Address".
+   * 
+   * @return translated "Patient Address"
+   */
+  @DefaultMessage("Patient Address")
+  @Key("dataView.patientAddress")
+  String dataView_patientAddress();
+
+  /**
+   * Translated "Patient Apt/Suite #".
+   * 
+   * @return translated "Patient Apt/Suite #"
+   */
+  @DefaultMessage("Patient Apt/Suite #")
+  @Key("dataView.patientAptSuite")
+  String dataView_patientAptSuite();
+
+  /**
+   * Translated "Patient Birth Date".
+   * 
+   * @return translated "Patient Birth Date"
+   */
+  @DefaultMessage("Patient Birth Date")
+  @Key("dataView.patientBirthDate")
+  String dataView_patientBirthDate();
+
+  /**
+   * Translated "Patient Birth Time".
+   * 
+   * @return translated "Patient Birth Time"
+   */
+  @DefaultMessage("Patient Birth Time")
+  @Key("dataView.patientBirthTime")
+  String dataView_patientBirthTime();
+
+  /**
+   * Translated "Patient City".
+   * 
+   * @return translated "Patient City"
+   */
+  @DefaultMessage("Patient City")
+  @Key("dataView.patientCity")
+  String dataView_patientCity();
+
+  /**
+   * Translated "Patient First Name".
+   * 
+   * @return translated "Patient First Name"
+   */
+  @DefaultMessage("Patient First Name")
+  @Key("dataView.patientFirstName")
+  String dataView_patientFirstName();
+
+  /**
+   * Translated "Patient Gender".
+   * 
+   * @return translated "Patient Gender"
+   */
+  @DefaultMessage("Patient Gender")
+  @Key("dataView.patientGender")
+  String dataView_patientGender();
+
+  /**
+   * Translated "Patient Id".
+   * 
+   * @return translated "Patient Id"
+   */
+  @DefaultMessage("Patient Id")
+  @Key("dataView.patientId")
+  String dataView_patientId();
+
+  /**
+   * Translated "Patient Last Name".
+   * 
+   * @return translated "Patient Last Name"
+   */
+  @DefaultMessage("Patient Last Name")
+  @Key("dataView.patientLastName")
+  String dataView_patientLastName();
+
+  /**
+   * Translated "Patient Phone Number".
+   * 
+   * @return translated "Patient Phone Number"
+   */
+  @DefaultMessage("Patient Phone Number")
+  @Key("dataView.patientPhone")
+  String dataView_patientPhone();
+
+  /**
+   * Translated "Patient State".
+   * 
+   * @return translated "Patient State"
+   */
+  @DefaultMessage("Patient State")
+  @Key("dataView.patientState")
+  String dataView_patientState();
+
+  /**
+   * Translated "Patient Zip Code".
+   * 
+   * @return translated "Patient Zip Code"
+   */
+  @DefaultMessage("Patient Zip Code")
+  @Key("dataView.patientZipcode")
+  String dataView_patientZipcode();
+
+  /**
+   * Translated "Please Wait...".
+   * 
+   * @return translated "Please Wait..."
+   */
+  @DefaultMessage("Please Wait...")
+  @Key("dataView.pleaseWait")
+  String dataView_pleaseWait();
+
+  /**
+   * Translated "Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}.".
+   * 
+   * @return translated "Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}."
+   */
+  @DefaultMessage("Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}.")
+  @Key("dataView.queryTooBigException")
+  String dataView_queryTooBigException(Integer arg0,  Integer arg1);
+
+  /**
    * Translated "Released By".
    * 
    * @return translated "Released By"
@@ -4226,6 +4469,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Released By")
   @Key("dataView.releasedBy")
   String dataView_releasedBy();
+
+  /**
+   * Translated "Report Stopped".
+   * 
+   * @return translated "Report Stopped"
+   */
+  @DefaultMessage("Report Stopped")
+  @Key("dataView.reportStopped")
+  String dataView_reportStopped();
 
   /**
    * Translated "Reportable Only".
@@ -4244,6 +4496,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample Fields To Search By")
   @Key("dataView.sampleFieldSearchBy")
   String dataView_sampleFieldSearchBy();
+
+  /**
+   * Translated "Sample Revision".
+   * 
+   * @return translated "Sample Revision"
+   */
+  @DefaultMessage("Sample Revision")
+  @Key("dataView.sampleRevision")
+  String dataView_sampleRevision();
 
   /**
    * Translated "Save Query".
@@ -4381,11 +4642,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_selectSdwisField();
 
   /**
-   * Translated "This tab''s fields are disabled because another domain has been selected on Query tab ".
+   * Translated "This tab''s fields are disabled because another domain has been selected on Query tab".
    * 
-   * @return translated "This tab''s fields are disabled because another domain has been selected on Query tab "
+   * @return translated "This tab''s fields are disabled because another domain has been selected on Query tab"
    */
-  @DefaultMessage("This tab''s fields are disabled because another domain has been selected on Query tab ")
+  @DefaultMessage("This tab''s fields are disabled because another domain has been selected on Query tab")
   @Key("dataView.tabFieldsDisabled")
   String dataView_tabFieldsDisabled();
 
@@ -12544,6 +12805,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization_homeNumber();
 
   /**
+   * Translated "Organization Name".
+   * 
+   * @return translated "Organization Name"
+   */
+  @DefaultMessage("Organization Name")
+  @Key("organization.name")
+  String organization_name();
+
+  /**
+   * Translated "Organization #".
+   * 
+   * @return translated "Organization #"
+   */
+  @DefaultMessage("Organization #")
+  @Key("organization.num")
+  String organization_num();
+
+  /**
    * Translated "History - Parameter".
    * 
    * @return translated "History - Parameter"
@@ -13082,15 +13361,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient")
   @Key("patient.patient")
   String patient_patient();
-
-  /**
-   * Translated "Patient Phone Number".
-   * 
-   * @return translated "Patient Phone Number"
-   */
-  @DefaultMessage("Patient Phone Number")
-  @Key("patient.phone")
-  String patient_phone();
 
   /**
    * Translated "Race".
@@ -15064,6 +15334,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String report_export();
 
   /**
+   * Translated "Fetching Data...".
+   * 
+   * @return translated "Fetching Data..."
+   */
+  @DefaultMessage("Fetching Data...")
+  @Key("report.fetchingData")
+  String report_fetchingData();
+
+  /**
+   * Translated "Specified file name is not valid; please report this error to your sysadmin".
+   * 
+   * @return translated "Specified file name is not valid; please report this error to your sysadmin"
+   */
+  @DefaultMessage("Specified file name is not valid; please report this error to your sysadmin")
+  @Key("report.fileNameNotValidException")
+  String report_fileNameNotValidException();
+
+  /**
    * Translated "Generating Data View...".
    * 
    * @return translated "Generating Data View..."
@@ -15107,6 +15395,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Run Report")
   @Key("report.runReport")
   String report_runReport();
+
+  /**
+   * Translated "Report Stopped".
+   * 
+   * @return translated "Report Stopped"
+   */
+  @DefaultMessage("Report Stopped")
+  @Key("report.stopped")
+  String report_stopped();
 
   /**
    * Translated "Tube Labels ".

@@ -25,10 +25,6 @@
  */
 package org.openelis.modules.report.dataView1.server;
 
-import java.beans.XMLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -36,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.DataView1Bean;
-import org.openelis.bean.SystemVariableBean;
+import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.DataView1VO;
 import org.openelis.modules.report.dataView1.client.DataViewServiceInt1;
 import org.openelis.ui.common.ReportStatus;
@@ -45,16 +41,16 @@ import org.openelis.ui.server.RemoteServlet;
 @WebServlet("/openelis/dataViewReport1")
 public class DataViewReportServlet1 extends RemoteServlet implements DataViewServiceInt1 {
 
-    private static final long serialVersionUID = 1L;
+    private static final long  serialVersionUID = 1L;
 
     @EJB
-    SystemVariableBean        systemVariable;
+    private SessionCacheBean   session;
 
     @EJB
-    DataView1Bean              dataView1;
+    private DataView1Bean      dataView1;
 
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
-        try {        
+        try {
             return dataView1.fetchTestAnalyteAndAuxField(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -64,32 +60,26 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
     public DataView1VO openQuery() throws Exception {
         List<String> paths;
         HttpSession session;
-        XMLDecoder dec;
-        Path path;
 
-        dec = null;
         session = getThreadLocalRequest().getSession();
-        paths = (List<String>) session.getAttribute("upload");
+        paths = (List<String>)session.getAttribute("upload");
         if (paths != null && paths.size() > 0) {
-            path = Paths.get(paths.get(0));
             try {
-                dec = new XMLDecoder(Files.newInputStream(path));
-                return (DataView1VO)dec.readObject();
+                return dataView1.openQuery(paths.get(0));
             } catch (Exception anyE) {
                 throw serializeForGWT(anyE);
             } finally {
-                if (dec != null)
-                    dec.close();
                 session.removeAttribute("upload");
             }
         }
+        
         return null;
     }
 
     public ReportStatus saveQuery(DataView1VO data) throws Exception {
         ReportStatus st;
 
-        try {        
+        try {
             st = dataView1.saveQuery(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -104,7 +94,7 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
     public ReportStatus runReport(DataView1VO data) throws Exception {
         ReportStatus st;
 
-        try {        
+        try {
             st = dataView1.runReport(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -114,5 +104,19 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
+    }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        try {
+            return (ReportStatus)session.getAttribute("DataViewReportStatus");
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public void stopReport() {
+        session.setAttribute("DataViewStopReport", Boolean.TRUE);
     }
 }
