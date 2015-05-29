@@ -2151,7 +2151,7 @@ public class DataViewBean {
         if ("Y".equals(data.getSampleClinicalPatientEthnicity()))
             headers.add(Messages.get().ethnicity());
         if ("Y".equals(data.getSampleClinicalPatientPhoneNumber()))
-            headers.add(Messages.get().patient_phone());
+            headers.add(Messages.get().dataView_patientPhone());
         if ("Y".equals(data.getSampleClinicalProviderLastName()))
             headers.add(Messages.get().provider_lastName());
         if ("Y".equals(data.getSampleClinicalProviderFirstName()))

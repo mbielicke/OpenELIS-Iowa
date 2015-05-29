@@ -47,7 +47,7 @@ public class DataView1VO implements Serializable {
     protected ArrayList<TestAnalyteDataView1VO> testAnalytes;
     protected ArrayList<AuxFieldDataView1VO>    auxFields;
     
-    public DataView1VO() {       
+    public DataView1VO() {
     }
 
     public String getExcludeResultOverride() {

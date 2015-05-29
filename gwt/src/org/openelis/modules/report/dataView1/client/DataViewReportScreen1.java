@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.DataView1VO;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.modules.report.dataView.client.DataViewReportService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -49,6 +50,10 @@ public class DataViewReportScreen1 extends ReportScreen<DataView1VO> {
         this.window = window;
         if (!DataBaseUtil.isEmpty(attachment))
             setAttachmentName(attachment);
+    }
+    
+    public String getRunReportInterface() {
+        return reportMethod;
     }
     
     public void setRunReportInterface(String reportMethod) {
@@ -72,5 +77,7 @@ public class DataViewReportScreen1 extends ReportScreen<DataView1VO> {
     public void runReport(DataView1VO data, AsyncCallback<ReportStatus> callback) {
         if(reportMethod.equals("runReport"))
             DataViewReportService1.get().runReport(data, callback);
+        else if(reportMethod.equals("saveQuery"))
+            DataViewReportService1.get().saveQuery(data, callback);
     }
 }

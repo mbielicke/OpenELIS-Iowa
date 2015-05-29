@@ -370,29 +370,27 @@ public class SampleManager1Bean {
             for (ProviderDO data : provider.fetchByIds(ids5))
                 map5.put(data.getId(), data);
         }
-        
+
         for (SampleManager1 sm1 : sms) {
             s = getSample(sm1);
             sn = getSampleNeonatal(sm1);
             sc = getSampleClinical(sm1);
             if (sn != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
-                    sn.setPaperOrderValidator(map3.get(s.getOrderId())
-                                                .getPaperOrderValidator());
+                    sn.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
                 sn.setPatient(map4.get(sn.getPatientId()));
                 sn.setNextOfKin(map4.get(sn.getNextOfKinId()));
                 if (sn.getProviderId() != null)
                     sn.setProvider(map5.get(sn.getProviderId()));
-            } else if ( sc != null) {
+            } else if (sc != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
-                    sc.setPaperOrderValidator(map3.get(s.getOrderId())
-                                                       .getPaperOrderValidator());
+                    sc.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
                 sc.setPatient(map4.get(sc.getPatientId()));
                 if (sc.getProviderId() != null)
                     sc.setProvider(map5.get(sc.getProviderId()));
             }
         }
-        
+
         ids3 = ids4 = ids5 = null;
         map3 = null;
         map4 = null;
@@ -554,8 +552,9 @@ public class SampleManager1Bean {
         SampleNeonatalViewDO sn;
         SampleClinicalViewDO sc;
         SampleManager1 sm;
-        ArrayList<Integer> ids1, ids2, ids3, ids4, ids5;
+        ArrayList<Integer> ids, ids1, ids2, ids3, ids4, ids5;
         ArrayList<SampleManager1> sms;
+        ArrayList<AnalysisViewDO> anas;
         HashMap<Integer, SampleManager1> map1, map2;
         HashMap<Integer, EOrderDO> map3;
         HashMap<Integer, PatientDO> map4;
@@ -585,7 +584,7 @@ public class SampleManager1Bean {
         map4 = new HashMap<Integer, PatientDO>();
         ids5 = new ArrayList<Integer>(); // provider ids
         map5 = new HashMap<Integer, ProviderDO>();
-        
+
         for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds)) {
             sm = map1.get(data.getSampleId());
             if (sm == null) {
@@ -614,7 +613,7 @@ public class SampleManager1Bean {
         for (SampleDO data : sample.fetchByIds(ids1)) {
             sm = map1.get(data.getId());
             setSample(sm, data);
-            if ((Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
                 data.getOrderId() != null)
                 ids3.add(data.getOrderId());
         }
@@ -679,29 +678,27 @@ public class SampleManager1Bean {
             for (ProviderDO data : provider.fetchByIds(ids5))
                 map5.put(data.getId(), data);
         }
-        
+
         for (SampleManager1 sm1 : sms) {
             s = getSample(sm1);
             sn = getSampleNeonatal(sm1);
             sc = getSampleClinical(sm1);
             if (sn != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
-                    sn.setPaperOrderValidator(map3.get(s.getOrderId())
-                                                .getPaperOrderValidator());
+                    sn.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
                 sn.setPatient(map4.get(sn.getPatientId()));
                 sn.setNextOfKin(map4.get(sn.getNextOfKinId()));
                 if (sn.getProviderId() != null)
                     sn.setProvider(map5.get(sn.getProviderId()));
-            } else if ( sc != null) {
+            } else if (sc != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
-                    sc.setPaperOrderValidator(map3.get(s.getOrderId())
-                                                       .getPaperOrderValidator());
+                    sc.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
                 sc.setPatient(map4.get(sc.getPatientId()));
                 if (sc.getProviderId() != null)
                     sc.setProvider(map5.get(sc.getProviderId()));
             }
         }
-        
+
         ids3 = ids4 = ids5 = null;
         map3 = null;
         map4 = null;
@@ -761,7 +758,11 @@ public class SampleManager1Bean {
          */
         ids1 = new ArrayList<Integer>();
         map1 = new HashMap<Integer, SampleManager1>();
-        for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
+        if (el.contains(SampleManager1.Load.SINGLEANALYSIS))
+            anas = analysis.fetchByIds(analysisIds);
+        else
+            anas = analysis.fetchBySampleItemIds(ids2);
+        for (AnalysisViewDO data : anas) {
             sm = map2.get(data.getSampleItemId());
             SampleManager1Accessor.addAnalysis(sm, data);
             ids1.add(data.getId());
@@ -770,8 +771,13 @@ public class SampleManager1Bean {
         ids2 = null;
         map2 = null;
 
+        if (el.contains(SampleManager1.Load.SINGLEANALYSIS))
+            ids = analysisIds;
+        else
+            ids = ids1;
+
         if (el.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
+            for (NoteViewDO data : note.fetchByIds(ids, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 if ("Y".equals(data.getIsExternal()))
                     addAnalysisExternalNote(sm, data);
@@ -781,40 +787,40 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.QA)) {
-            for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids1)) {
+            for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids)) {
                 sm = map1.get(data.getAnalysisId());
                 addAnalysisQA(sm, data);
             }
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids1, Constants.table().ANALYSIS)) {
+            for (StorageViewDO data : storage.fetchByIds(ids, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addStorage(sm, data);
             }
         }
 
         if (el.contains(SampleManager1.Load.ANALYSISUSER)) {
-            for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids1)) {
+            for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids)) {
                 sm = map1.get(data.getAnalysisId());
                 addUser(sm, data);
             }
         }
 
-        if (el.contains(SampleManager1.Load.RESULT)) {
-            for (ResultViewDO data : result.fetchByAnalysisIds(ids1)) {
+        if (el.contains(SampleManager1.Load.SINGLERESULT)) {
+            for (ResultViewDO data : result.fetchByAnalysisIds(analysisIds)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
             }
-        } else if (el.contains(SampleManager1.Load.SINGLERESULT)) {
-            for (ResultViewDO data : result.fetchByAnalysisIds(analysisIds)) {
+        } else if (el.contains(SampleManager1.Load.RESULT)) {
+            for (ResultViewDO data : result.fetchByAnalysisIds(ids)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
             }
         }
 
         if (el.contains(SampleManager1.Load.WORKSHEET)) {
-            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids1)) {
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids)) {
                 sm = map1.get(data.getAnalysisId());
                 addWorksheet(sm, data);
             }

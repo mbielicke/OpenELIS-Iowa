@@ -79,8 +79,8 @@ public class SampleManager1 implements Serializable {
      * Flags that specify what optional data to load with the manager
      */
     public enum Load {
-        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT,
-        WORKSHEET, ATTACHMENT, EORDER, PROVIDER
+        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, SINGLEANALYSIS, ANALYSISUSER, RESULT,
+        SINGLERESULT, WORKSHEET, ATTACHMENT, EORDER, PROVIDER
     };
 
     /**

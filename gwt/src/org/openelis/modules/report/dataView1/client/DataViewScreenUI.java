@@ -36,6 +36,8 @@ import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.TestAnalyteDataView1VO;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
@@ -48,14 +50,21 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.widget.fileupload.FileLoad;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DataViewScreenUI extends Screen {
@@ -69,7 +78,11 @@ public class DataViewScreenUI extends Screen {
     protected DataView1VO                  data;
 
     @UiField
+    protected FileLoad                     fileLoad;
+
+    @UiField
     protected Button                       openQueryButton, saveQueryButton, executeQueryButton;
+
     @UiField
     protected TabLayoutPanel               tabPanel;
 
@@ -97,11 +110,21 @@ public class DataViewScreenUI extends Screen {
     @UiField(provided = true)
     protected PTTabUI                      ptTab;
 
+    protected DataViewScreenUI             screen;
+
     protected FilterScreenUI               filterScreen;
 
     private DataViewReportScreen1          reportScreen;
 
+    private PopupPanel                     statusPanel;
+
+    private StatusBarPopupScreenUI         statusScreen;
+
+    private Timer                          timer;
+
     protected AsyncCallbackUI<DataView1VO> fetchTestAnalyteAndAuxFieldCall;
+
+    protected AsyncCallback<ReportStatus>  runReportCall;
 
     public DataViewScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -119,6 +142,11 @@ public class DataViewScreenUI extends Screen {
 
         initialize();
         data = new DataView1VO();
+        data.setExcludeResultOverride("N");
+        data.setExcludeResults("N");
+        data.setIncludeNotReportableResults("N");
+        data.setExcludeAuxData("N");
+        data.setIncludeNotReportableAuxData("N");
         setData();
         setState(DEFAULT);
         fireDataChange();
@@ -127,6 +155,16 @@ public class DataViewScreenUI extends Screen {
     }
 
     private void initialize() {
+        screen = this;
+
+        fileLoad.setAction("openelis/upload");
+
+        fileLoad.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+            public void onSubmitComplete(SubmitCompleteEvent event) {
+                openQuery();
+            }
+        });
+
         addScreenHandler(openQueryButton, "openQueryButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 openQueryButton.setEnabled(true);
@@ -277,6 +315,9 @@ public class DataViewScreenUI extends Screen {
         });
     }
 
+    /**
+     * Sets the VO in the tabs
+     */
     private void setData() {
         queryTab.setData(data);
         commonTab.setData(data);
@@ -288,26 +329,50 @@ public class DataViewScreenUI extends Screen {
         ptTab.setData(data);
     }
 
+    /**
+     * Validates the screen and shows the errors if there are any; otherwise,
+     * calls the service method to save the data on the screen in an xml file;
+     * everything except analytes and values is saved
+     */
+    @UiHandler("saveQueryButton")
+    protected void saveQuery(ClickEvent event) {
+        Validation validation;
+
+        finishEditing();
+
+        clearStatus();
+        validation = validate();
+        if (validation.getStatus() == Validation.Status.ERRORS) {
+            showErrors(validation);
+            return;
+        }
+
+        data.setQueryFields(getQueryFields());
+        data.setTestAnalytes(null);
+        data.setAuxFields(null);
+        data.setColumns(getColumns());
+
+        getReportScreen("saveQuery", window, "DataView.xml");
+
+        setBusy(Messages.get().gen_saving());
+        runReport();
+    }
+
+    /**
+     * Validates the screen and shows the errors if there are any; if there are
+     * no errors, calls the service method to generate the report if the user
+     * has excluded both results and aux data; otherwise, calls the service
+     * method to fetch analytes and values and shows them on the filter screen
+     */
     @UiHandler("executeQueryButton")
     protected void executeQuery(ClickEvent event) {
         boolean excludeResults, excludeAuxData;
         Validation validation;
         ArrayList<String> columns;
-        ArrayList<Exception> errors;
 
         finishEditing();
 
-        columns = new ArrayList<String>();
-        /*
-         * find out which columns are selected in each tab
-         */
-        commonTab.addColumns(columns);
-        environmentalTab.addColumns(columns);
-        privateWellTab.addColumns(columns);
-        sdwisTab.addColumns(columns);
-        clinicalTab.addColumns(columns);
-        neonatalTab.addColumns(columns);
-        ptTab.addColumns(columns);
+        columns = getColumns();
 
         /*
          * if both results and aux data are excluded then at least one column
@@ -317,22 +382,14 @@ public class DataViewScreenUI extends Screen {
         excludeAuxData = "Y".equals(data.getExcludeAuxData());
 
         if (excludeResults && excludeAuxData && columns.size() == 0) {
-            window.setError(Messages.get().dataView_selAtleastOneField());
+            setError(Messages.get().dataView_selAtleastOneField());
             return;
         }
 
-        window.clearStatus();
-
+        clearStatus();
         validation = validate();
         if (validation.getStatus() == Validation.Status.ERRORS) {
-            errors = validation.getExceptions();
-            if (errors != null && errors.size() > 0) {
-                setError(Messages.get().gen_errorOneOfMultiple(errors.size(),
-                                                               errors.get(0).getMessage()));
-                window.setMessagePopup(errors, "ErrorPanel");
-            } else {
-                window.setError(Messages.get().gen_correctErrors());
-            }
+            showErrors(validation);
             return;
         }
 
@@ -340,9 +397,14 @@ public class DataViewScreenUI extends Screen {
         data.setTestAnalytes(null);
         data.setAuxFields(null);
         data.setColumns(columns);
-        setBusy(Messages.get().querying());
+        setBusy(Messages.get().gen_querying());
+        /*
+         * if the user has excluded both results and aux data, don't show the
+         * filter screen, just generate the report; otherwise fetch the analytes
+         * and values and show them on the filter screen
+         */
         if (excludeResults && excludeAuxData) {
-
+            executeQuery(window);
         } else {
             if (fetchTestAnalyteAndAuxFieldCall == null) {
                 fetchTestAnalyteAndAuxFieldCall = new AsyncCallbackUI<DataView1VO>() {
@@ -373,6 +435,89 @@ public class DataViewScreenUI extends Screen {
         }
     }
 
+    /**
+     * Calls the service method to return a VO filled from a file containing
+     * query fields, filters and columns used for a previous query; initializes
+     * the filters if they're not set
+     */
+    private void openQuery() {
+        data = null;
+
+        try {
+            data = (DataView1VO)DataViewReportService1.get().openQuery();
+            if (data == null) {
+                Window.alert(Messages.get().report_fileNameNotValidException());
+            } else {
+                if (DataBaseUtil.isEmpty(data.getExcludeResultOverride()))
+                    data.setExcludeResultOverride("N");
+                if (DataBaseUtil.isEmpty(data.getExcludeResults()))
+                    data.setExcludeResults("N");
+                if (DataBaseUtil.isEmpty(data.getIncludeNotReportableResults()))
+                    data.setIncludeNotReportableResults("N");
+                if (DataBaseUtil.isEmpty(data.getExcludeAuxData()))
+                    data.setExcludeAuxData("N");
+                if (DataBaseUtil.isEmpty(data.getIncludeNotReportableAuxData()))
+                    data.setIncludeNotReportableAuxData("N");
+            }
+        } catch (Exception e) {
+            Window.alert("There was an error with loading the query: " + e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        setData();
+        setState(DEFAULT);
+        fireDataChange();
+    }
+
+    /**
+     * Returns the list of columns selected in all tabs
+     */
+    private ArrayList<String> getColumns() {
+        ArrayList<String> columns;
+
+        columns = new ArrayList<String>();
+        /*
+         * find out which columns are selected in each tab
+         */
+        commonTab.addColumns(columns);
+        environmentalTab.addColumns(columns);
+        privateWellTab.addColumns(columns);
+        sdwisTab.addColumns(columns);
+        clinicalTab.addColumns(columns);
+        neonatalTab.addColumns(columns);
+        ptTab.addColumns(columns);
+
+        return columns;
+    }
+
+    /**
+     * This method is called after validating the screen and finding errors;
+     * this can happen if the widgets are in error and/or if there were
+     * exceptions added in a tab like query tab; the exceptions are added
+     * because the errors are due to a combination of widgets and not one
+     * widget; if there are exceptions present, they are shown in the bottom
+     * panel instead of the generic message "Please correct..."; otherwise the
+     * user wouldn't get a chance to see them; the generic message is shown if
+     * there are no exceptions; errors in the widgets can be seen in either case
+     */
+    private void showErrors(Validation validation) {
+        ArrayList<Exception> errors;
+
+        errors = validation.getExceptions();
+        if (errors != null && errors.size() > 0) {
+            setError(Messages.get().gen_errorOneOfMultiple(errors.size(),
+                                                           errors.get(0).getMessage()));
+            window.setMessagePopup(errors, "ErrorPanel");
+        } else {
+            setError(Messages.get().gen_correctErrors());
+        }
+    }
+
+    /**
+     * Shows the screen that allows the user to select one or more analyte(s)
+     * and value(s) linked to results and aux data; these were returned by the
+     * query executed by the user
+     */
     private void showFilter(DataView1VO data) {
         ModalWindow modal;
 
@@ -412,22 +557,7 @@ public class DataViewScreenUI extends Screen {
                         }
                     }
 
-                    try {
-                        if (reportScreen == null)
-                            reportScreen = new DataViewReportScreen1("runReport", window, null);
-                        else
-                            /*
-                             * since Filter screen can be reused by DataView
-                             * Screen and inserted into a new window, the window
-                             * needs to be reset
-                             */
-                            reportScreen.setWindow(window);
-
-                        reportScreen.runReport(data);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
+                    screen.executeQuery(window);
                 }
 
                 @Override
@@ -445,5 +575,137 @@ public class DataViewScreenUI extends Screen {
 
         filterScreen.setWindow(modal);
         filterScreen.setData(data);
+    }
+
+    /**
+     * Calls the service method to generate the data view report; shows a
+     * progress bar for the status of the report; the status gets refreshed
+     * every second, using a timer
+     */
+    private void executeQuery(WindowInt window) {
+        getReportScreen("runReport", window, null);
+
+        if (statusScreen == null) {
+            statusScreen = new StatusBarPopupScreenUI() {
+                @Override
+                public void stop() {
+                    message.setText(Messages.get().dataView_pleaseWait());
+                    DataViewReportService1.get().stopReport();
+                }
+            };
+
+            /*
+             * initialize and show the popup screen
+             */
+            statusPanel = new PopupPanel();
+            statusPanel.setSize("450px", "125px");
+            statusPanel.setWidget(statusScreen);
+            statusPanel.setPopupPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+            statusPanel.setModal(true);
+        }
+        statusPanel.show();
+        statusScreen.setStatus(null);
+
+        window.setBusy(Messages.get().report_generatingReport());
+
+        runReport();
+
+        /*
+         * refresh the status of generating the report every second, until the
+         * process successfully completes or is aborted because of an error or
+         * by the user
+         */
+        if (timer == null) {
+            timer = new Timer() {
+                public void run() {
+                    ReportStatus status;
+                    try {
+                        status = DataViewReportService1.get().getStatus();
+                        /*
+                         * the status only needs to be refreshed while the
+                         * status panel is showing because once the job is
+                         * finished, the panel is closed
+                         */
+                        if (statusPanel.isShowing()) {
+                            statusScreen.setStatus(status);
+                            this.schedule(1000);
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+            };
+            timer.schedule(1000);
+        }
+    }
+
+    /**
+     * Calls a service method for generating a file and shows the file in the
+     * front-end; the service method and type of file generated may vary
+     */
+    private void runReport() {
+        reportScreen.runReport(data, new AsyncCallbackUI<ReportStatus>() {
+            @Override
+            public void success(ReportStatus result) {
+                String url;
+
+                hideStatus();
+                if (result.getStatus() == ReportStatus.Status.SAVED) {
+                    url = "/openelis/openelis/report?file=" + result.getMessage();
+                    if (reportScreen.getAttachmentName() != null)
+                        url += "&attachment=" + reportScreen.getAttachmentName();
+
+                    Window.open(URL.encode(url), reportScreen.getRunReportInterface(), null);
+                    reportScreen.getWindow().setDone("Generated file " + result.getMessage());
+                } else {
+                    reportScreen.getWindow().setDone(result.getMessage());
+                }
+            }
+
+            @Override
+            public void notFound() {
+                hideStatus();
+                reportScreen.getWindow().setDone(Messages.get().gen_noRecordsFound());
+            }
+
+            @Override
+            public void failure(Throwable caught) {
+                hideStatus();
+                reportScreen.getWindow().setError("Failed");
+                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, caught.getMessage(), caught);
+            }
+        });
+    }
+
+    /**
+     * Creates DataViewReportScreen1 if it's not already present; sets the
+     * passed arguments in it
+     */
+    private void getReportScreen(String reportMethod, WindowInt window, String attachment) {
+        if (reportScreen == null) {
+            try {
+                reportScreen = new DataViewReportScreen1(reportMethod, window, attachment);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return;
+            }
+        } else {
+            reportScreen.setWindow(window);
+            reportScreen.setRunReportInterface(reportMethod);
+            reportScreen.setAttachmentName(attachment);
+        }
+    }
+
+    /**
+     * Hides the panel that shows the progress bar
+     */
+    private void hideStatus() {
+        if (statusPanel != null && statusPanel.isShowing()) {
+            statusPanel.hide();
+            statusScreen.setStatus(null);
+        }
     }
 }

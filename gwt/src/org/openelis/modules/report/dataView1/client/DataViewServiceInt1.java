@@ -9,11 +9,15 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @RemoteServiceRelativePath("dataViewReport1")
 public interface DataViewServiceInt1 extends XsrfProtectedService {
 
-    DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception;
+    public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception;
 
-    ReportStatus runReport(DataView1VO data) throws Exception;
+    public ReportStatus runReport(DataView1VO data) throws Exception;
 
-    DataView1VO openQuery() throws Exception;
+    public DataView1VO openQuery() throws Exception;
 
-    ReportStatus saveQuery(DataView1VO data) throws Exception;
+    public ReportStatus saveQuery(DataView1VO data) throws Exception;
+    
+    public ReportStatus getStatus() throws Exception;
+    
+    public void stopReport();
 }

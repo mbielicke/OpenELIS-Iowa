@@ -174,7 +174,7 @@
               <w:CheckBox ui:field="neonatalTransfusionDate" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
-              <ui:text from="{msg.sampleNeonatal_transAge}" />
+              <ui:text from="{msg.sampleNeonatal_transDate}" />
             </td>
             <td>
               <w:CheckBox ui:field="neonatalIsRepeat" />

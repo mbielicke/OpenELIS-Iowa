@@ -39,20 +39,30 @@ public class DataViewResultFetch1VO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, sampleAccessionNumber, analysisId, analyteId, typeId;
+    protected Integer         sampleId, sampleAccessionNumber, sampleItemId, analysisId, analyteId,
+                    typeId;
 
     protected String          analyteName, value;
 
     public DataViewResultFetch1VO(Integer sampleId, Integer sampleAccessionNumber,
-                                  Integer analysisId, Integer analyteId, String analysisName,
-                                  Integer typeId, String value) {
+                                  Integer sampleItemId, Integer analysisId, Integer analyteId,
+                                  String analysisName, Integer typeId, String value) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
+        setSampleItemId(sampleItemId);
         setAnalysisId(analysisId);
         setAnalyteId(analyteId);
         setAnalyteName(analysisName);
         setTypeId(typeId);
         setValue(value);
+    }
+
+    public DataViewResultFetch1VO(Integer sampleId, Integer sampleAccessionNumber,
+                                  Integer sampleItemId, Integer analysisId) {
+        setSampleId(sampleId);
+        setSampleAccessionNumber(sampleAccessionNumber);
+        setSampleItemId(sampleItemId);
+        setAnalysisId(analysisId);
     }
 
     public Integer getSampleId() {
@@ -69,6 +79,14 @@ public class DataViewResultFetch1VO implements Serializable {
 
     public void setSampleAccessionNumber(Integer sampleAccessionNumber) {
         this.sampleAccessionNumber = sampleAccessionNumber;
+    }
+
+    public Integer getSampleItemId() {
+        return sampleItemId;
+    }
+
+    public void setSampleItemId(Integer sampleItemId) {
+        this.sampleItemId = sampleItemId;
     }
 
     public Integer getAnalysisId() {
