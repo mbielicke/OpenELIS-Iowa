@@ -13,7 +13,7 @@ FROM
       dictionary d
       left join dictionary d1 on d1.id = d.related_entry_id
 WHERE
-      $X{IN,d.id::varchar(10),UNIT_LIST}]]>
+      $X{IN,d.id,UNIT_LIST}]]>
 	</queryString>
 	<field name="unit_name" class="java.lang.String"/>
 	<field name="unit_description" class="java.lang.String"/>
