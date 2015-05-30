@@ -68,6 +68,7 @@ grant select,insert,update,delete on pws to "jboss_dev";
 grant select,insert,update,delete on pws_address to "jboss_dev";
 grant select,insert,update,delete on pws_facility to "jboss_dev";
 grant select,insert,update,delete on pws_monitor to "jboss_dev";
+grant select,insert,update,delete on pws_violation to "jboss_dev";
 grant select,insert,update,delete on qaevent to "jboss_dev";
 grant select,insert,update,delete on qc to "jboss_dev";
 grant select,insert,update,delete on qc_analyte to "jboss_dev";

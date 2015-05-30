@@ -233,7 +233,7 @@ create unique index sample_environmental_1_idx on sample_environmental(id);
 create unique index sample_environmental_2_idx on sample_environmental(sample_id);
 
 create unique index sample_item_1_idx on sample_item(id);
-create unique index sample_item_2_idx on sample_item(sample_id);
+create        index sample_item_2_idx on sample_item(sample_id);
 
 create unique index sample_neonatal_1_idx on sample_neonatal(id);
 create unique index sample_neonatal_2_idx on sample_neonatal(sample_id);
