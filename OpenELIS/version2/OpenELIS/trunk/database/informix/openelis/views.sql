@@ -26,21 +26,21 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.owner is not null then '[own]' || spw.owner
+                   when spw.owner is not null then '[own]' || trim(spw.owner)
                    else null
                end
            when s.domain = 'S' then
                case
-                   when pws.name is not null then '[pws]' || pws.name || ' '
+                   when pws.name is not null then '[pws]' || trim(pws.name) || ' '
                    else ''
                end ||
                case
-                   when ssd.facility_id is not null then '[fac]' || ssd.facility_id || ' '
+                   when ssd.facility_id is not null then '[fac]' || trim(ssd.facility_id) || ' '
                    else ''
                end ||
                case
@@ -49,28 +49,28 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then '[lst]' || trim(pat.last_name) || ' '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then '[fst]' || trim(pat.first_name) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            else null
@@ -78,51 +78,51 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
        case
            when s.domain = 'E' then
                case
-                   when sen.location is not null then '[loc]' || sen.location || ' '
+                   when sen.location is not null then '[loc]' || trim(sen.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || trim(o.name)
                    else ''
                end
            when s.domain = 'S' then
                case
-                   when ssd.location is not null then '[loc]' || ssd.location || ' '
+                   when ssd.location is not null then '[loc]' || trim(ssd.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || trim(o.name)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.location is not null then '[loc]' || spw.location
+                   when spw.location is not null then '[loc]' || trim(spw.location)
                    else null
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then '[lst]' || tim(pat.last_name) || ' '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then '[fst]' || trim(pat.first_name) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            else null
@@ -240,11 +240,11 @@ select s.id, s.domain, s.accession_number, s.revision, s.received_date, s.collec
        case 
            when s.domain = 'C' then
                case
-                   when pv.last_name is not null then pv.last_name || ', '
+                   when pv.last_name is not null then trim(pv.last_name) || ', '
                    else ''
                end ||
                case
-                   when pv.first_name is not null then pv.first_name
+                   when pv.first_name is not null then trim(pv.first_name)
                    else ''
                end
            else null
@@ -322,21 +322,21 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
                end
             when s.domain = 'W' then
                 case
-                    when spw.owner is not null then '[own]' || spw.owner
+                    when spw.owner is not null then '[own]' || trim(spw.owner)
                     else null
                 end
             when s.domain = 'S' then
                 case
-                    when pws.name is not null then '[pws]' || pws.name || ' '
+                    when pws.name is not null then '[pws]' || trim(pws.name) || ' '
                     else ''
                 end ||
                 case
-                    when ssd.facility_id is not null then ' [fac]' || ssd.facility_id || ' '
+                    when ssd.facility_id is not null then ' [fac]' || trim(ssd.facility_id) || ' '
                     else ''
                 end ||
                 case
@@ -345,28 +345,28 @@ select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
                 end
             when s.domain = 'C' then
                 case
-                    when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                    when pat.last_name is not null then '[lst]' || trim(pat.last_name) || ' '
                     else ''
                 end ||
                 case
-                    when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                    when pat.first_name is not null then '[fst]' || trim(pat.first_name) || ' '
                     else ''
                 end ||
                 case
-                    when si.container_reference is not null then '[cnt]' || si.container_reference
+                    when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                     else ''
                 end
             when s.domain = 'P' then
                 case
-                    when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                    when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                     else ''
                 end ||
                 case
-                    when spt.series is not null then '[ser]' || spt.series || ' '
+                    when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                     else ''
                 end ||
                 case
-                    when si.container_reference is not null then '[cnt]' || si.container_reference
+                    when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                     else ''
                 end
             else null
@@ -437,55 +437,55 @@ select wa.id, wi.id, wi.position, w.id, w.format_id, w.description,
                case 
                    when s.domain = 'E' then
                        case
-                           when sen.location is not null then '[loc]' || sen.location || ' '
+                           when sen.location is not null then '[loc]' || trim(sen.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'S' then
                        case
-                           when ssd.location is not null then '[loc]' || ssd.location || ' '
+                           when ssd.location is not null then '[loc]' || trim(ssd.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'W' then
                        case
-                           when spw.location is not null then '[loc]' || spw.location || ' '
+                           when spw.location is not null then '[loc]' || trim(spw.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'C' then
                        case
-                           when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                           when pat.last_name is not null then '[lst]' || trim(pat.last_name) || ' '
                            else ''
                        end ||
                        case
-                           when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                           when pat.first_name is not null then '[fst]' || trim(pat.first_name) || ' '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                            else ''
                        end
                    when s.domain = 'P' then
                        case
-                           when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                           when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                            else ''
                        end ||
                        case
-                           when spt.series is not null then '[ser]' || spt.series || ' '
+                           when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                            else ''
                        end
                    else null
