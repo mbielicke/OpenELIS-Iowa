@@ -83,9 +83,7 @@ public class PrinterCacheBean {
      * Method to refresh the printer list cache
      */
     @Asynchronous
-    @AccessTimeout(300000)
     @Lock(LockType.WRITE)
-    
     public void refresh() {
         String name, type;
         Printer printer;
