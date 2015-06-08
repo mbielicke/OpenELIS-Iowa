@@ -44,6 +44,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SecondaryLabelVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
@@ -81,7 +82,7 @@ public class SecondaryLabelReportBean {
      */
     public ReportStatus runReport(ArrayList<SecondaryLabelVO> labels) throws Exception {
         Integer testId, accession;
-        String printer, printstat;
+        String printer, printstat, st;
         SampleManager1 sm;
         TestViewDO t;
         PrintStream ps;
@@ -138,6 +139,7 @@ public class SecondaryLabelReportBean {
             }
 
             accession = getSample(sm).getAccessionNumber();
+            st = "";
             t = null;
             for (AnalysisViewDO ana : getAnalyses(sm)) {
                 /*
@@ -145,6 +147,18 @@ public class SecondaryLabelReportBean {
                  * the test it's linked to
                  */
                 if (ana.getId().equals(data.getAnalysisId())) {
+                    for (SampleItemViewDO siVDO : getItems(sm)) {
+                        if (siVDO.getId().equals(ana.getSampleItemId())) {
+                            if (siVDO.getSourceOther() != null && siVDO.getSourceOther().length() > 0)
+                                st = siVDO.getSourceOther();
+                            else if (siVDO.getSourceOfSample() != null && siVDO.getSourceOfSample().length() > 0)
+                                st = siVDO.getSourceOfSample();
+                            else
+                                st = siVDO.getTypeOfSample();
+                            break;
+                        }
+                    }
+                    
                     testId = ana.getTestId();
                     t = tests.get(testId);
                     if (t == null) {
@@ -170,7 +184,7 @@ public class SecondaryLabelReportBean {
                         }
                     }
                     if (t != null)
-                        printLabel(ps, sm, t, data.getLabelQty(), e);
+                        printLabel(ps, sm, st, t, data.getLabelQty(), e);
                     break;
                 }
             }
@@ -196,7 +210,8 @@ public class SecondaryLabelReportBean {
      * Print the label defined for the passed test by obtaining the required
      * data from the manager and the test
      */
-    private void printLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty, ValidationErrorsList e) {
+    private void printLabel(PrintStream ps, SampleManager1 sm, String st, TestViewDO t,
+                            Integer labelQty, ValidationErrorsList e) {
         Integer accession;
 
         accession = getSample(sm).getAccessionNumber();
@@ -219,7 +234,7 @@ public class SecondaryLabelReportBean {
          */
         switch (t.getLabelName()) {
             case "1x2 acc+rec":
-                accessionReceivedLabel(ps, sm, t, labelQty);
+                accessionReceivedLabel(ps, sm, labelQty);
                 break;
             case "1x2 acc+rec+test":
                 accessionReceivedTestLabel(ps, sm, t, labelQty);
@@ -228,7 +243,10 @@ public class SecondaryLabelReportBean {
                 accessionReceivedTestMethodLabel(ps, sm, t, labelQty);
                 break;
             case "1x2 acc+pat+rec+test":
-                accessionPatientReceivedTestLabel(ps, sm, t, labelQty, e);
+                accessionPatientReceivedTestLabel(ps, sm, t, labelQty);
+                break;
+            case "1x2 acc+col+rec+pat+typ+tst+me":
+                accessionCollectionReceivedPatientTypeTestMethodLabel(ps, sm, st, t, labelQty);
                 break;
             default:
                 /*
@@ -242,11 +260,53 @@ public class SecondaryLabelReportBean {
     }
 
     /**
+     * Prints the label showing accession number, collected date, received date,
+     * patient name, sample type, test name, and method name
+     */
+    private void accessionCollectionReceivedPatientTypeTestMethodLabel(PrintStream ps,
+                                                                       SampleManager1 sm,
+                                                                       String st, TestViewDO t,
+                                                                       Integer labelQty) {
+        Integer accession;
+        String collection, received, patientName;
+        PatientDO pat;
+
+        pat = null;
+        if (getSampleClinical(sm) != null)
+            pat = getSampleClinical(sm).getPatient();
+        else if (getSampleNeonatal(sm) != null)
+            pat = getSampleNeonatal(sm).getPatient();
+
+        accession = getSample(sm).getAccessionNumber();
+        if (pat != null)
+            patientName = DataBaseUtil.concatWithSeparator(pat.getLastName(),
+                                                           ", ",
+                                                           pat.getFirstName());
+        else
+            patientName = "";
+
+        collection = ReportUtil.toString(getSample(sm).getCollectionDate(), Messages.get()
+                                                                                    .datePattern());
+        received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()
+                                                                                .dateTimePattern());
+
+        labelReport.accessionCollectionReceivedPatientTypeTestLabel(ps,
+                                                                    accession,
+                                                                    collection,
+                                                                    received,
+                                                                    patientName,
+                                                                    st,
+                                                                    t.getName(),
+                                                                    t.getMethodName(),
+                                                                    labelQty);
+    }
+
+    /**
      * Prints the label showing accession number, patient name, received date
      * and test name
      */
     private void accessionPatientReceivedTestLabel(PrintStream ps, SampleManager1 sm, TestViewDO t,
-                                                   Integer labelQty, ValidationErrorsList e) {
+                                                   Integer labelQty) {
         Integer accession;
         String received, patientName;
         PatientDO pat;
@@ -279,7 +339,7 @@ public class SecondaryLabelReportBean {
     /**
      * Prints the label showing accession number and received date
      */
-    private void accessionReceivedLabel(PrintStream ps, SampleManager1 sm, TestViewDO t, Integer labelQty) {
+    private void accessionReceivedLabel(PrintStream ps, SampleManager1 sm, Integer labelQty) {
         String received;
 
         received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()

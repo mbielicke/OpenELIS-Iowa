@@ -183,6 +183,27 @@ public class LabelReportBean {
     }
     
     /*
+     * Print a test label showing accession number, collection date, received
+     * date, patient name, sample type, test name, and method name;
+     * quantity is the number of copies to be printed
+     */
+    public void accessionCollectionReceivedPatientTypeTestLabel(PrintStream f, int accession,
+                                                                String collection, String received,
+                                                                String patientName,
+                                                                String sampleType, String testName,
+                                                                String methodName, int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,35^AE^BCN,50,Y,N,N^FD"+accession+"^FS");     // barcoded accession
+        f.print("^FO60,130^AF^FD"+collection+"^FS");                // readable collection date
+        f.print("^FO350,130^AF^FD"+received+"^FS");                 // readable received date
+        f.print("^FO60,165^AF^FD"+patientName+"^FS");               // readable patient name
+        f.print("^FO60,200^AF^FD"+sampleType+"^FS");                // readable sample type  
+        f.print("^FO60,235^AF^FD"+testName+", "+methodName+"^FS");  // readable test name + method name  
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
+    
+    /*
      * Print a tube label for blood lead
      */
     public void tubeLabel(PrintStream f, String tubeNumber) {
