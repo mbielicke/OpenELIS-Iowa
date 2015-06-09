@@ -33,7 +33,7 @@ import org.openelis.ui.common.MetaMap;
 
 public class SampleWebMeta implements Meta, MetaMap {
 
-    public static final String    ID = "_sample.id",
+    public static final String     ID = "_sample.id",
                     DOMAIN = "_sample.domain",
                     ACCESSION_NUMBER = "_sample.accessionNumber",
                     ACCESSION_NUMBER_FROM = "_display.accessionNumberFrom",
@@ -69,6 +69,18 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ENV_LOCATION = "_sampleEnvironmental.location",
                     ENV_LOCATION_HEADER = "_sampleEnvironmental.locationHeader",
                     ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
+
+                    LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
+                    LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress",
+                    LOCATION_ADDR_CITY = "_locationAddress.city",
+                    LOCATION_ADDR_STATE = "_locationAddress.state",
+                    LOCATION_ADDR_ZIP_CODE = "_locationAddress.zipCode",
+                    LOCATION_ADDR_WORK_PHONE = "_locationAddress.workPhone",
+                    LOCATION_ADDR_HOME_PHONE = "_locationAddress.homePhone",
+                    LOCATION_ADDR_CELL_PHONE = "_locationAddress.cellPhone",
+                    LOCATION_ADDR_FAX_PHONE = "_locationAddress.faxPhone",
+                    LOCATION_ADDR_EMAIL = "_locationAddress.email",
+                    LOCATION_ADDR_COUNTRY = "_locationAddress.country",
 
                     // sample private well
                     WELL_ID = "_samplePrivateWell.id",
@@ -187,7 +199,6 @@ public class SampleWebMeta implements Meta, MetaMap {
                     PT_DUE_DATE = "_samplePT.dueDate",
                     PT_ADDITIONAL_DOMAIN = "_samplePT.additionalDomain",
 
-                    LOCATION_ADDR_CITY = "_locationAddress.city",
                     LOCATION_ADDR_CITY_HEADER = "_locationAddress.cityHeader",
 
                     ITEM_ID = "_sampleItem.id", ITEM_SAMPLE_ID = "_sampleItem.sampleId",
@@ -202,6 +213,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ANALYSIS_ID = "_analysis.id",
                     ANALYSIS_SAMPLE_ITEM_ID = "_analysis.sampleItemId",
                     ANALYSIS_REVISION = "_analysis.revision",
+                    ANALYSIS_TYPE_ID = "_analysis.typeId",
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
                     ANALYSIS_IS_REPORTABLE_HEADER = "_analysis.isReportableHeader",
                     ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
@@ -321,7 +333,17 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ENV_LOCATION_HEADER,
                                                   ENV_LOCATION_ADDRESS_ID,
                                                   ENV_LOCATION_ADDRESS_ID,
+                                                  LOCATION_ADDR_MULTIPLE_UNIT,
+                                                  LOCATION_ADDR_STREET_ADDRESS,
                                                   LOCATION_ADDR_CITY,
+                                                  LOCATION_ADDR_STATE,
+                                                  LOCATION_ADDR_ZIP_CODE,
+                                                  LOCATION_ADDR_WORK_PHONE,
+                                                  LOCATION_ADDR_HOME_PHONE,
+                                                  LOCATION_ADDR_CELL_PHONE,
+                                                  LOCATION_ADDR_FAX_PHONE,
+                                                  LOCATION_ADDR_EMAIL,
+                                                  LOCATION_ADDR_COUNTRY,
                                                   WELL_ID,
                                                   WELL_SAMPLE_ID,
                                                   WELL_ORGANIZATION_ID,
@@ -435,6 +457,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ANALYSIS_ID,
                                                   ANALYSIS_SAMPLE_ITEM_ID,
                                                   ANALYSIS_REVISION,
+                                                  ANALYSIS_TYPE_ID,
                                                   ANALYSIS_IS_REPORTABLE,
                                                   ANALYSIS_IS_REPORTABLE_HEADER,
                                                   ANALYSIS_UNIT_OF_MEASURE_ID,
@@ -556,7 +579,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getReceivedDateTo() {
         return RECEIVED_DATE_TO;
     }
-    
+
     public static String getReceivedById() {
         return RECEIVED_BY_ID;
     }
@@ -629,8 +652,48 @@ public class SampleWebMeta implements Meta, MetaMap {
         return ENV_LOCATION_ADDRESS_ID;
     }
 
+    public static String getLocationAddrMultipleUnit() {
+        return LOCATION_ADDR_MULTIPLE_UNIT;
+    }
+    
+    public static String getLocationAddrStreetAddress() {
+        return LOCATION_ADDR_STREET_ADDRESS;
+    }
+    
     public static String getLocationAddrCity() {
         return LOCATION_ADDR_CITY;
+    }
+
+    public static String getLocationAddrState() {
+        return LOCATION_ADDR_STATE;
+    }
+    
+    public static String getLocationAddrZipCode() {
+        return LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getLocationAddrWorkPhone() {
+        return LOCATION_ADDR_WORK_PHONE;
+    }
+    
+    public static String getLocationAddrHomePhone() {
+        return LOCATION_ADDR_HOME_PHONE;
+    }
+    
+    public static String getLocationAddrCellPhone() {
+        return LOCATION_ADDR_CELL_PHONE;
+    }
+    
+    public static String getLocationAddrFaxPhone() {
+        return LOCATION_ADDR_FAX_PHONE;
+    }
+    
+    public static String getLocationAddrEmail() {
+        return LOCATION_ADDR_EMAIL;
+    }
+    
+    public static String getLocationAddrCountry() {
+        return LOCATION_ADDR_COUNTRY;
     }
 
     public static String getLocationAddrCityHeader() {
@@ -1064,15 +1127,15 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getClinicalPatientAddrHomePhone() {
         return CLIN_PATIENT_ADDR_HOME_PHONE;
     }
-    
+
     public static String getPTSampleId() {
         return PT_SAMPLE_ID;
     }
-    
+
     public static String getPTPTProviderId() {
         return PT_PT_PROVIDER_ID;
     }
-    
+
     public static String getPTSeries() {
         return PT_SERIES;
     }
@@ -1080,7 +1143,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getPTDueDate() {
         return PT_DUE_DATE;
     }
-    
+
     public static String getPTAdditionalDomain() {
         return PT_ADDITIONAL_DOMAIN;
     }
@@ -1131,6 +1194,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getAnalysisRevision() {
         return ANALYSIS_REVISION;
+    }
+    
+    public static String getAnalysisTypeId() {
+        return ANALYSIS_TYPE_ID;
     }
 
     public static String getAnalysisIsReportable() {
@@ -1404,7 +1471,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getResultTestAnalyteResultGroup() {
         return RESULT_TEST_ANALYTE_RESULT_GROUP;
     }
-    
+
     public static String getAuxDataFieldId() {
         return AUX_DATA_FIELD_ID;
     }
@@ -1474,7 +1541,7 @@ public class SampleWebMeta implements Meta, MetaMap {
             where.indexOf("clinicalPatientAddress.") > -1 ||
             where.indexOf("clinicalProvider.") > -1)
             from += ", IN (_sample.sampleClinical) _sampleClinical ";
-        
+
         // sample pt
         if (where.indexOf("samplePT.") > -1)
             from += ", IN (_sample.samplePT) _samplePT ";

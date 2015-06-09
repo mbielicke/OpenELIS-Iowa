@@ -50,7 +50,7 @@
               </tr>
               <tr>
                 <td>
-                  <w:CheckBox ui:field="envCollectorHeader" />
+                  <w:CheckBox ui:field="envCollector" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
                   <ui:text from="{msg.sample_collector}" />
@@ -67,27 +67,70 @@
               </tr>
               <tr>
                 <td>
-                  <w:CheckBox ui:field="envLocationHeader" />
+                  <w:CheckBox ui:field="envDescription" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
-                  <ui:text from="{msg.gen_location}" />
+                  <ui:text from="{msg.gen_description}" />
                 </td>
                 <td>
                   <g:HorizontalPanel width="52px" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="locationAddrCityHeader" />
+                  <w:CheckBox ui:field="envLocation" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
-                  <ui:text from="{msg.dataView_locationCity}" />
+                  <ui:text from="{msg.gen_location}" />
                 </td>
               </tr>
               <tr>
                 <td>
-                  <w:CheckBox ui:field="envDescription" />
+                  <w:CheckBox ui:field="locationAddrMultipleUnit" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
-                  <ui:text from="{msg.gen_description}" />
+                  <ui:text from="{msg.dataView_locationAptSuite}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="52px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="locationAddrStreetAddress" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.dataView_locationAddress}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="locationAddrCity" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.dataView_locationCity}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="52px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="locationAddrState" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.dataView_locationState}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="locationAddrZipCode" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.dataView_locationZipCode}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="52px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="locationAddrCountry" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.dataView_locationCountry}" />
                 </td>
               </tr>
             </table>

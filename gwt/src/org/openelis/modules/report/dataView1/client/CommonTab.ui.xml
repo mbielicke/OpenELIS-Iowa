@@ -324,6 +324,12 @@
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.gen_section}" />
             </td>
+            <td>
+              <w:CheckBox ui:field="analysisTypeId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_type}" />
+            </td>
           </tr>
         </table>
       </g:HTMLPanel>

@@ -50,12 +50,18 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "OrganizationContact.FetchByOrganizationId",
-                query = "select new org.openelis.domain.OrganizationContactDO(c.id,c.organizationId," +
-                		"c.contactTypeId,c.name,c.address.id,c.address.multipleUnit,c.address.streetAddress," +
-                		"c.address.city,c.address.state,c.address.zipCode,c.address.workPhone,c.address.homePhone," +
-                		"c.address.cellPhone,c.address.faxPhone,c.address.email,c.address.country)"
-                      + " from OrganizationContact c where c.organizationId = :id")})
+               @NamedQuery(name = "OrganizationContact.FetchByOrganizationId",
+                           query = "select new org.openelis.domain.OrganizationContactDO(c.id,c.organizationId,"
+                                   + "c.contactTypeId,c.name,c.address.id,c.address.multipleUnit,c.address.streetAddress,"
+                                   + "c.address.city,c.address.state,c.address.zipCode,c.address.workPhone,c.address.homePhone,"
+                                   + "c.address.cellPhone,c.address.faxPhone,c.address.email,c.address.country)"
+                                   + " from OrganizationContact c where c.organizationId = :id"),
+               @NamedQuery(name = "OrganizationContact.FetchByOrganizationIds",
+                           query = "select new org.openelis.domain.OrganizationContactDO(c.id,c.organizationId,"
+                                   + "c.contactTypeId,c.name,c.address.id,c.address.multipleUnit,c.address.streetAddress,"
+                                   + "c.address.city,c.address.state,c.address.zipCode,c.address.workPhone,c.address.homePhone,"
+                                   + "c.address.cellPhone,c.address.faxPhone,c.address.email,c.address.country)"
+                                   + " from OrganizationContact c where c.organizationId in (:ids)")})
 @Entity
 @Table(name = "organization_contact")
 @EntityListeners({AuditUtil.class})
@@ -155,8 +161,11 @@ public class OrganizationContact implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("organization_id", organizationId, original.organizationId)
-                 .setField("contact_type_id", contactTypeId, original.contactTypeId, Constants.table().DICTIONARY)
-                 .setField("name", name, original.name) 
+                 .setField("contact_type_id",
+                           contactTypeId,
+                           original.contactTypeId,
+                           Constants.table().DICTIONARY)
+                 .setField("name", name, original.name)
                  .setField("address_id", addressId, original.addressId, Constants.table().ADDRESS);
 
         return audit;

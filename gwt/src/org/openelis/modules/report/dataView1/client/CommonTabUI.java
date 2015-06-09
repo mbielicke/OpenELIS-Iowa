@@ -63,7 +63,7 @@ public class CommonTabUI extends Screen {
                     analysisRevision, analysisIsReportableHeader, analysisUnitOfMeasureId,
                     analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
                     analysisReleasedDate, analysisReleasedBy, analysisStartedDate,
-                    analysisPrintedDate, analysisSectionName;
+                    analysisPrintedDate, analysisSectionName, analysisTypeId;
 
     protected Screen                 parentScreen;
 
@@ -91,7 +91,7 @@ public class CommonTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? revision : analysisSectionName;
+                return forward ? revision : analysisTypeId;
             }
         });
 
@@ -609,7 +609,21 @@ public class CommonTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? accessionNumber : analysisPrintedDate;
+                return forward ? analysisTypeId : analysisPrintedDate;
+            }
+        });
+        
+        addScreenHandler(analysisTypeId, SampleWebMeta.getAnalysisTypeId(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisTypeId.setValue(getValue(SampleWebMeta.getAnalysisTypeId()));
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                analysisTypeId.setEnabled( isState(DEFAULT));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : analysisSectionName;
             }
         });
     }

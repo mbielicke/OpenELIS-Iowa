@@ -575,10 +575,11 @@ public class QueryTabUI extends Screen {
         if (data == null || data.getQueryFields() == null)
             return;
         /*
-         * set query fields' query strings in a map, so that the widgets can be
-         * filled from them without repeatedly iterating over the fields; the
-         * values of some fields like accession number are split into "from" and
-         * "to" values before being set in the map
+         * the query string for each query field is put in a map, where the key
+         * is the field's key and the value is the query string; the map is used
+         * to fill the widgets, without having to iterate over the query fields
+         * repeatedly; the query string of some fields like accession number are
+         * split into "from" and "to" values before being set in the map
          */
         for (QueryData f : data.getQueryFields()) {
             if (SampleWebMeta.getAccessionNumber().equals(f.getKey()))
@@ -937,7 +938,7 @@ public class QueryTabUI extends Screen {
         /*
          * the key is set here because it's not set when the query data is
          * created; this is because, the widget doesn't know what its key is;
-         * the key is set in the hashmap for handlers
+         * the key is in the hashmap for screen handlers
          */
         if (field != null)
             field.setKey(key);

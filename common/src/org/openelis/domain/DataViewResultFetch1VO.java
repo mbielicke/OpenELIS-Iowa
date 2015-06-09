@@ -39,18 +39,20 @@ public class DataViewResultFetch1VO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, sampleAccessionNumber, sampleItemId, analysisId, analyteId,
-                    typeId;
+    protected Integer         sampleId, sampleAccessionNumber, sampleItemId, analysisId, id,
+                    analyteId, typeId;
 
     protected String          analyteName, value;
 
     public DataViewResultFetch1VO(Integer sampleId, Integer sampleAccessionNumber,
-                                  Integer sampleItemId, Integer analysisId, Integer analyteId,
-                                  String analysisName, Integer typeId, String value) {
+                                  Integer sampleItemId, Integer analysisId, Integer id,
+                                  Integer analyteId, String analysisName, Integer typeId,
+                                  String value) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
         setSampleItemId(sampleItemId);
         setAnalysisId(analysisId);
+        setId(id);
         setAnalyteId(analyteId);
         setAnalyteName(analysisName);
         setTypeId(typeId);
@@ -95,6 +97,14 @@ public class DataViewResultFetch1VO implements Serializable {
 
     public void setAnalysisId(Integer analysisId) {
         this.analysisId = analysisId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getAnalyteId() {

@@ -2,7 +2,7 @@ package org.openelis.portal.modules.dataView.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DataViewVO;
+import org.openelis.domain.DataView1VO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
 
@@ -14,11 +14,9 @@ public interface DataViewServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception;
 
-    DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception;
+    DataView1VO fetchAnalyteAndAuxField(DataView1VO data) throws Exception;
 
-    ReportStatus runReport(DataViewVO data) throws Exception;
-
-    ReportStatus runReportForPortal(DataViewVO data) throws Exception;
+    ReportStatus runReportForPortal(DataView1VO data) throws Exception;
 
     ReportStatus getStatus() throws Exception;
 
