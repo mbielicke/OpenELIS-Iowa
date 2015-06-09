@@ -1,0 +1,327 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:wb="urn:import:org.openelis.ui.widget.web"
+	xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+
+	<ui:with type="org.openelis.portal.messages.PortalMessages"
+		field="msg" />
+	<ui:with type="org.openelis.portal.client.resources.Resources"
+		field="res" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+
+	<w:PortalPanel width="275px">
+		<g:DeckPanel ui:field="deck">
+			<g:HTMLPanel>
+				<table class="{res.style.Form}">
+					<tr>
+						<td colspan="5">
+							<span style="float:left;font-weight:bold;font-size:13pt;">
+								<ui:text from="{msg.main_finalReport}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_anySamples}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_collectedDate}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="collectedFrom" width="75px"
+								begin="0" end="2" enabled="true" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="collectedTo" width="75px" begin="0"
+								end="2" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="collectedError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_releasedDate}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="releasedFrom" width="75px"
+								begin="0" end="4" enabled="true" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="releasedTo" width="75px" begin="0"
+								end="4" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="releasedError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_accessionNumber}:" />
+						</td>
+						<td>
+							<w:TextBox ui:field="accessionFrom" width="77px" field="Integer"
+								enabled="true" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<w:TextBox ui:field="accessionTo" width="77px" field="Integer"
+								enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="accessionError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_clientReference}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="clientReference" width="180px"
+								field="String" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="clientReferenceError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_project}:" />
+						</td>
+						<td colspan="3">
+							<w:MultiDropdown ui:field="projectCode" width="178px"
+								field="Integer" enabled="true">
+								<w:popup>
+									<t:Table visibleRows="10" header="true">
+										<t:Column width="100" label="{msg.gen_name}">
+											<t:LabelCell />
+										</t:Column>
+										<t:Column width="300" label="{msg.gen_description}">
+											<t:LabelCell />
+										</t:Column>
+									</t:Table>
+								</w:popup>
+							</w:MultiDropdown>
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="projectError" css="{res.errorCss}" text=""
+								placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_environmentalOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_collector}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="envCollector" width="180px" field="String"
+								enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="envCollectorError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_sdwisOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_collector}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="sdwisCollector" width="180px"
+								field="String" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_sdwisCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="sdwisCollectorError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.pws_id}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="pwsId" width="180px" field="String"
+								enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="pwsError" css="{res.errorCss}" text=""
+								placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_clinicalOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientLast}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientLast" width="180px" field="String"
+								enabled="true" case="UPPER" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientLastError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientFirst}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientFirst" width="180px" field="String"
+								enabled="true" case="UPPER" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientFirstError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientBirth}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthFrom" width="75px"
+								begin="0" end="2" enabled="true" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthTo" width="75px"
+								begin="0" end="2" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientBirthError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+				</table>
+				<table class="{res.style.Form}">
+					<tr>
+						<td>
+							<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
+								enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+						</td>
+						<td>
+							<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+								enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+			<g:HTMLPanel>
+				<table class="{res.style.Form}">
+					<tr>
+						<td>
+							<span style="float:left;font-weight:bold;font-size:13pt;">
+								<ui:text from="{msg.main_finalReport}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="backButton" image="{res.backImage}"
+								pixelSize="20,20" css="{res.portalButton}" rightText="Back"
+								enabled="true" width="70px" height="25px" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<g:FlexTable ui:field="table"
+								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
+						</td>
+					</tr>
+					<tr>
+						<td ui:field="rowCount" />
+					</tr>
+					<tr>
+						<td>
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+								<w:Button ui:field="unselectAllButton" rightText="{msg.finalReport_unselectAll}"
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+								<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+							</g:HorizontalPanel>
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:DeckPanel>
+	</w:PortalPanel>
+</ui:UiBinder>
