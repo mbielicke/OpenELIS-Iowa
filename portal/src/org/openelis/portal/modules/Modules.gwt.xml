@@ -1,0 +1,13 @@
+<module>
+	<inherits name="org.openelis.portal.modules.desktop.Desktop" />
+	<inherits name="org.openelis.portal.modules.mobile.Mobile" />
+	<inherits name="org.openelis.portal.modules.tablet.Tablet" />
+	<inherits name="org.openelis.portal.modules.example.Example" />
+	<inherits name="org.openelis.portal.modules.main.Main" />
+	<inherits name="org.openelis.portal.modules.finalReport.FinalReport" />
+	<inherits name="org.openelis.portal.modules.sampleStatus.SampleStatus" />
+	<inherits name="org.openelis.portal.modules.cases.Cases"/>
+	<inherits name="org.openelis.portal.modules.dataView.DataView" />
+	<inherits name="org.openelis.portal.modules.emailNotification.EmailNotification" />
+	<inherits name="org.openelis.portal.modules.message.Message" />
+</module>
