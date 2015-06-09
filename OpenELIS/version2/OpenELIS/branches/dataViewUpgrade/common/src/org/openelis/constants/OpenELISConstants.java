@@ -1240,6 +1240,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_testIdMissingException(Integer arg0,  Integer arg1);
 
   /**
+   * Translated "Analysis Type".
+   * 
+   * @return translated "Analysis Type"
+   */
+  @DefaultMessage("Analysis Type")
+  @Key("analysis.type")
+  String analysis_type();
+
+  /**
    * Translated "Unit of measure invalid for this sample type".
    * 
    * @return translated "Unit of measure invalid for this sample type"
@@ -4147,6 +4156,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_fetchingData();
 
   /**
+   * Translated "There was an error with opening the file".
+   * 
+   * @return translated "There was an error with opening the file"
+   */
+  @DefaultMessage("There was an error with opening the file")
+  @Key("dataView.fileUploadException")
+  String dataView_fileUploadException();
+
+  /**
    * Translated "Filters".
    * 
    * @return translated "Filters"
@@ -4190,6 +4208,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Location City")
   @Key("dataView.locationCity")
   String dataView_locationCity();
+
+  /**
+   * Translated "Location Country".
+   * 
+   * @return translated "Location Country"
+   */
+  @DefaultMessage("Location Country")
+  @Key("dataView.locationCountry")
+  String dataView_locationCountry();
 
   /**
    * Translated "Location State".
@@ -4451,6 +4478,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Please Wait...")
   @Key("dataView.pleaseWait")
   String dataView_pleaseWait();
+
+  /**
+   * Translated "Provider Phone Number".
+   * 
+   * @return translated "Provider Phone Number"
+   */
+  @DefaultMessage("Provider Phone Number")
+  @Key("dataView.providerPhone")
+  String dataView_providerPhone();
 
   /**
    * Translated "Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}.".
@@ -7009,6 +7045,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_created();
 
   /**
+   * Translated "yyyy-MM-dd".
+   * 
+   * @return translated "yyyy-MM-dd"
+   */
+  @DefaultMessage("yyyy-MM-dd")
+  @Key("gen.datePattern")
+  String gen_datePattern();
+
+  /**
    * Translated "Date Rec".
    * 
    * @return translated "Date Rec"
@@ -7016,6 +7061,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Date Rec")
   @Key("gen.dateRec")
   String gen_dateRec();
+
+  /**
+   * Translated "yyyy-MM-dd HH:mm".
+   * 
+   * @return translated "yyyy-MM-dd HH:mm"
+   */
+  @DefaultMessage("yyyy-MM-dd HH:mm")
+  @Key("gen.dateTimePattern")
+  String gen_dateTimePattern();
 
   /**
    * Translated "Delete".

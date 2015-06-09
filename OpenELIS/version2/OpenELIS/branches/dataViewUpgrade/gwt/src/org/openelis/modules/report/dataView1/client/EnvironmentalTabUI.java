@@ -57,8 +57,10 @@ public class EnvironmentalTabUI extends Screen {
     private static EnvironmentalTabUIBinder uiBinder = GWT.create(EnvironmentalTabUIBinder.class);
 
     @UiField
-    protected CheckBox                      envIsHazardous, envPriority, envCollectorHeader,
-                    envCollectorPhone, envLocationHeader, locationAddrCityHeader, envDescription;
+    protected CheckBox                      envIsHazardous, envPriority, envCollector,
+                    envCollectorPhone, envDescription, envLocation, locationAddrMultipleUnit,
+                    locationAddrStreetAddress, locationAddrCity, locationAddrState,
+                    locationAddrZipCode, locationAddrCountry;
 
     @UiField
     protected Label<String>                 fieldsDisabledLabel;
@@ -96,7 +98,7 @@ public class EnvironmentalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? envPriority : envDescription;
+                                 return forward ? envPriority : locationAddrCountry;
                              }
                          });
 
@@ -110,19 +112,19 @@ public class EnvironmentalTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? envCollectorHeader : envIsHazardous;
+                return forward ? envCollector : envIsHazardous;
             }
         });
 
-        addScreenHandler(envCollectorHeader,
-                         SampleWebMeta.getEnvCollectorHeader(),
+        addScreenHandler(envCollector,
+                         SampleWebMeta.getEnvCollector(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 envCollectorHeader.setValue(getValue(SampleWebMeta.getEnvCollectorHeader()));
+                                 envCollector.setValue(getValue(SampleWebMeta.getEnvCollector()));
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 envCollectorHeader.setEnabled(isState(DEFAULT) && canEdit);
+                                 envCollector.setEnabled(isState(DEFAULT) && canEdit);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -142,39 +144,7 @@ public class EnvironmentalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? envLocationHeader : envCollectorHeader;
-                             }
-                         });
-
-        addScreenHandler(envLocationHeader,
-                         SampleWebMeta.getEnvLocationHeader(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 envLocationHeader.setValue(getValue(SampleWebMeta.getEnvLocationHeader()));
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 envLocationHeader.setEnabled(isState(DEFAULT) && canEdit);
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? locationAddrCityHeader : envCollectorPhone;
-                             }
-                         });
-
-        addScreenHandler(locationAddrCityHeader,
-                         SampleWebMeta.getLocationAddrCityHeader(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrCityHeader.setValue(getValue(SampleWebMeta.getLocationAddrCityHeader()));
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 locationAddrCityHeader.setEnabled(isState(DEFAULT) && canEdit);
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? envDescription : envLocationHeader;
+                                 return forward ? envDescription : envCollector;
                              }
                          });
 
@@ -190,7 +160,117 @@ public class EnvironmentalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? envIsHazardous : locationAddrCityHeader;
+                                 return forward ? envLocation : envCollectorPhone;
+                             }
+                         });
+
+        addScreenHandler(envLocation, SampleWebMeta.getEnvLocation(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                envLocation.setValue(getValue(SampleWebMeta.getEnvLocation()));
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                envLocation.setEnabled(isState(DEFAULT) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? locationAddrMultipleUnit : envDescription;
+            }
+        });
+        
+        addScreenHandler(locationAddrMultipleUnit,
+                         SampleWebMeta.getLocationAddrMultipleUnit(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrMultipleUnit.setValue(getValue(SampleWebMeta.getLocationAddrMultipleUnit()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrMultipleUnit.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddrStreetAddress : envLocation;
+                             }
+                         });
+        
+        addScreenHandler(locationAddrStreetAddress,
+                         SampleWebMeta.getLocationAddrStreetAddress(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrStreetAddress.setValue(getValue(SampleWebMeta.getLocationAddrStreetAddress()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrStreetAddress.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddrCity : locationAddrMultipleUnit;
+                             }
+                         });
+       
+        addScreenHandler(locationAddrCity,
+                         SampleWebMeta.getLocationAddrCity(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrCity.setValue(getValue(SampleWebMeta.getLocationAddrCity()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrCity.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddrState : locationAddrStreetAddress;
+                             }
+                         });
+        
+        addScreenHandler(locationAddrState,
+                         SampleWebMeta.getLocationAddrState(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrState.setValue(getValue(SampleWebMeta.getLocationAddrState()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrState.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddrZipCode : locationAddrCity;
+                             }
+                         });
+        
+        addScreenHandler(locationAddrZipCode,
+                         SampleWebMeta.getLocationAddrZipCode(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrZipCode.setValue(getValue(SampleWebMeta.getLocationAddrZipCode()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrZipCode.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddrCountry : locationAddrState;
+                             }
+                         });
+        
+        addScreenHandler(locationAddrCountry,
+                         SampleWebMeta.getLocationAddrCountry(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 locationAddrCountry.setValue(getValue(SampleWebMeta.getLocationAddrCountry()));
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 locationAddrCountry.setEnabled(isState(DEFAULT) && canEdit);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? envIsHazardous : locationAddrZipCode;
                              }
                          });
 

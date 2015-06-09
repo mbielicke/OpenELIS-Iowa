@@ -19,10 +19,10 @@
     <g:layer top="0px" height="30px">
       <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>
-          <f:FileLoad ui:field="fileLoad">
+          <f:FileInput ui:field="fileInput">
             <w:Button css="{res.buttonPanel}" ui:field="openQueryButton" leftIcon="{res.icon.OpenButtonImage}"
               text="{msg.dataView_openQuery}" />
-          </f:FileLoad>
+          </f:FileInput>
           <w:Button css="{res.buttonPanel}" ui:field="saveQueryButton" leftIcon="{res.icon.SaveButtonImage}"
             text="{msg.dataView_saveQuery}" />
           <w:Button css="{res.buttonPanel}" ui:field="executeQueryButton" leftIcon="{res.icon.NextButtonImage}"

@@ -33,11 +33,14 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldDataView1VO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.TestAnalyteDataView1VO;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
@@ -50,7 +53,8 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.WindowInt;
-import org.openelis.ui.widget.fileupload.FileLoad;
+import org.openelis.ui.widget.fileupload.FileInput;
+import org.openelis.ui.widget.fileupload.FormData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -62,8 +66,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -78,7 +80,7 @@ public class DataViewScreenUI extends Screen {
     protected DataView1VO                  data;
 
     @UiField
-    protected FileLoad                     fileLoad;
+    protected FileInput                    fileInput;
 
     @UiField
     protected Button                       openQueryButton, saveQueryButton, executeQueryButton;
@@ -157,17 +159,23 @@ public class DataViewScreenUI extends Screen {
     private void initialize() {
         screen = this;
 
-        fileLoad.setAction("openelis/upload");
-
-        fileLoad.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-            public void onSubmitComplete(SubmitCompleteEvent event) {
-                openQuery();
+        addScreenHandler(fileInput, "fileInput", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                fileInput.setEnabled(true);
             }
         });
 
-        addScreenHandler(openQueryButton, "openQueryButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                openQueryButton.setEnabled(true);
+        fileInput.setSendUrl("openelis/upload");
+
+        fileInput.addFormDataCallback(new FormData.Callback() {
+            @Override
+            public void success() {
+                openQuery();
+            }
+
+            @Override
+            public void failure() {
+                Window.alert(Messages.get().dataView_fileUploadException());
             }
         });
 
@@ -337,6 +345,7 @@ public class DataViewScreenUI extends Screen {
     @UiHandler("saveQueryButton")
     protected void saveQuery(ClickEvent event) {
         Validation validation;
+        ArrayList<String> columns;
 
         finishEditing();
 
@@ -350,7 +359,19 @@ public class DataViewScreenUI extends Screen {
         data.setQueryFields(getQueryFields());
         data.setTestAnalytes(null);
         data.setAuxFields(null);
-        data.setColumns(getColumns());
+
+        /*
+         * make a list of the columns selected in each tab
+         */
+        columns = new ArrayList<String>();
+        commonTab.addColumns(columns);
+        environmentalTab.addColumns(columns);
+        privateWellTab.addColumns(columns);
+        sdwisTab.addColumns(columns);
+        clinicalTab.addColumns(columns);
+        neonatalTab.addColumns(columns);
+        ptTab.addColumns(columns);
+        data.setColumns(columns);
 
         getReportScreen("saveQuery", window, "DataView.xml");
 
@@ -366,13 +387,76 @@ public class DataViewScreenUI extends Screen {
      */
     @UiHandler("executeQueryButton")
     protected void executeQuery(ClickEvent event) {
+        int before, numDomains;
         boolean excludeResults, excludeAuxData;
+        QueryData field;
+        String domain;
         Validation validation;
         ArrayList<String> columns;
+        ArrayList<QueryData> fields;
 
         finishEditing();
 
-        columns = getColumns();
+        columns = new ArrayList<String>();
+
+        /*
+         * find out which columns are selected in each tab; also, find out
+         * columns from how many domains have been selected
+         */
+        commonTab.addColumns(columns);
+
+        numDomains = 0;
+        domain = null;
+
+        before = columns.size();
+        environmentalTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().ENVIRONMENTAL;
+        }
+
+        before = columns.size();
+        privateWellTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().PRIVATEWELL;
+        }
+
+        before = columns.size();
+        sdwisTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().SDWIS;
+        }
+
+        before = columns.size();
+        clinicalTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().CLINICAL;
+        }
+
+        before = columns.size();
+        neonatalTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().NEONATAL;
+        }
+
+        before = columns.size();
+        ptTab.addColumns(columns);
+        if (columns.size() > before) {
+            numDomains++ ;
+            domain = Constants.domain().PT;
+        }
+
+        /*
+         * columns from only one domain must be selected
+         */
+        if (numDomains > 1) {
+            setError(Messages.get().dataView_selFieldsOneDomain());
+            return;
+        }
 
         /*
          * if both results and aux data are excluded then at least one column
@@ -393,7 +477,28 @@ public class DataViewScreenUI extends Screen {
             return;
         }
 
-        data.setQueryFields(getQueryFields());
+        fields = getQueryFields();
+        /*
+         * if the user has not selected a domain in the dropdown, but has
+         * selected the columns for a domain, then set that as the domain
+         */
+        if (domain != null) {
+            field = null;
+            for (QueryData f : fields) {
+                if (SampleWebMeta.DOMAIN.equals(f.getKey())) {
+                    field = f;
+                    break;
+                }
+            }
+            if (field == null) {
+                field = new QueryData();
+                field.setKey(SampleWebMeta.DOMAIN);
+                field.setQuery(domain);
+                field.setType(QueryData.Type.STRING);
+                fields.add(field);
+            }
+        }
+        data.setQueryFields(fields);
         data.setTestAnalytes(null);
         data.setAuxFields(null);
         data.setColumns(columns);
@@ -467,27 +572,6 @@ public class DataViewScreenUI extends Screen {
         setData();
         setState(DEFAULT);
         fireDataChange();
-    }
-
-    /**
-     * Returns the list of columns selected in all tabs
-     */
-    private ArrayList<String> getColumns() {
-        ArrayList<String> columns;
-
-        columns = new ArrayList<String>();
-        /*
-         * find out which columns are selected in each tab
-         */
-        commonTab.addColumns(columns);
-        environmentalTab.addColumns(columns);
-        privateWellTab.addColumns(columns);
-        sdwisTab.addColumns(columns);
-        clinicalTab.addColumns(columns);
-        neonatalTab.addColumns(columns);
-        ptTab.addColumns(columns);
-
-        return columns;
     }
 
     /**
@@ -589,6 +673,10 @@ public class DataViewScreenUI extends Screen {
             statusScreen = new StatusBarPopupScreenUI() {
                 @Override
                 public void stop() {
+                    /*
+                     * set the attribute in the session that would tell the bean
+                     * that the report should be stopped
+                     */
                     message.setText(Messages.get().dataView_pleaseWait());
                     DataViewReportService1.get().stopReport();
                 }
@@ -619,6 +707,7 @@ public class DataViewScreenUI extends Screen {
             timer = new Timer() {
                 public void run() {
                     ReportStatus status;
+                    
                     try {
                         status = DataViewReportService1.get().getStatus();
                         /*
@@ -636,8 +725,8 @@ public class DataViewScreenUI extends Screen {
                     }
                 }
             };
-            timer.schedule(1000);
         }
+        timer.schedule(1000);
     }
 
     /**

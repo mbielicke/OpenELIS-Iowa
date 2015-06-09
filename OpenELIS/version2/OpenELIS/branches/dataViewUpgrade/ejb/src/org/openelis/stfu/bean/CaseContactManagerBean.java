@@ -10,7 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.bean.LockBean;
 import org.openelis.domain.Constants;

@@ -557,9 +557,9 @@ public abstract class FilterScreenUI extends Screen {
              * selected/unselected; at that time, no results may be shown if no
              * analyte is selected or the results being shown may be of a
              * different analyte than the passed one; this check makes sure that
-             * an exception is not thrown on trying to check/uncheck a row's
-             * checkbox if the table doesn't have as many rows as the number of
-             * results for the passed analyte
+             * an exception is not thrown on trying to check/uncheck a analyte's
+             * checkbox if the result table doesn't have as many rows as the
+             * number of results for the passed analyte
              */
             if (data == sel)
                 resultTable.setValueAt(i, 0, val);
@@ -610,9 +610,9 @@ public abstract class FilterScreenUI extends Screen {
              * selected/unselected; at that time, no aux data may be shown if no
              * aux field is selected or the aux data being shown may be of a
              * different aux field than the passed one; this check makes sure
-             * that an exception is not thrown on trying to check/uncheck a
-             * row's checkbox if the table doesn't have as many rows as the
-             * number of results for the passed aux field
+             * that an exception is not thrown on trying to check/uncheck a aux
+             * field's checkbox if the aux data table doesn't have as many rows
+             * as the number of aux data for the passed aux field
              */
             if (data == sel)
                 auxDataTable.setValueAt(i, 0, val);
