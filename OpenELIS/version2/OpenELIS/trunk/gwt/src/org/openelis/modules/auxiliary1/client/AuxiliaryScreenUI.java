@@ -959,7 +959,10 @@ public class AuxiliaryScreenUI extends Screen {
     @UiHandler("add")
     protected void add(ClickEvent event) {
         setBusy();
+
         manager = new AuxFieldGroupManager1();
+        manager.getGroup().setIsActive("N");
+
         setState(ADD);
         fireDataChange();
         name.setFocus(true);

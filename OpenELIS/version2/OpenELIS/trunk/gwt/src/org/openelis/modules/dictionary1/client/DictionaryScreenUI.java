@@ -437,7 +437,7 @@ public class DictionaryScreenUI extends Screen {
                 int r, c;
                 Object val;
                 DictionaryViewDO data;
-                Item<Integer> row;
+                AutoCompleteValue row;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -465,10 +465,10 @@ public class DictionaryScreenUI extends Screen {
                         data.setEntry((String)val);
                         break;
                     case 4:
-                        row = (Item<Integer>) ( ((AutoCompleteValue)val).getData());
+                        row = (AutoCompleteValue)val;
                         if (row != null) {
-                            data.setRelatedEntryId((Integer)row.getKey());
-                            data.setRelatedEntryName((String)row.getCell(0));
+                            data.setRelatedEntryId(row.getId());
+                             data.setRelatedEntryName(row.getDisplay());
                         } else {
                             data.setRelatedEntryId(null);
                             data.setRelatedEntryName(null);
@@ -516,6 +516,8 @@ public class DictionaryScreenUI extends Screen {
                 DictionaryViewDO data;
                 HTML html;
 
+                if (manager == null)
+                    return new HTML();
                 data = manager.dictionary.get(row);
                 if (data == null)
                     return new HTML();
@@ -1162,15 +1164,17 @@ public class DictionaryScreenUI extends Screen {
     }
 
     private ArrayList<Item<Integer>> getRelatedEntryMatches(String match) {
+        Item<Integer> row;
         ArrayList<Item<Integer>> model;
         ArrayList<DictionaryViewDO> list;
 
         model = new ArrayList<Item<Integer>>();
         try {
             list = service.fetchByEntry(QueryFieldUtil.parseAutocomplete(match));
-            for (DictionaryViewDO data : list)
-                model.add(new Item<Integer>(data.getId(), data.getEntry(), data.getCategoryName()));
-
+            for (DictionaryViewDO data : list) {
+                row = new Item<Integer>(data.getId(), data.getEntry(), data.getCategoryName());
+                model.add(row);
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
