@@ -52,7 +52,7 @@
        left join dictionary d2 on d2.id = a1.status_id
  WHERE s.entered_date between $P{FROM} and $P{TO}
        $P!{STATUS} $P!{TEST} $P!{SECTION}
-ORDER BY $P{ORDER_BY} ]]>
+ORDER BY $P!{ORDER_BY}]]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.Integer"/>

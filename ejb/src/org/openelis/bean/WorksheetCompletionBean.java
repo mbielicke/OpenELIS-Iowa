@@ -1182,7 +1182,8 @@ public class WorksheetCompletionBean {
                 } else {
                     setCellValue(cell, wrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("T"+testId);
                         if (pMap == null) {
@@ -1204,11 +1205,11 @@ public class WorksheetCompletionBean {
                         }
 
                         apVDO = pMap.get(wrVDO.getAnalyteId());
-                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
+                        if (apVDO != null && ("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
+                        } else if (apVDO != null && ("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
+                        } else if (apVDO != null && ("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
@@ -1317,7 +1318,8 @@ public class WorksheetCompletionBean {
                 } else {
                     setCellValue(cell, wqrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("Q"+qcId);
                         if (pMap == null) {
@@ -1339,11 +1341,11 @@ public class WorksheetCompletionBean {
                         }
 
                         apVDO = pMap.get(wqrVDO.getAnalyteId());
-                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
+                        if (apVDO != null && ("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
+                        } else if (apVDO != null && ("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
+                        } else if (apVDO != null && ("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
