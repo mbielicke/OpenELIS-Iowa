@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -69,7 +70,7 @@ public class QcChartReportBean {
     public QcChartReportViewVO fetchForQcChart(ArrayList<QueryData> paramList) throws Exception {
         Integer plot, qc, number, location;
         String analyteName, qcName, systemName;
-        Timestamp startDate, endDate;
+        Date startDate, endDate;
         QcChartReportViewVO.Value vo;
         QcChartReportViewVO data, qcChartVO;
         ArrayList<Value> qcList, list;
@@ -80,8 +81,8 @@ public class QcChartReportBean {
 
         param = ReportUtil.getMapParameter(paramList);
 
-        startDate = ReportUtil.getTimestampParameter(param, QcChartMeta.getWorksheetCreatedDateFrom());
-        endDate = ReportUtil.getTimestampParameter(param, QcChartMeta.getWorksheetCreatedDateTo());
+        startDate = ReportUtil.getDateParameter(param, QcChartMeta.getWorksheetCreatedDateFrom());
+        endDate = ReportUtil.getDateParameter(param, QcChartMeta.getWorksheetCreatedDateTo());
         number = ReportUtil.getIntegerParameter(param, QcChartMeta.getNumInstances());
         qcName = ReportUtil.getStringParameter(param, QcChartMeta.getQCName());
         qc = ReportUtil.getIntegerParameter(param, QcChartMeta.getQCType());
