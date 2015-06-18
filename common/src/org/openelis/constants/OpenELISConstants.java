@@ -106,6 +106,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String abbr();
 
   /**
+   * Translated "Abnormals Report".
+   * 
+   * @return translated "Abnormals Report"
+   */
+  @DefaultMessage("Abnormals Report")
+  @Key("abnormals.abnormalsReport")
+  String abnormals_abnormalsReport();
+
+  /**
    * Translated "Abort".
    * 
    * @return translated "Abort"
@@ -4102,6 +4111,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_dataView();
 
   /**
+   * Translated "Data View: Considering {0,number,#0} samples for user ''{1}''".
+   * 
+   * @return translated "Data View: Considering {0,number,#0} samples for user ''{1}''"
+   */
+  @DefaultMessage("Data View: Considering {0,number,#0} samples for user ''{1}''")
+  @Key("dataView.eventLogMessage")
+  String dataView_eventLogMessage(Integer arg0,  String arg1);
+
+  /**
    * Translated "Exclude All".
    * 
    * @return translated "Exclude All"
@@ -4489,11 +4507,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_providerPhone();
 
   /**
-   * Translated "Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}.".
+   * Translated "Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}.".
    * 
-   * @return translated "Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}."
+   * @return translated "Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}."
    */
-  @DefaultMessage("Query too big. Your search returned {0,number,#0} results, but the limit is {1,number,#0}.")
+  @DefaultMessage("Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}.")
   @Key("dataView.queryTooBigException")
   String dataView_queryTooBigException(Integer arg0,  Integer arg1);
 
@@ -13417,6 +13435,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String patient_patient();
 
   /**
+   * Translated "Patient Phone Number".
+   * 
+   * @return translated "Patient Phone Number"
+   */
+  @DefaultMessage("Patient Phone Number")
+  @Key("patient.phone")
+  String patient_phone();
+
+  /**
    * Translated "Race".
    * 
    * @return translated "Race"
@@ -17951,6 +17978,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}")
   @Key("secondaryLabel.failedToFetchTestException")
   String secondaryLabel_failedToFetchTestException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Label quantity must be at least one".
+   * 
+   * @return translated "Label quantity must be at least one"
+   */
+  @DefaultMessage("Label quantity must be at least one")
+  @Key("secondaryLabel.invalidQtyException")
+  String secondaryLabel_invalidQtyException();
 
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - No label type defined".

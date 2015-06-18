@@ -30,23 +30,23 @@ import java.util.ArrayList;
 
 import org.openelis.domain.InventoryXUseViewDO;
 
-public class OrderFillManager implements Serializable {
+public class IOrderFillManager implements Serializable {
 
     private static final long                                  serialVersionUID = 1L;
 
-    protected Integer                                          orderId;
+    protected Integer                                          iorderId;
     protected ArrayList<InventoryXUseViewDO>                   fills, deleted;
 
-    protected transient static OrderFillManagerProxy proxy;
+    protected transient static IOrderFillManagerProxy proxy;
 
-    protected OrderFillManager() {
+    protected IOrderFillManager() {
     }
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderFillManager getInstance() {
-        return new OrderFillManager();
+    public static IOrderFillManager getInstance() {
+        return new IOrderFillManager();
     }
 
     public InventoryXUseViewDO getFillAt(int i) {
@@ -109,15 +109,15 @@ public class OrderFillManager implements Serializable {
     }
 
     // service methods
-    public static OrderFillManager fetchByOrderId(Integer id) throws Exception {
-        return proxy().fetchByOrderId(id);
+    public static IOrderFillManager fetchByOrderId(Integer id) throws Exception {
+        return proxy().fetchByIorderId(id);
     }
 
-    public OrderFillManager add() throws Exception {
+    public IOrderFillManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderFillManager update() throws Exception {
+    public IOrderFillManager update() throws Exception {
         return proxy().update(this);
     }
     
@@ -127,11 +127,11 @@ public class OrderFillManager implements Serializable {
 
     // friendly methods used by managers and proxies
     Integer getOrderId() {
-        return orderId;
+        return iorderId;
     }
 
     void setOrderId(Integer id) {
-        orderId = id;
+        iorderId = id;
     }
 
     ArrayList<InventoryXUseViewDO> getFills() {
@@ -152,9 +152,9 @@ public class OrderFillManager implements Serializable {
         return deleted.get(i);
     }
 
-    private static OrderFillManagerProxy proxy() {
+    private static IOrderFillManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderFillManagerProxy();
+            proxy = new IOrderFillManagerProxy();
         return proxy;
     }
 }

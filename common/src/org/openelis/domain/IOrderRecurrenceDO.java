@@ -34,22 +34,22 @@ import org.openelis.ui.common.Datetime;
  * Class represents the fields in database table order_recurrence
  */
 
-public class OrderRecurrenceDO extends DataObject {
+public class IOrderRecurrenceDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, orderId, frequency, unitId;
+    protected Integer         id, iorderId, frequency, unitId;
     protected String          isActive;
     protected Datetime        activeBegin, activeEnd;
 
-    public OrderRecurrenceDO() {
+    public IOrderRecurrenceDO() {
     }
     
-    public OrderRecurrenceDO(Integer id, Integer orderId, String isActive,
+    public IOrderRecurrenceDO(Integer id, Integer iorderId, String isActive,
                              Date activeBegin, Date activeEnd, 
                              Integer frequency, Integer unitId) {
         setId(id);
-        setOrderId(orderId);
+        setIorderId(iorderId);
         setIsActive(isActive);
         setActiveBegin(DataBaseUtil.toYD(activeBegin));
         setActiveEnd(DataBaseUtil.toYD(activeEnd));
@@ -67,12 +67,12 @@ public class OrderRecurrenceDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
         _changed = true;
     }
     

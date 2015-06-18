@@ -28,27 +28,27 @@ package org.openelis.domain;
 import java.util.Date;
 
 /**
- * The class extends order DO and carries the additional organization information.
+ * The class extends iorder DO and carries the additional organization information.
  * The additional field is for read/display only and does not get committed to
  * the database. Note: isChanged will not reflect any changes to read/display
  * fields.
  */
 
-public class OrderViewDO extends OrderDO {
+public class IOrderViewDO extends IOrderDO {
 
     private static final long serialVersionUID = 1L;
 
     protected OrganizationDO organization;
 
-    public OrderViewDO() {
+    public IOrderViewDO() {
     }
 
-    public OrderViewDO(Integer id,Integer parentOrderId, String description,
+    public IOrderViewDO(Integer id,Integer parentIorderId, String description,
                        Integer statusId, Date orderedDate, Integer neededInDays,
                        String requestedBy, Integer costCenterId, Integer organizationId,
                        String organizationAttention, String type, String externalOrderNumber,
                        Integer shipFromId, Integer numberOfForms) {
-        super(id, parentOrderId, description, statusId, orderedDate,neededInDays, requestedBy,
+        super(id, parentIorderId, description, statusId, orderedDate,neededInDays, requestedBy,
               costCenterId, organizationId, organizationAttention, type, externalOrderNumber,
               shipFromId, numberOfForms);
     }

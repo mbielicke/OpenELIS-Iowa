@@ -34,20 +34,20 @@ import org.openelis.ui.common.DataBaseUtil;
  * changes to read/display fields.
  */
 
-public class OrderItemViewDO extends OrderItemDO {
+public class IOrderItemViewDO extends IOrderItemDO {
 
     private static final long serialVersionUID = 1L;
 
     protected String inventoryItemName, inventoryItemProductUri;
     protected Integer storeId;
     
-    public OrderItemViewDO() {
+    public IOrderItemViewDO() {
     }
 
-    public OrderItemViewDO(Integer id, Integer orderId, Integer inventoryItemId,
+    public IOrderItemViewDO(Integer id, Integer iorderId, Integer inventoryItemId,
                            Integer quantity, String catalogNumber, Double unitCost, 
                            String inventoryItemName, Integer storeId, String inventoryItemProductUri) {
-        super(id, orderId, inventoryItemId, quantity, catalogNumber, unitCost);
+        super(id, iorderId, inventoryItemId, quantity, catalogNumber, unitCost);
         
         setInventoryItemName(inventoryItemName);
         setStoreId(storeId);

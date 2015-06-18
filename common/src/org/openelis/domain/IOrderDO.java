@@ -31,29 +31,29 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 /**
- * Class represents the fields in database table order.
+ * Class represents the fields in database table iorder.
  */
 
-public class OrderDO extends DataObject {
+public class IOrderDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, parentOrderId, statusId, neededInDays, costCenterId,
+    protected Integer         id, parentIorderId, statusId, neededInDays, costCenterId,
                               organizationId, shipFromId, numberOfForms;
     protected String          description, requestedBy, type, externalOrderNumber,
                               organizationAttention;
     protected Datetime        orderedDate;
 
-    public OrderDO() {
+    public IOrderDO() {
     }
 
-    public OrderDO(Integer id, Integer parentOrderId, String description, Integer statusId,
+    public IOrderDO(Integer id, Integer parentIorderId, String description, Integer statusId,
                    Date orderedDate, Integer neededInDays, String requestedBy, 
                    Integer costCenterId, Integer organizationId,String organizationAttention, 
                    String type, String externalOrderNumber, Integer shipFromId, 
                    Integer numberOfForms) {
         setId(id);
-        setParentOrderId(parentOrderId);
+        setParentIorderId(parentIorderId);
         setDescription(description);
         setStatusId(statusId);
         setOrderedDate(DataBaseUtil.toYD(orderedDate));
@@ -79,12 +79,12 @@ public class OrderDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getParentOrderId() {
-        return parentOrderId;
+    public Integer getParentIorderId() {
+        return parentIorderId;
     }
 
-    public void setParentOrderId(Integer parentOrderId) {
-        this.parentOrderId = parentOrderId;
+    public void setParentIorderId(Integer parentOrderId) {
+        this.parentIorderId = parentOrderId;
         _changed = true;
     }
 
