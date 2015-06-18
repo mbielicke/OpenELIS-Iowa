@@ -370,7 +370,8 @@ public class SampleBean {
                                                       (String)result[7],
                                                       (String)result[8],
                                                       (String)result[9],
-                                                      (String)result[10]);
+                                                      (String)result[10],
+                                                      null);
             returnList.add(notificationVo);
         }
         return returnList;
@@ -400,7 +401,8 @@ public class SampleBean {
                                                       (String)result[5],
                                                       (String)result[6],
                                                       (String)result[7],
-                                                      (String)result[8]);
+                                                      (String)result[8],
+                                                      null);
             returnList.add(notificationVo);
         }
         return returnList;

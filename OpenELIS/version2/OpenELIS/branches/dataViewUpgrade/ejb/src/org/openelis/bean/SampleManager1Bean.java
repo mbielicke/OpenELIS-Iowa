@@ -567,7 +567,7 @@ public class SampleManager1Bean {
                 }
             }
         }
-        
+
         if (status != null)
             status.setPercentComplete(100);
 
@@ -1304,7 +1304,7 @@ public class SampleManager1Bean {
          * Creating the default AnalysisReportFlags record to be added for each
          * analysis that is added to the database
          */
-        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
+        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, null, null);
 
         /*
          * this will be used as the released date for any newly released
@@ -1624,9 +1624,7 @@ public class SampleManager1Bean {
                                 id = amap.get(id);
                             if (id != null && !rmap.containsKey(data.getId())) {
                                 // sort order is per analysis. avoid updating
-                                // sort
-                                // order
-                                // if numbers are ascending
+                                // sort order if numbers are ascending
                                 so = seq.get(id);
                                 if (so == null)
                                     so = 1;
@@ -1892,8 +1890,8 @@ public class SampleManager1Bean {
      * analysis is past logged-in status or if there are reflexed analyses.
      * Cancelled analyses, storages and internal notes are not duplicated. If
      * some data e.g. organization could not be duplicated because of being
-     * inactive, then the returned VO contains warnings for that and the
-     * partially duplicated manager.
+     * inactive, the returned VO contains warnings for that and the partially
+     * duplicated manager.
      */
     public SampleTestReturnVO duplicate(Integer sampleId) throws Exception {
         int i;
@@ -3355,6 +3353,10 @@ public class SampleManager1Bean {
         return ana;
     }
 
+    /**
+     * If the passed status is not null, increments its percent completion by
+     * the passed amount
+     */
     private void updateStatus(ReportStatus status, int increment) {
         if (status != null)
             status.setPercentComplete(status.getPercentComplete() + increment);

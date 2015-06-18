@@ -50,10 +50,10 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryXPut;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
+import org.openelis.entity.IOrder;
+import org.openelis.entity.IOrderItem;
 import org.openelis.manager.InventoryReceiptManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -127,7 +127,7 @@ public class InventoryReceiptBean {
         builder.setSelect("distinct new org.openelis.domain.InventoryReceiptViewDO(" +
                           InventoryReceiptMeta.getId() + ", " +
                           InventoryReceiptMeta.getInventoryItemId() + ", " +
-                          InventoryReceiptMeta.getOrderItemId() + ", " +
+                          InventoryReceiptMeta.getIorderItemId() + ", " +
                           InventoryReceiptMeta.getOrganizationId() + ", " +
                           InventoryReceiptMeta.getReceivedDate() + ", " +
                           InventoryReceiptMeta.getQuantityReceived() + ", " +
@@ -135,19 +135,19 @@ public class InventoryReceiptBean {
                           InventoryReceiptMeta.getQcReference() + ", " +
                           InventoryReceiptMeta.getExternalReference() + ", " +
                           InventoryReceiptMeta.getUpc() + ", " +
-                          InventoryReceiptMeta.getOrderItemQuantity() + ", " +
-                          InventoryReceiptMeta.getOrderItemOrderId() + ", " +
-                          InventoryReceiptMeta.getOrderItemOrderExternalOrderNumber() +
-                          ", " + InventoryReceiptMeta.getOrderItemUnitCost() + ") ");
+                          InventoryReceiptMeta.getIorderItemQuantity() + ", " +
+                          InventoryReceiptMeta.getIorderItemIorderId() + ", " +
+                          InventoryReceiptMeta.getIorderItemIorderExternalOrderNumber() +
+                          ", " + InventoryReceiptMeta.getIorderItemUnitCost() + ") ");
         builder.constructWhere(fields);
 
-        builder.addWhere(InventoryReceiptMeta.getOrderItemOrderType() + "=" + "'" +
-                         OrderManager.TYPE_VENDOR + "' and " +
-                         InventoryReceiptMeta.getOrderItemOrderStatusId() + " IN (" +
+        builder.addWhere(InventoryReceiptMeta.getIorderItemIorderType() + "=" + "'" +
+                         IOrderManager.TYPE_VENDOR + "' and " +
+                         InventoryReceiptMeta.getIorderItemIorderStatusId() + " IN (" +
                          Constants.dictionary().ORDER_STATUS_PENDING + "," +
                          Constants.dictionary().ORDER_STATUS_BACK_ORDERED + ")");
 
-        builder.setOrderBy(InventoryReceiptMeta.getOrderItemOrderId() + " DESC," +
+        builder.setOrderBy(InventoryReceiptMeta.getIorderItemIorderId() + " DESC," +
                            InventoryReceiptMeta.getInventoryItemId() + " DESC," +
                            InventoryReceiptMeta.getReceivedDate() + " DESC");
 
@@ -182,7 +182,7 @@ public class InventoryReceiptBean {
         entity = new InventoryReceipt();
 
         entity.setInventoryItemId(data.getInventoryItemId());
-        entity.setOrderItemId(data.getOrderItemId());
+        entity.setIorderItemId(data.getIorderItemId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setReceivedDate(data.getReceivedDate());
         entity.setQuantityReceived(data.getQuantityReceived());
@@ -270,7 +270,7 @@ public class InventoryReceiptBean {
         entity = manager.find(InventoryReceipt.class, data.getId());
         oldQ = entity.getQuantityReceived();
         entity.setInventoryItemId(data.getInventoryItemId());
-        entity.setOrderItemId(data.getOrderItemId());
+        entity.setIorderItemId(data.getIorderItemId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setReceivedDate(data.getReceivedDate());
         entity.setQuantityReceived(data.getQuantityReceived());
@@ -497,7 +497,7 @@ public class InventoryReceiptBean {
                                              InventoryReceiptMeta.getInventoryItemName()));
         }
 
-        orderItemQ = data.getOrderItemQuantity();
+        orderItemQ = data.getIorderItemQuantity();
         receivedQ = data.getQuantityReceived();
         if (receivedQ == null) {
             if (data.getId() != null)
@@ -517,10 +517,10 @@ public class InventoryReceiptBean {
 
     private ArrayList<InventoryReceiptManager> getManagers(ArrayList<InventoryReceiptViewDO> list) throws Exception {
         Integer orderId, prevOrderId, prevInvItemId, ordItemId, orgId, qtyReceived;
-        Order order;
+        IOrder order;
         InventoryReceiptManager man;
         ArrayList<InventoryReceiptManager> managers;
-        OrderItem item;
+        IOrderItem item;
         InventoryReceiptViewDO data, prevData;
         OrganizationDO org;
         HashMap<Integer, OrganizationDO> orgMap;
@@ -539,7 +539,7 @@ public class InventoryReceiptBean {
 
         for (int i = 0; i < list.size(); i++ ) {
             data = list.get(i);
-            orderId = data.getOrderItemOrderId();
+            orderId = data.getIorderItemIorderId();
             if ( !DataBaseUtil.isSame(prevOrderId, orderId))
                 prevInvItemId = null;
 
@@ -565,7 +565,7 @@ public class InventoryReceiptBean {
                     // the order changes
                     //
                     if (prevData != null &&
-                        prevData.getOrderItemQuantity() > qtyReceived && qtyReceived != 0)
+                        prevData.getIorderItemQuantity() > qtyReceived && qtyReceived != 0)
                         man.addReceipt(getRemainingQtyReceipt(prevData,
                                                               qtyReceived,
                                                               prevOrderId));
@@ -574,10 +574,10 @@ public class InventoryReceiptBean {
                     managers.add(man);
                     orderList.add(orderId);
                 }
-                order = manager.find(Order.class, orderId);
+                order = manager.find(IOrder.class, orderId);
 
-                ordItemId = data.getOrderItemId();
-                item = manager.find(OrderItem.class, ordItemId);
+                ordItemId = data.getIorderItemId();
+                item = manager.find(IOrderItem.class, ordItemId);
                 if (data.getId() == null) {
                     data.setInventoryItemId(item.getInventoryItemId());
                     data.setOrganizationId(order.getOrganizationId());
@@ -592,7 +592,7 @@ public class InventoryReceiptBean {
                 //
                 if ( !data.getInventoryItemId().equals(prevInvItemId)) {
                     if (prevInvItemId != null && qtyReceived != 0) {
-                        if (prevData.getOrderItemQuantity() > qtyReceived)
+                        if (prevData.getIorderItemQuantity() > qtyReceived)
                             man.addReceipt(getRemainingQtyReceipt(prevData,
                                                                   qtyReceived,
                                                                   prevOrderId));
@@ -630,7 +630,7 @@ public class InventoryReceiptBean {
         // last DO has not been received the full quantity of, the addtional DO
         // gets added at the end of the list
         //
-        if (prevData.getOrderItemQuantity() > qtyReceived && qtyReceived != 0)
+        if (prevData.getIorderItemQuantity() > qtyReceived && qtyReceived != 0)
             man.addReceipt(getRemainingQtyReceipt(prevData, qtyReceived, prevOrderId));
 
         return managers;
@@ -642,14 +642,14 @@ public class InventoryReceiptBean {
         InventoryReceiptViewDO lastData;
 
         lastData = new InventoryReceiptViewDO();
-        lastData.setOrderItemId(data.getOrderItemId());
+        lastData.setIorderItemId(data.getIorderItemId());
         lastData.setInventoryItemId(data.getInventoryItemId());
         lastData.setOrganizationId(data.getOrganizationId());
         lastData.setOrganization(data.getOrganization());
-        lastData.setOrderItemQuantity(data.getOrderItemQuantity() - totalReceived);
-        lastData.setUnitCost(data.getOrderItemUnitCost());
-        lastData.setOrderItemOrderId(orderId);
-        lastData.setOrderItemOrderExternalOrderNumber(data.getOrderItemOrderExternalOrderNumber());
+        lastData.setIorderItemQuantity(data.getIorderItemQuantity() - totalReceived);
+        lastData.setUnitCost(data.getIorderItemUnitCost());
+        lastData.setIorderItemIorderId(orderId);
+        lastData.setIorderItemIorderExternalOrderNumber(data.getIorderItemIorderExternalOrderNumber());
 
         return lastData;
     }

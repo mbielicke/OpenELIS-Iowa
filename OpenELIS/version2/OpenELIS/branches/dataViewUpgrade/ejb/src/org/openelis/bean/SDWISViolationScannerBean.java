@@ -25,7 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.getItems;
+import static org.openelis.manager.IOrderManager1Accessor.getItems;
 import static org.openelis.manager.SampleManager1Accessor.getResults;
 import static org.openelis.manager.SampleManager1Accessor.getSample;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
@@ -51,14 +51,14 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.PWSMonitorDO;
 import org.openelis.domain.PWSViolationDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
 import org.openelis.manager.SampleManager1;
@@ -85,7 +85,7 @@ public class SDWISViolationScannerBean {
     private SampleManager1Bean  sampleManager;
 
     @EJB
-    private OrderManager1Bean   orderManager;
+    private IOrderManager1Bean   orderManager;
 
     @EJB
     private TestResultBean      testResult;
@@ -331,7 +331,7 @@ public class SDWISViolationScannerBean {
     private void createOrder(SampleManager1 sm, PWSManager pwsm, Integer orderTemplate,
                              String series, ArrayList<String> analytes, boolean trigger) throws Exception {
         int multi, index;
-        OrderManager1 om;
+        IOrderManager1 om;
         PWSMonitorManager pwsmm;
         PWSMonitorDO data;
 
@@ -357,7 +357,7 @@ public class SDWISViolationScannerBean {
                 }
             }
 
-            for (OrderItemViewDO item : getItems(om))
+            for (IOrderItemViewDO item : getItems(om))
                 item.setQuantity(item.getQuantity() * multi);
         }
 
@@ -373,7 +373,7 @@ public class SDWISViolationScannerBean {
             if (index != -1)
                 analytes.remove(index);
         }
-        orderManager.createOrderFromSample(om, sm, analytes);
+        orderManager.createIOrderFromSample(om, sm, analytes);
     }
 
     /**

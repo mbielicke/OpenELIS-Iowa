@@ -6,17 +6,16 @@
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
-     a.name a_name,
-     ta.result_group ta_result_group,
-     ta.is_column ta_is_column,
-     ta.is_reportable ta_is_reportable,
-     d.entry d_entry
-FROM
-     analyte a,
-     test_analyte ta,
-     dictionary d
-WHERE
-      ta.test_id = $P{TEST_ID}  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order]]>
+     a.name as a_name,
+     ta.result_group as ta_result_group,
+     ta.is_column as ta_is_column,
+     ta.is_reportable as ta_is_reportable,
+     d.entry as d_entry
+FROM analyte a
+     join test_analyte ta on ta.analyte_id = a.id
+     join dictionary d on d.id = ta.type_id
+WHERE ta.test_id = $P{TEST_ID}
+ORDER BY ta.row_group, ta.sort_order]]>
 	</queryString>
 	<field name="a_name" class="java.lang.String"/>
 	<field name="ta_result_group" class="java.lang.Integer"/>

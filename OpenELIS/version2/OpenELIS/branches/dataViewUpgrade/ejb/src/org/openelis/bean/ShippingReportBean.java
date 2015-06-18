@@ -28,8 +28,8 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingViewDO;
@@ -58,10 +58,10 @@ public class ShippingReportBean {
     private ShippingBean          shipping;
 
     @EJB
-    private OrderBean             order;
+    private IOrderBean            iorder;
 
     @EJB
-    private OrderItemBean         orderItem;
+    private IOrderItemBean        iorderItem;
 
     @EJB
     private RequestformReportBean requestFormReport;
@@ -133,7 +133,7 @@ public class ShippingReportBean {
         int numpkg;
         boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, methodId;
-        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel, requestForm, instruction, dir, printstat, itemUri, uriPath, method, costCenter, userName;
+        String printer, barcodePrinter, dir, printstat, itemUri, uriPath, method, costCenter, userName;
         URL url;
         Path path;
         HashMap<String, Object> jparam;
@@ -142,11 +142,10 @@ public class ShippingReportBean {
         HashMap<String, QueryData> param;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
         ShippingViewDO shipData;
         ArrayList<Integer> orderIds;
-        ArrayList<OrderViewDO> orderList;
-        ArrayList<OrderItemViewDO> itemList;
+        ArrayList<IOrderViewDO> orderList;
+        ArrayList<IOrderItemViewDO> itemList;
         AddressDO shipFromAddr, shipToAddr;
         OrganizationViewDO shipFrom;
         DictionaryDO labLocDict;
@@ -255,7 +254,7 @@ public class ShippingReportBean {
                     shipTo = shipData.getShippedTo();
                     shipToAddr = shipTo.getAddress();
 
-                    orderList = order.fetchByShippingId(shippingId);
+                    orderList = iorder.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
                     costCenter = null;
                     /*
@@ -263,7 +262,7 @@ public class ShippingReportBean {
                      * defined and create a list of the order ids that may be
                      * needed later
                      */
-                    for (OrderViewDO o : orderList) {
+                    for (IOrderViewDO o : orderList) {
                         orderIds.add(o.getId());
                         if (o.getCostCenterId() != null && costCenter == null)
                             costCenter = dictionaryCache.getById(o.getCostCenterId()).getEntry();
@@ -300,16 +299,16 @@ public class ShippingReportBean {
                 uriPath = ReportUtil.getSystemVariableValue("inventory_uri_directory");
 
                 if (orderIds == null) {
-                    orderList = order.fetchByShippingId(shippingId);
+                    orderList = iorder.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
-                    for (OrderViewDO o : orderList)
+                    for (IOrderViewDO o : orderList)
                         orderIds.add(o.getId());
                 }
 
-                itemList = orderItem.fetchByOrderIds(orderIds);
+                itemList = iorderItem.fetchByIorderIds(orderIds);
                 prevOrderId = null;
-                for (OrderItemViewDO data : itemList) {
-                    orderId = data.getOrderId();
+                for (IOrderItemViewDO data : itemList) {
+                    orderId = data.getIorderId();
                     if ( !orderId.equals(prevOrderId) && printReqform)
                         //
                         // print the order request form

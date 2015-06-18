@@ -10,40 +10,42 @@
 	<queryString>
 		<![CDATA[SELECT
      aux_data.sort_order,
-     analyte.name analyte_name,
-     analyte.external_id analyte_ext_id,
-     aux_data.value aux_data_value,
-     aux_field.description field_description,
+     analyte.name as analyte_name,
+     analyte.external_id as analyte_ext_id,
+     aux_data.value as aux_data_value,
+     aux_field.description as field_description,
      aux_field.aux_field_group_id
 FROM
      aux_data
-     join aux_field on aux_data.aux_field_id = aux_field.id
-     join analyte on aux_field.analyte_id = analyte.id
+     join aux_field on aux_field.id = aux_data.aux_field_id
+     join analyte on analyte.id = aux_field.analyte_id
 WHERE
      aux_data.reference_id = $P{ORDER_ID} and
      aux_data.reference_table_id = $P{ORDER_REFERENCE_TABLE_ID} and
      aux_data.is_reportable = 'Y' and
      (aux_data.type_id is null or
       aux_data.type_id in (select d.id from dictionary d where d.system_name != 'aux_dictionary'))
+
 UNION
+
 SELECT
      aux_data.sort_order,
-     analyte.name analyte_name,
-     analyte.external_id analyte_ext_id,
-     dictionary.entry aux_data_value,
-     aux_field.description field_description,
+     analyte.name as analyte_name,
+     analyte.external_id as analyte_ext_id,
+     dictionary.entry as aux_data_value,
+     aux_field.description as field_description,
      aux_field.aux_field_group_id
 FROM
      aux_data
-     join aux_field on aux_data.aux_field_id = aux_field.id
-     join analyte on aux_field.analyte_id = analyte.id
-     join dictionary on CAST(aux_data.value AS integer) = dictionary.id
+     join aux_field on aux_field.id = aux_data.aux_field_id
+     join analyte on analyte.id = aux_field.analyte_id
+     join dictionary on dictionary.id = aux_data.value::integer
 WHERE
      aux_data.reference_id = $P{ORDER_ID} and
      aux_data.reference_table_id = $P{ORDER_REFERENCE_TABLE_ID} and
      aux_data.is_reportable = 'Y' and
      aux_data.type_id = (select d.id from dictionary d where d.system_name = 'aux_dictionary')
-ORDER BY aux_data.sort_order]]>
+ORDER BY sort_order]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
 	<field name="analyte_name" class="java.lang.String"/>

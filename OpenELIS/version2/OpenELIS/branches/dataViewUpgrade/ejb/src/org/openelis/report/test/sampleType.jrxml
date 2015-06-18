@@ -5,11 +5,11 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
 	<queryString>
-		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry
-FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
-where t.test_id = $P{TEST_ID} and
-           t.type_of_sample_id = d1.id and
-           t.unit_of_measure_id = d2.id]]>
+		<![CDATA[SELECT d1.entry as type_entry, d2.entry as unit_entry
+FROM   test_type_of_sample t
+       left join dictionary d1 on d1.id = t.type_of_sample_id
+       left join dictionary d2 on d2.id = t.unit_of_measure_id
+where t.test_id = $P{TEST_ID}]]>
 	</queryString>
 	<field name="type_entry" class="java.lang.String"/>
 	<field name="unit_entry" class="java.lang.String"/>

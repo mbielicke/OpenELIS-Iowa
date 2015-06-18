@@ -8,13 +8,15 @@
 	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<parameter name="ORDER_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT DISTINCT count(oc.id) oc_count, d.entry containerName
-from order_container oc, dictionary d
-where oc.container_id = d.id and oc.order_id = $P{ORDER_ID}
+		<![CDATA[SELECT DISTINCT
+      count(oc.id) as oc_count, d.entry as containerName
+FROM  iorder_container oc
+      join dictionary d on d.id = oc.container_id
+WHERE oc.iorder_id = $P{ORDER_ID}
 group by 2
 order by 2]]>
 	</queryString>
-	<field name="oc_count" class="java.math.BigDecimal"/>
+	<field name="oc_count" class="java.lang.Long"/>
 	<field name="containername" class="java.lang.String"/>
 	<detail>
 		<band height="12">

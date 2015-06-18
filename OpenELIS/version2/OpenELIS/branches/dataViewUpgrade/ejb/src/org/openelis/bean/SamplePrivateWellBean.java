@@ -116,7 +116,6 @@ public class SamplePrivateWellBean {
         }
 
         if (map.size() > 0) {
-            log.log(Level.INFO, "Fetching private well organizations");
             orgs = organization.fetchByIds(DataBaseUtil.toArrayList(map.keySet()));
 
             for (OrganizationViewDO org : orgs) {

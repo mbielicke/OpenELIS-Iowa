@@ -331,7 +331,7 @@ public class UIHCFinalReportExportBean {
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
-                    return;
+                    continue;
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")
@@ -480,7 +480,7 @@ public class UIHCFinalReportExportBean {
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Pathology Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
-                    return;
+                    continue;
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")

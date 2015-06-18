@@ -38,8 +38,8 @@ import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.InventoryXPutViewDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -81,10 +81,10 @@ public class BuildKitManagerProxy {
         InventoryXPutBean xl;
         InventoryLocationBean ll;
         InventoryItemBean il;
-        OrderManager orderMan;
-        OrderViewDO order;
-        OrderItemViewDO orderItem;
-        ArrayList<OrderItemViewDO> orderItems;
+        IOrderManager iorderMan;
+        IOrderViewDO iorder;
+        IOrderItemViewDO iorderItem;
+        ArrayList<IOrderItemViewDO> iorderItems;
         ArrayList<Integer> locationIdList;
         Datetime date;
 
@@ -93,18 +93,18 @@ public class BuildKitManagerProxy {
         //
         // we create an internal order in order to use up kit components
         //
-        orderMan = OrderManager.getInstance();
-        order = orderMan.getOrder();
-        order.setNeededInDays(0);
-        order.setOrderedDate(date);
-        order.setRequestedBy(null);
-        order.setType(OrderManager.TYPE_INTERNAL);
-        order.setStatusId(statusProcessed);
-        orderMan.add();
-        kitMan.order = orderMan.getOrder();
+        iorderMan = IOrderManager.getInstance();
+        iorder = iorderMan.getIorder();
+        iorder.setNeededInDays(0);
+        iorder.setOrderedDate(date);
+        iorder.setRequestedBy(null);
+        iorder.setType(IOrderManager.TYPE_INTERNAL);
+        iorder.setStatusId(statusProcessed);
+        iorderMan.add();
+        kitMan.iorder = iorderMan.getIorder();
 
         compMan = kitMan.getInventoryItem().getComponents();
-        orderItems = new ArrayList<OrderItemViewDO>();
+        iorderItems = new ArrayList<IOrderItemViewDO>();
         locationIdList = new ArrayList<Integer>();
         ll = EJBFactory.getInventoryLocation();
         for (i = 0; i < compMan.count(); i++ ) {
@@ -118,19 +118,19 @@ public class BuildKitManagerProxy {
                 continue;
 
             ll.fetchForUpdate(component.getInventoryLocationId());
-            orderItem = new OrderItemViewDO();
-            orderItem.setOrderId(order.getId());
-            orderItem.setInventoryItemId(component.getComponentId());
-            orderItem.setQuantity(component.getTotal());
+            iorderItem = new IOrderItemViewDO();
+            iorderItem.setIorderId(iorder.getId());
+            iorderItem.setInventoryItemId(component.getComponentId());
+            iorderItem.setQuantity(component.getTotal());
             locationIdList.add(component.getInventoryLocationId());
-            orderItems.add(orderItem);
+            iorderItems.add(iorderItem);
         }
 
-        EJBFactory.getOrderItem().add(order, orderItems);
+        EJBFactory.getIOrderItem().add(iorder, iorderItems);
         //
         // fill the order
         //
-        EJBFactory.getInventoryXUse().add(orderItems, locationIdList);
+        EJBFactory.getInventoryXUse().add(iorderItems, locationIdList);
 
         //
         // calculate the total cost of the kit

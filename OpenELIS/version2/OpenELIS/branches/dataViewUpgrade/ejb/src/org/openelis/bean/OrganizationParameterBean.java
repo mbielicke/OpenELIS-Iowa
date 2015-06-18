@@ -70,6 +70,7 @@ public class OrganizationParameterBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<OrganizationParameterDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
         Query query;
         List<OrganizationParameterDO> o;
@@ -195,8 +196,10 @@ public class OrganizationParameterBean {
         StringBuffer sb;
         EmailFilter decoded;
 
-        sb = new StringBuffer();
         decoded = new EmailFilter();
+        if (DataBaseUtil.isEmpty(encoded))
+            return decoded;
+        sb = new StringBuffer();
 
         str = encoded.toCharArray();
         for (i = 0; i < encoded.length(); i++ ) {

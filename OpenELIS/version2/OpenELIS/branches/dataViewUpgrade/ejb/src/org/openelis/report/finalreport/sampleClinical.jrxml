@@ -11,12 +11,12 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     s.received_date s_received_date, s.collection_date s_collection_date,
-     s.collection_time s_collection_time, s.client_reference s_client_reference, s.released_date s_released_date,
-     p.last_name pat_last, p.first_name pat_first, p.birth_date pat_birth_date, g.entry pat_gender,
-     pa.multiple_unit pat_multiple_unit, pa.street_address pat_street_address, pa.city pat_city,
-     pa.state pat_state, pa.zip_code pat_zip_code,
-     pr.last_name pro_last, pr.first_name pro_first
+     s.received_date as s_received_date, s.collection_date as s_collection_date,
+     s.collection_time as s_collection_time, s.client_reference as s_client_reference,
+     s.released_date as s_released_date, p.last_name as pat_last, p.first_name as pat_first,
+     p.birth_date as pat_birth_date, g.entry as pat_gender, pa.multiple_unit as pat_multiple_unit,
+     pa.street_address as pat_street_address, pa.city as pat_city, pa.state as pat_state,
+     pa.zip_code as pat_zip_code, pr.last_name as pro_last, pr.first_name as pro_first
 FROM
      sample s
      join sample_clinical sc on s.id = sc.sample_id
@@ -25,7 +25,7 @@ FROM
      left join dictionary g on p.gender_id = g.id
      left join provider pr on sc.provider_id = pr.id
 WHERE
-     s.domain = 'C' and s.id = $P{SAMPLE_ID}]]>
+     s.id = $P{SAMPLE_ID} and s.domain = 'C']]>
 	</queryString>
 	<field name="s_received_date" class="java.sql.Timestamp"/>
 	<field name="s_collection_date" class="java.sql.Timestamp"/>
@@ -176,21 +176,21 @@ WHERE
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="60" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pat_multiple_unit}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="72" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pat_street_address}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="84" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{pat_city}, ", ", DataBaseUtil.concatWithSeparator($F{pat_state}, " ", $F{pat_zip_code}))]]></textFieldExpression>

@@ -24,7 +24,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
@@ -50,7 +50,7 @@ public class RequestformReportBean {
     private SessionCacheBean    session;
 
     @EJB
-    private OrderBean           order;
+    private IOrderBean          iorder;
 
     @EJB
     private PrinterCacheBean    printers;
@@ -104,8 +104,7 @@ public class RequestformReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
-        OrderViewDO data;
+        IOrderViewDO data;
 
         /*
          * push status into session so we can query it while the report is
@@ -126,7 +125,7 @@ public class RequestformReportBean {
             throw new InconsistencyException("You must specify the order # and printer for this report");
         } else {
             try {
-                data = order.fetchById(orderId);
+                data = iorder.fetchById(orderId);
                 if ( !"S".equals(data.getType()))
                     throw new InconsistencyException("You must specify a valid Send-out order #");
             } catch (NumberFormatException e) {

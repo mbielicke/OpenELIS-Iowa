@@ -32,7 +32,7 @@ import java.util.HashMap;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.meta.SampleMeta;
@@ -487,7 +487,7 @@ public class SampleManagerProxy {
     }
 
     private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
-        OrderViewDO order;
+        IOrderViewDO order;
         if (data.getOrderId() == null)
             return;
         /*
@@ -496,8 +496,8 @@ public class SampleManagerProxy {
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
             Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
             Constants.domain().SDWIS.equals(data.getDomain())) {
-            order = EJBFactory.getOrder().fetchById(data.getOrderId());
-            if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
+            order = EJBFactory.getIOrder().fetchById(data.getOrderId());
+            if (order == null || !IOrderManager.TYPE_SEND_OUT.equals(order.getType()))
                 errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                        SampleMeta.getOrderId()));
         }

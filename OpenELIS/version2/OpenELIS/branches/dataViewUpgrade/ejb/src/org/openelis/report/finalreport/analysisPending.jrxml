@@ -8,16 +8,16 @@
 	<parameter name="REPORT_TYPE" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
-     t.reporting_description t_reporting_description,
-     m.reporting_description m_reporting_description
+     t.reporting_description as t_reporting_description,
+     m.reporting_description as m_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m
+     analysis a
+     join sample_item si on si.id = a.sample_item_id
+     join test t on t.id = a.test_id
+     join method m on m.id = t.method_id
 WHERE
      si.sample_id = $P{SAMPLE_ID} and
-     a.sample_item_id = si.id and
      a.is_reportable = 'Y' and
-     a.test_id = t.id and
-     t.method_id = m.id and
      (($P{REPORT_TYPE} = 'R' and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_released'))) or
       ($P{REPORT_TYPE} = 'C' and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_completed', 'analysis_released'))))]]>
 	</queryString>

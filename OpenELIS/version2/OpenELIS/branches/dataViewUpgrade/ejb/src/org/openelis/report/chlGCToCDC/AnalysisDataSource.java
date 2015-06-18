@@ -230,9 +230,7 @@ public class AnalysisDataSource implements JRRewindableDataSource {
                                     if ("visit_reason".equals(rVDO.getAnalyteExternalId())) {
                                         row.put("visit_reason", dictDO.getCode());
                                     } else if ("risk_history".equals(rVDO.getAnalyteExternalId())) {
-                                        if (dictDO == null) {
-                                            row.put("risk_none", "Y");
-                                        } else {
+                                        if (dictDO != null) {
                                             if ("risk_new".equals(dictDO.getSystemName()))
                                                 row.put("risk_new", "Y");
                                             else if ("risk_multiple".equals(dictDO.getSystemName()))
@@ -241,13 +239,13 @@ public class AnalysisDataSource implements JRRewindableDataSource {
                                                 row.put("risk_contact", "Y");
                                             else if ("risk_msm".equals(dictDO.getSystemName()))
                                                 row.put("risk_msm", "Y");
+                                            else if ("none_of_the_above".equals(dictDO.getSystemName()))
+                                                row.put("risk_none", "Y");
                                         }
                                     } else if ("symptom".equals(rVDO.getAnalyteExternalId())) {
                                         row.put("symptom", dictDO.getCode());
                                     } else if ("sign".equals(rVDO.getAnalyteExternalId())) {
-                                        if (dictDO == null) {
-                                            row.put("sign_none", "Y");
-                                        } else {
+                                        if (dictDO != null) {
                                             if ("sign_cervical".equals(dictDO.getSystemName()))
                                                 row.put("sign_cervical", "Y");
                                             else if ("sign_cervicitis".equals(dictDO.getSystemName()))
@@ -258,6 +256,8 @@ public class AnalysisDataSource implements JRRewindableDataSource {
                                                 row.put("sign_urethritis", "Y");
                                             else if ("sign_no_exam".equals(dictDO.getSystemName()))
                                                 row.put("sign_no_exam", "Y");
+                                            else if ("none_of_the_above".equals(dictDO.getSystemName()))
+                                                row.put("sign_none", "Y");
                                         }
                                     } else if ("insurance_type".equals(rVDO.getAnalyteExternalId())) {
                                         row.put("insurance_type", dictDO.getCode());

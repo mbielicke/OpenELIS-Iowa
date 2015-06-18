@@ -8,9 +8,9 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
-     p.last_name patient_last, p.first_name patient_first, p.birth_date, p.national_id, p.address_id,
-     d1.entry gender, d2.entry race, d3.entry ethnicity,
-     pv.last_name provider_last, pv.first_name provider_first, sc.provider_phone,
+     p.last_name as patient_last, p.first_name as patient_first, p.birth_date, p.national_id, p.address_id,
+     d1.entry as gender, d2.entry as race, d3.entry as ethnicity,
+     pv.last_name as provider_last, pv.first_name as provider_first, sc.provider_phone,
      so.organization_id, so.organization_attention
 FROM
      sample_clinical sc
@@ -23,8 +23,7 @@ FROM
      left join dictionary d2 on p.race_id = d2.id
      left join dictionary d3 on p.ethnicity_id = d3.id
 WHERE
-     sc.sample_id = $P{SAMPLE_ID}
-     ]]>
+     sc.sample_id = $P{SAMPLE_ID}]]>
 	</queryString>
 	<field name="patient_last" class="java.lang.String"/>
 	<field name="patient_first" class="java.lang.String"/>

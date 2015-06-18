@@ -25,7 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.getItems;
+import static org.openelis.manager.IOrderManager1Accessor.getItems;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 
 import java.util.ArrayList;
@@ -41,12 +41,12 @@ import javax.ejb.Stateless;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.PWSMonitorDO;
 import org.openelis.domain.PWSViolationDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
 import org.openelis.manager.SampleManager1;
@@ -67,7 +67,7 @@ public class SDWISAdditionalScannerBean {
     private SystemVariableBean  systemVariable;
 
     @EJB
-    private OrderManager1Bean   orderManager;
+    private IOrderManager1Bean   orderManager;
 
     @EJB
     private SampleManager1Bean  sampleManager;
@@ -274,12 +274,12 @@ public class SDWISAdditionalScannerBean {
     private void createOrder(SampleManager1 sm, PWSManager pwsm, Integer orderTemplate,
                              ArrayList<String> analytes, PWSViolationDO violation, int multiplier) throws Exception {
         int index;
-        OrderManager1 om;
+        IOrderManager1 om;
 
         om = orderManager.duplicate(orderTemplate, true, false).getManager();
 
         if (getItems(om) != null) {
-            for (OrderItemViewDO item : getItems(om))
+            for (IOrderItemViewDO item : getItems(om))
                 item.setQuantity(item.getQuantity() * multiplier);
         }
 
@@ -294,7 +294,7 @@ public class SDWISAdditionalScannerBean {
         }
         if (index != -1)
             analytes.remove(index);
-        orderManager.createOrderFromSample(om, sm, analytes);
+        orderManager.createIOrderFromSample(om, sm, analytes);
     }
 
     /**
