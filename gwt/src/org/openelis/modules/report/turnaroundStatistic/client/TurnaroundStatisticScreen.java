@@ -69,7 +69,7 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.widget.WindowInt;
@@ -815,7 +815,7 @@ public class TurnaroundStatisticScreen extends Screen {
 
         window.setBusy();
         try {
-            orgs = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            orgs = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (OrganizationDO data : orgs ) {
                 row = new TableDataRow(4);

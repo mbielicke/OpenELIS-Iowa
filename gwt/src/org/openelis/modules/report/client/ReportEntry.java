@@ -520,5 +520,31 @@ public class ReportEntry implements EntryPoint {
                 });
             } 
         });
+
+        ScreenBus.get().addHandler(ScreenBus.ABNORMALS_REPORT, new ShowScreenHandler() {
+
+            @Override
+            public void showScreen() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName("Abnormals Report");
+                            window.setSize("20px", "20px");
+                            window.setContent(new AbnormalsReportScreen(window));
+                            OpenELIS.getBrowser().addWindow(window, "abnormalsReport");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            } 
+        });
     }
 }

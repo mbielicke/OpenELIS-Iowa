@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -65,7 +65,7 @@ public class SendoutOrderFillTabUI extends Screen {
 
     protected boolean                          isVisible, redraw;
 
-    protected OrderManager1                    manager;
+    protected IOrderManager1                    manager;
 
     public SendoutOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -102,7 +102,7 @@ public class SendoutOrderFillTabUI extends Screen {
         });
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }

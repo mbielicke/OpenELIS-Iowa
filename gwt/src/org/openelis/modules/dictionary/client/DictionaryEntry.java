@@ -19,7 +19,7 @@ public class DictionaryEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.DICTIONARY, this);        
+//        ScreenBus.get().addHandler(ScreenBus.DICTIONARY, this);        
     }
     
     @Override

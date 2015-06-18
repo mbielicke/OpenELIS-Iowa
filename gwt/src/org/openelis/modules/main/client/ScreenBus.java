@@ -10,7 +10,7 @@ public class ScreenBus extends SimpleEventBus {
     public static ScreenBus instance;
 
     public static final ShowScreenType ORGANIZATION = new ShowScreenType("Organization"),
-                    PREFERENCE = new ShowScreenType("Preference"),
+                    PREFERENCES = new ShowScreenType("Preference"),
                     QUICK_ENTRY = new ShowScreenType("Quick Entry"),
                     VERIFICATION = new ShowScreenType("Verification"),
                     SAMPLE_TRACKING = new ShowScreenType("Sample Tracking"),
@@ -86,7 +86,8 @@ public class ScreenBus extends SimpleEventBus {
                     SECONDARY_LABEL_REPORT = new ShowScreenType("Secondary Labels"),
                     PRIVATE_WELL_ATTACHMENT = new ShowScreenType("PrivateWellAttachment"),
                     TUBE_LABEL_REPORT = new ShowScreenType("Tube Labels"),
-                    CHL_GC_TO_CDC_EXPORT = new ShowScreenType("Chl-Gc to CDC Export");
+                    CHL_GC_TO_CDC_EXPORT = new ShowScreenType("Chl-Gc to CDC Export"),
+                    ABNORMALS_REPORT = new ShowScreenType("Abnormals Report");
 
     public static ScreenBus get() {
         if (instance == null)

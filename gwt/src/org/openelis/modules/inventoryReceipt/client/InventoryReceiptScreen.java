@@ -75,12 +75,12 @@ import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.manager.InventoryReceiptManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
 import org.openelis.modules.order.client.ShipNoteTab;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
@@ -242,7 +242,7 @@ public class InventoryReceiptScreen extends Screen {
                 int index;
                 InventoryReceiptManager man;
                 InventoryReceiptDataBundle bundle;
-                OrderManager order;
+                IOrderManager order;
                 TableDataRow row;
                 
                 row = receiptTable.getSelection();                
@@ -254,7 +254,7 @@ public class InventoryReceiptScreen extends Screen {
                 vendorTab.setManager(man, index); 
                 
                 try { 
-                    order = man.getOrder();
+                    order = man.getIorder();
                     if(state == State.ADD || state == State.UPDATE) {
                         if(order != null) 
                             shipNoteTab.setState(state);
@@ -406,7 +406,7 @@ public class InventoryReceiptScreen extends Screen {
                             }         
                             
                             if (data.getUnitCost() == null) {
-                                data.setUnitCost(data.getOrderItemUnitCost());
+                                data.setUnitCost(data.getIorderItemUnitCost());
                                 receiptTable.setCell(r, 8, data.getUnitCost());
                             }
                         }
@@ -520,7 +520,7 @@ public class InventoryReceiptScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -549,7 +549,7 @@ public class InventoryReceiptScreen extends Screen {
         addScreenHandler(addReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;       
-                OrderManager order;
+                IOrderManager order;
                 
                 order = null;
                 receiptTable.addRow();                
@@ -573,7 +573,7 @@ public class InventoryReceiptScreen extends Screen {
         addScreenHandler(removeReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-                OrderManager order;
+                IOrderManager order;
                 
                 r = receiptTable.getSelectedRow();
                 order = null;
@@ -725,9 +725,9 @@ public class InventoryReceiptScreen extends Screen {
     }
     
     protected void query() {    
-        OrderManager order;
+        IOrderManager order;
         
-        order = OrderManager.getInstance();     
+        order = IOrderManager.getInstance();     
                 
         setState(State.QUERY);        
         DataChangeEvent.fire(this);
@@ -743,9 +743,9 @@ public class InventoryReceiptScreen extends Screen {
     }
     
     protected void add() {
-        OrderManager order;
+        IOrderManager order;
         
-        order = OrderManager.getInstance();
+        order = IOrderManager.getInstance();
         query = null;
         receiptModel =  new ArrayList<TableDataRow>();
         setState(State.ADD);
@@ -777,7 +777,7 @@ public class InventoryReceiptScreen extends Screen {
         InventoryReceiptDataBundle bundle;
         InventoryReceiptManager prevMan, currMan;                
         TableDataRow row;     
-        OrderManager order;
+        IOrderManager order;
         
         if ( !validate()) {
             window.setError(Messages.get().correctErrors());
@@ -843,7 +843,7 @@ public class InventoryReceiptScreen extends Screen {
             }
             
             if (success) {
-                order = OrderManager.getInstance();
+                order = IOrderManager.getInstance();
                 itemTab.setManager(null, -1, screen);
                 vendorTab.setManager(null, receiptTable.getSelectedRow());
                 shipNoteTab.setManager(order);
@@ -855,9 +855,9 @@ public class InventoryReceiptScreen extends Screen {
     }    
 
     protected void abort() {
-        OrderManager order;
+        IOrderManager order;
         
-        order = OrderManager.getInstance();
+        order = IOrderManager.getInstance();
         setFocus(null);
         clearErrors();
         window.setBusy(Messages.get().cancelChanges());
@@ -945,7 +945,7 @@ public class InventoryReceiptScreen extends Screen {
                 TableDataRow row;
                 InventoryReceiptViewDO data;
                 OrganizationDO organization;
-                OrderManager order;
+                IOrderManager order;
                 InventoryItemDO invItem;
                 InventoryReceiptManager manager; 
                 InventoryReceiptDataBundle bundle;
@@ -964,10 +964,10 @@ public class InventoryReceiptScreen extends Screen {
                             for (j = 0; j < count; j++ ) {                                
                                 row = new TableDataRow(9);
                                 data = manager.getReceiptAt(j);                                
-                                orderId = data.getOrderItemOrderId();                                
+                                orderId = data.getIorderItemIorderId();                                
                                                                 
                                 row.cells.get(0).setValue(orderId);
-                                row.cells.get(1).setValue(data.getOrderItemOrderExternalOrderNumber());
+                                row.cells.get(1).setValue(data.getIorderItemIorderExternalOrderNumber());
                                 row.cells.get(2).setValue(data.getReceivedDate());
 
                                 invItem = InventoryItemCache.getById(data.getInventoryItemId());
@@ -983,17 +983,17 @@ public class InventoryReceiptScreen extends Screen {
                                     row.cells.get(5).setValue(new TableDataRow(organization.getId(),
                                                                         organization.getName()));
 
-                                row.cells.get(6).setValue(data.getOrderItemQuantity());         
+                                row.cells.get(6).setValue(data.getIorderItemQuantity());         
                                 row.cells.get(7).setValue(data.getQuantityReceived());     
                                 if (data.getId() != null)
                                     row.cells.get(8).setValue(data.getUnitCost());
-                                bundle = new InventoryReceiptDataBundle(j, data.getOrderItemOrderId(), manager);
+                                bundle = new InventoryReceiptDataBundle(j, data.getIorderItemIorderId(), manager);
                                 row.data = bundle;                                                                 
                                 receiptModel.add(row);
                                 k++;
                             }
                             if(state == State.UPDATE) {
-                                manager.getOrder();
+                                manager.getIorder();
                                 manager = manager.abortUpdate();
                             } else if(state == State.DISPLAY) {
                                 manager = manager.fetchForUpdate();
@@ -1014,7 +1014,7 @@ public class InventoryReceiptScreen extends Screen {
 
                     itemTab.setManager(null, -1, screen);
                     vendorTab.setManager(null, -1);
-                    order = OrderManager.getInstance();
+                    order = IOrderManager.getInstance();
                     shipNoteTab.setManager(order);
                     shipNoteTab.setState(State.DISPLAY);
 

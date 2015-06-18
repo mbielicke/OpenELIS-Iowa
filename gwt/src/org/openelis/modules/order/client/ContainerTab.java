@@ -31,7 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderContainerDO;
+import org.openelis.domain.IOrderContainerDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
@@ -57,8 +57,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -68,7 +68,7 @@ import com.google.gwt.user.client.Window;
 
 public class ContainerTab extends Screen {
 
-    private OrderManager            manager;
+    private IOrderManager            manager;
     private AppButton               addContainerButton, removeContainerButton, popoutButton,
                                     duplicateButton;
     private TableWidget             table;
@@ -126,7 +126,7 @@ public class ContainerTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                OrderContainerDO data;
+                IOrderContainerDO data;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -154,13 +154,13 @@ public class ContainerTab extends Screen {
             public void onRowAdded(RowAddedEvent event) {
                 int index;
                 TableDataRow row;
-                OrderContainerDO data;
+                IOrderContainerDO data;
                 
                 try {
                     index = event.getIndex();
                     row = table.getRow(index);
                     
-                    data = new OrderContainerDO();
+                    data = new IOrderContainerDO();
                     data.setItemSequence(index);
                     data.setContainerId((Integer)row.cells.get(1).getValue());
                     data.setTypeOfSampleId((Integer)row.cells.get(2).getValue());
@@ -176,7 +176,7 @@ public class ContainerTab extends Screen {
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 int index;
-                OrderContainerManager man;
+                IOrderContainerManager man;
                 
                 index = event.getIndex();
                 try {
@@ -214,7 +214,7 @@ public class ContainerTab extends Screen {
         table.addRowMovedHandler(new RowMovedHandler() {
             public void onRowMoved(RowMovedEvent event) {
                 int oldIndex, newIndex;
-                OrderContainerManager man;
+                IOrderContainerManager man;
                 
                 try {
                     man = manager.getContainers();
@@ -238,8 +238,8 @@ public class ContainerTab extends Screen {
             public void onClick(ClickEvent event) {
                 int n, r;
                 TableDataRow row;
-                OrderContainerDO prevData;
-                OrderContainerManager man;
+                IOrderContainerDO prevData;
+                IOrderContainerManager man;
 
                 table.finishEditing();
                 
@@ -314,7 +314,7 @@ public class ContainerTab extends Screen {
         addScreenHandler(duplicateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n, r;     
-                OrderContainerDO prevData;
+                IOrderContainerDO prevData;
                 TableDataRow row;
                 
                 r = table.getSelectedRow();
@@ -383,9 +383,9 @@ public class ContainerTab extends Screen {
     }
     
     private ArrayList<TableDataRow> getContainerTableModel() {
-        OrderContainerDO data;
+        IOrderContainerDO data;
         ArrayList<TableDataRow> model;
-        OrderContainerManager man;
+        IOrderContainerManager man;
         TableDataRow row;
         
         model = new ArrayList<TableDataRow>();
@@ -411,7 +411,7 @@ public class ContainerTab extends Screen {
     }
     
     private void resetSequencesFrom(int index) throws Exception {
-        OrderContainerManager man;
+        IOrderContainerManager man;
         
         man = manager.getContainers();
         for (int i = index; i < man.count(); i++) {
@@ -429,7 +429,7 @@ public class ContainerTab extends Screen {
         }
     }
     
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }

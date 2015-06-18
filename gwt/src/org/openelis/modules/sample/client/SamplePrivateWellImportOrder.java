@@ -31,8 +31,8 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
@@ -44,8 +44,8 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
@@ -163,17 +163,17 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
 
     protected void loadOrganizations(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         boolean addWarning;
-        OrderViewDO order;
+        IOrderViewDO order;
         OrganizationDO shipTo;
         SamplePrivateWellManager wellMan;
         SamplePrivateWellViewDO well;
-        OrderOrganizationManager orderOrgMan;
+        IOrderOrganizationManager orderOrgMan;
         SampleOrganizationManager samOrgMan;
-        OrderOrganizationViewDO ordOrg, ordReportTo;
+        IOrderOrganizationViewDO ordOrg, ordReportTo;
         SampleOrganizationViewDO samBillTo;
 
         if (orderMan == null)
-            orderMan = OrderManager.fetchById(orderId);
+            orderMan = IOrderManager.fetchById(orderId);
 
         wellMan = (SamplePrivateWellManager)man.getDomainManager();
         well = wellMan.getPrivateWell();
@@ -225,7 +225,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
          * if report-to was not found then set the ship-to as the report-to, but
          * only if ship-to is active
          */
-        order = orderMan.getOrder();
+        order = orderMan.getIorder();
         shipTo = order.getOrganization();
         if (ordReportTo == null) {
             if ("Y".equals(shipTo.getIsActive())) {
@@ -254,7 +254,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         }
     }
 
-    private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
+    private OrganizationDO createOrganization(IOrderOrganizationViewDO org) {
         OrganizationDO data;
         AddressDO addr;
 

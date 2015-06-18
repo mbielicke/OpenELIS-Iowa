@@ -25,9 +25,11 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -43,7 +45,7 @@ import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -390,7 +392,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                     parentScreen.setBusy();
 
-                    tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
+                    tests = PanelService1Impl.INSTANCE.fetchByNameSampleTypeWithTests(query);
 
                     model = new ArrayList<Item<Integer>>();
                     for (TestMethodVO t : tests) {

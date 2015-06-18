@@ -7,7 +7,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -30,8 +30,8 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.OrderManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.manager.IOrderManager;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.ui.widget.WindowInt;
 
@@ -40,7 +40,7 @@ import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen {
 
-    private OrderManager          manager;
+    private IOrderManager          manager;
     private TableWidget           table;
     private AutoComplete<Integer> inventory;
     private AppButton             addItemButton, removeItemButton;
@@ -59,7 +59,7 @@ public class ItemTab extends Screen {
 
     private void initialize() {
         table = (TableWidget)def.getWidget("itemTable");
-        inventory = (AutoComplete)table.getColumnWidget(OrderMeta.getOrderItemInventoryItemName());
+        inventory = (AutoComplete)table.getColumnWidget(IOrderMeta.getIorderItemInventoryItemName());
 
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -76,7 +76,7 @@ public class ItemTab extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 if ( (state != State.ADD && state != State.UPDATE) ||
-                    (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                    (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                  .getStatusId()))) {
                     event.cancel();
                     return;
@@ -95,7 +95,7 @@ public class ItemTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                OrderItemViewDO data;
+                IOrderItemViewDO data;
                 InventoryItemDO row;
                 TableDataRow trow;
 
@@ -224,7 +224,7 @@ public class ItemTab extends Screen {
         // variable number of columns. One table has OrderItemUnitCost and the
         // other one does not
         //
-        hasExtraCols = table.getColumnWidget(OrderMeta.getOrderItemUnitCost()) != null;
+        hasExtraCols = table.getColumnWidget(IOrderMeta.getIorderItemUnitCost()) != null;
     }
 
     private void initializeDropdowns() {
@@ -235,7 +235,7 @@ public class ItemTab extends Screen {
 
         store = (Dropdown)inventory.getColumns().get(2).getColumnWidget();
         units = (Dropdown)inventory.getColumns().get(3).getColumnWidget();
-        storeId = (Dropdown)table.getColumnWidget(OrderMeta.getOrderItemInventoryItemStoreId());
+        storeId = (Dropdown)table.getColumnWidget(IOrderMeta.getIorderItemInventoryItemStoreId());
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -261,7 +261,7 @@ public class ItemTab extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         int i;
-        OrderItemViewDO data;
+        IOrderItemViewDO data;
         ArrayList<TableDataRow> model;
         TableDataRow row;
 
@@ -291,7 +291,7 @@ public class ItemTab extends Screen {
         return model;
     }
 
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }
@@ -305,7 +305,7 @@ public class ItemTab extends Screen {
 
     private boolean canEdit(State state) {
         return EnumSet.of(State.ADD).contains(state) ||
-               (state == State.UPDATE && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+               (state == State.UPDATE && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                                       .getStatusId()));
     }
 }

@@ -58,7 +58,7 @@ public class NeonatalTabUI extends Screen {
 
     @UiField
     protected CheckBox                 neonatalPatientId, neonatalPatientLastName,
-                    neonatalPatientFirstName, neonatalPatientBirthDate, neonatalPatientBirthTime,
+                    neonatalPatientFirstName, neonatalPatientBirthDate,
                     neonatalPatientAddrMultipleUnit, neonatalPatientAddrStreetAddress,
                     neonatalPatientAddrCity, neonatalPatientAddrState, neonatalPatientAddrZipCode,
                     neonatalPatientGenderId, neonatalPatientRaceId, neonatalPatientEthnicityId,
@@ -161,25 +161,8 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? neonatalPatientBirthTime
-                                               : neonatalPatientFirstName;
-                             }
-                         });
-
-        addScreenHandler(neonatalPatientBirthTime,
-                         SampleWebMeta.getNeonatalPatientBirthTime(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientBirthTime.setValue(getValue(SampleWebMeta.getNeonatalPatientBirthTime()));
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientBirthTime.setEnabled(isState(DEFAULT) && canEdit);
-                             }
-
-                             public Widget onTab(boolean forward) {
                                  return forward ? neonatalPatientAddrMultipleUnit
-                                               : neonatalPatientBirthDate;
+                                               : neonatalPatientFirstName;
                              }
                          });
 
@@ -197,7 +180,7 @@ public class NeonatalTabUI extends Screen {
 
                              public Widget onTab(boolean forward) {
                                  return forward ? neonatalPatientAddrStreetAddress
-                                               : neonatalPatientBirthTime;
+                                               : neonatalPatientBirthDate;
                              }
                          });
 

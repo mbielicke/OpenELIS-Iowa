@@ -37,13 +37,14 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.manager.OrderManager1;
-import org.openelis.meta.OrderMeta;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.order1.client.AddTestEvent.AddType;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -102,7 +103,7 @@ public class TestTabUI extends Screen {
 
     protected boolean              isVisible, redraw;
 
-    protected OrderManager1        manager;
+    protected IOrderManager1        manager;
 
     private static final String    TEST_LEAF = "test", ANALYTE_LEAF = "analyte";
 
@@ -139,13 +140,13 @@ public class TestTabUI extends Screen {
                     if (qd != null) {
                         switch (i) {
                             case 0:
-                                qd.setKey(OrderMeta.getTestItemSequence());
+                                qd.setKey(IOrderMeta.getTestItemSequence());
                                 break;
                             case 1:
-                                qd.setKey(OrderMeta.getTestName());
+                                qd.setKey(IOrderMeta.getTestName());
                                 break;
                             case 2:
-                                qd.setKey(OrderMeta.getTestMethodName());
+                                qd.setKey(IOrderMeta.getTestMethodName());
                                 break;
                         }
                         qds.add(qd);
@@ -166,8 +167,8 @@ public class TestTabUI extends Screen {
         tree.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 String uid;
-                OrderTestViewDO ot;
-                OrderTestAnalyteViewDO ota;
+                IOrderTestViewDO ot;
+                IOrderTestAnalyteViewDO ota;
                 Object val;
                 Node node;
 
@@ -176,10 +177,10 @@ public class TestTabUI extends Screen {
                 if (event.getCol() == 0) {
                     uid = node.getData();
                     if (TEST_LEAF.equals(node.getType())) {
-                        ot = (OrderTestViewDO)manager.getObject(uid);
+                        ot = (IOrderTestViewDO)manager.getObject(uid);
                         ot.setItemSequence((Integer)val);
                     } else if (ANALYTE_LEAF.equals(node.getType())) {
-                        ota = (OrderTestAnalyteViewDO)manager.getObject(uid);
+                        ota = (IOrderTestAnalyteViewDO)manager.getObject(uid);
                         ota.setTestAnalyteIsReportable((String)val);
                     }
                 }
@@ -297,7 +298,7 @@ public class TestTabUI extends Screen {
                 if (ANALYTE_LEAF.equals(selRow.getType()))
                     selRow = selRow.getParent();
                 uid = selRow.getData();
-                testIds.add( ((OrderTestViewDO)manager.getObject(uid)).getId());
+                testIds.add( ((IOrderTestViewDO)manager.getObject(uid)).getId());
             }
             parentBus.fireEvent(new RemoveTestEvent(new ArrayList<Integer>(testIds)));
         }
@@ -318,9 +319,9 @@ public class TestTabUI extends Screen {
         Integer orderId;
         String uid;
         Node node, child;
-        OrderTestAnalyteViewDO ota;
+        IOrderTestAnalyteViewDO ota;
 
-        orderId = manager.getOrder().getId();
+        orderId = manager.getIorder().getId();
         if (orderId == null)
             orderId = 0;
 
@@ -342,13 +343,13 @@ public class TestTabUI extends Screen {
         for (int i = 0; i < node.getChildCount(); i++ ) {
             child = node.getChildAt(i);
             uid = child.getData();
-            ota = (OrderTestAnalyteViewDO)manager.getObject(uid);
+            ota = (IOrderTestAnalyteViewDO)manager.getObject(uid);
             ota.setTestAnalyteIsReportable(reportable);
             tree.setValueAt(index + i + 1, 0, ota.getTestAnalyteIsReportable());
         }
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }
@@ -367,8 +368,8 @@ public class TestTabUI extends Screen {
     private Node getRoot() {
         int i, j;
         Node root, tnode, anode;
-        OrderTestAnalyteViewDO ota;
-        OrderTestViewDO ot;
+        IOrderTestAnalyteViewDO ota;
+        IOrderTestViewDO ot;
 
         root = new Node();
         if (manager == null)
@@ -425,8 +426,8 @@ public class TestTabUI extends Screen {
 
         try {
             parentScreen.getWindow().setBusy();
-            tests = PanelService.get().fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
-                                                                                             "%"));
+            tests = PanelService1Impl.INSTANCE.fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
+                                                                                                     "%"));
 
             model = new ArrayList<Item<Integer>>();
             for (TestMethodVO t : tests) {

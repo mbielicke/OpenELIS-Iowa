@@ -3861,9 +3861,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3871,10 +3869,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runDomainScriptlet(Action_Before.ANALYSIS);
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -3932,9 +3936,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3942,12 +3944,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

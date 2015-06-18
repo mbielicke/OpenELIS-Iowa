@@ -30,7 +30,7 @@ import static org.openelis.ui.screen.State.*;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -74,7 +74,7 @@ public class SampleNotesTabUI extends Screen {
 
     protected EventBus                    parentBus;
 
-    protected OrderManager1               manager;
+    protected IOrderManager1               manager;
 
     protected NoteViewDO                  displayedSampleNote;
 
@@ -111,7 +111,7 @@ public class SampleNotesTabUI extends Screen {
         });
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }

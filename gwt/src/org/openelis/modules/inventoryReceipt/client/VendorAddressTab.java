@@ -25,15 +25,12 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import java.util.EnumSet;
-
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.meta.InventoryReceiptMeta;
@@ -79,8 +76,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressMultipleUnit.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                organizationAddressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
+                organizationAddressMultipleUnit.enable(false);
             }
         });
 
@@ -199,5 +195,4 @@ public class VendorAddressTab extends Screen {
 
         loaded = true;        
     }
-
 }

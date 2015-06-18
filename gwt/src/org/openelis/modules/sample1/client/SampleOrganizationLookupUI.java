@@ -25,9 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -42,7 +43,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.manager.SampleManager1;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -225,8 +226,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);

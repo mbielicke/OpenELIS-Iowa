@@ -56,7 +56,6 @@ import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.worksheetBuilder.client.ReagentsWithChoicesEvent;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;

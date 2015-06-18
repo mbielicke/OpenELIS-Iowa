@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.clinicalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -81,11 +85,11 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.project.client.ProjectService;
-import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider1.client.ProviderService1;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
@@ -1428,8 +1432,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = ProviderService.get()
-                                          .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ProviderService1.get()
+                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);
@@ -1616,8 +1620,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -1695,8 +1698,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -3989,20 +3991,23 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = ret.getErrors();
                         if (errors != null && errors.size() > 0) {
                             if (errors.hasWarnings())
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
-                                screen.showErrors(errors);
-                            isBusy = false;
-                        } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                                showErrors(errors);
+                        }
+
+                        if (ret.getTests() == null || ret.getTests().size() == 0) {
                             isBusy = false;
                         } else {
+                            /*
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import
+                             */
                             showTests(ret);
                         }
                     } catch (Exception e) {
@@ -4884,9 +4889,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4894,16 +4897,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -4916,6 +4912,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -4960,22 +4960,24 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
