@@ -133,7 +133,7 @@
 								</td>
 								<td>
 									<w:TextBox ui:field="externalId" width="200px" field="String"
-										maxLength="20" required="true" />
+										maxLength="20" />
 								</td>
 							</tr>
 							<tr>
