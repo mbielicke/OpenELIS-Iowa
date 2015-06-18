@@ -58,6 +58,13 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
     }
 
     public DataView1VO fetchAnalyteAndAuxField(DataView1VO data) throws Exception {
+        /*
+         * these flags are set here to make sure that not reportable results or
+         * aux data won't be shown though the portal even if someone manages to
+         * set them in the client
+         */
+        data.setIncludeNotReportableResults("N");
+        data.setIncludeNotReportableAuxData("N");
         try {
             return dataView.fetchAnalyteAndAuxFieldForPortal(data);
         } catch (Exception anyE) {
@@ -70,7 +77,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
 
         /*
          * these flags are set here to make sure that not reportable results or
-         * aux data won't be shown though the portal even if someone manages to
+         * aux data won't be shown through the portal even if someone manages to
          * set them in the client
          */
         data.setIncludeNotReportableResults("N");
