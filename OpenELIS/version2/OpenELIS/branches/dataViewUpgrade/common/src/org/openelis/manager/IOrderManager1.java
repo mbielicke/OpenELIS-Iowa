@@ -36,24 +36,24 @@ import org.openelis.domain.DataObject;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderTestAnalyteDO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderTestAnalyteDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestDO;
+import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 
 /**
- * This class encapsulates an order and all its related information including
+ * This class encapsulates an iorder and all its related information including
  * organization, items, tests, etc. Although the class provides some basic
  * functions internally, it is designed to interact with EJB methods to provide
- * majority of the operations needed to manage an order.
+ * majority of the operations needed to manage an iorder.
  */
-public class OrderManager1 implements Serializable {
+public class IOrderManager1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -66,28 +66,28 @@ public class OrderManager1 implements Serializable {
         RECURRENCE // recurrence
     };
 
-    protected OrderViewDO                         order;
-    protected ArrayList<OrderOrganizationViewDO>  organizations;
-    protected ArrayList<OrderItemViewDO>          items;
+    protected IOrderViewDO                         iorder;
+    protected ArrayList<IOrderOrganizationViewDO>  organizations;
+    protected ArrayList<IOrderItemViewDO>          items;
     protected ArrayList<InventoryXUseViewDO>      fills;
     protected ArrayList<InventoryXPutViewDO>      receipts;
-    protected ArrayList<OrderContainerDO>         containers;
-    protected ArrayList<OrderTestViewDO>          tests;
-    protected ArrayList<OrderTestAnalyteViewDO>   analytes;
+    protected ArrayList<IOrderContainerDO>         containers;
+    protected ArrayList<IOrderTestViewDO>          tests;
+    protected ArrayList<IOrderTestAnalyteViewDO>   analytes;
     protected NoteViewDO                          shipNote, custNote, sampNote;
     protected ArrayList<NoteViewDO>               internalNotes;
     protected ArrayList<AuxDataViewDO>            auxilliary;
-    protected OrderRecurrenceDO                   recurrence;
+    protected IOrderRecurrenceDO                   recurrence;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID      = -1;
 
-    transient public final OrderOrganization      organization = new OrderOrganization();
-    transient public final OrderItem              item         = new OrderItem();
-    transient public final OrderFill              fill         = new OrderFill();
-    transient public final OrderReceipt           receipt      = new OrderReceipt();
-    transient public final OrderContainer         container    = new OrderContainer();
-    transient public final OrderTest              test         = new OrderTest();
-    transient public final OrderTestAnalyte       analyte      = new OrderTestAnalyte();
+    transient public final IOrderOrganization     organization = new IOrderOrganization();
+    transient public final IOrderItem             item         = new IOrderItem();
+    transient public final IOrderFill             fill         = new IOrderFill();
+    transient public final IOrderReceipt          receipt      = new IOrderReceipt();
+    transient public final IOrderContainer        container    = new IOrderContainer();
+    transient public final IOrderTest             test         = new IOrderTest();
+    transient public final IOrderTestAnalyte      analyte      = new IOrderTestAnalyte();
     transient public final ShippingNote           shippingNote = new ShippingNote();
     transient public final CustomerNote           customerNote = new CustomerNote();
     transient public final SampleNote             sampleNote   = new SampleNote();
@@ -98,17 +98,17 @@ public class OrderManager1 implements Serializable {
     /**
      * Initialize an empty order manager
      */
-    public OrderManager1() {
+    public IOrderManager1() {
     }
 
     /**
-     * Returns the order view DO
+     * Returns the iorder view DO
      */
-    public OrderViewDO getOrder() {
-        return order;
+    public IOrderViewDO getIorder() {
+        return iorder;
     }
 
-    public OrderRecurrenceDO getRecurrence() {
+    public IOrderRecurrenceDO getRecurrence() {
         return recurrence;
     }
 
@@ -116,11 +116,11 @@ public class OrderManager1 implements Serializable {
      * Adds a recurrence DO to the manager and sets the status of the order to
      * recurring
      */
-    public OrderRecurrenceDO addRecurrence() {
+    public IOrderRecurrenceDO addRecurrence() {
         if (recurrence == null) {
-            recurrence = new OrderRecurrenceDO();
+            recurrence = new IOrderRecurrenceDO();
             recurrence.setIsActive("Y");
-            order.setStatusId(Constants.dictionary().ORDER_STATUS_RECURRING);
+            iorder.setStatusId(Constants.dictionary().ORDER_STATUS_RECURRING);
         }
 
         return recurrence;
@@ -128,7 +128,7 @@ public class OrderManager1 implements Serializable {
 
     /**
      * Returns the next negative Id for this sample's newly created and as yet
-     * uncommitted data objects e.g. order tests and order test analytes.
+     * uncommitted data objects e.g. iorder tests and iorder test analytes.
      */
     public int getNextUID() {
         return --nextUID;
@@ -142,10 +142,10 @@ public class OrderManager1 implements Serializable {
             uidMap = new HashMap<String, DataObject>();
 
             if (tests != null)
-                for (OrderTestDO data : tests)
+                for (IOrderTestDO data : tests)
                     uidMap.put(Constants.uid().get(data), data);
             if (analytes != null)
-                for (OrderTestAnalyteDO data : analytes)
+                for (IOrderTestAnalyteDO data : analytes)
                     uidMap.put(Constants.uid().get(data), data);
         }
         return uidMap.get(uid);
@@ -154,27 +154,27 @@ public class OrderManager1 implements Serializable {
     /**
      * Class to manage Order Organization information
      */
-    public class OrderOrganization {
+    public class IOrderOrganization {
         /**
          * Returns the organization at specified index.
          */
-        public OrderOrganizationViewDO get(int i) {
+        public IOrderOrganizationViewDO get(int i) {
             return organizations.get(i);
         }
 
-        public OrderOrganizationViewDO add() {
-            OrderOrganizationViewDO data;
+        public IOrderOrganizationViewDO add() {
+            IOrderOrganizationViewDO data;
 
-            data = new OrderOrganizationViewDO();
+            data = new IOrderOrganizationViewDO();
             if (organizations == null)
-                organizations = new ArrayList<OrderOrganizationViewDO>();
+                organizations = new ArrayList<IOrderOrganizationViewDO>();
             organizations.add(data);
 
             return data;
         }
 
-        public OrderOrganizationViewDO add(OrganizationDO organization) {
-            OrderOrganizationViewDO data;
+        public IOrderOrganizationViewDO add(OrganizationDO organization) {
+            IOrderOrganizationViewDO data;
             AddressDO addr;
 
             data = add();
@@ -195,19 +195,19 @@ public class OrderManager1 implements Serializable {
          * Removes an organization from the list
          */
         public void remove(int i) {
-            OrderOrganizationViewDO data;
+            IOrderOrganizationViewDO data;
 
             data = organizations.remove(i);
             dataObjectRemove(data.getId(), data);
         }
 
-        public void remove(OrderOrganizationViewDO data) {
+        public void remove(IOrderOrganizationViewDO data) {
             organizations.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
         /**
-         * Returns the number of organizations associated with this order
+         * Returns the number of organizations associated with this iorder
          */
         public int count() {
             if (organizations != null)
@@ -216,17 +216,17 @@ public class OrderManager1 implements Serializable {
         }
 
         /**
-         * Returns a list of order organizations that are of specified typeId.
+         * Returns a list of iorder organizations that are of specified typeId.
          */
-        public ArrayList<OrderOrganizationViewDO> getByType(Integer typeId) {
-            ArrayList<OrderOrganizationViewDO> list;
+        public ArrayList<IOrderOrganizationViewDO> getByType(Integer typeId) {
+            ArrayList<IOrderOrganizationViewDO> list;
 
             list = null;
             if (organizations != null) {
-                for (OrderOrganizationViewDO data : organizations) {
+                for (IOrderOrganizationViewDO data : organizations) {
                     if (typeId.equals(data.getTypeId())) {
                         if (list == null)
-                            list = new ArrayList<OrderOrganizationViewDO>();
+                            list = new ArrayList<IOrderOrganizationViewDO>();
                         list.add(data);
                     }
                 }
@@ -238,20 +238,20 @@ public class OrderManager1 implements Serializable {
     /**
      * Class to manage Order Item information
      */
-    public class OrderItem {
+    public class IOrderItem {
         /**
          * Returns the item at specified index.
          */
-        public OrderItemViewDO get(int i) {
+        public IOrderItemViewDO get(int i) {
             return items.get(i);
         }
 
-        public OrderItemViewDO add() {
-            OrderItemViewDO data;
+        public IOrderItemViewDO add() {
+            IOrderItemViewDO data;
 
-            data = new OrderItemViewDO();
+            data = new IOrderItemViewDO();
             if (items == null)
-                items = new ArrayList<OrderItemViewDO>();
+                items = new ArrayList<IOrderItemViewDO>();
             items.add(data);
 
             return data;
@@ -261,19 +261,19 @@ public class OrderManager1 implements Serializable {
          * Removes an item from the list
          */
         public void remove(int i) {
-            OrderItemViewDO data;
+            IOrderItemViewDO data;
 
             data = items.remove(i);
             dataObjectRemove(data.getId(), data);
         }
 
-        public void remove(OrderItemViewDO data) {
+        public void remove(IOrderItemViewDO data) {
             items.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
         /**
-         * Returns the number of items associated with this order
+         * Returns the number of items associated with this iorder
          */
         public int count() {
             if (items != null)
@@ -285,7 +285,7 @@ public class OrderManager1 implements Serializable {
     /**
      * Class to manage Order Fill (Inventory X Use) information
      */
-    public class OrderFill {
+    public class IOrderFill {
 
         public InventoryXUseViewDO get(int i) {
             return fills.get(i);
@@ -318,7 +318,7 @@ public class OrderManager1 implements Serializable {
         }
 
         /**
-         * Returns the number of fills associated with this order
+         * Returns the number of fills associated with this iorder
          */
         public int count() {
             if (fills != null)
@@ -328,9 +328,9 @@ public class OrderManager1 implements Serializable {
     }
 
     /**
-     * Class to manage Order Receipt (Inventory X Use) information
+     * Class to manage IOrder Receipt (Inventory X Use) information
      */
-    public class OrderReceipt {
+    public class IOrderReceipt {
 
         public InventoryXPutViewDO get(int i) {
             return receipts.get(i);
@@ -347,7 +347,7 @@ public class OrderManager1 implements Serializable {
         }
 
         /**
-         * Returns the number of receipts associated with this order
+         * Returns the number of receipts associated with this iorder
          */
         public int count() {
             if (receipts != null)
@@ -357,30 +357,30 @@ public class OrderManager1 implements Serializable {
     }
 
     /**
-     * Class to manage Order Container information
+     * Class to manage IOrder Container information
      */
-    public class OrderContainer {
-        public OrderContainerDO get(int i) {
+    public class IOrderContainer {
+        public IOrderContainerDO get(int i) {
             return containers.get(i);
         }
 
-        public OrderContainerDO add() {
-            OrderContainerDO data;
+        public IOrderContainerDO add() {
+            IOrderContainerDO data;
 
-            data = new OrderContainerDO();
+            data = new IOrderContainerDO();
             if (containers == null)
-                containers = new ArrayList<OrderContainerDO>();
+                containers = new ArrayList<IOrderContainerDO>();
             containers.add(data);
 
             return data;
         }
 
-        public OrderContainerDO add(int i) {
-            OrderContainerDO data;
+        public IOrderContainerDO add(int i) {
+            IOrderContainerDO data;
 
-            data = new OrderContainerDO();
+            data = new IOrderContainerDO();
             if (containers == null)
-                containers = new ArrayList<OrderContainerDO>();
+                containers = new ArrayList<IOrderContainerDO>();
             containers.add(i, data);
             resetSequencesFrom(i);
 
@@ -391,21 +391,21 @@ public class OrderManager1 implements Serializable {
          * Removes a container from the list
          */
         public void remove(int i) {
-            OrderContainerDO data;
+            IOrderContainerDO data;
 
             data = containers.remove(i);
             dataObjectRemove(data.getId(), data);
             resetSequencesFrom(i);
         }
 
-        public void remove(OrderContainerDO data) {
+        public void remove(IOrderContainerDO data) {
             containers.remove(data);
             dataObjectRemove(data.getId(), data);
             resetSequencesFrom(containers.indexOf(data));
         }
 
         public void move(int oldIndex, int newIndex) {
-            OrderContainerDO data;
+            IOrderContainerDO data;
 
             data = containers.remove(oldIndex);
 
@@ -420,7 +420,7 @@ public class OrderManager1 implements Serializable {
         }
 
         /**
-         * Returns the number of containers associated with this order
+         * Returns the number of containers associated with this iorder
          */
         public int count() {
             if (containers != null)
@@ -436,16 +436,16 @@ public class OrderManager1 implements Serializable {
     }
 
     /**
-     * Class to manage Order Test information
+     * Class to manage IOrder Test information
      */
-    public class OrderTest {
+    public class IOrderTest {
 
-        public OrderTestViewDO get(int i) {
+        public IOrderTestViewDO get(int i) {
             return tests.get(i);
         }
 
         /**
-         * Returns the number of tests associated with this order
+         * Returns the number of tests associated with this iorder
          */
         public int count() {
             if (tests != null)
@@ -455,24 +455,24 @@ public class OrderManager1 implements Serializable {
     }
 
     /**
-     * Class to manage Order Test Analyte information
+     * Class to manage IOrder Test Analyte information
      */
-    public class OrderTestAnalyte {
-        transient protected HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> map = null;
+    public class IOrderTestAnalyte {
+        transient protected HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>> map = null;
 
         /**
-         * Returns the order test analytes at specified index.
+         * Returns the iorder test analytes at specified index.
          */
-        public OrderTestAnalyteViewDO get(OrderTestViewDO test, int i) {
+        public IOrderTestAnalyteViewDO get(IOrderTestViewDO test, int i) {
             mapBuild();
             return map.get(test.getId()).get(i);
         }
 
         /**
-         * Returns the number of analytes associated with specified order test
+         * Returns the number of analytes associated with specified iorder test
          */
-        public int count(OrderTestViewDO test) {
-            ArrayList<OrderTestAnalyteViewDO> l;
+        public int count(IOrderTestViewDO test) {
+            ArrayList<IOrderTestAnalyteViewDO> l;
 
             if (analytes != null) {
                 mapBuild();
@@ -488,8 +488,8 @@ public class OrderManager1 implements Serializable {
          */
         private void mapBuild() {
             if (map == null && analytes != null) {
-                map = new HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>>();
-                for (OrderTestAnalyteViewDO data : analytes)
+                map = new HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>>();
+                for (IOrderTestAnalyteViewDO data : analytes)
                     mapAdd(data);
             }
         }
@@ -497,14 +497,14 @@ public class OrderManager1 implements Serializable {
         /*
          * adds a new analyte to the hash map
          */
-        private void mapAdd(OrderTestAnalyteViewDO data) {
-            ArrayList<OrderTestAnalyteViewDO> l;
+        private void mapAdd(IOrderTestAnalyteViewDO data) {
+            ArrayList<IOrderTestAnalyteViewDO> l;
 
             if (map != null) {
-                l = map.get(data.getOrderTestId());
+                l = map.get(data.getIorderTestId());
                 if (l == null) {
-                    l = new ArrayList<OrderTestAnalyteViewDO>();
-                    map.put(data.getOrderTestId(), l);
+                    l = new ArrayList<IOrderTestAnalyteViewDO>();
+                    map.put(data.getIorderTestId(), l);
                 }
                 l.add(data);
             }
@@ -517,7 +517,7 @@ public class OrderManager1 implements Serializable {
     public class ShippingNote {
 
         /**
-         * Returns the order's one (1) shipping note
+         * Returns the iorder's one (1) shipping note
          */
         public NoteViewDO get() {
             return shipNote;
@@ -555,7 +555,7 @@ public class OrderManager1 implements Serializable {
     public class CustomerNote {
 
         /**
-         * Returns the order's one (1) customer note
+         * Returns the iorder's one (1) customer note
          */
         public NoteViewDO get() {
             return custNote;
@@ -593,7 +593,7 @@ public class OrderManager1 implements Serializable {
     public class SampleNote {
 
         /**
-         * Returns the order's one (1) sample note
+         * Returns the iorder's one (1) sample note
          */
         public NoteViewDO get() {
             return sampNote;
@@ -631,7 +631,7 @@ public class OrderManager1 implements Serializable {
     public class InternalNote {
 
         /**
-         * Returns the order's internal note at specified index.
+         * Returns the iorder's internal note at specified index.
          */
         public NoteViewDO get(int i) {
             return internalNotes.get(i);
@@ -691,7 +691,7 @@ public class OrderManager1 implements Serializable {
         }
 
         /**
-         * Returns the number of aux data associated with the order
+         * Returns the number of aux data associated with the iorder
          */
         public int count() {
             if (auxilliary == null)

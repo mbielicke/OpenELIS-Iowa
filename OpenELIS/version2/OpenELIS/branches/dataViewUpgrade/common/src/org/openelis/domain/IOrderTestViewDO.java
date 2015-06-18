@@ -28,13 +28,13 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * The class extends OrderTestDO and carries the additional test/panel information.
+ * The class extends IOrderTestDO and carries the additional test/panel information.
  * The additional field is for read/display only and does not get committed to
  * the database. Note: isChanged will not reflect any changes to read/display
  * fields.
  */
 
-public class OrderTestViewDO extends OrderTestDO {
+public class IOrderTestViewDO extends IOrderTestDO {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,13 +42,13 @@ public class OrderTestViewDO extends OrderTestDO {
     
     protected Integer         methodId;
     
-    public OrderTestViewDO() {        
+    public IOrderTestViewDO() {        
     }
     
-    public OrderTestViewDO(Integer id, Integer orderId, Integer itemSequence, Integer sortOrder,
+    public IOrderTestViewDO(Integer id, Integer iorderId, Integer itemSequence, Integer sortOrder,
                            Integer testId, String testName, Integer methodId, String methodName,
                            String description, String isActive) {
-        super(id, orderId, itemSequence, sortOrder, testId);
+        super(id, iorderId, itemSequence, sortOrder, testId);
         setTestName(testName);
         setMethodId(methodId);
         setMethodName(methodName);

@@ -2,24 +2,25 @@
 package org.openelis.meta;
 
 /**
-  * InventoryReceiptOrderItem META Data
+  * OrderTest META Data
   */
 
 import java.util.HashSet;
-
 import org.openelis.ui.common.Meta;
 
-public class InventoryReceiptOrderItemMeta implements Meta {
+public class IOrderTestMeta implements Meta {
   	private String path = "";
-	private static final String entityName = "InventoryReceiptOrderItem";
+	private static final String entityName = "OrderTest";
 	
 	private static final String
-              ID					        ="id",
-              INVENTORY_RECEIPT_ID			="inventoryReceiptId",
-              ORDER_ITEM_ID					="orderItemId";
+              ID					="id",
+              IORDER_ID             ="iorderId",
+              SEQUENCE              ="sequence",
+              REFERENCE_ID          ="referenceId",
+              REFERENCE_TABLE_ID    ="referenceTableId";
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_RECEIPT_ID,ORDER_ITEM_ID};
+  	  ID,IORDER_ID,SEQUENCE,REFERENCE_ID,REFERENCE_TABLE_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -30,11 +31,11 @@ public class InventoryReceiptOrderItemMeta implements Meta {
         }
     }
     
-    public InventoryReceiptOrderItemMeta() {
+    public IOrderTestMeta() {
 		init();        
     }
     
-    public InventoryReceiptOrderItemMeta(String path) {
+    public IOrderTestMeta(String path) {
         this.path = path;
 		init();        
     }
@@ -56,13 +57,19 @@ public class InventoryReceiptOrderItemMeta implements Meta {
         return path + ID;
     } 
 
-    public String getInventoryReceiptId() {
-        return path + INVENTORY_RECEIPT_ID;
+    public String getIorderId() {
+        return path + IORDER_ID;
     } 
 
-    public String getOrderItemId() {
-        return path + ORDER_ITEM_ID;
+    public String getSequence() {
+        return path + SEQUENCE;
     } 
 
-  
+    public String getReferenceId() {
+        return path + REFERENCE_ID;
+    } 
+
+    public String getReferenceTableId() {
+        return path + REFERENCE_TABLE_ID;
+    } 
 }   

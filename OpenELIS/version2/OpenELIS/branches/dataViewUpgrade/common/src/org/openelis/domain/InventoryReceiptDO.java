@@ -37,7 +37,7 @@ public class InventoryReceiptDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, inventoryItemId, orderItemId, organizationId,
+    protected Integer         id, inventoryItemId, iorderItemId, organizationId,
                               quantityReceived;
     protected Datetime        receivedDate;
     protected Double          unitCost;
@@ -46,13 +46,13 @@ public class InventoryReceiptDO extends DataObject {
     public InventoryReceiptDO() {
     }     
     
-    public InventoryReceiptDO(Integer id, Integer inventoryItemId, Integer orderItemId,
+    public InventoryReceiptDO(Integer id, Integer inventoryItemId, Integer iorderItemId,
                               Integer organizationId, Date receivedDate,
                               Integer quantityReceived, Double unitCost,
                               String qcReference, String externalReference, String upc) {
         setId(id);
         setInventoryItemId(inventoryItemId);
-        setOrderItemId(orderItemId);
+        setIorderItemId(iorderItemId);
         setOrganizationId(organizationId);
         setReceivedDate(DataBaseUtil.toYD(receivedDate));
         setQuantityReceived(quantityReceived);
@@ -81,12 +81,12 @@ public class InventoryReceiptDO extends DataObject {
         _changed = true;
     }
     
-    public Integer getOrderItemId() {
-        return orderItemId;
+    public Integer getIorderItemId() {
+        return iorderItemId;
     }
 
-    public void setOrderItemId(Integer orderItemId) {
-        this.orderItemId = orderItemId;
+    public void setIorderItemId(Integer iorderItemId) {
+        this.iorderItemId = iorderItemId;
         _changed = true;
     }
     

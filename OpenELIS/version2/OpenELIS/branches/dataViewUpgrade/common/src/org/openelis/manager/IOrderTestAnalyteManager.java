@@ -28,26 +28,26 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 
-public class OrderTestAnalyteManager implements Serializable {
+public class IOrderTestAnalyteManager implements Serializable {
 
     private static final long                   serialVersionUID = 1L;
 
-    protected Integer                           orderTestId;
-    protected ArrayList<OrderTestAnalyteViewDO> analytes, deleted;
+    protected Integer                           iorderTestId;
+    protected ArrayList<IOrderTestAnalyteViewDO> analytes, deleted;
 
-    protected transient static OrderTestAnalyteManagerProxy proxy;
+    protected transient static IOrderTestAnalyteManagerProxy proxy;
 
-    protected OrderTestAnalyteManager() {
+    protected IOrderTestAnalyteManager() {
     }
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderTestAnalyteManager getInstance() {
-        return new OrderTestAnalyteManager();
+    public static IOrderTestAnalyteManager getInstance() {
+        return new IOrderTestAnalyteManager();
     }
 
     public int count() {
@@ -56,19 +56,19 @@ public class OrderTestAnalyteManager implements Serializable {
         return analytes().size();
     }
 
-    public OrderTestAnalyteViewDO getAnalyteAt(int i) {
+    public IOrderTestAnalyteViewDO getAnalyteAt(int i) {
         return analytes.get(i);
     }
 
-    public void setAnalyteAt(OrderTestAnalyteViewDO orderTestAnalyte, int i) {
+    public void setAnalyteAt(IOrderTestAnalyteViewDO orderTestAnalyte, int i) {
         analytes().set(i, orderTestAnalyte);
     }
 
-    public void addAnalyte(OrderTestAnalyteViewDO orderTestAnalyte) {
+    public void addAnalyte(IOrderTestAnalyteViewDO orderTestAnalyte) {
         analytes().add(orderTestAnalyte);
     }
 
-    public void addAnalyteAt(OrderTestAnalyteViewDO orderTestAnalyte, int i) {
+    public void addAnalyteAt(IOrderTestAnalyteViewDO orderTestAnalyte, int i) {
         analytes().add(i, orderTestAnalyte);
     }
 
@@ -80,48 +80,48 @@ public class OrderTestAnalyteManager implements Serializable {
     }
     
     // service methods
-    public static OrderTestAnalyteManager fetchByOrderTestId(Integer id) throws Exception {
-        return proxy().fetchByOrderTestId(id);
+    public static IOrderTestAnalyteManager fetchByIorderTestId(Integer id) throws Exception {
+        return proxy().fetchByIorderTestId(id);
     }
     
-    public static OrderTestAnalyteManager fetchMergedByOrderTestId(Integer id) throws Exception {
-        return proxy().fetchMergedByOrderTestId(id);
+    public static IOrderTestAnalyteManager fetchMergedByIorderTestId(Integer id) throws Exception {
+        return proxy().fetchMergedByIorderTestId(id);
     }
     
-    public static OrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
+    public static IOrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
         return proxy().fetchByTestId(id);
     }
     
-    public OrderTestAnalyteManager add() throws Exception {
+    public IOrderTestAnalyteManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderTestAnalyteManager update() throws Exception {
+    public IOrderTestAnalyteManager update() throws Exception {
         return proxy().update(this);
     }
 
-    public void validate(OrderTestViewDO test, int index) throws Exception {
+    public void validate(IOrderTestViewDO test, int index) throws Exception {
         proxy().validate(this, test, index);
     }
 
     // friendly methods used by managers and proxies
-    Integer getOrderTestId() {
-        return orderTestId;
+    Integer getIorderTestId() {
+        return iorderTestId;
     }
 
-    void setOrderTestId(Integer id) {
-        orderTestId = id;
+    void setIorderTestId(Integer id) {
+        iorderTestId = id;
     }
 
-    ArrayList<OrderTestAnalyteViewDO> getAnalytes() {
+    ArrayList<IOrderTestAnalyteViewDO> getAnalytes() {
         return analytes;
     }
 
-    void setAnalytes(ArrayList<OrderTestAnalyteViewDO> analytes) {
+    void setAnalytes(ArrayList<IOrderTestAnalyteViewDO> analytes) {
         this.analytes = analytes;
     }
     
-    void mergeAnalytes(OrderTestAnalyteManager man) {
+    void mergeAnalytes(IOrderTestAnalyteManager man) {
         int i;
         
         if (man == null)
@@ -140,26 +140,26 @@ public class OrderTestAnalyteManager implements Serializable {
         return deleted.size();
     }
 
-    OrderTestAnalyteViewDO getDeletedAt(int i) {
+    IOrderTestAnalyteViewDO getDeletedAt(int i) {
         return deleted.get(i);
     }        
 
-    private static OrderTestAnalyteManagerProxy proxy() {
+    private static IOrderTestAnalyteManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderTestAnalyteManagerProxy();
+            proxy = new IOrderTestAnalyteManagerProxy();
         return proxy;
     }
     
-    private ArrayList<OrderTestAnalyteViewDO> analytes() {
+    private ArrayList<IOrderTestAnalyteViewDO> analytes() {
         if (analytes == null)
-            analytes = new ArrayList<OrderTestAnalyteViewDO>();
+            analytes = new ArrayList<IOrderTestAnalyteViewDO>();
         return analytes;
     }
     
-    private void addToDeleted(OrderTestAnalyteViewDO tmp) {
+    private void addToDeleted(IOrderTestAnalyteViewDO tmp) {
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<OrderTestAnalyteViewDO>();
+                deleted = new ArrayList<IOrderTestAnalyteViewDO>();
             deleted.add(tmp);
         }
     }

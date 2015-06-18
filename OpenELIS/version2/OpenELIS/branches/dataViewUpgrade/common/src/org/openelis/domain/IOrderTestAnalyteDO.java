@@ -28,21 +28,21 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * Class represents the fields in database table order_test_analyte.
+ * Class represents the fields in database table iorder_test_analyte.
  */
 
-public class OrderTestAnalyteDO extends DataObject {
+public class IOrderTestAnalyteDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, orderTestId, analyteId;
+    protected Integer         id, iorderTestId, analyteId;
     
-    public OrderTestAnalyteDO() {
+    public IOrderTestAnalyteDO() {
     }
 
-    public OrderTestAnalyteDO(Integer id, Integer orderTestId, Integer analyteId) {
+    public IOrderTestAnalyteDO(Integer id, Integer orderTestId, Integer analyteId) {
         setId(id);
-        setOrderTestId(orderTestId);
+        setIorderTestId(orderTestId);
         setAnalyteId(analyteId);
         _changed = false;
     }
@@ -53,25 +53,23 @@ public class OrderTestAnalyteDO extends DataObject {
 
     public void setId(Integer id) {
         /*
-         * we need to set this field to null like this because the query that 
-         * is run to fetch this record may set the id to zero and not null in 
-         * order to make the query to get deployed
+         * The named query can't set null as a value for this column. The practice
+         * is to set the field to 0 in the named query so it can be set to null.
          */ 
         this.id = DataBaseUtil.isSame(id, 0) ? null : id;
         _changed = true;
     }
 
-    public Integer getOrderTestId() {
-        return orderTestId;        
+    public Integer getIorderTestId() {
+        return iorderTestId;        
     }
 
-    public void setOrderTestId(Integer orderTestId) {
+    public void setIorderTestId(Integer iorderTestId) {
         /*
-         * we need to set this field to null like this because the query that
-         * is run to fetch this record may set the orderTestId to zero and not null
-         * in order to make the query to get deployed
+         * The named query can't set null as a value for this column. The practice
+         * is to set the field to 0 in the named query so it can be set to null.
          */ 
-        this.orderTestId = DataBaseUtil.isSame(orderTestId, 0) ? null : orderTestId;
+        this.iorderTestId = DataBaseUtil.isSame(iorderTestId, 0) ? null : iorderTestId;
         _changed = true;
     }
 

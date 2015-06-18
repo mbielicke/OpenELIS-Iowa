@@ -28,71 +28,71 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.domain.OrderContainerDO;
+import org.openelis.domain.IOrderContainerDO;
 
-public class OrderContainerManager implements Serializable {
+public class IOrderContainerManager implements Serializable {
 
     private static final long                             serialVersionUID = 1L;
 
-    protected Integer                                     orderId;
-    protected ArrayList<OrderContainerDO>                 containers, deleted;
+    protected Integer                                     iorderId;
+    protected ArrayList<IOrderContainerDO>                containers, deleted;
 
-    protected transient static OrderContainerManagerProxy proxy;
+    protected transient static IOrderContainerManagerProxy proxy;
 
-    protected OrderContainerManager() {
+    protected IOrderContainerManager() {
     }
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderContainerManager getInstance() {
-        return new OrderContainerManager();
+    public static IOrderContainerManager getInstance() {
+        return new IOrderContainerManager();
     }
 
-    public OrderContainerDO getContainerAt(int i) {
+    public IOrderContainerDO getContainerAt(int i) {
         return containers.get(i);
     }
 
-    public void setContainerAt(OrderContainerDO container, int i) {
+    public void setContainerAt(IOrderContainerDO container, int i) {
         if (containers == null)
-            containers = new ArrayList<OrderContainerDO>();
+            containers = new ArrayList<IOrderContainerDO>();
         containers.set(i, container);
     }
 
     public int addContainer() {
         if (containers == null)
-            containers = new ArrayList<OrderContainerDO>();
-        containers.add(new OrderContainerDO());   
+            containers = new ArrayList<IOrderContainerDO>();
+        containers.add(new IOrderContainerDO());   
         
         return count() - 1;
     }
     
     public int addContainerAt(int i) {
         if (containers == null)
-            containers = new ArrayList<OrderContainerDO>();
-        containers.add(i, new OrderContainerDO()); 
+            containers = new ArrayList<IOrderContainerDO>();
+        containers.add(i, new IOrderContainerDO()); 
         
         return count() - 1;
     }
     
-    public int addContainer(OrderContainerDO container) {
+    public int addContainer(IOrderContainerDO container) {
         if (containers == null)
-            containers = new ArrayList<OrderContainerDO>();
+            containers = new ArrayList<IOrderContainerDO>();
         containers.add(container);   
         
         return count() - 1;
     }
     
-    public int addContainerAt(OrderContainerDO container, int i) {
+    public int addContainerAt(IOrderContainerDO container, int i) {
         if (containers == null)
-            containers = new ArrayList<OrderContainerDO>();
+            containers = new ArrayList<IOrderContainerDO>();
         containers.add(i, container);   
         
         return count() - 1;
     }
 
     public void removeContainerAt(int i) {
-        OrderContainerDO tmp;
+        IOrderContainerDO tmp;
 
         if (containers == null || i >= containers.size())
             return;
@@ -100,13 +100,13 @@ public class OrderContainerManager implements Serializable {
         tmp = containers.remove(i);
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<OrderContainerDO>();
+                deleted = new ArrayList<IOrderContainerDO>();
             deleted.add(tmp);
         }
     }
     
     public void moveContainer(int oldIndex, int newIndex) {
-        OrderContainerDO entry;
+        IOrderContainerDO entry;
 
         if (containers == null || oldIndex == newIndex)
             return;
@@ -129,15 +129,15 @@ public class OrderContainerManager implements Serializable {
     }
 
     // service methods
-    public static OrderContainerManager fetchByOrderId(Integer id) throws Exception {
-        return proxy().fetchByOrderId(id);
+    public static IOrderContainerManager fetchByIorderId(Integer id) throws Exception {
+        return proxy().fetchByIorderId(id);
     }
 
-    public OrderContainerManager add() throws Exception {
+    public IOrderContainerManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderContainerManager update() throws Exception {
+    public IOrderContainerManager update() throws Exception {
         return proxy().update(this);
     }
 
@@ -147,18 +147,18 @@ public class OrderContainerManager implements Serializable {
 
     // friendly methods used by managers and proxies
     Integer getOrderId() {
-        return orderId;
+        return iorderId;
     }
 
     void setOrderId(Integer id) {
-        orderId = id;
+        iorderId = id;
     }
 
-    ArrayList<OrderContainerDO> getContainers() {
+    ArrayList<IOrderContainerDO> getContainers() {
         return containers;
     }
 
-    void setContainers(ArrayList<OrderContainerDO> containers) {
+    void setContainers(ArrayList<IOrderContainerDO> containers) {
         this.containers = containers;
     }
 
@@ -168,13 +168,13 @@ public class OrderContainerManager implements Serializable {
         return deleted.size();
     }
 
-    OrderContainerDO getDeletedAt(int i) {
+    IOrderContainerDO getDeletedAt(int i) {
         return deleted.get(i);
     }
 
-    private static OrderContainerManagerProxy proxy() {
+    private static IOrderContainerManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderContainerManagerProxy();
+            proxy = new IOrderContainerManagerProxy();
         return proxy;
     }
 

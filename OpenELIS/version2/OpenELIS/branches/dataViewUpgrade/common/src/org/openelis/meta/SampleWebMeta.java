@@ -96,8 +96,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     WELL_COLLECTOR = "_samplePrivateWell.collector",
                     WELL_WELL_NUMBER = "_samplePrivateWell.wellNumber",
                     WELL_REPORT_TO_ADDR_CITY = "_privateWellReportToAddress.city",
+                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_privateWellReportToAddress.workPhone",
                     WELL_REPORT_TO_ADDR_FAX_PHONE = "_privateWellReportToAddress.faxPhone",
-                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone",
 
                     WELL_LOCATION_ADDR_ID = "_wellLocationAddress.id",
                     WELL_LOCATION_ADDR_MULTIPLE_UNIT = "_wellLocationAddress.multipleUnit",
@@ -105,6 +105,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     WELL_LOCATION_ADDR_CITY = "_wellLocationAddress.city",
                     WELL_LOCATION_ADDR_STATE = "_wellLocationAddress.state",
                     WELL_LOCATION_ADDR_ZIP_CODE = "_wellLocationAddress.zipCode",
+                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone",
 
                     // sample sdwis
                     SDWIS_ID = "_sampleSDWIS.id",
@@ -118,6 +119,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     SDWIS_PRIORITY = "_sampleSDWIS.priority",
                     SDWIS_LOCATION = "_sampleSDWIS.location",
                     SDWIS_COLLECTOR = "_sampleSDWIS.collector",
+                    SDWIS_COLLECTOR_HEADER = "_sampleSDWIS.collectorHeader",
 
                     PWS_NUMBER0 = "_pws.number0",
                     PWS_ID = "_pws.id",
@@ -176,7 +178,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                     CLIN_PATIENT_ID = "_clinicalPatient.id",
                     CLIN_PROVIDER_PHONE = "_sampleClinical.providerPhone",
                     CLIN_PATIENT_LAST_NAME = "_clinicalPatient.lastName",
+                    CLIN_PATIENT_LAST_NAME_HEADER = "_clinicalPatient.lastNameHeader",
                     CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
+                    CLIN_PATIENT_FIRST_NAME_HEADER = "_clinicalPatient.firstNameHeader",
                     CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
                     CLIN_PATIENT_BIRTH_DATE_FROM = "display.patientBirthDateFrom",
                     CLIN_PATIENT_BIRTH_DATE_TO = "display.patientBirthDateTo",
@@ -315,12 +319,6 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RELEASED_DATE,
                                                   RELEASED_DATE_FROM,
                                                   RELEASED_DATE_TO,
-                                                  CLIN_PATIENT_LAST_NAME,
-                                                  CLIN_PATIENT_FIRST_NAME,
-                                                  CLIN_PATIENT_BIRTH_DATE,
-                                                  CLIN_PATIENT_BIRTH_DATE_FROM,
-                                                  CLIN_PATIENT_BIRTH_DATE_TO,
-                                                  CLIN_PATIENT_BIRTH_TIME,
                                                   ENV_ID,
                                                   ENV_SAMPLE_ID,
                                                   ENV_IS_HAZARDOUS,
@@ -357,13 +355,14 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   WELL_COLLECTOR,
                                                   WELL_WELL_NUMBER,
                                                   WELL_REPORT_TO_ADDR_CITY,
+                                                  WELL_REPORT_TO_ADDR_WORK_PHONE,
                                                   WELL_REPORT_TO_ADDR_FAX_PHONE,
-                                                  WELL_LOCATION_ADDR_WORK_PHONE,
                                                   WELL_LOCATION_ADDR_MULTIPLE_UNIT,
                                                   WELL_LOCATION_ADDR_STREET_ADDRESS,
                                                   WELL_LOCATION_ADDR_CITY,
                                                   WELL_LOCATION_ADDR_STATE,
                                                   WELL_LOCATION_ADDR_ZIP_CODE,
+                                                  WELL_LOCATION_ADDR_WORK_PHONE,
                                                   SDWIS_ID,
                                                   SDWIS_SAMPLE_ID,
                                                   SDWIS_PWS_ID,
@@ -375,6 +374,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   SDWIS_PRIORITY,
                                                   SDWIS_LOCATION,
                                                   SDWIS_COLLECTOR,
+                                                  SDWIS_COLLECTOR_HEADER,
                                                   PWS_NUMBER0,
                                                   PWS_ID,
                                                   PWS_NAME,
@@ -424,7 +424,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   CLIN_PATIENT_ID,
                                                   CLIN_PROVIDER_PHONE,
                                                   CLIN_PATIENT_LAST_NAME,
+                                                  CLIN_PATIENT_LAST_NAME_HEADER,
                                                   CLIN_PATIENT_FIRST_NAME,
+                                                  CLIN_PATIENT_FIRST_NAME_HEADER,
                                                   CLIN_PATIENT_BIRTH_DATE,
                                                   CLIN_PATIENT_BIRTH_DATE_FROM,
                                                   CLIN_PATIENT_BIRTH_DATE_TO,
@@ -624,30 +626,6 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RELEASED_DATE_TO;
     }
 
-    public static String getClinPatientLastName() {
-        return CLIN_PATIENT_LAST_NAME;
-    }
-
-    public static String getClinPatientFirstName() {
-        return CLIN_PATIENT_FIRST_NAME;
-    }
-
-    public static String getClinPatientBirthDate() {
-        return CLIN_PATIENT_BIRTH_DATE;
-    }
-
-    public static String getClinPatientBirthDateFrom() {
-        return CLIN_PATIENT_BIRTH_DATE_FROM;
-    }
-
-    public static String getClinPatientBirthDateTo() {
-        return CLIN_PATIENT_BIRTH_DATE_TO;
-    }
-
-    public static String getClinPatientBirthTime() {
-        return CLIN_PATIENT_BIRTH_TIME;
-    }
-
     public static String getEnvLocationAddrId() {
         return ENV_LOCATION_ADDRESS_ID;
     }
@@ -795,15 +773,15 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getWellReportToAddressCity() {
         return WELL_REPORT_TO_ADDR_CITY;
     }
+    
+    public static String getWellReportToAddressWorkPhone() {
+        return WELL_REPORT_TO_ADDR_WORK_PHONE;
+    }
 
     public static String getWellReportToAddressFaxPhone() {
         return WELL_REPORT_TO_ADDR_FAX_PHONE;
     }
-
-    public static String getWellReportToAddressWorkPhone() {
-        return WELL_LOCATION_ADDR_WORK_PHONE;
-    }
-
+    
     public static String getWellLocationAddrId() {
         return WELL_LOCATION_ADDR_ID;
     }
@@ -826,6 +804,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getWellLocationAddrZipCode() {
         return WELL_LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getWellLocationAddrWorkPhone() {
+        return WELL_LOCATION_ADDR_WORK_PHONE;
     }
 
     public static String getSDWISId() {
@@ -871,7 +853,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getSDWISCollector() {
         return SDWIS_COLLECTOR;
     }
-
+    
+    public static String getSDWISCollectorHeader() {
+        return SDWIS_COLLECTOR_HEADER;
+    }
+    
     public static String getPwsNumber0() {
         return PWS_NUMBER0;
     }
@@ -1067,9 +1053,17 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getClinicalPatientLastName() {
         return CLIN_PATIENT_LAST_NAME;
     }
+    
+    public static String getClinicalPatientLastNameHeader() {
+        return CLIN_PATIENT_LAST_NAME_HEADER;
+    }
 
     public static String getClinicalPatientFirstName() {
         return CLIN_PATIENT_FIRST_NAME;
+    }
+
+    public static String getClinicalPatientFirstNameHeader() {
+        return CLIN_PATIENT_FIRST_NAME_HEADER;
     }
 
     public static String getClinicalPatientBirthDate() {

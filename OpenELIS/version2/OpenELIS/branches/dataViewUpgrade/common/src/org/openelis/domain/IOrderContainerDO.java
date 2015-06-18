@@ -25,28 +25,22 @@
  */
 package org.openelis.domain;
 
-import org.openelis.ui.common.DataBaseUtil;
-
-/**
- * Class represents the fields in database table order_organization.
- */
-
-public class OrderOrganizationDO extends DataObject {
+public class IOrderContainerDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, orderId, organizationId, typeId;
-    protected String          organizationAttention;
-
-    public OrderOrganizationDO() {
+    protected Integer         id, iorderId, containerId, itemSequence, typeOfSampleId;
+    
+    public IOrderContainerDO() {
     }
 
-    public OrderOrganizationDO(Integer id, Integer orderId, Integer organizationId, String organizationAttention, Integer typeId) {
+    public IOrderContainerDO(Integer id, Integer iorderId, Integer containerId,
+                            Integer itemSequence, Integer typeOfSampleId) {
         setId(id);
-        setOrderId(orderId);
-        setOrganizationId(organizationId);
-        setOrganizationAttention(organizationAttention);
-        setTypeId(typeId);
+        setIorderId(iorderId);
+        setContainerId(containerId);
+        setItemSequence(itemSequence);
+        setTypeOfSampleId(typeOfSampleId);    
         _changed = false;
     }
 
@@ -59,39 +53,40 @@ public class OrderOrganizationDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
         _changed = true;
     }
 
-    public Integer getOrganizationId() {
-        return organizationId;
+    public Integer getContainerId() {
+        return containerId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
-        this.organizationId = organizationId;
+    public void setContainerId(Integer containerId) {
+        this.containerId = containerId;
         _changed = true;
     }
 
-    public Integer getTypeId() {
-        return typeId;
+    public Integer getItemSequence() {
+        return itemSequence;
     }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
+    public void setItemSequence(Integer itemSequence) {
+        this.itemSequence = itemSequence;
         _changed = true;
     }
 
-    public String getOrganizationAttention() {
-        return organizationAttention;
+    public Integer getTypeOfSampleId() {
+        return typeOfSampleId;
     }
 
-    public void setOrganizationAttention(String organizationAttention) {
-        this.organizationAttention = DataBaseUtil.trim(organizationAttention);
+    public void setTypeOfSampleId(Integer typeOfSampleId) {
+        this.typeOfSampleId = typeOfSampleId;
         _changed = true;
     }
+    
 }

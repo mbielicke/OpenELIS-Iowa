@@ -28,71 +28,71 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.ui.common.NotFoundException;
 
-public class OrderTestManager implements Serializable {
+public class IOrderTestManager implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    protected Integer                       orderId;
-    protected ArrayList<OrderTestListItem>  items, deleted;
+    protected Integer                       iorderId;
+    protected ArrayList<IOrderTestListItem>  items, deleted;
 
-    protected transient static OrderTestManagerProxy proxy;
+    protected transient static IOrderTestManagerProxy proxy;
     
-    protected OrderTestManager() {        
+    protected IOrderTestManager() {        
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static OrderTestManager getInstance() {
-        return new OrderTestManager();
+    public static IOrderTestManager getInstance() {
+        return new IOrderTestManager();
     }
     
-    public OrderTestViewDO getTestAt(int i) {
+    public IOrderTestViewDO getTestAt(int i) {
         return items.get(i).test;
     }
     
-    public void setTestAt(OrderTestViewDO test, int i) {
+    public void setTestAt(IOrderTestViewDO test, int i) {
         if(items == null)
-            items = new ArrayList<OrderTestListItem>();
+            items = new ArrayList<IOrderTestListItem>();
         items.get(i).test = test;        
     }
     
     public void addTest() {
-        OrderTestListItem item;
+        IOrderTestListItem item;
         
         if(items == null)
-            items = new ArrayList<OrderTestListItem>();
-        item = new OrderTestListItem();        
-        item.test = new OrderTestViewDO();
+            items = new ArrayList<IOrderTestListItem>();
+        item = new IOrderTestListItem();        
+        item.test = new IOrderTestViewDO();
         items.add(item);
     }
     
-    public void addTest(OrderTestViewDO test) {
-        OrderTestListItem item;
+    public void addTest(IOrderTestViewDO test) {
+        IOrderTestListItem item;
         
         if(items == null)
-            items = new ArrayList<OrderTestListItem>();
-        item = new OrderTestListItem();        
+            items = new ArrayList<IOrderTestListItem>();
+        item = new IOrderTestListItem();        
         item.test = test;
         items.add(item);
     }
     
     public void addTestAt(int i) {
-        OrderTestListItem item;
+        IOrderTestListItem item;
         
         if(items == null)
-            items = new ArrayList<OrderTestListItem>();
-        item = new OrderTestListItem();        
-        item.test = new OrderTestViewDO();
+            items = new ArrayList<IOrderTestListItem>();
+        item = new IOrderTestListItem();        
+        item.test = new IOrderTestViewDO();
         items.add(i, item);
     }
     
     public void removeTestAt(int i) {
-        OrderTestListItem tmp;
+        IOrderTestListItem tmp;
         
         if(items == null || i >= items.size())
             return;
@@ -100,14 +100,14 @@ public class OrderTestManager implements Serializable {
         tmp = items.remove(i);
         if (tmp.test.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<OrderTestListItem>();
+                deleted = new ArrayList<IOrderTestListItem>();
             deleted.add(tmp);        
         }
     }
     
     public void removeNotReportableAnalytesAt(int i) { 
-        OrderTestAnalyteManager aman;
-        OrderTestAnalyteViewDO ana;
+        IOrderTestAnalyteManager aman;
+        IOrderTestAnalyteViewDO ana;
         
         if(items == null || i >= items.size())
             return;
@@ -131,15 +131,15 @@ public class OrderTestManager implements Serializable {
     }
     
     // service methods
-    public static OrderTestManager fetchByOrderId(Integer id) throws Exception {
-        return proxy().fetchByOrderId(id);
+    public static IOrderTestManager fetchByIorderId(Integer id) throws Exception {
+        return proxy().fetchByIorderId(id);
     }
     
-    public OrderTestManager add() throws Exception {
+    public IOrderTestManager add() throws Exception {
         return proxy().add(this);
     }        
     
-    public OrderTestManager update() throws Exception {
+    public IOrderTestManager update() throws Exception {
         return proxy().update(this);
     } 
     
@@ -147,14 +147,14 @@ public class OrderTestManager implements Serializable {
         proxy().validate(this);
     }
     
-    public OrderTestAnalyteManager getAnalytesAt(int i) throws Exception {
-        OrderTestListItem item;
+    public IOrderTestAnalyteManager getAnalytesAt(int i) throws Exception {
+        IOrderTestListItem item;
         
         item = items.get(i);
         if (item.analytes == null) {
             if (item.test != null && item.test.getId() != null) {
                 try {
-                    item.analytes = OrderTestAnalyteManager.fetchByOrderTestId(item.test.getId());
+                    item.analytes = IOrderTestAnalyteManager.fetchByIorderTestId(item.test.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -164,20 +164,20 @@ public class OrderTestManager implements Serializable {
         }
 
         if (item.analytes == null)
-            item.analytes = OrderTestAnalyteManager.getInstance();
+            item.analytes = IOrderTestAnalyteManager.getInstance();
 
         return item.analytes;
     }
     
-    public OrderTestAnalyteManager getMergedAnalytesAt(int i) throws Exception {
-        OrderTestListItem item;
+    public IOrderTestAnalyteManager getMergedAnalytesAt(int i) throws Exception {
+        IOrderTestListItem item;
 
         item = items.get(i);
         if (item.analytes == null) {
             if (item.test != null) {
                 if (item.test.getId() != null) {
                     try {
-                        item.analytes = OrderTestAnalyteManager.fetchMergedByOrderTestId(item.test.getId());
+                        item.analytes = IOrderTestAnalyteManager.fetchMergedByIorderTestId(item.test.getId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -185,7 +185,7 @@ public class OrderTestManager implements Serializable {
                     }
                 } else if (item.test.getTestId() != null) {
                     try {
-                        item.analytes = OrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
+                        item.analytes = IOrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -197,14 +197,14 @@ public class OrderTestManager implements Serializable {
         }
 
         if (item.analytes == null)
-            item.analytes = OrderTestAnalyteManager.getInstance();
+            item.analytes = IOrderTestAnalyteManager.getInstance();
 
         return item.analytes;
     }
     
     public void refreshAnalytesByTestAt(int i) throws Exception {
-        OrderTestListItem item;
-        OrderTestAnalyteManager newMan;
+        IOrderTestListItem item;
+        IOrderTestAnalyteManager newMan;
         
         /*
          * done to make sure that the analytes for the old test are present before
@@ -220,16 +220,16 @@ public class OrderTestManager implements Serializable {
          */
         item = items.get(i);
         if (item.test == null || item.test.getTestId() == null) {
-            newMan = OrderTestAnalyteManager.getInstance();
+            newMan = IOrderTestAnalyteManager.getInstance();
         } else {
             /*
              * fetch the analytes for the new test associated with this order
              * test and merge them with the analytes from the previous test
              */
             try {
-                newMan = OrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
+                newMan = IOrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
             } catch (NotFoundException e) {
-                newMan = OrderTestAnalyteManager.getInstance();
+                newMan = IOrderTestAnalyteManager.getInstance();
             } catch (Exception e) {
                 throw e;
             }
@@ -239,15 +239,15 @@ public class OrderTestManager implements Serializable {
     }
 
     // friendly methods used by managers and proxies
-    Integer getOrderId() {
-        return orderId;
+    Integer getIorderId() {
+        return iorderId;
     }
 
-    void setOrderId(Integer id) {
-        orderId = id;
+    void setIorderId(Integer id) {
+        iorderId = id;
     }
     
-    void setTests(ArrayList<OrderTestListItem> tests) {
+    void setTests(ArrayList<IOrderTestListItem> tests) {
         this.items = tests;
     }
     
@@ -257,20 +257,20 @@ public class OrderTestManager implements Serializable {
         return deleted.size();
     }
     
-    OrderTestListItem getDeletedAt(int i) {
+    IOrderTestListItem getDeletedAt(int i) {
         return deleted.get(i);
     }
     
-    private static OrderTestManagerProxy proxy() {
+    private static IOrderTestManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderTestManagerProxy();
+            proxy = new IOrderTestManagerProxy();
         return proxy;
     }
     
-    static class OrderTestListItem implements Serializable {
+    static class IOrderTestListItem implements Serializable {
         private static final long serialVersionUID = 1L;
         
-        OrderTestViewDO         test;
-        OrderTestAnalyteManager analytes;
+        IOrderTestViewDO         test;
+        IOrderTestAnalyteManager analytes;
     }
 }
