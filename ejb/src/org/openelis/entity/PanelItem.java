@@ -35,6 +35,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,23 +46,26 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "PanelItem.FetchByPanelId", 
-           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.type,p.sortOrder,p.name,p.methodName)"
-                 + " from PanelItem p where p.panelId = :id order by p.sortOrder")
-
+@NamedQueries({
+               @NamedQuery(name = "PanelItem.FetchByPanelId",
+                           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.type,p.sortOrder,p.name,p.methodName)"
+                                   + " from PanelItem p where p.panelId = :id order by p.sortOrder"),
+               @NamedQuery(name = "PanelItem.FetchByPanelIds",
+                           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.type,p.sortOrder,p.name,p.methodName)"
+                                   + " from PanelItem p where p.panelId in (:ids) order by p.sortOrder")})
 @Entity
 @Table(name = "panel_item")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class PanelItem implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer   id;
 
     @Column(name = "panel_id")
     private Integer   panelId;
-    
+
     @Column(name = "type")
     private String    type;
 
@@ -82,7 +86,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -91,7 +95,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     public void setPanelId(Integer panelId) {
-        if (DataBaseUtil.isDifferent(panelId,this.panelId))
+        if (DataBaseUtil.isDifferent(panelId, this.panelId))
             this.panelId = panelId;
     }
 
@@ -100,7 +104,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     public void setType(String type) {
-        if (DataBaseUtil.isDifferent(type,this.type))
+        if (DataBaseUtil.isDifferent(type, this.type))
             this.type = type;
     }
 
@@ -109,7 +113,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        if (DataBaseUtil.isDifferent(sortOrder,this.sortOrder))
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
     }
 
@@ -118,7 +122,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if (DataBaseUtil.isDifferent(name,this.name))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -127,7 +131,7 @@ public class PanelItem implements Auditable, Cloneable {
     }
 
     public void setMethodName(String methodName) {
-        if (DataBaseUtil.isDifferent(methodName,this.methodName))
+        if (DataBaseUtil.isDifferent(methodName, this.methodName))
             this.methodName = methodName;
     }
 

@@ -12,9 +12,9 @@
 		<![CDATA[SELECT
      name, address_id
 FROM
-     organization o
+     organization
 WHERE
-     o.id = $P{ORGANIZATION_ID}]]>
+     id = $P{ORGANIZATION_ID}]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
 	<field name="address_id" class="java.lang.Integer"/>

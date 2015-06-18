@@ -11,10 +11,10 @@
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="BEGIN_ENTERED" class="java.lang.String">
+	<parameter name="BEGIN_ENTERED" class="java.sql.Timestamp">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_ENTERED" class="java.lang.String">
+	<parameter name="END_ENTERED" class="java.sql.Timestamp">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TEST" class="java.lang.String">
@@ -30,64 +30,113 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state,s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se,
-         outer(organization o, sample_organization so, address ad, dictionary d), analysis_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and  s.domain != 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
-      d.system_name = 'org_report_to' and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and a.section_id = se.id and
-      aq.analysis_id = a.id and o.address_id = ad.id
-      $P!{TEST} $P!{SECTION}
-UNION
-SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se,
-         outer(organization o, sample_organization so, address ad, dictionary d), sample_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and  s.domain != 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
-      d.system_name = 'org_report_to' and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and a.section_id = se.id and
-      aq.sample_id = s.id and o.address_id = ad.id
+		<![CDATA[SELECT distinct
+      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join analysis_qaevent aq on aq.analysis_id = a.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      left join sample_organization so on so.sample_id = s.id
+      left join organization o on o.id = so.organization_id
+      left join address ad on ad.id = o.address_id
+      left join dictionary d on d.id = so.type_id and d.system_name = 'org_report_to'
+WHERE
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain != 'W'
       $P!{TEST} $P!{SECTION}
 
 UNION
-SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se,
-         organization o, sample_private_well so, address ad, analysis_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and si.sample_id = s.id and
-      a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
-      aq.analysis_id = a.id and o.address_id = ad.id
-      $P!{TEST} $P!{SECTION}
-UNION
-SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se,
-         organization o, sample_private_well so, address ad, sample_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and si.sample_id = s.id and
-      a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
-      aq.sample_id = s.id and o.address_id = ad.id
-      $P!{TEST} $P!{SECTION}
-UNION
-SELECT distinct 'private',so.organization_id o_id, 'pvt_city', 'pvt_state', s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se, test_section ts,
-         sample_private_well so, address ad, analysis_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
-      s.id = so.sample_id and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and a.section_id = se.id and
-      aq.analysis_id = a.id and so.report_to_address_id = ad.id
-      $P!{TEST} $P!{SECTION}
-UNION
-SELECT distinct 'private',so.organization_id o_id,'pvt_city', 'pvt_state', s.accession_number, s.id s_id
-FROM sample s, sample_item si, analysis a, test t, section se,
-         sample_private_well so, address ad, sample_qaevent aq
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
-      s.id = so.sample_id and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and a.section_id = se.id and
-      aq.sample_id = s.id and so.report_to_address_id = ad.id
+
+SELECT distinct
+      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join sample_qaevent aq on aq.sample_id = s.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      left join sample_organization so on so.sample_id = s.id
+      left join organization o on o.id = so.organization_id
+      left join address ad on ad.id = o.address_id
+      left join dictionary d on d.id = so.type_id and d.system_name = 'org_report_to'
+WHERE
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain != 'W'
       $P!{TEST} $P!{SECTION}
 
-ORDER BY o_id, s.accession_number]]>
+UNION
+
+SELECT distinct
+      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_private_well so on so.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join analysis_qaevent aq on aq.analysis_id = a.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      join organization o on o.id = so.organization_id
+      join address ad on ad.id = o.address_id
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
+      $P!{TEST} $P!{SECTION}
+
+UNION
+
+SELECT distinct
+      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_private_well so on so.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join sample_qaevent aq on aq.sample_id = s.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      join organization o on o.id = so.organization_id
+      join address ad on ad.id = o.address_id
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
+      $P!{TEST} $P!{SECTION}
+
+UNION
+
+SELECT distinct
+      'private' as o_name, so.organization_id as o_id, 'pvt_city' as city, 'pvt_state' as state,
+      s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_private_well so on so.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join analysis_qaevent aq on aq.analysis_id = a.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      join address ad on ad.id = so.report_to_address_id
+WHERE
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
+      $P!{TEST} $P!{SECTION}
+
+UNION
+
+SELECT distinct
+      'private' as o_name, so.organization_id as o_id, 'pvt_city' as city, 'pvt_state' as state,
+      s.accession_number, s.id as s_id
+FROM
+      sample s
+      join sample_private_well so on so.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join sample_qaevent aq on aq.sample_id = s.id
+      join test t on t.id = a.test_id
+      join section se on se.id = a.section_id
+      join address ad on ad.id = so.report_to_address_id
+WHERE
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
+      $P!{TEST} $P!{SECTION}
+
+ORDER BY o_id, accession_number]]>
 	</queryString>
 	<field name="o_name" class="java.lang.String"/>
 	<field name="o_id" class="java.lang.Integer"/>
@@ -304,7 +353,7 @@ ORDER BY o_id, s.accession_number]]>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{BEGIN_ENTERED})]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{BEGIN_ENTERED}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="endEntered.label" mode="Transparent" x="300" y="12" width="15" height="12" backcolor="#FFFFFF"/>
@@ -318,7 +367,7 @@ ORDER BY o_id, s.accession_number]]>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{END_ENTERED})]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{END_ENTERED}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

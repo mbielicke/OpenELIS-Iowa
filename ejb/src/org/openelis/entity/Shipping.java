@@ -60,12 +60,12 @@ import org.openelis.utils.Auditable;
                 		"s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                 		"s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                       + " from Shipping s where s.id = :id"),
-    @NamedQuery( name = "Shipping.FetchByOrderId",
+    @NamedQuery( name = "Shipping.FetchByIorderId",
                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
                        "s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                      + " from Shipping s left join s.shippingItem i where i.referenceTableId = :referenceTableId "
-                     + " and i.referenceId in (select id from OrderItem oi where oi.orderId = :orderId)")})                
+                     + " and i.referenceId in (select id from IOrderItem oi where oi.iorderId = :orderId)")})                
 
 @Entity
 @Table(name = "shipping")

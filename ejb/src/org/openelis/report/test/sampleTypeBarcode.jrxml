@@ -6,27 +6,28 @@
 	<parameter name="T_OR_P_ID" class="java.lang.Integer" isForPrompting="false"/>
 	<parameter name="REF_TYPE" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
-		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
-FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
+		<![CDATA[SELECT d1.entry as type_entry, d2.entry as unit_entry, t.type_of_sample_id as t_type_of_sample_id
+FROM   test_type_of_sample t
+       left join dictionary d1 on d1.id = t.type_of_sample_id
+       left join dictionary d2 on d2.id = t.unit_of_measure_id
 WHERE $P{REF_TYPE} = 'T' and
-      t.test_id = $P{T_OR_P_ID} and
-      t.type_of_sample_id = d1.id and
-      t.unit_of_measure_id = d2.id
+      t.test_id = $P{T_OR_P_ID}
 
 UNION
 
-SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
-FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
+SELECT d1.entry as type_entry, d2.entry as unit_entry, t.type_of_sample_id as t_type_of_sample_id
+FROM   test_type_of_sample t
+       left join dictionary d1 on d1.id = t.type_of_sample_id
+       left join dictionary d2 on d2.id = t.unit_of_measure_id
 WHERE $P{REF_TYPE} = 'P' and
       t.test_id in (
-	SELECT te.id FROM panel_item pi, test te, method me
-	WHERE pi.panel_id = $P{T_OR_P_ID} and
-      	      pi.name = te.name and
-              pi.method_name = me.name and
-      	      te.method_id = me.id and
-      	      te.is_active = 'Y' ) and
-      t.type_of_sample_id = d1.id and
-      t.unit_of_measure_id = d2.id]]>
+	SELECT t1.id
+          FROM   panel_item p
+                 join test t1 on t1.name = p.name
+                 join method m1 on m1.name = p.method_name
+	WHERE  p.panel_id = $P{T_OR_P_ID} and
+      	       t1.method_id = m1.id and
+      	       t1.is_active = 'Y' )]]>
 	</queryString>
 	<field name="type_entry" class="java.lang.String"/>
 	<field name="unit_entry" class="java.lang.String"/>

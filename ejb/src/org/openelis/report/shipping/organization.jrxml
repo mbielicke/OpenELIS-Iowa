@@ -12,12 +12,10 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     name, multiple_unit, street_address, city, state, zip_code, country
-FROM
-     organization o, address a
-WHERE
-     o.address_id = a.id and o.id = $P{ORGANIZATION_ID}]]>
+		<![CDATA[SELECT name, multiple_unit, street_address, city, state, zip_code, country
+FROM   organization o
+       join address a on a.id = o.address_id
+WHERE  o.id = $P{ORGANIZATION_ID}]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
 	<field name="multiple_unit" class="java.lang.String"/>

@@ -1101,8 +1101,8 @@ public class AirQualityExportBean {
          * only create strings for samples with descriptions of "sample" or
          * "replicate"
          */
-        if ( !"sample".equals(sm.getSampleEnvironmental().getDescription()) &&
-            !"duplicate".equals(sm.getSampleEnvironmental().getDescription()))
+        if ( !"sample".equalsIgnoreCase(sm.getSampleEnvironmental().getDescription()) &&
+            !"duplicate".equalsIgnoreCase(sm.getSampleEnvironmental().getDescription()))
             return null;
 
         /*
@@ -1185,7 +1185,7 @@ public class AirQualityExportBean {
             }
         }
 
-        if ("duplicate".equals(sm.getSampleEnvironmental().getDescription())) {
+        if ("duplicate".equalsIgnoreCase(sm.getSampleEnvironmental().getDescription())) {
             if (DataBaseUtil.isEmpty(nullDataCd)) {
                 if (airToxicPrecisionStrings.get(key) == null)
                     airToxicPrecisionStrings.put(key, new ArrayList<String>());

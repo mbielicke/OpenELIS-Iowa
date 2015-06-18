@@ -87,15 +87,15 @@ public class ShippingBean {
         return data;
     }   
     
-    public ShippingViewDO fetchByOrderId(Integer orderId) throws Exception {
+    public ShippingViewDO fetchByIorderId(Integer iorderId) throws Exception {
         Query query;
         ShippingViewDO data;
         OrganizationViewDO organization;
         List list;
         
-        query = manager.createNamedQuery("Shipping.FetchByOrderId");
-        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
-        query.setParameter("orderId", orderId);
+        query = manager.createNamedQuery("Shipping.FetchByIorderId");
+        query.setParameter("referenceTableId", Constants.table().IORDER_ITEM);
+        query.setParameter("orderId", iorderId);
         data = null;
         
         list = query.getResultList();

@@ -11,16 +11,16 @@
 	<queryString>
 		<![CDATA[SELECT
      s.released_date, s.received_date, s.collection_date, s.collection_time, ss.collector,
-     p.number0, p.name, ss.facility_id, d1.entry sdwis_sample_type,
-     d2.entry sdwis_sample_category, ss.sample_point_id, ss.location, s.client_reference
+     p.number0, p.name, ss.facility_id, d1.entry as sdwis_sample_type,
+     d2.entry as sdwis_sample_category, ss.sample_point_id, ss.location, s.client_reference
 FROM
-     sample s, sample_sdwis ss, pws p, dictionary d1, dictionary d2
+     sample s
+     join sample_sdwis ss on ss.sample_id = s.id
+     join pws p on p.id = ss.pws_id
+     join dictionary d1 on d1.id = ss.sample_type_id
+     join dictionary d2 on d2.id = ss.sample_category_id
 WHERE
-     s.domain = 'S' and s.id = $P{SAMPLE_ID} and
-     ss.sample_id = s.id and
-     ss.pws_id = p.id and
-     ss.sample_type_id = d1.id and
-     ss.sample_category_id = d2.id]]>
+     s.id = $P{SAMPLE_ID} and s.domain = 'S']]>
 	</queryString>
 	<field name="released_date" class="java.sql.Timestamp"/>
 	<field name="received_date" class="java.sql.Timestamp"/>

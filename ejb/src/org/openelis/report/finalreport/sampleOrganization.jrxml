@@ -9,7 +9,7 @@
 	</parameter>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT first 1
+		<![CDATA[SELECT
      organization_attention, organization_id
 FROM
      sample_organization
@@ -23,7 +23,9 @@ WHERE
 	<detail>
 		<band height="60" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="250" height="60"/>
+				<reportElement x="0" y="0" width="250" height="60">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
+				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

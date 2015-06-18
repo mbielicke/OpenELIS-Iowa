@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.bean.OrganizationParameterBean.EmailFilter;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ClientNotificationVO;
@@ -26,18 +27,20 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 public class ClientNotificationReceivedReportBean {
-    
-    
-    @EJB
-    private SampleBean               sample;
 
     @EJB
-    private SystemVariableBean       systemVariable;
+    private SampleBean                sample;
 
     @EJB
-    private AnalysisReportFlagsBean analysisReportFlags;
+    private SystemVariableBean        systemVariable;
 
-    private static final Logger    log = Logger.getLogger("openelis");
+    @EJB
+    private AnalysisReportFlagsBean   analysisReportFlags;
+
+    @EJB
+    private OrganizationParameterBean organizationParameter;
+
+    private static final Logger       log = Logger.getLogger("openelis");
 
     /*
      * Execute the report and email its output to specified addresses
@@ -77,17 +80,20 @@ public class ClientNotificationReceivedReportBean {
 
     protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
         Integer accession, lastAccession, sampleId;
-        String email, lastEmail, to, collectedDt, ref, qaOverride;
+        String email, lastEmail, to, collectedDt, ref, qaOverride, filter, filterValue;
         StringBuilder contents;
+        EmailFilter parsed;
         ArrayList<ClientNotificationVO> l;
         HashMap<String, ArrayList<ClientNotificationVO>> emails;
+        HashMap<String, EmailFilter> parsedEmails;
         HashMap<Integer, Boolean> sampleQA;
         ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
 
         emails = new HashMap<String, ArrayList<ClientNotificationVO>>();
+        parsedEmails = new HashMap<String, EmailFilter>();
         sampleQA = new HashMap<Integer, Boolean>();
-        
+
         /*
          * Group unique samples for each email address.
          */
@@ -96,6 +102,42 @@ public class ClientNotificationReceivedReportBean {
         for (ClientNotificationVO data : resultList) {
             accession = data.getAccessionNumber();
             email = data.getEmail();
+            if (parsedEmails.get(email) == null) {
+                parsed = organizationParameter.decodeEmail(email);
+                parsedEmails.put(email, parsed);
+            } else {
+                parsed = parsedEmails.get(email);
+            }
+            email = parsed.getEmail();
+            filter = parsed.getFilter();
+            filterValue = parsed.getfilterValue();
+            if (filter != null)
+                switch (filter) {
+                    case "C:":
+                        /*
+                         * reference field 1 should be collector
+                         */
+                        if (DataBaseUtil.isEmpty(data.getReferenceField1()) ||
+                            !data.getReferenceField1().contains(filterValue))
+                            continue;
+                        break;
+                    case "R:":
+                        /*
+                         * reference field 3 should be client reference string
+                         */
+                        if (DataBaseUtil.isEmpty(data.getReferenceField3()) ||
+                            !data.getReferenceField3().contains(filterValue))
+                            continue;
+                        break;
+                    case "P:":
+                        // TODO add provider to data object
+                        if (DataBaseUtil.isEmpty(data.getProviderLastName()) ||
+                            !data.getProviderLastName().contains(filterValue))
+                            continue;
+                        break;
+                    default:
+                        // do nothing if the filter is invalid
+                }
             l = emails.get(email);
             if (l == null) {
                 l = new ArrayList<ClientNotificationVO>();
@@ -106,30 +148,30 @@ public class ClientNotificationReceivedReportBean {
             }
             lastAccession = accession;
             lastEmail = email;
-            
+
             /*
              * We put an accession number in the map only if it either has a
              * sample/analysis level qa override. Also If the map already has an
              * entry for an accession number, we do not update it further.
              */
             if (data.getSampleQaeventId() != null || data.getAnalysisQaeventId() != null)
-                if (!sampleQA.containsKey(accession))
+                if ( !sampleQA.containsKey(accession))
                     sampleQA.put(accession, Boolean.TRUE);
         }
-        
+
         collectedDt = null;
         contents = new StringBuilder();
         sampleIds = new ArrayList<Integer>();
-        
-        /* 
+
+        /*
          * Generate emails for each email address from the emails map.
          */
         for (Entry<String, ArrayList<ClientNotificationVO>> entry : emails.entrySet()) {
             contents.setLength(0);
-            
+
             printHeader(contents);
-            
-            to = entry.getKey();            
+
+            to = entry.getKey();
             l = entry.getValue();
             for (ClientNotificationVO data : l) {
                 if (data.getCollectionDate() != null)
@@ -157,19 +199,23 @@ public class ClientNotificationReceivedReportBean {
                 sampleIds.add(sampleId);
             }
             printFooter(contents);
-            
+
             try {
-                ReportUtil.sendEmail(from, to, "Samples Received by the State Hygienic Laboratory", contents.toString());
+                ReportUtil.sendEmail(from,
+                                     to,
+                                     "Samples Received by the State Hygienic Laboratory",
+                                     contents.toString());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not send email to "+ to, e);
+                log.log(Level.SEVERE, "Could not send email to " + to, e);
             }
         }
-        
+
         /*
-         * Updating analysis with notified_received flag set to Y (meaning email has been sent). 
-         * If an exception occurs for updating the flag for an analysis, we don't throw an exception so that the flag 
-         * can be updated for the remaining analyses.
-         * Email associated with the failed analysis will get multiple emails. 
+         * Updating analysis with notified_received flag set to Y (meaning email
+         * has been sent). If an exception occurs for updating the flag for an
+         * analysis, we don't throw an exception so that the flag can be updated
+         * for the remaining analyses. Email associated with the failed analysis
+         * will get multiple emails.
          */
         anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
         for (AnalysisReportFlagsDO anaData : anaList) {
@@ -201,13 +247,17 @@ public class ClientNotificationReceivedReportBean {
                              String dateCollected, String refInfo, String qaOverride) {
         body.append("<tr><td>")
             .append(accNum)
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(dateCollected))
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(dateReceived))
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(refInfo))
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(qaOverride))
             .append("</td></tr>\r\n");
     }

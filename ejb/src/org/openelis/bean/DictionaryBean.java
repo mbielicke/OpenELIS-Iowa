@@ -79,6 +79,15 @@ public class DictionaryBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    public ArrayList<DictionaryViewDO> fetchByCategoryIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Dictionary.FetchByCategoryIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception {
         Query query;
 

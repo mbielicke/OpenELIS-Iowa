@@ -43,6 +43,10 @@ public class AnalysisUnitList {
     	return unitList.size();
     }
     
+    public ArrayList<Integer> get() {
+        return unitList;
+    }
+    
     public String toString() {
         int i;
         StringBuffer str;

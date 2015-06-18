@@ -55,13 +55,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
@@ -75,8 +75,8 @@ import org.openelis.domain.DataView1VO;
 import org.openelis.domain.DataViewAuxDataFetch1VO;
 import org.openelis.domain.DataViewResultFetch1VO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleClinicalViewDO;
@@ -86,6 +86,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePTDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
@@ -136,13 +137,17 @@ public class DataView1Bean {
     @EJB
     private DictionaryCacheBean        dictionaryCache;
 
-    private static final SampleWebMeta meta               = new SampleWebMeta();
+    @EJB
+    private SystemVariableBean         systemVariable;
 
-    private static final Logger        log                = Logger.getLogger("openelis");
+    @EJB
+    private EventLogBean               eventLog;
 
-    private static final int           QUERY_RESULT_LIMIT = 1000000;
+    private static final SampleWebMeta meta = new SampleWebMeta();
 
-    private static final String        DATA_VIEW          = "data_view", FILTERS = "filters",
+    private static final Logger        log  = Logger.getLogger("openelis");
+
+    private static final String        DATA_VIEW = "data_view", FILTERS = "filters",
                     EXCLUDE_RES_OVERRIDE = "excludeResultOverride", EXCLUDE_RES = "excludeResults",
                     INCLUDE_NOT_REP_RES = "includeNotReportableResults",
                     EXCLUDE_AUX = "excludeAuxData",
@@ -215,9 +220,9 @@ public class DataView1Bean {
     }
 
     /**
-     * Returns a VO filled from the data in the xml file located at the passed
-     * url; the VO contains the "include" and "exclude" filters, the query
-     * fields and columns
+     * Returns a VO filled from the xml file located at the passed url; the VO
+     * contains the "include" and "exclude" filters, the query fields and
+     * columns
      */
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataView1VO openQuery(String url) throws Exception {
@@ -398,6 +403,8 @@ public class DataView1Bean {
      */
     private DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data, String moduleName) throws Exception {
         boolean excludeOverride, excludeRes, excludeAux;
+        Integer max;
+        String value;
         QueryBuilderV2 builder;
         ArrayList<QueryData> fields;
         List<DataViewResultFetch1VO> results;
@@ -421,6 +428,21 @@ public class DataView1Bean {
 
         results = null;
         auxiliary = null;
+
+        /*
+         * get the maximum number of samples allowed by this report
+         */
+        try {
+            value = systemVariable.fetchByName("data_view_max_samples").getValue();
+            max = Integer.valueOf(value);
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    Messages.get()
+                            .systemVariable_missingInvalidSystemVariable("data_view_max_samples"),
+                    e);
+            throw e;
+        }
+
         if ( !excludeRes) {
             /*
              * fetch results
@@ -438,17 +460,13 @@ public class DataView1Bean {
             buildWhereForResult(builder, data, moduleName);
             results = (List<DataViewResultFetch1VO>)fetchAnalytesAndValues(builder, fields);
             log.log(Level.INFO, "Fetched " + results.size() + " results");
-
-            if (results.size() > QUERY_RESULT_LIMIT)
-                throw new InconsistencyException(Messages.get()
-                                                         .dataView_queryTooBigException(results.size(),
-                                                                                        QUERY_RESULT_LIMIT));
         }
 
         /*
          * go through the fetched results to make lists of their sample,
          * analysis ids and dictionary ids so that any qa events etc. linked to
-         * them can be fetched
+         * them can be fetched; throw an exception if the number of samples
+         * exceeds the maximum allowed limit
          */
         sampleIds = new HashSet<Integer>();
         analysisIds = new HashSet<Integer>();
@@ -460,6 +478,11 @@ public class DataView1Bean {
                 if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()))
                     dictIds.add(Integer.valueOf(res.getValue()));
             }
+
+            if (sampleIds.size() > max)
+                throw new InconsistencyException(Messages.get()
+                                                         .dataView_queryTooBigException(sampleIds.size(),
+                                                                                        max));
         }
 
         if ( !excludeAux) {
@@ -500,11 +523,6 @@ public class DataView1Bean {
                 auxiliary = (List<DataViewAuxDataFetch1VO>)fetchAnalytesAndValues(builder, fields);
             }
             log.log(Level.INFO, "Fetched " + auxiliary.size() + " aux data");
-
-            if (auxiliary.size() > QUERY_RESULT_LIMIT)
-                throw new InconsistencyException(Messages.get()
-                                                         .dataView_queryTooBigException(results.size(),
-                                                                                        QUERY_RESULT_LIMIT));
         }
 
         if ( (results == null || results.isEmpty()) && (auxiliary == null || auxiliary.isEmpty()))
@@ -512,7 +530,8 @@ public class DataView1Bean {
 
         /*
          * go through the fetched aux data to make lists of their dictionary ids
-         * so the dictionary entries linked to them can be fetched
+         * so the dictionary entries linked to them can be fetched; throw an
+         * exception if the number of samples exceeds the maximum allowed limit
          */
         if (auxiliary != null) {
             for (DataViewAuxDataFetch1VO aux : auxiliary) {
@@ -520,14 +539,19 @@ public class DataView1Bean {
                 if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId()))
                     dictIds.add(Integer.valueOf(aux.getValue()));
             }
+
+            if (sampleIds.size() > max)
+                throw new InconsistencyException(Messages.get()
+                                                         .dataView_queryTooBigException(sampleIds.size(),
+                                                                                        max));
         }
 
         if (excludeOverride) {
             /*
-             * the user wants to exclude results and aux data linked to samples
-             * or analyses with result override qa events; fetch the sample and
-             * analysis qa events; keep the ids of only those samples and
-             * analyses that don't have any result override qa events
+             * the user wants to exclude results and aux data linked to
+             * overridden samples or analyses; fetch the sample and analysis qa
+             * events; keep the ids of only those samples and analyses that
+             * don't have any result override qa events
              */
             sqas = sampleQAEvent.fetchBySampleIds(DataBaseUtil.toArrayList(sampleIds));
             for (SampleQaEventViewDO sqa : sqas) {
@@ -578,12 +602,22 @@ public class DataView1Bean {
         return data;
     }
 
+    /**
+     * creates an Excel file for the selected columns, analytes and values in
+     * the passed VO; if results and/or aux data are excluded, the file shows
+     * upto analysis level data; the data for the file is fetched using the
+     * query fields in the VO, the selected analytes and the clause for the
+     * passed module; if the passed flag is true, only reportable column
+     * analytes are shown; the returned status contains the path to the file
+     */
     private ReportStatus runReport(DataView1VO data, String moduleName,
                                    boolean showReportableColumnsOnly) throws Exception {
         boolean excludeRes, excludeAux;
+        Integer max;
+        String source, value;
         ReportStatus status;
         QueryBuilderV2 builder;
-        HSSFWorkbook wb;
+        XSSFWorkbook wb;
         OutputStream out;
         Path path;
         ArrayList<String> headers;
@@ -601,7 +635,7 @@ public class DataView1Bean {
         HashMap<Integer, SampleManager1> smMap;
 
         status = new ReportStatus();
-        if (stopReport(status))
+        if (reportStopped(status))
             return status;
 
         excludeRes = "Y".equals(data.getExcludeResults());
@@ -621,33 +655,20 @@ public class DataView1Bean {
         colFieldMap = new HashMap<Integer, String>();
 
         /*
-         * get the labels to be displayed in the headers for the various fields;
-         * keep track of which column is showing which field; get sample headers
+         * get the labels to be displayed in the headers for the various
+         * columns; the passed map keeps track of which column is showing which
+         * field; optional parts of the manager e.g. organization are only
+         * fetched if the user selected some column(s) belonging to them e.g.
+         * organization name; load elements for those parts are added to the
+         * passed list, based on the selected columns
          */
-        headers.addAll(getSampleHeaders(data.getColumns(), headers.size(), colFieldMap, load));
+        headers = getHeaders(data.getColumns(), colFieldMap, load);
 
         /*
-         * get organization headers
+         * always fetch sample and analysis qa events to make sure that
+         * overridden values are not shown
          */
-        headers.addAll(getOrganizationHeaders(data.getColumns(), headers.size(), colFieldMap, load));
-
-        /*
-         * get headers for sample item and analysis
-         */
-        headers.addAll(getSampleItemHeaders(data.getColumns(), headers.size(), colFieldMap));
-        headers.addAll(getAnalysisHeaders(data.getColumns(), headers.size(), colFieldMap, load));
-
-        if ("Y".equals(data.getExcludeResultOverride()) && !load.contains(SampleManager1.Load.QA))
-            load.add(SampleManager1.Load.QA);
-
-        /*
-         * get headers for domains
-         */
-        headers.addAll(getEnvironmentalHeaders(data.getColumns(), headers.size(), colFieldMap));
-        headers.addAll(getSDWISHeaders(data.getColumns(), headers.size(), colFieldMap));
-        headers.addAll(getClinicalHeaders(data.getColumns(), headers.size(), colFieldMap, load));
-        headers.addAll(getNeonatalHeaders(data.getColumns(), headers.size(), colFieldMap, load));
-        headers.addAll(getPTHeaders(data.getColumns(), headers.size(), colFieldMap));
+        load.add(SampleManager1.Load.QA);
 
         /*
          * the headers for analyte and value are always shown if results and/or
@@ -664,14 +685,32 @@ public class DataView1Bean {
         analysisIds = new HashSet<Integer>();
         sampleIds = new HashSet<Integer>();
 
+        /*
+         * get the maximum number of samples allowed by this report
+         */
+        try {
+            value = systemVariable.fetchByName("data_view_max_samples").getValue();
+            max = Integer.valueOf(value);
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    Messages.get()
+                            .systemVariable_missingInvalidSystemVariable("data_view_max_samples"),
+                    e);
+            throw e;
+        }
+
         if (excludeRes && excludeAux) {
-            noResAux = fetchNoResultAuxData(moduleName, builder, data);
             /*
-             * make a list of analysis ids from the fetched records for fetching
-             * the managers
+             * fetch the data for the case when both results and aux data are
+             * excluded; make a set of analysis ids for fetching managers and a
+             * set of sample ids to know whether the maximum allowed number of
+             * samples has been exceeded
              */
-            for (DataViewResultFetch1VO nra : noResAux)
+            noResAux = fetchNoResultAuxData(moduleName, builder, data);
+            for (DataViewResultFetch1VO nra : noResAux) {
                 analysisIds.add(nra.getAnalysisId());
+                sampleIds.add(nra.getSampleId());
+            }
         } else {
             if ( !excludeRes) {
                 load.add(SampleManager1.Load.SINGLERESULT);
@@ -680,9 +719,8 @@ public class DataView1Bean {
                 if (testAnalytes != null) {
                     /*
                      * the analytes and results selected by the user are stored
-                     * in this map so that they can be used later on to select
-                     * or reject adding a row for a result based on whether or
-                     * not it belongs in the map
+                     * in this map; the row for a result is added to the file if
+                     * it's found in the map
                      */
                     testAnaResMap = new HashMap<Integer, HashSet<String>>();
                     for (TestAnalyteDataView1VO ana : testAnalytes) {
@@ -707,28 +745,24 @@ public class DataView1Bean {
 
                 /*
                  * fetch fields related to results based on the analytes and
-                 * values selected by the user from the lists associated with
-                 * test analytes
+                 * values selected by the user
                  */
                 if (testAnaResMap != null && testAnaResMap.size() > 0) {
-                    if (testAnaResMap.size() > QUERY_RESULT_LIMIT / 5)
-                        throw new InconsistencyException(Messages.get()
-                                                                 .dataView_queryTooBigException(testAnaResMap.size(),
-                                                                                                QUERY_RESULT_LIMIT / 5));
-                    log.log(Level.INFO, "Before fetching results");
+                    log.log(Level.FINE, "Before fetching results");
                     results = fetchResults(moduleName,
                                            builder,
                                            testAnaResMap,
                                            unselAnalyteIds,
                                            data);
-                    log.log(Level.INFO, "Fetched " + results.size() + " results");
+                    log.log(Level.FINE, "Fetched " + results.size() + " results");
                     status.setPercentComplete(5);
 
                     /*
-                     * make a list of analysis ids from the fetched results for
-                     * fetching the managers; the list of sample ids is used to
+                     * make a set of analysis ids from the fetched results for
+                     * fetching the managers; the set of sample ids is used to
                      * restrict the aux data to only those samples that the
-                     * results belong to
+                     * results belong to and also to know whether the maximum
+                     * allowed number of samples has been exceeded
                      */
                     for (DataViewResultFetch1VO res : results) {
                         analysisIds.add(res.getAnalysisId());
@@ -737,19 +771,25 @@ public class DataView1Bean {
                 }
             }
 
-            if (stopReport(status))
+            if (reportStopped(status))
                 return status;
 
+            /*
+             * number of samples fetched must not exceed the maximum allowed
+             */
+            if (sampleIds.size() > max)
+                throw new InconsistencyException(Messages.get()
+                                                         .dataView_queryTooBigException(sampleIds.size(),
+                                                                                        max));
+
             if ( !excludeAux) {
-                load.add(SampleManager1.Load.AUXDATA);
                 unselAnalyteIds = new ArrayList<Integer>();
                 auxFields = data.getAuxFields();
                 if (auxFields != null) {
                     /*
-                     * the analytes and values selected by the user are stored
-                     * in this hashmap so that they can be used later on to
-                     * select or reject adding a row for an aux data based on
-                     * whether or not it belongs in the hashmap
+                     * the analytes and aux values selected by the user are
+                     * stored in this map; the row for an aux data is added to
+                     * the file if it's found in the map
                      */
                     auxFieldValMap = new HashMap<Integer, HashSet<String>>();
                     for (AuxFieldDataView1VO af : auxFields) {
@@ -771,31 +811,32 @@ public class DataView1Bean {
                         auxFieldValMap.put(af.getAnalyteId(), auxValues);
                     }
                 }
+
                 /*
-                 * fetch fields related to aux data based on the analytes and
-                 * values selected by the user from the lists associated with
-                 * aux fields
+                 * fetch aux data based on the analytes and values selected by
+                 * the user
                  */
                 builder.clearWhereClause();
                 if (auxFieldValMap != null && auxFieldValMap.size() > 0) {
-                    if (auxFieldValMap.size() > (QUERY_RESULT_LIMIT / 5))
-                        throw new InconsistencyException(Messages.get()
-                                                                 .dataView_queryTooBigException(auxFieldValMap.size(),
-                                                                                                QUERY_RESULT_LIMIT / 5));
-                    log.log(Level.INFO, "Before fetching aux data");
+                    log.log(Level.FINE, "Before fetching aux data");
                     auxiliary = fetchAuxData(moduleName,
                                              builder,
                                              auxFieldValMap,
                                              unselAnalyteIds,
                                              sampleIds,
                                              data);
-                    log.log(Level.INFO, "Fetched " + auxiliary.size() + " aux data");
+                    log.log(Level.FINE, "Fetched " + auxiliary.size() + " aux data");
                     /*
-                     * make a list of sample ids from the fetched aux data for
-                     * fetching the managers
+                     * make a set of sample ids from the fetched aux data for
+                     * fetching managers but only if no results were fetched; if
+                     * results were fetched, the aux data's sample ids should
+                     * already be in the set; this is because aux data were
+                     * restricted by the results' sample ids
                      */
-                    for (DataViewAuxDataFetch1VO aux : auxiliary)
-                        sampleIds.add(aux.getSampleId());
+                    if (results == null || results.size() == 0) {
+                        for (DataViewAuxDataFetch1VO aux : auxiliary)
+                            sampleIds.add(aux.getSampleId());
+                    }
                 }
             }
         }
@@ -807,11 +848,45 @@ public class DataView1Bean {
             (noResAux == null || noResAux.size() == 0))
             throw new NotFoundException();
 
-        if (stopReport(status))
+        if (reportStopped(status))
             return status;
 
-        log.log(Level.INFO, "Before fetching managers");
+        /*
+         * number of samples fetched must not exceed the allowed limit
+         */
+        if (sampleIds.size() > max)
+            throw new InconsistencyException(Messages.get()
+                                                     .dataView_queryTooBigException(sampleIds.size(),
+                                                                                    max));
 
+        /*
+         * create the event log for data view
+         */
+        source = Messages.get().dataView_eventLogMessage(sampleIds.size(),
+                                                         userCache.getSystemUser().getLoginName());
+        try {
+            eventLog.add(new EventLogDO(null,
+                                        Constants.dictionary().LOG_TYPE_REPORT,
+                                        source,
+                                        null,
+                                        null,
+                                        Constants.dictionary().LOG_LEVEL_INFO,
+                                        null,
+                                        null,
+                                        null));
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add log entry for: " + source, e);
+        }
+
+        log.log(Level.FINE, "Before fetching managers");
+
+        /*
+         * if analysis ids are present, managers are fetched by them and with
+         * the load element SINGLEANALYSIS; this makes sure that only the
+         * analyses and results linked to the analytes selected by the user are
+         * fetched and not all analyses and results belonging to a sample;
+         * otherwise managers are fetched by sample ids
+         */
         if (analysisIds.size() > 0) {
             load.add(SampleManager1.Load.SINGLEANALYSIS);
             sms = sampleManager1.fetchByAnalyses(DataBaseUtil.toArrayList(analysisIds),
@@ -823,7 +898,7 @@ public class DataView1Bean {
                                             load.toArray(new SampleManager1.Load[load.size()]));
         }
 
-        log.log(Level.INFO, "Fetched " + sms.size() + " managers");
+        log.log(Level.FINE, "Fetched " + sms.size() + " managers");
 
         smMap = new HashMap<Integer, SampleManager1>();
         for (SampleManager1 sm : sms)
@@ -831,6 +906,12 @@ public class DataView1Bean {
 
         sms = null;
 
+        /*
+         * create a workbook from the data structures created above; the passed
+         * status is updated every time, a new row is added to the workbook; set
+         * the structures to null to free up memory after the workbook has been
+         * created; write the workbook to a file and set its path in the status
+         */
         wb = getWorkbook(results,
                          auxiliary,
                          noResAux,
@@ -849,19 +930,20 @@ public class DataView1Bean {
         noResAux = null;
         testAnaResMap = null;
         auxFieldValMap = null;
+        headers = null;
+        colFieldMap = null;
 
         if (wb != null) {
             out = null;
             try {
-                status.setMessage("Outputing report").setPercentComplete(20);
-                path = ReportUtil.createTempFile("dataview", ".xls", "upload_stream_directory");
-
-                status.setPercentComplete(100);
+                status.setMessage(Messages.get().report_outputReport()).setPercentComplete(20);
+                path = ReportUtil.createTempFile("dataview", ".xlsx", "upload_stream_directory");
 
                 out = Files.newOutputStream(path);
                 wb.write(out);
-                out.close();
-                status.setMessage(path.getFileName().toString())
+
+                status.setPercentComplete(100)
+                      .setMessage(path.getFileName().toString())
                       .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             } catch (Exception e) {
@@ -880,62 +962,72 @@ public class DataView1Bean {
         return status;
     }
 
+    /**
+     * Returns the clause for the module with the passed name for the logged in
+     * user
+     */
     private String getClause(String moduleName) throws Exception {
-        /*
-         * retrieving the organization Ids to which the user belongs from the
-         * security clause in the userPermission
-         */
         return userCache.getPermission().getModule(moduleName).getClause();
     }
 
     /**
-     * Creates a "where" clause from the passed arguments and sets it in the
-     * passed query builder; if "moduleName" is specified, the clause from
-     * security for that module for the logged in user is added to the "where"
-     * clause; if the boolean flag is true it means that query is for results,
-     * otherwise it's for aux data and the appropriate where
+     * Creates a "where" clause from the query fields in the passed VO and sets
+     * it in the passed query builder; if "moduleName" is specified, the clause
+     * from security for that module for the logged in user is added to the
+     * "where" clause; the "where" clause is used for fetching results
      */
     private void buildWhereForResult(QueryBuilderV2 builder, DataView1VO data, String moduleName) throws Exception {
         builder.constructWhere(data.getQueryFields());
         /*
-         * if moduleName is not null, then this query is being executed for the
-         * web and we need to report only released analyses
+         * if moduleName is not null then this query is being executed for the
+         * web
          */
         if (moduleName != null) {
+            builder.addWhere("(" + getClause(moduleName) + ")");
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
+            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                             Constants.dictionary().SAMPLE_ERROR);
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                              Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere("(" + getClause(moduleName) + ")");
             builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
         }
-
-        if ("N".equals(data.getIncludeNotReportableResults()))
-            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
-        builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
-        builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
 
         /*
          * this is done so that the alias for "sampleItem" gets added to the
          * query, otherwise the query will not execute
          */
         builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
+
+        /*
+         * the user wants to see only reportable results
+         */
+        if ("N".equals(data.getIncludeNotReportableResults()))
+            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
+
+        builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
+        builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
     }
 
     /**
-     * Creates a "where" clause from the passed arguments and sets it in the
-     * passed query builder; if "moduleName" is specified, the clause from
-     * security for that module for the logged in user is added to the "where"
-     * clause; if the boolean flag is true it means that query is for results,
-     * otherwise it's for aux data and the appropriate where
+     * Creates a "where" clause from the query fields in the passed VO and sets
+     * it in the passed query builder; if "moduleName" is specified, the clause
+     * from security for that module for the logged in user is added to the
+     * "where" clause; the "where" clause is used for fetching aux data
      */
     private void buildWhereForAux(QueryBuilderV2 builder, DataView1VO data, String moduleName,
                                   List<Integer> sampleIds) throws Exception {
         builder.constructWhere(data.getQueryFields());
         /*
          * if moduleName is not null, then this query is being executed for the
-         * web and we need to report only released analyses
+         * web
          */
         if (moduleName != null) {
             builder.addWhere("(" + getClause(moduleName) + ")");
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
+            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                             Constants.dictionary().SAMPLE_ERROR);
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                              Constants.dictionary().ANALYSIS_RELEASED);
             builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
@@ -970,6 +1062,12 @@ public class DataView1Bean {
         }
     }
 
+    /**
+     * Runs the query passed query builder's query by setting the parameters
+     * from the passed list of QueryData; the returned list contains either VOs
+     * for either results or aux data; it is used to show analytes and values to
+     * the user, so that they can be selected to be included in the report
+     */
     private List fetchAnalytesAndValues(QueryBuilderV2 builder, ArrayList<QueryData> fields) throws Exception {
         Query query;
 
@@ -1134,6 +1232,13 @@ public class DataView1Bean {
         return auxFields;
     }
 
+    /**
+     * Fetches results for generating the report; if "moduleName" is not null,
+     * the clause from security for that module for the logged in user is added
+     * to the "where" clause; the passed map and list are used to limit the
+     * query by either selected or not selected analytes, based on which is
+     * smaller in size
+     */
     private List<DataViewResultFetch1VO> fetchResults(String moduleName,
                                                       QueryBuilderV2 builder,
                                                       HashMap<Integer, HashSet<String>> testAnaResultMap,
@@ -1156,12 +1261,13 @@ public class DataView1Bean {
 
         builder.constructWhere(fields);
         /*
-         * If moduleName is present, then it means that this report is being run
-         * for the samples belonging to the list of organizations specified in
-         * this user's system_user_module for a specific domain.
+         * if moduleName is not null then this query is being executed for the
+         * web
          */
         if (moduleName != null) {
             builder.addWhere("(" + getClause(moduleName) + ")");
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
             builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
                              Constants.dictionary().SAMPLE_ERROR);
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
@@ -1169,10 +1275,12 @@ public class DataView1Bean {
             builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
         }
 
+        /*
+         * this is done so that the alias for "sampleItem" gets added to the
+         * query, otherwise the query will not execute
+         */
         builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
 
-        orderBy = new ArrayList<String>();
-        orderBy.add(SampleWebMeta.getAccessionNumber());
         /*
          * the user wants to see only reportable results
          */
@@ -1181,16 +1289,19 @@ public class DataView1Bean {
 
         builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
         builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
+
         /*
          * add the clause for limiting the results by analytes only if the user
-         * selected some specific analytes and not all of them. This eliminates
-         * the unnecessary time spent on excluding those results from the
-         * records returned by the query
+         * selected some specific analytes and not all; this eliminates the
+         * unnecessary time spent on excluding results linked to not selected
+         * analytes from the data returned by the query
          */
         if (unselAnalyteIds != null && unselAnalyteIds.size() > 0)
             builder.addWhere(SampleWebMeta.getResultAnalyteId() +
                              getAnalyteClause(testAnaResultMap.keySet(), unselAnalyteIds) + ")");
 
+        orderBy = new ArrayList<String>();
+        orderBy.add(SampleWebMeta.getAccessionNumber());
         orderBy.add(SampleWebMeta.getResultAnalysisid());
         orderBy.add(SampleWebMeta.getResultAnalyteName());
 
@@ -1200,6 +1311,13 @@ public class DataView1Bean {
         return query.getResultList();
     }
 
+    /**
+     * Fetches aux data for generating the report; if "moduleName" is not null,
+     * the clause from security for that module for the logged in user is added
+     * to the "where" clause; the passed map and list are used to limit the
+     * query by either selected or not selected analytes, based on which is
+     * smaller in size
+     */
     private List<DataViewAuxDataFetch1VO> fetchAuxData(String moduleName,
                                                        QueryBuilderV2 builder,
                                                        HashMap<Integer, HashSet<String>> auxFieldValueMap,
@@ -1252,8 +1370,15 @@ public class DataView1Bean {
                 query = manager.createQuery(builder.getEJBQL());
                 builder.setQueryParams(query, data.getQueryFields());
                 auxiliary.addAll(query.getResultList());
-                Collections.sort(auxiliary, new DataViewComparator());
             }
+            /*
+             * the final list of aux data is obtained by combining smaller lists
+             * returned by the queries run on subsets of sample ids; so a
+             * comparator is used here to sort the final list by accession
+             * number and analyte name because it isn't sorted by that at the
+             * time of combining the lists
+             */
+            Collections.sort(auxiliary, new DataViewComparator());
         } else {
             builder.clearWhereClause();
             buildWhereForAuxOutput(builder, data, moduleName, null, analyteClause);
@@ -1271,8 +1396,7 @@ public class DataView1Bean {
      * Creates a "where" clause from the passed arguments and sets it in the
      * passed query builder; if "moduleName" is specified, the clause from
      * security for that module for the logged in user is added to the "where"
-     * clause; if the boolean flag is true it means that query is for results,
-     * otherwise it's for aux data and the appropriate where
+     * clause; the "where" clause is used in the query for generating the report
      */
     private void buildWhereForAuxOutput(QueryBuilderV2 builder, DataView1VO data,
                                         String moduleName, List<Integer> sampleIds,
@@ -1289,6 +1413,16 @@ public class DataView1Bean {
                              Constants.dictionary().ORG_REPORT_TO);
             builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
                              Constants.dictionary().SAMPLE_ERROR);
+            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
+                             Constants.dictionary().ANALYSIS_RELEASED);
+            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
+
+            /*
+             * this is done so that the alias for "sampleItem" gets added to the
+             * query, otherwise the query will not execute
+             */
+            builder.addWhere(SampleWebMeta.getItemId() + "=" +
+                             SampleWebMeta.getAnalysisSampleItemId());
         }
 
         /*
@@ -1305,7 +1439,7 @@ public class DataView1Bean {
          * the user wants to see aux data for all analytes. Otherwise, in that
          * case the clause for name won't get added.
          */
-        builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteName() + "!=" + "null");
+        builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + "!=" + "null");
 
         /*
          * Add the clause for limiting the aux data by analytes only if the user
@@ -1314,7 +1448,7 @@ public class DataView1Bean {
          * records returned by the query
          */
         if ( !DataBaseUtil.isEmpty(analyteClause))
-            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + analyteClause + ")");
+            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + analyteClause);
 
         if (sampleIds != null) {
             builder.addWhere(SampleWebMeta.getAuxDataReferenceId() + " in (" +
@@ -1324,6 +1458,11 @@ public class DataView1Bean {
         }
     }
 
+    /**
+     * Fetches data for generating the report when both results and aux data are
+     * excluded; if "moduleName" is not null, the clause from security for that
+     * module for the logged in user is added to the "where" clause
+     */
     private List<DataViewResultFetch1VO> fetchNoResultAuxData(String moduleName,
                                                               QueryBuilderV2 builder,
                                                               DataView1VO data) throws Exception {
@@ -1344,6 +1483,8 @@ public class DataView1Bean {
          */
         if (moduleName != null) {
             builder.addWhere("(" + getClause(moduleName) + ")");
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
             builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
                              Constants.dictionary().SAMPLE_ERROR);
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
@@ -1360,10 +1501,10 @@ public class DataView1Bean {
     }
 
     /**
-     * Returns a clause for excluding the unselected ids if more than the
-     * selected ids or including analyte ids, such that, if then the clause will
-     * begin with "not in" followed by the unselected ids or otherwise with "in"
-     * followed by the selected ids
+     * The passed set contains the ids for selected analytes and the passed list
+     * contains the ids for not selected analytes; the method returns a clause
+     * for either excluding the unselected analytes or including the selected
+     * analytes based on which collection is smaller in size
      */
     private String getAnalyteClause(Set<Integer> selAnalytes, ArrayList<Integer> unselAnalytes) {
         StringBuffer buf;
@@ -1395,7 +1536,18 @@ public class DataView1Bean {
         return buf.toString();
     }
 
-    private HSSFWorkbook getWorkbook(List<DataViewResultFetch1VO> results,
+    /**
+     * Creates and returns a workbook where "headers" specifies the headers for
+     * the columns; each row shows fields from some part of a sample and
+     * analytes and values if the lists of result and aux data VO are not null;
+     * an analyte and value are shown only if they are present in
+     * "testAnaResMap" or "auxFieldValMap", which means that they were selected
+     * by the user; if the passed boolean flag is true, only reportable column
+     * analytes are shown; "colFieldMap" specifies which column is showing which
+     * field; the percent completion in the passed ReportStatus is updated every
+     * time a new row is added; the data is taken for the passed map of managers
+     */
+    private XSSFWorkbook getWorkbook(List<DataViewResultFetch1VO> results,
                                      List<DataViewAuxDataFetch1VO> auxiliary,
                                      List<DataViewResultFetch1VO> noResAux,
                                      HashMap<Integer, HashSet<String>> testAnaResMap,
@@ -1405,35 +1557,35 @@ public class DataView1Bean {
                                      HashMap<Integer, String> colFieldMap, DataView1VO data,
                                      HashMap<Integer, SampleManager1> smMap, ReportStatus status) throws Exception {
         boolean excludeOverride, excludeRes, excludeAux, samOverridden, anaOverridden, addResRow, addAuxRow, addNoResAuxRow;
-        int i, j, resIndex, auxIndex, noResAuxIndex, rowIndex, numRes, numAux, numNoResAux, startCol, lastCol, currCol;
+        int i, j, resIndex, auxIndex, noResAuxIndex, rowIndex, numRes, numAux, numNoResAux, lastCol, currCol;
         Integer samId, prevSamId, itemId, anaId, prevAnaId, anaIndex;
         String resVal, auxVal;
         SampleManager1 sm;
-        HSSFWorkbook wb;
-        HSSFSheet sheet;
+        XSSFWorkbook wb;
+        XSSFSheet sheet;
         DataViewResultFetch1VO res, noRA;
         DataViewAuxDataFetch1VO aux;
         ResultViewDO rowRes, colRes;
-        Row headerRow, resRow, auxRow, noResAuxRow, currRow, prevRow;
+        Row headerRow, currRow, prevRow;
+        RowData rd;
         Cell cell;
-        CellStyle headerStyle;
-        LabelGroup samGrp, orgGrp, itemGrp, anaGrp, envGrp, sdwisGrp, clinGrp, neoGrp, ptGrp;
-        ArrayList<LabelGroup> grps;
+        CellStyle style;
         ArrayList<ResultViewDO> smResults;
         HashMap<String, Integer> colAnaMap;
 
-        wb = new HSSFWorkbook();
+        wb = new XSSFWorkbook();
         sheet = wb.createSheet();
+        sheet.setDefaultColumnWidth(20);
 
-        headerRow = sheet.createRow(0);
-        headerStyle = createHeaderStyle(wb);
         /*
          * create the header row and set its style
          */
+        headerRow = sheet.createRow(0);
+        style = createHeaderStyle(wb);
         for (i = 0; i < headers.size(); i++ ) {
             cell = headerRow.createCell(i);
             cell.setCellValue(headers.get(i));
-            cell.setCellStyle(headerStyle);
+            cell.setCellStyle(style);
         }
 
         numRes = results == null ? 0 : results.size();
@@ -1465,17 +1617,8 @@ public class DataView1Bean {
         currRow = null;
         prevRow = null;
         sm = null;
-        samGrp = null;
-        orgGrp = null;
-        itemGrp = null;
-        anaGrp = null;
-        envGrp = null;
-        sdwisGrp = null;
-        clinGrp = null;
-        neoGrp = null;
-        ptGrp = null;
-        grps = new ArrayList<LabelGroup>();
         colAnaMap = new HashMap<String, Integer>();
+        rd = new RowData();
 
         excludeOverride = "Y".equals(data.getExcludeResultOverride());
         excludeRes = "Y".equals(data.getExcludeResults());
@@ -1490,12 +1633,11 @@ public class DataView1Bean {
          * are no more elements left in each of them to read from
          */
         while (resIndex < numRes || auxIndex < numAux || noResAuxIndex < numNoResAux) {
-            if (stopReport(status))
+            if (reportStopped(status))
                 return null;
 
             status.setPercentComplete(100 * (resIndex + auxIndex + noResAuxIndex) /
                                       (numRes + numAux + numNoResAux));
-            session.setAttribute("DataViewReportStatus", status);
             if (excludeRes && excludeAux) {
                 if (noResAuxIndex < numNoResAux) {
                     noRA = noResAux.get(noResAuxIndex++ );
@@ -1505,28 +1647,28 @@ public class DataView1Bean {
                     addNoResAuxRow = true;
                 }
             } else {
+                addAuxRow = false;
+                addResRow = false;
                 if (resIndex < numRes && auxIndex < numAux) {
                     res = results.get(resIndex);
                     aux = auxiliary.get(auxIndex);
                     /*
-                     * If this result's accession number is less than or equal
-                     * to this aux data's then add a row for this result,
-                     * otherwise add a row for the aux data. This makes sure
-                     * that the results for a sample are shown before the aux
-                     * data. Accession numbers are compared instead of sample
-                     * ids because the former is the field shown in the output
-                     * and not the latter.
+                     * if this result's accession number is less than or equal
+                     * to this aux data's, add a row for this result, otherwise
+                     * add a row for the aux data; this makes sure that the
+                     * results for a sample are shown before the aux data;
+                     * accession numbers are compared instead of sample ids
+                     * because the former is the field shown in the report and
+                     * not the latter
                      */
                     if (res.getSampleAccessionNumber() <= aux.getSampleAccessionNumber()) {
                         addResRow = true;
-                        addAuxRow = false;
                         resIndex++ ;
                         samId = res.getSampleId();
                         itemId = res.getSampleItemId();
                         anaId = res.getAnalysisId();
                     } else {
                         addAuxRow = true;
-                        addResRow = false;
                         auxIndex++ ;
                         samId = aux.getSampleId();
                         itemId = null;
@@ -1537,7 +1679,6 @@ public class DataView1Bean {
                      * no more aux data left to show
                      */
                     addResRow = true;
-                    addAuxRow = false;
                     res = results.get(resIndex);
                     resIndex++ ;
                     samId = res.getSampleId();
@@ -1548,7 +1689,6 @@ public class DataView1Bean {
                      * no more results left to show
                      */
                     addAuxRow = true;
-                    addResRow = false;
                     aux = auxiliary.get(auxIndex);
                     auxIndex++ ;
                     samId = aux.getSampleId();
@@ -1557,52 +1697,58 @@ public class DataView1Bean {
                 }
             }
 
-            /*
-             * don't show any data for this sample if it's overridden and such
-             * samples are to be excluded
-             */
             if ( !samId.equals(prevSamId)) {
+                /*
+                 * don't show any data for this sample if it's overridden and
+                 * such samples are excluded; whether the sample is overridden
+                 * is checked even if such samples are not excluded because
+                 * overridden result values are not shown in the report
+                 */
                 sm = smMap.get(samId);
                 samOverridden = false;
-                if (excludeOverride && (getSampleQAs(sm) != null)) {
+                if ( (getSampleQAs(sm) != null)) {
                     for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
                         if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
                             samOverridden = true;
-                            prevSamId = samId;
+                            if (excludeOverride)
+                                prevSamId = samId;
                             break;
                         }
                     }
                 }
-                if (samOverridden)
-                    continue;
-            } else if (samOverridden && excludeOverride) {
-                continue;
             }
+
+            if (samOverridden && excludeOverride)
+                continue;
 
             if (addResRow) {
                 /*
                  * don't show any data for this analysis if it's overridden and
-                 * such analyses are to be excluded
+                 * such analyses are excluded; whether the analysis is
+                 * overridden is checked even if such samples are not excluded
+                 * because overridden values are not shown in the report
                  */
                 if ( !anaId.equals(prevAnaId)) {
                     anaOverridden = false;
-                    if (excludeOverride && (getAnalysisQAs(sm) != null)) {
+                    if ( (getAnalysisQAs(sm) != null)) {
                         for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
                             if (aqa.getAnalysisId().equals(anaId) &&
                                 Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
                                 anaOverridden = true;
-                                addResRow = false;
-                                prevAnaId = anaId;
+                                if (excludeOverride) {
+                                    addResRow = false;
+                                    prevAnaId = anaId;
+                                }
                                 break;
                             }
                         }
                     }
-                } else if (anaOverridden && excludeOverride) {
-                    addResRow = false;
                 }
+
+                if (anaOverridden && excludeOverride)
+                    addResRow = false;
             }
 
-            resRow = null;
             if (addResRow) {
                 /*
                  * the value of this result was selected by the user; add a row
@@ -1613,12 +1759,11 @@ public class DataView1Bean {
                                   res.getValue(),
                                   res.getTypeId());
                 if (resVal != null)
-                    currRow = resRow = sheet.createRow(rowIndex++ );
+                    currRow = sheet.createRow(rowIndex++ );
                 else
                     addResRow = false;
             }
 
-            auxRow = null;
             if (addAuxRow) {
                 /*
                  * the value of this aux data was selected by the user; add a
@@ -1629,126 +1774,37 @@ public class DataView1Bean {
                                   aux.getValue(),
                                   aux.getTypeId());
                 if (auxVal != null)
-                    currRow = auxRow = sheet.createRow(rowIndex++ );
+                    currRow = sheet.createRow(rowIndex++ );
                 else
                     addAuxRow = false;
             }
 
-            noResAuxRow = null;
             if (addNoResAuxRow)
-                currRow = noResAuxRow = sheet.createRow(rowIndex++ );
+                currRow = sheet.createRow(rowIndex++ );
 
             if ( !addResRow && !addAuxRow && !addNoResAuxRow)
                 continue;
 
-            startCol = 0;
             /*
-             * set the labels for sample fields
+             * fill the passed row's cells for all columns except the ones for
+             * analytes and values
              */
-            if (samGrp == null) {
-                samGrp = new LabelGroup();
-                grps.add(samGrp);
-            }
-            setSampleLabels(samGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += samGrp.labels.size();
-            /*
-             * set the labels for organization fields
-             */
-            if (orgGrp == null) {
-                orgGrp = new LabelGroup();
-                grps.add(orgGrp);
-            }
-            setOrganizationLabels(orgGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += orgGrp.labels.size();
-            /*
-             * set the labels for sample item fields
-             */
-            if (itemGrp == null) {
-                itemGrp = new LabelGroup();
-                grps.add(itemGrp);
-            }
-            setSampleItemLabels(itemGrp, samId, itemId, smMap, colFieldMap, startCol);
-
-            startCol += itemGrp.labels.size();
-            /*
-             * set the labels for analysis fields
-             */
-            if (anaGrp == null) {
-                anaGrp = new LabelGroup();
-                grps.add(anaGrp);
-            }
-            setAnalysisLabels(anaGrp, samId, anaId, smMap, colFieldMap, startCol, moduleName);
-
-            startCol += anaGrp.labels.size();
-            /*
-             * set the labels for environmental fields
-             */
-            if (envGrp == null) {
-                envGrp = new LabelGroup();
-                grps.add(envGrp);
-            }
-            setEnvironmentalLabels(envGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += envGrp.labels.size();
-            /*
-             * set the labels for sdwis fields
-             */
-            if (sdwisGrp == null) {
-                sdwisGrp = new LabelGroup();
-                grps.add(sdwisGrp);
-            }
-            setSDWISLabels(sdwisGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += sdwisGrp.labels.size();
-            /*
-             * set the labels for clinical fields
-             */
-            if (clinGrp == null) {
-                clinGrp = new LabelGroup();
-                grps.add(clinGrp);
-            }
-            setClinicalLabels(clinGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += clinGrp.labels.size();
-            /*
-             * set the labels for neonatal fields
-             */
-            if (neoGrp == null) {
-                neoGrp = new LabelGroup();
-                grps.add(neoGrp);
-            }
-            setNeonatalLabels(neoGrp, samId, smMap, colFieldMap, startCol);
-
-            startCol += neoGrp.labels.size();
-            /*
-             * set the labels for pt fields
-             */
-            if (ptGrp == null) {
-                ptGrp = new LabelGroup();
-                grps.add(ptGrp);
-            }
-            setPTLabels(ptGrp, samId, smMap, colFieldMap, startCol);
+            setCells(samId, itemId, anaId, smMap, rd, colFieldMap, moduleName, currRow);
 
             if (addResRow) {
-                setCells(resRow, grps);
                 /*
-                 * set the analyte's name and the result's value
+                 * set the analyte name; set the value if the analysis or sample
+                 * is not overridden
                  */
-                cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
+                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(res.getAnalyteName());
-                cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
-
-                /*
-                 * results are not shown if the analysis or sample is overridden
-                 */
+                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 if ( !anaOverridden && !samOverridden)
                     cell.setCellValue(resVal);
 
                 /*
                  * find out if this analyte has any column analytes; if it does,
-                 * add the analytes to the header and their values in the
+                 * add the column analytes to the header and their values in the
                  * columns; if an analyte B is found first, it's added to the
                  * header before another analyte A even if A's column appears to
                  * the left of B's in any test
@@ -1763,13 +1819,14 @@ public class DataView1Bean {
                         /*
                          * this analyte has column analytes; "lastCol" is the
                          * right-most column in the output; if an analyte
-                         * doesn't have have a column yet, that column will be
-                         * added after "lastCol"; "currCol" keeps track of the
-                         * current column
+                         * doesn't have a column yet, that column will be added
+                         * after "lastCol"; "currCol" keeps track of the current
+                         * column
                          */
                         if (lastCol == 0)
-                            lastCol = resRow.getPhysicalNumberOfCells();
-                        currCol = resRow.getPhysicalNumberOfCells();
+                            lastCol = currRow.getPhysicalNumberOfCells();
+
+                        currCol = currRow.getPhysicalNumberOfCells();
                         while (j < smResults.size()) {
                             colRes = smResults.get(j++ );
                             if ("N".equals(colRes.getIsColumn()))
@@ -1783,25 +1840,25 @@ public class DataView1Bean {
                              * map, create a new column and start adding values
                              * in it; set the value in this cell if the analyte
                              * is shown in this column; if the analyte is not
-                             * shown in this column, set the value in the
-                             * appropriate column
+                             * shown in this column, find the column in which it
+                             * is shown and set the value
                              */
                             if (anaIndex == null) {
                                 anaIndex = lastCol++ ;
                                 colAnaMap.put(colRes.getAnalyte(), anaIndex);
                                 cell = headerRow.createCell(anaIndex);
                                 cell.setCellValue(colRes.getAnalyte());
-                                cell.setCellStyle(headerStyle);
-                                cell = resRow.createCell(anaIndex);
+                                cell.setCellStyle(style);
+                                cell = currRow.createCell(anaIndex);
                             } else if (anaIndex == currCol) {
-                                cell = resRow.createCell(currCol++ );
+                                cell = currRow.createCell(currCol++ );
                             } else {
-                                cell = resRow.createCell(anaIndex);
+                                cell = currRow.createCell(anaIndex);
                             }
 
                             /*
-                             * results are not shown if the analysis or sample
-                             * is overridden
+                             * set the value if the analysis or sample is not
+                             * overridden
                              */
                             if ( !anaOverridden && !samOverridden)
                                 cell.setCellValue(getValue(colRes.getValue(), colRes.getTypeId()));
@@ -1811,30 +1868,25 @@ public class DataView1Bean {
             }
 
             if (addAuxRow) {
-                setCells(auxRow, grps);
                 /*
-                 * set the analyte's name and the aux data's value
+                 * set the analyte name and aux data value
                  */
-                cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
+                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(aux.getAuxFieldAnalyteName());
-                cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
+                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(auxVal);
             }
-
-            if (addNoResAuxRow)
-                setCells(noResAuxRow, grps);
 
             prevAnaId = anaId;
             prevSamId = samId;
 
             /*
-             * An empty row can't be created and then added it to the sheet, it
-             * has to be obtained from the sheet. Thus it has to be removed if
-             * we don't want to show it. We do so if two consecutive rows have
-             * the same data in all cells. It can happen if, for example, a user
-             * chose to see sample items but all the ones under a sample have
-             * the same container and sample type and those were the only fields
-             * chosen to be shown.
+             * an empty row can't be created and then added to the sheet, it has
+             * to be obtained from the sheet; thus it has to be removed if it
+             * shouldn't be shown because it has the same data as the previous
+             * row in all cells; this can happen if e.g. a user selects only
+             * container and sample type but all sample items in a sample have
+             * the same values for these fields
              */
             if (isSameDataInRows(currRow, prevRow)) {
                 sheet.removeRow(currRow);
@@ -1859,13 +1911,14 @@ public class DataView1Bean {
      * status to inform the user that the report has been stopped and removes
      * that attribute from the session; returns false otherwise
      */
-    private boolean stopReport(ReportStatus status) {
-        Object stop;
+    private boolean reportStopped(ReportStatus status) {
+        // Object stop;
 
-        stop = (Boolean)session.getAttribute("DataViewStopReport");
-        if (Boolean.TRUE.equals(stop)) {
+        // stop = (Boolean)session.getAttribute("DataViewStopReport");
+        // if (Boolean.TRUE.equals(stop)) {
+        if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
             status.setMessage(Messages.get().report_stopped());
-            session.removeAttribute("DataViewStopReport");
+            // session.removeAttribute("DataViewStopReport");
             return true;
         }
 
@@ -1876,34 +1929,51 @@ public class DataView1Bean {
      * Creates the style to distinguish the header row from the other rows in
      * the output
      */
-    private CellStyle createHeaderStyle(HSSFWorkbook wb) {
-        CellStyle headerStyle;
+    private CellStyle createHeaderStyle(XSSFWorkbook wb) {
+        CellStyle style;
         Font font;
 
         font = wb.createFont();
         font.setColor(IndexedColors.WHITE.getIndex());
-        headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        headerStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        headerStyle.setFont(font);
+        style = wb.createCellStyle();
+        style.setAlignment(CellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
+        style.setFont(font);
 
-        return headerStyle;
+        return style;
     }
 
-    private ArrayList<String> getSampleHeaders(ArrayList<String> columns, int startCol,
-                                               HashMap<Integer, String> colFieldMap,
-                                               ArrayList<SampleManager1.Load> load) {
-        boolean allSet;
-        String c;
+    /**
+     * Creates the list of header labels for the report by going through
+     * "columns"; it's the list of meta keys for the columns selected by the
+     * user; the headers are in the same order as the keys and not in some fixed
+     * order; populates the passed map by making the column index as the key and
+     * the meta key for that column as the value; if some column is for a part
+     * of sample manager, that's fetched using a load element e.g. organization,
+     * adds the load element for it to "load"
+     */
+    private ArrayList<String> getHeaders(ArrayList<String> columns,
+                                         HashMap<Integer, String> colFieldMap,
+                                         ArrayList<SampleManager1.Load> load) throws Exception {
+        String column;
+        boolean fetchOrg, fetchUser, fetchProv;
         ArrayList<String> headers;
 
         headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+        if (columns == null)
+            return headers;
+
+        fetchOrg = false;
+        fetchUser = false;
+        fetchProv = false;
+        for (int i = 0; i < columns.size(); i++ ) {
+            column = columns.get(i);
+            switch (column) {
+            /*
+             * sample fields
+             */
                 case SampleWebMeta.ACCESSION_NUMBER:
                     headers.add(Messages.get().sample_accessionNum());
                     break;
@@ -1935,85 +2005,44 @@ public class DataView1Bean {
                 case SampleWebMeta.CLIENT_REFERENCE_HEADER:
                     headers.add(Messages.get().sample_clntRef());
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        return headers;
-    }
-
-    private ArrayList<String> getOrganizationHeaders(ArrayList<String> columns, int startCol,
-                                                     HashMap<Integer, String> colFieldMap,
-                                                     ArrayList<SampleManager1.Load> load) {
-        boolean allSet;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * organization fields
+                 */
                 case SampleWebMeta.SAMPLE_ORG_ID:
                     headers.add(Messages.get().organization_num());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ORG_NAME:
                     headers.add(Messages.get().organization_name());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.SAMPLE_ORG_ATTENTION:
                     headers.add(Messages.get().order_attention());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ADDR_MULTIPLE_UNIT:
                     headers.add(Messages.get().address_aptSuite());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ADDR_STREET_ADDRESS:
                     headers.add(Messages.get().address_address());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ADDR_CITY:
                     headers.add(Messages.get().address_city());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ADDR_STATE:
                     headers.add(Messages.get().address_state());
+                    fetchOrg = true;
                     break;
                 case SampleWebMeta.ADDR_ZIP_CODE:
                     headers.add(Messages.get().address_zipcode());
+                    fetchOrg = true;
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        /*
-         * fetch organizations only if they'll be shown in the output
-         */
-        if (headers.size() > 0)
-            load.add(SampleManager1.Load.ORGANIZATION);
-
-        return headers;
-    }
-
-    private ArrayList<String> getSampleItemHeaders(ArrayList<String> columns, int startCol,
-                                                   HashMap<Integer, String> colFieldMap) {
-        boolean allSet;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * sample item fields
+                 */
                 case SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID:
                     headers.add(Messages.get().gen_sampleType());
                     break;
@@ -2032,32 +2061,9 @@ public class DataView1Bean {
                 case SampleWebMeta.ITEM_ITEM_SEQUENCE:
                     headers.add(Messages.get().gen_sequence());
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        return headers;
-    }
-
-    private ArrayList<String> getAnalysisHeaders(ArrayList<String> columns, int startCol,
-                                                 HashMap<Integer, String> colFieldMap,
-                                                 ArrayList<SampleManager1.Load> load) {
-        boolean allSet, fetchUser;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        fetchUser = true;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * analysis fields
+                 */
                 case SampleWebMeta.ANALYSIS_ID:
                     headers.add(Messages.get().analysis_id());
                     break;
@@ -2081,7 +2087,6 @@ public class DataView1Bean {
                     break;
                 case SampleWebMeta.ANALYSISSUBQA_NAME:
                     headers.add(Messages.get().qaEvent_qaEvent());
-                    load.add(SampleManager1.Load.QA);
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
                     headers.add(Messages.get().gen_completedDate());
@@ -2109,40 +2114,16 @@ public class DataView1Bean {
                 case SampleWebMeta.ANALYSIS_TYPE_ID:
                     headers.add(Messages.get().analysis_type());
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        if (fetchUser)
-            load.add(SampleManager1.Load.ANALYSISUSER);
-
-        return headers;
-    }
-
-    private ArrayList<String> getEnvironmentalHeaders(ArrayList<String> columns, int startCol,
-                                                      HashMap<Integer, String> colFieldMap) {
-        boolean allSet;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * environmental fields
+                 */
                 case SampleWebMeta.ENV_IS_HAZARDOUS:
                     headers.add(Messages.get().sampleEnvironmental_hazardous());
                     break;
                 case SampleWebMeta.ENV_PRIORITY:
                     headers.add(Messages.get().gen_priority());
                     break;
-                case SampleWebMeta.ENV_COLLECTOR:
+                case SampleWebMeta.ENV_COLLECTOR_HEADER:
                     headers.add(Messages.get().env_collector());
                     break;
                 case SampleWebMeta.ENV_COLLECTOR_PHONE:
@@ -2172,30 +2153,45 @@ public class DataView1Bean {
                 case SampleWebMeta.LOCATION_ADDR_COUNTRY:
                     headers.add(Messages.get().dataView_locationCountry());
                     break;
-                default:
-                    allSet = true;
+                /*
+                 * private well fields
+                 */
+                case SampleWebMeta.WELL_OWNER:
+                    headers.add(Messages.get().owner());
                     break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        return headers;
-    }
-
-    private ArrayList<String> getSDWISHeaders(ArrayList<String> columns, int startCol,
-                                              HashMap<Integer, String> colFieldMap) {
-        boolean allSet;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                case SampleWebMeta.WELL_COLLECTOR:
+                    headers.add(Messages.get().collector());
+                    break;
+                case SampleWebMeta.WELL_WELL_NUMBER:
+                    headers.add(Messages.get().wellNum());
+                    break;
+                case SampleWebMeta.WELL_REPORT_TO_ADDR_WORK_PHONE:
+                    headers.add(Messages.get().address_phone());
+                    break;
+                case SampleWebMeta.WELL_REPORT_TO_ADDR_FAX_PHONE:
+                    headers.add(Messages.get().faxNumber());
+                    break;
+                case SampleWebMeta.WELL_LOCATION:
+                    headers.add(Messages.get().location());
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_MULTIPLE_UNIT:
+                    headers.add(Messages.get().dataView_locationAptSuite());
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_STREET_ADDRESS:
+                    headers.add(Messages.get().dataView_locationAddress());
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_CITY:
+                    headers.add(Messages.get().dataView_locationCity());
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_STATE:
+                    headers.add(Messages.get().dataView_locationState());
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_ZIP_CODE:
+                    headers.add(Messages.get().dataView_locationZipCode());
+                    break;
+                /*
+                 * sdwis fields
+                 */
                 case SampleWebMeta.SDWIS_PWS_ID:
                     headers.add(Messages.get().pws_id());
                     break;
@@ -2223,42 +2219,19 @@ public class DataView1Bean {
                 case SampleWebMeta.SDWIS_PRIORITY:
                     headers.add(Messages.get().gen_priority());
                     break;
-                case SampleWebMeta.SDWIS_COLLECTOR:
+                case SampleWebMeta.SDWIS_COLLECTOR_HEADER:
                     headers.add(Messages.get().sampleSDWIS_collector());
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        return headers;
-    }
-
-    private ArrayList<String> getClinicalHeaders(ArrayList<String> columns, int startCol,
-                                                 HashMap<Integer, String> colFieldMap,
-                                                 ArrayList<SampleManager1.Load> load) {
-        boolean allSet, fetchProv;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        fetchProv = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * clinical fields
+                 */
                 case SampleWebMeta.CLIN_PATIENT_ID:
                     headers.add(Messages.get().dataView_patientId());
                     break;
-                case SampleWebMeta.CLIN_PATIENT_LAST_NAME:
+                case SampleWebMeta.CLIN_PATIENT_LAST_NAME_HEADER:
                     headers.add(Messages.get().dataView_patientLastName());
                     break;
-                case SampleWebMeta.CLIN_PATIENT_FIRST_NAME:
+                case SampleWebMeta.CLIN_PATIENT_FIRST_NAME_HEADER:
                     headers.add(Messages.get().dataView_patientFirstName());
                     break;
                 case SampleWebMeta.CLIN_PATIENT_BIRTH_DATE:
@@ -2305,38 +2278,9 @@ public class DataView1Bean {
                 case SampleWebMeta.CLIN_PROVIDER_PHONE:
                     headers.add(Messages.get().dataView_providerPhone());
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        /*
-         * fetch providers only if they'll be shown in the output
-         */
-        if (fetchProv && !load.contains(SampleManager1.Load.PROVIDER))
-            load.add(SampleManager1.Load.PROVIDER);
-
-        return headers;
-    }
-
-    private ArrayList<String> getNeonatalHeaders(ArrayList<String> columns, int startCol,
-                                                 HashMap<Integer, String> colFieldMap,
-                                                 ArrayList<SampleManager1.Load> load) {
-        boolean allSet, fetchProv;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        fetchProv = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * neonatal fields
+                 */
                 case SampleWebMeta.NEO_PATIENT_ID:
                     headers.add(Messages.get().dataView_patientId());
                     break;
@@ -2442,6 +2386,9 @@ public class DataView1Bean {
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_ZIP_CODE:
                     headers.add(Messages.get().dataView_nextOfKinZipcode());
                     break;
+                case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_HOME_PHONE:
+                    headers.add(Messages.get().dataView_nextOfKinPhone());
+                    break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_GENDER_ID:
                     headers.add(Messages.get().dataView_nextOfKinGender());
                     break;
@@ -2459,35 +2406,9 @@ public class DataView1Bean {
                     headers.add(Messages.get().provider_firstName());
                     fetchProv = true;
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-            colFieldMap.put(i, c);
-        }
-
-        /*
-         * fetch providers only if they'll be shown in the output
-         */
-        if (fetchProv && !load.contains(SampleManager1.Load.PROVIDER))
-            load.add(SampleManager1.Load.PROVIDER);
-        return headers;
-    }
-
-    private ArrayList<String> getPTHeaders(ArrayList<String> columns, int startCol,
-                                           HashMap<Integer, String> colFields) {
-        boolean allSet;
-        String c;
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        allSet = false;
-        for (int i = startCol; i < columns.size(); i++ ) {
-            c = columns.get(i);
-            switch (c) {
+                /*
+                 * pt fields
+                 */
                 case SampleWebMeta.PT_PT_PROVIDER_ID:
                     headers.add(Messages.get().provider_provider());
                     break;
@@ -2501,14 +2422,23 @@ public class DataView1Bean {
                     headers.add(Messages.get().gen_receivedBy());
                     break;
                 default:
-                    allSet = true;
-                    break;
-
+                    throw new InconsistencyException("Unknown column " + column);
             }
-            if (allSet)
-                break;
-            colFields.put(i, c);
+            colFieldMap.put(i, column);
         }
+
+        /*
+         * fetch organizations, users, providers only if they'll be shown in the
+         * report
+         */
+        if (fetchOrg)
+            load.add(SampleManager1.Load.ORGANIZATION);
+
+        if (fetchUser)
+            load.add(SampleManager1.Load.ANALYSISUSER);
+
+        if (fetchProv && !load.contains(SampleManager1.Load.PROVIDER))
+            load.add(SampleManager1.Load.PROVIDER);
 
         return headers;
     }
@@ -2548,6 +2478,10 @@ public class DataView1Bean {
         return val;
     }
 
+    /**
+     * returns the value or the dictionary entry for it, based on the passed
+     * type; returns null is the value is empty or null
+     */
     private String getValue(String value, Integer typeId) throws Exception {
         Integer id;
 
@@ -2563,300 +2497,92 @@ public class DataView1Bean {
     }
 
     /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the manager from the passed map and sets the labels for the
-     * sample fields in the group; "colFieldMap" is used to find out which field
-     * is showing in which column; doesn't do anything if the sample id is the
-     * same as the id in the group
+     * Fills the passed row's cells for all columns except the ones for analytes
+     * and values; the sample, sample item and analysis for each row are
+     * specified by the passed ids; for aux data rows, sample item and analysis
+     * ids are null, because those cells need to be blank; "colFieldMap"
+     * specifies which column is showing which field; the passed RowData holds
+     * data that needs to be recomputed when the sample, item or analysis
+     * changes, but stays the same otherwise e.g. analysis received by
      */
-    private void setSampleLabels(LabelGroup grp, Integer sampleId,
-                                 HashMap<Integer, SampleManager1> smMap,
-                                 HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field, name;
+    private void setCells(Integer sampleId, Integer sampleItemId, Integer analysisId,
+                          HashMap<Integer, SampleManager1> smMap, RowData rd,
+                          HashMap<Integer, String> colFieldMap, String moduleName, Row row) throws Exception {
+        boolean runForWeb;
+        String column;
+        Object value;
         SampleDO s;
+        SampleEnvironmentalDO se;
+        SamplePrivateWellViewDO spw;
+        SampleSDWISViewDO ss;
         SampleManager1 sm;
-        Date cd;
-        Datetime ct, cdt;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
+        SampleClinicalViewDO sc;
+        SampleNeonatalViewDO sn;
+        SamplePTDO spt;
+        Datetime dt;
+        Cell cell;
+        ArrayList<String> labels;
 
         sm = smMap.get(sampleId);
         s = getSample(sm);
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
-                case SampleWebMeta.ACCESSION_NUMBER:
-                    setNumberLabel(grp, s.getAccessionNumber());
-                    break;
-                case SampleWebMeta.REVISION:
-                    setNumberLabel(grp, s.getRevision());
-                    break;
-                case SampleWebMeta.COLLECTION_DATE:
-                    cdt = null;
-                    /*
-                     * set the combination of collection date and time
-                     */
-                    if (s.getCollectionDate() != null) {
-                        cd = s.getCollectionDate().getDate();
-                        ct = s.getCollectionTime();
-                        if (ct == null) {
-                            cd.setHours(0);
-                            cd.setMinutes(0);
-                        } else {
-                            cd.setHours(ct.getDate().getHours());
-                            cd.setMinutes(ct.getDate().getMinutes());
-                        }
+        se = getSampleEnvironmental(sm);
+        spw = getSamplePrivateWell(sm);
+        ss = getSampleSDWIS(sm);
+        sc = getSampleClinical(sm);
+        sn = getSampleNeonatal(sm);
+        spt = getSamplePT(sm);
 
-                        cdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, cd);
+        if ( !sampleId.equals(rd.sampleId)) {
+            rd.clear();
+            rd.sampleId = sampleId;
+            /*
+             * find the report-to organization
+             */
+            if (getOrganizations(sm) != null) {
+                for (SampleOrganizationViewDO data : getOrganizations(sm)) {
+                    if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId())) {
+                        rd.repToOrg = data;
+                        break;
                     }
-                    setDateTimeLabel(grp, cdt, Messages.get().gen_dateTimePattern());
-                    break;
-                case SampleWebMeta.RECEIVED_DATE:
-                    setDateTimeLabel(grp, s.getReceivedDate(), Messages.get().gen_dateTimePattern());
-                    break;
-                case SampleWebMeta.ENTERED_DATE:
-                    setDateTimeLabel(grp, s.getEnteredDate(), Messages.get().gen_dateTimePattern());
-                    break;
-                case SampleWebMeta.RELEASED_DATE:
-                    setDateTimeLabel(grp, s.getReleasedDate(), Messages.get().gen_dateTimePattern());
-                    break;
-                case SampleWebMeta.STATUS_ID:
-                    setDictionaryLabel(grp, s.getStatusId());
-                    break;
-                case SampleWebMeta.PROJECT_NAME:
-                    /*
-                     * set the name of the first permanent project
-                     */
-                    name = null;
-                    if (getProjects(sm) != null) {
-                        for (SampleProjectViewDO data : getProjects(sm)) {
-                            if ("Y".equals(data.getIsPermanent())) {
-                                name = data.getProjectName();
-                                break;
-                            }
-                        }
-                    }
-                    setLabel(grp, name);
-                    break;
-                case SampleWebMeta.CLIENT_REFERENCE_HEADER:
-                    setLabel(grp, s.getClientReference());
-                    break;
-                default:
-                    allSet = true;
-                    break;
-
+                }
             }
-            if (allSet)
-                break;
-        }
-    }
 
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the manager from the passed map and sets the labels for the
-     * organization fields in the group; "colFieldMap" is used to find out which
-     * field is showing in which column; doesn't do anything if the sample id is
-     * the same as the id in the group
-     */
-    private void setOrganizationLabels(LabelGroup grp, Integer sampleId,
-                                       HashMap<Integer, SampleManager1> smMap,
-                                       HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleOrganizationViewDO so;
-        SampleManager1 sm;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-
-        sm = smMap.get(sampleId);
-        /*
-         * find the report-to organization
-         */
-        so = null;
-        if (getOrganizations(sm) != null) {
-            for (SampleOrganizationViewDO data : getOrganizations(sm)) {
-                if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId())) {
-                    so = data;
-                    break;
+            /*
+             * find the first permanent project
+             */
+            if (getProjects(sm) != null) {
+                for (SampleProjectViewDO data : getProjects(sm)) {
+                    if ("Y".equals(data.getIsPermanent())) {
+                        rd.projName = data.getProjectName();
+                        break;
+                    }
                 }
             }
         }
 
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
-                case SampleWebMeta.SAMPLE_ORG_ID:
-                    setNumberLabel(grp, so != null ? so.getOrganizationId() : null);
-                    break;
-                case SampleWebMeta.ORG_NAME:
-                    setLabel(grp, so != null ? so.getOrganizationName() : null);
-                    break;
-                case SampleWebMeta.SAMPLE_ORG_ATTENTION:
-                    setLabel(grp, so != null ? so.getOrganizationAttention() : null);
-                    break;
-                case SampleWebMeta.ADDR_MULTIPLE_UNIT:
-                    setLabel(grp, so != null ? so.getOrganizationMultipleUnit() : null);
-                    break;
-                case SampleWebMeta.ADDR_STREET_ADDRESS:
-                    setLabel(grp, so != null ? so.getOrganizationStreetAddress() : null);
-                    break;
-                case SampleWebMeta.ADDR_CITY:
-                    setLabel(grp, so != null ? so.getOrganizationCity() : null);
-                    break;
-                case SampleWebMeta.ADDR_STATE:
-                    setLabel(grp, so != null ? so.getOrganizationState() : null);
-                    break;
-                case SampleWebMeta.ADDR_ZIP_CODE:
-                    setLabel(grp, so != null ? so.getOrganizationZipCode() : null);
-                    break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample item id is different from the id in the passed label
-     * group, gets the sample and item from the passed map and sets the labels
-     * for the item fields in the passed label group; "colFieldMap" is used to
-     * find out which field is showing in which column; doesn't do anything if
-     * the sample item id is the same as the id in the group; if item id is null
-     * (for aux data rows), adds empty labels for each field
-     */
-    private void setSampleItemLabels(LabelGroup grp, Integer sampleId, Integer itemId,
-                                     HashMap<Integer, SampleManager1> smMap,
-                                     HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleItemViewDO item;
-        SampleManager1 sm;
-
-        if (itemId != null && itemId.equals(grp.id))
-            return;
-
-        grp.id = itemId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        item = null;
-
-        if (itemId != null) {
-            sm = smMap.get(sampleId);
+        if (sampleItemId != null && !sampleItemId.equals(rd.sampleItemId)) {
             /*
              * find the item with the passed id
              */
             for (SampleItemViewDO data : getItems(sm)) {
-                if (data.getId().equals(itemId)) {
-                    item = data;
+                if (data.getId().equals(sampleItemId)) {
+                    rd.sampleItem = data;
                     break;
                 }
             }
+        } else if (sampleItemId == null) {
+            rd.sampleItem = null;
         }
 
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
-                case SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID:
-                    setLabel(grp, item != null ? item.getTypeOfSample() : null);
-                    break;
-                case SampleWebMeta.ITEM_SOURCE_OF_SAMPLE_ID:
-                    setLabel(grp, item != null ? item.getSourceOfSample() : null);
-                    break;
-                case SampleWebMeta.ITEM_SOURCE_OTHER:
-                    setLabel(grp, item != null ? item.getSourceOther() : null);
-                    break;
-                case SampleWebMeta.ITEM_CONTAINER_ID:
-                    setLabel(grp, item != null ? item.getContainer() : null);
-                    break;
-                case SampleWebMeta.ITEM_CONTAINER_REFERENCE:
-                    setLabel(grp, item != null ? item.getContainerReference() : null);
-                    break;
-                case SampleWebMeta.ITEM_ITEM_SEQUENCE:
-                    setNumberLabel(grp, item != null ? item.getItemSequence() : null);
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample item id is different from the id in the passed label
-     * group, gets the sample and item from the passed map and sets the labels
-     * for the item fields in the passed label group; "colFieldMap" is used to
-     * find out which field is showing in which column; doesn't do anything if
-     * the sample item id is the same as the id in the group; if item id is null
-     * (for aux data rows), adds empty labels for each field
-     */
-    private void setAnalysisLabels(LabelGroup grp, Integer sampleId, Integer anaId,
-                                   HashMap<Integer, SampleManager1> smMap,
-                                   HashMap<Integer, String> colFieldMap, int startCol,
-                                   String moduleName) throws Exception {
-        boolean allSet, runForWeb;
-        String field, test, method, rep, comp, rel, qa;
-        ArrayList<String> labels;
-        AnalysisViewDO ana;
-        SampleManager1 sm;
-        Datetime dt;
-
-        if (anaId != null && anaId.equals(grp.id))
-            return;
-
-        grp.id = anaId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        ana = null;
-        comp = null;
-        rel = null;
-        qa = null;
         runForWeb = moduleName != null;
 
-        if (anaId != null) {
-            sm = smMap.get(sampleId);
+        if (analysisId != null && !analysisId.equals(rd.analysisId)) {
             /*
              * find the analysis with the passed id
              */
             for (AnalysisViewDO data : getAnalyses(sm)) {
-                if (data.getId().equals(anaId)) {
-                    ana = data;
+                if (data.getId().equals(analysisId)) {
+                    rd.analysis = data;
                     break;
                 }
             }
@@ -2864,28 +2590,32 @@ public class DataView1Bean {
              * find the names of the users who completed and/or released the
              * analysis
              */
+            rd.completedBy = null;
+            rd.releasedBy = null;
             if (getUsers(sm) != null) {
                 labels = new ArrayList<String>();
                 for (AnalysisUserViewDO data : getUsers(sm)) {
-                    if ( !data.getAnalysisId().equals(anaId))
+                    if ( !data.getAnalysisId().equals(analysisId))
                         continue;
                     if (Constants.dictionary().AN_USER_AC_COMPLETED.equals(data.getActionId()))
                         labels.add(data.getSystemUser());
                     else if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId()))
-                        rel = data.getSystemUser();
+                        rd.releasedBy = data.getSystemUser();
                 }
-                comp = DataBaseUtil.concatWithSeparator(labels, ", ");
+                rd.completedBy = DataBaseUtil.concatWithSeparator(labels, ", ");
             }
 
             /*
-             * find the qa events for the analysis; if the report is run for
-             * external clients, internal qa events are not shown and the qa
-             * event's reporting text is shown, otherwise its name is shown
+             * find the qa events for the analysis; for external clients,
+             * internal qa events are not shown and the qa event's reporting
+             * text is shown; otherwise internal qa events are shown and the qa
+             * event's name is shown
              */
+            rd.analysisQAs = null;
             if (getAnalysisQAs(sm) != null) {
                 labels = new ArrayList<String>();
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                    if ( !data.getAnalysisId().equals(anaId))
+                    if ( !data.getAnalysisId().equals(analysisId))
                         continue;
                     if (runForWeb &&
                         !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId()))
@@ -2893,654 +2623,582 @@ public class DataView1Bean {
                     else
                         labels.add(data.getQaEventName());
                 }
-                qa = DataBaseUtil.concatWithSeparator(labels, runForWeb ? " " : ", ");
+                rd.analysisQAs = DataBaseUtil.concatWithSeparator(labels, runForWeb ? " " : ", ");
             }
+        } else if (analysisId == null) {
+            rd.analysis = null;
         }
 
         /*
          * set the label for each column
          */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+        for (int i = 0; i < colFieldMap.size(); i++ ) {
+            column = colFieldMap.get(i);
+            value = null;
+            switch (column) {
+            /*
+             * sample columns
+             */
+                case SampleWebMeta.ACCESSION_NUMBER:
+                    value = s.getAccessionNumber();
+                    break;
+                case SampleWebMeta.REVISION:
+                    value = s.getRevision();
+                    break;
+                case SampleWebMeta.COLLECTION_DATE:
+                    if (rd.collDateTime == null) {
+                        /*
+                         * combine the collected date and time to form the label
+                         * for this column; "collDateTime" is set to empty
+                         * string and not null so that it isn't tried to be
+                         * created again until the sample changes; at that time
+                         * it gets set to null before entering the switch-case
+                         */
+                        dt = getDateTime(s.getCollectionDate(), s.getCollectionTime());
+                        rd.collDateTime = dt != null ? getDateTimeLabel(dt,
+                                                                        Messages.get()
+                                                                                .gen_dateTimePattern())
+                                                    : "";
+                    }
+                    value = rd.collDateTime;
+                    break;
+                case SampleWebMeta.RECEIVED_DATE:
+                    value = getDateTimeLabel(s.getReceivedDate(), Messages.get()
+                                                                          .gen_dateTimePattern());
+                    break;
+                case SampleWebMeta.ENTERED_DATE:
+                    value = getDateTimeLabel(s.getEnteredDate(), Messages.get()
+                                                                         .gen_dateTimePattern());
+                    break;
+                case SampleWebMeta.RELEASED_DATE:
+                    value = getDateTimeLabel(s.getReleasedDate(), Messages.get()
+                                                                          .gen_dateTimePattern());
+                    break;
+                case SampleWebMeta.STATUS_ID:
+                    value = getDictionaryLabel(s.getStatusId());
+                    break;
+                case SampleWebMeta.PROJECT_NAME:
+                    value = rd.projName;
+                    break;
+                case SampleWebMeta.CLIENT_REFERENCE_HEADER:
+                    value = s.getClientReference();
+                    break;
+                /*
+                 * organization columns
+                 */
+                case SampleWebMeta.SAMPLE_ORG_ID:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationId() : null;
+                    break;
+                case SampleWebMeta.ORG_NAME:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationName() : null;
+                    break;
+                case SampleWebMeta.SAMPLE_ORG_ATTENTION:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationAttention() : null;
+                    break;
+                case SampleWebMeta.ADDR_MULTIPLE_UNIT:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationMultipleUnit() : null;
+                    break;
+                case SampleWebMeta.ADDR_STREET_ADDRESS:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationStreetAddress() : null;
+                    break;
+                case SampleWebMeta.ADDR_CITY:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationCity() : null;
+                    break;
+                case SampleWebMeta.ADDR_STATE:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationState() : null;
+                    break;
+                case SampleWebMeta.ADDR_ZIP_CODE:
+                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationZipCode() : null;
+                    break;
+                /*
+                 * sample item columns
+                 */
+                case SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID:
+                    value = rd.sampleItem != null ? rd.sampleItem.getTypeOfSample() : null;
+                    break;
+                case SampleWebMeta.ITEM_SOURCE_OF_SAMPLE_ID:
+                    value = rd.sampleItem != null ? rd.sampleItem.getSourceOfSample() : null;
+                    break;
+                case SampleWebMeta.ITEM_SOURCE_OTHER:
+                    value = rd.sampleItem != null ? rd.sampleItem.getSourceOther() : null;
+                    break;
+                case SampleWebMeta.ITEM_CONTAINER_ID:
+                    value = rd.sampleItem != null ? rd.sampleItem.getContainer() : null;
+                    break;
+                case SampleWebMeta.ITEM_CONTAINER_REFERENCE:
+                    value = rd.sampleItem != null ? rd.sampleItem.getContainerReference() : null;
+                    break;
+                case SampleWebMeta.ITEM_ITEM_SEQUENCE:
+                    value = rd.sampleItem != null ? rd.sampleItem.getItemSequence() : null;
+                    break;
+                /*
+                 * analysis columns
+                 */
                 case SampleWebMeta.ANALYSIS_ID:
-                    setNumberLabel(grp, ana != null ? ana.getId() : null);
+                    value = rd.analysis != null ? rd.analysis.getId() : null;
                     break;
                 case SampleWebMeta.ANALYSIS_TEST_NAME_HEADER:
-                    test = null;
-                    if (ana != null)
-                        test = runForWeb ? ana.getTestReportingDescription() : ana.getTestName();
-                    setLabel(grp, test);
+                    value = null;
+                    if (rd.analysis != null)
+                        value = runForWeb ? rd.analysis.getTestReportingDescription()
+                                         : rd.analysis.getTestName();
                     break;
                 case SampleWebMeta.ANALYSIS_METHOD_NAME_HEADER:
-                    method = null;
-                    if (ana != null)
-                        method = runForWeb ? ana.getMethodReportingDescription()
-                                          : ana.getMethodName();
-                    setLabel(grp, method);
+                    value = null;
+                    if (rd.analysis != null)
+                        value = runForWeb ? rd.analysis.getMethodReportingDescription()
+                                         : rd.analysis.getMethodName();
                     break;
                 case SampleWebMeta.ANALYSIS_STATUS_ID_HEADER:
-                    setDictionaryLabel(grp, ana != null ? ana.getStatusId() : null);
+                    value = getDictionaryLabel(rd.analysis != null ? rd.analysis.getStatusId()
+                                                                  : null);
                     break;
                 case SampleWebMeta.ANALYSIS_REVISION:
-                    setNumberLabel(grp, ana != null ? ana.getRevision() : null);
+                    value = rd.analysis != null ? rd.analysis.getRevision() : null;
                     break;
                 case SampleWebMeta.ANALYSIS_IS_REPORTABLE_HEADER:
-                    rep = null;
-                    if (ana != null)
-                        rep = "Y".equals(ana.getIsReportable()) ? Messages.get().gen_yes()
-                                                               : Messages.get().gen_no();
-                    setLabel(grp, rep);
+                    value = getYesNoLabel(rd.analysis != null ? rd.analysis.getIsReportable()
+                                                             : null);
                     break;
                 case SampleWebMeta.ANALYSIS_UNIT_OF_MEASURE_ID:
-                    setDictionaryLabel(grp, ana != null ? ana.getUnitOfMeasureId() : null);
+                    value = getDictionaryLabel(rd.analysis != null ? rd.analysis.getUnitOfMeasureId()
+                                                                  : null);
                     break;
                 case SampleWebMeta.ANALYSISSUBQA_NAME:
-                    setLabel(grp, qa);
+                    value = rd.analysisQAs;
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
-                    dt = ana != null ? ana.getCompletedDate() : null;
-                    setDateTimeLabel(grp, dt, Messages.get().gen_dateTimePattern());
+                    dt = rd.analysis != null ? rd.analysis.getCompletedDate() : null;
+                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_BY:
-                    setLabel(grp, comp);
+                    value = rd.completedBy;
                     break;
                 case SampleWebMeta.ANALYSIS_RELEASED_DATE:
-                    dt = ana != null ? ana.getReleasedDate() : null;
-                    setDateTimeLabel(grp, dt, Messages.get().gen_dateTimePattern());
+                    dt = rd.analysis != null ? rd.analysis.getReleasedDate() : null;
+                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.ANALYSIS_RELEASED_BY:
-                    setLabel(grp, rel);
+                    value = rd.releasedBy;
                     break;
                 case SampleWebMeta.ANALYSIS_STARTED_DATE:
-                    dt = ana != null ? ana.getStartedDate() : null;
-                    setDateTimeLabel(grp, dt, Messages.get().gen_dateTimePattern());
+                    dt = rd.analysis != null ? rd.analysis.getStartedDate() : null;
+                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.ANALYSIS_PRINTED_DATE:
-                    dt = ana != null ? ana.getPrintedDate() : null;
-                    setDateTimeLabel(grp, dt, Messages.get().gen_dateTimePattern());
+                    dt = rd.analysis != null ? rd.analysis.getPrintedDate() : null;
+                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.ANALYSIS_SECTION_NAME:
-                    setLabel(grp, ana != null ? ana.getSectionName() : null);
+                    value = rd.analysis != null ? rd.analysis.getSectionName() : null;
                     break;
                 case SampleWebMeta.ANALYSIS_TYPE_ID:
-                    setDictionaryLabel(grp, ana != null ? ana.getTypeId() : null);
+                    value = getDictionaryLabel(rd.analysis != null ? rd.analysis.getTypeId() : null);
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the sample from the passed map and sets the labels for the
-     * environmental fields in the passed label group; "colFieldMap" is used to
-     * find out which field is showing in which column; doesn't do anything if
-     * the sample id is the same as the id in the group
-     */
-    private void setEnvironmentalLabels(LabelGroup grp, Integer sampleId,
-                                        HashMap<Integer, SampleManager1> smMap,
-                                        HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleEnvironmentalDO se;
-        SampleManager1 sm;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        sm = smMap.get(sampleId);
-        se = getSampleEnvironmental(sm);
-        if (se == null)
-            return;
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+                /*
+                 * environmental columns
+                 */
                 case SampleWebMeta.ENV_IS_HAZARDOUS:
-                    setLabel(grp, "Y".equals(se.getIsHazardous()) ? Messages.get().gen_yes()
-                                                                 : Messages.get().gen_no());
+                    value = getYesNoLabel(se != null ? se.getIsHazardous() : null);
                     break;
                 case SampleWebMeta.ENV_PRIORITY:
-                    setNumberLabel(grp, se.getPriority());
+                    value = se != null ? se.getPriority() : null;
                     break;
-                case SampleWebMeta.ENV_COLLECTOR:
-                    setLabel(grp, se.getCollector());
+                case SampleWebMeta.ENV_COLLECTOR_HEADER:
+                    value = se != null ? se.getCollector() : null;
                     break;
                 case SampleWebMeta.ENV_COLLECTOR_PHONE:
-                    setLabel(grp, se.getCollectorPhone());
+                    value = se != null ? se.getCollectorPhone() : null;
                     break;
                 case SampleWebMeta.ENV_DESCRIPTION:
-                    setLabel(grp, se.getDescription());
+                    value = se != null ? se.getDescription() : null;
                     break;
                 case SampleWebMeta.ENV_LOCATION:
-                    setLabel(grp, se.getLocation());
+                    value = se != null ? se.getLocation() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_MULTIPLE_UNIT:
-                    setLabel(grp, se.getLocationAddress().getMultipleUnit());
+                    value = se != null ? se.getLocationAddress().getMultipleUnit() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_STREET_ADDRESS:
-                    setLabel(grp, se.getLocationAddress().getStreetAddress());
+                    value = se != null ? se.getLocationAddress().getStreetAddress() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_CITY:
-                    setLabel(grp, se.getLocationAddress().getCity());
+                    value = se != null ? se.getLocationAddress().getCity() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_STATE:
-                    setLabel(grp, se.getLocationAddress().getState());
+                    value = se != null ? se.getLocationAddress().getState() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_ZIP_CODE:
-                    setLabel(grp, se.getLocationAddress().getZipCode());
+                    value = se != null ? se.getLocationAddress().getZipCode() : null;
                     break;
                 case SampleWebMeta.LOCATION_ADDR_COUNTRY:
-                    setLabel(grp, se.getLocationAddress().getCountry());
+                    value = se != null ? se.getLocationAddress().getCountry() : null;
                     break;
-                default:
-                    allSet = true;
+                /*
+                 * private well columns
+                 */
+                case SampleWebMeta.WELL_OWNER:
+                    value = spw != null ? spw.getOwner() : null;
                     break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the sample from the passed map and sets the labels for the
-     * sdwis fields in the passed label group; "colFieldMap" is used to find out
-     * which field is showing in which column; doesn't do anything if the sample
-     * id is the same as the id in the group
-     */
-    private void setSDWISLabels(LabelGroup grp, Integer sampleId,
-                                HashMap<Integer, SampleManager1> smMap,
-                                HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleSDWISViewDO ss;
-        SampleManager1 sm;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        sm = smMap.get(sampleId);
-        ss = getSampleSDWIS(sm);
-        if (ss == null)
-            return;
-
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+                case SampleWebMeta.WELL_COLLECTOR:
+                    value = spw != null ? spw.getCollector() : null;
+                    break;
+                case SampleWebMeta.WELL_WELL_NUMBER:
+                    value = spw != null ? spw.getWellNumber() : null;
+                    break;
+                case SampleWebMeta.WELL_REPORT_TO_ADDR_WORK_PHONE:
+                    value = spw != null ? spw.getReportToAddress().getWorkPhone() : null;
+                    break;
+                case SampleWebMeta.WELL_REPORT_TO_ADDR_FAX_PHONE:
+                    value = spw != null ? spw.getReportToAddress().getFaxPhone() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION:
+                    value = spw != null ? spw.getLocation() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_MULTIPLE_UNIT:
+                    value = spw != null ? spw.getLocationAddress().getMultipleUnit() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_STREET_ADDRESS:
+                    value = spw != null ? spw.getLocationAddress().getStreetAddress() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_CITY:
+                    value = spw != null ? spw.getLocationAddress().getCity() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_STATE:
+                    value = spw != null ? spw.getLocationAddress().getState() : null;
+                    break;
+                case SampleWebMeta.WELL_LOCATION_ADDR_ZIP_CODE:
+                    value = spw != null ? spw.getLocationAddress().getZipCode() : null;
+                    break;
+                /*
+                 * sdwis columns
+                 */
                 case SampleWebMeta.SDWIS_PWS_ID:
-                    setLabel(grp, ss.getPwsNumber0());
+                    value = ss != null ? ss.getPwsNumber0() : null;
                     break;
                 case SampleWebMeta.PWS_NAME:
-                    setLabel(grp, ss.getPwsName());
+                    value = ss != null ? ss.getPwsName() : null;
                     break;
                 case SampleWebMeta.SDWIS_STATE_LAB_ID:
-                    setNumberLabel(grp, ss.getStateLabId());
+                    value = ss != null ? ss.getStateLabId() : null;
                     break;
                 case SampleWebMeta.SDWIS_FACILITY_ID:
-                    setLabel(grp, ss.getFacilityId());
+                    value = ss != null ? ss.getFacilityId() : null;
                     break;
                 case SampleWebMeta.SDWIS_SAMPLE_TYPE_ID:
-                    setDictionaryLabel(grp, ss.getSampleTypeId());
+                    value = getDictionaryLabel(ss != null ? ss.getSampleTypeId() : null);
                     break;
                 case SampleWebMeta.SDWIS_SAMPLE_CATEGORY_ID:
-                    setDictionaryLabel(grp, ss.getSampleCategoryId());
+                    value = getDictionaryLabel(ss != null ? ss.getSampleCategoryId() : null);
                     break;
                 case SampleWebMeta.SDWIS_SAMPLE_POINT_ID:
-                    setLabel(grp, ss.getSamplePointId());
+                    value = ss != null ? ss.getSamplePointId() : null;
                     break;
                 case SampleWebMeta.SDWIS_LOCATION:
-                    setLabel(grp, ss.getLocation());
+                    value = ss != null ? ss.getLocation() : null;
                     break;
                 case SampleWebMeta.SDWIS_PRIORITY:
-                    setNumberLabel(grp, ss.getPriority());
+                    value = ss != null ? ss.getPriority() : null;
                     break;
-                case SampleWebMeta.SDWIS_COLLECTOR:
-                    setLabel(grp, ss.getCollector());
+                case SampleWebMeta.SDWIS_COLLECTOR_HEADER:
+                    value = ss != null ? ss.getCollector() : null;
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the sample from the passed map and sets the labels for the
-     * clinical fields in the passed label group; "colFieldMap" is used to find
-     * out which field is showing in which column; doesn't do anything if the
-     * sample id is the same as the id in the group
-     */
-    private void setClinicalLabels(LabelGroup grp, Integer sampleId,
-                                   HashMap<Integer, SampleManager1> smMap,
-                                   HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleClinicalViewDO sc;
-        ProviderDO pr;
-        SampleManager1 sm;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        sm = smMap.get(sampleId);
-        sc = getSampleClinical(sm);
-        if (sc == null)
-            return;
-        pr = sc.getProvider();
-
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+                /*
+                 * clinical columns
+                 */
                 case SampleWebMeta.CLIN_PATIENT_ID:
-                    setNumberLabel(grp, sc.getPatientId());
+                    value = sc != null ? sc.getPatientId() : null;
                     break;
-                case SampleWebMeta.CLIN_PATIENT_LAST_NAME:
-                    setLabel(grp, sc.getPatient().getLastName());
+                case SampleWebMeta.CLIN_PATIENT_LAST_NAME_HEADER:
+                    value = sc != null ? sc.getPatient().getLastName() : null;
                     break;
-                case SampleWebMeta.CLIN_PATIENT_FIRST_NAME:
-                    setLabel(grp, sc.getPatient().getFirstName());
+                case SampleWebMeta.CLIN_PATIENT_FIRST_NAME_HEADER:
+                    value = sc != null ? sc.getPatient().getFirstName() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_BIRTH_DATE:
-                    setDateTimeLabel(grp,
-                                     sc.getPatient().getBirthDate(),
-                                     Messages.get().gen_datePattern());
+                    value = getDateTimeLabel(sc != null ? sc.getPatient().getBirthDate() : null,
+                                             Messages.get().gen_datePattern());
                     break;
                 case SampleWebMeta.CLIN_PATIENT_NATIONAL_ID:
-                    setLabel(grp, sc.getPatient().getNationalId());
+                    value = sc != null ? sc.getPatient().getNationalId() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_MULTIPLE_UNIT:
-                    setLabel(grp, sc.getPatient().getAddress().getMultipleUnit());
+                    value = sc != null ? sc.getPatient().getAddress().getMultipleUnit() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_STREET_ADDRESS:
-                    setLabel(grp, sc.getPatient().getAddress().getStreetAddress());
+                    value = sc != null ? sc.getPatient().getAddress().getStreetAddress() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_CITY:
-                    setLabel(grp, sc.getPatient().getAddress().getCity());
+                    value = sc != null ? sc.getPatient().getAddress().getCity() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_STATE:
-                    setLabel(grp, sc.getPatient().getAddress().getState());
+                    value = sc != null ? sc.getPatient().getAddress().getState() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_ZIP_CODE:
-                    setLabel(grp, sc.getPatient().getAddress().getZipCode());
+                    value = sc != null ? sc.getPatient().getAddress().getZipCode() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_HOME_PHONE:
-                    setLabel(grp, sc.getPatient().getAddress().getHomePhone());
+                    value = sc != null ? sc.getPatient().getAddress().getHomePhone() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_GENDER_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getGenderId());
+                    value = getDictionaryLabel(sc != null ? sc.getPatient().getGenderId() : null);
                     break;
                 case SampleWebMeta.CLIN_PATIENT_RACE_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getRaceId());
+                    value = getDictionaryLabel(sc != null ? sc.getPatient().getRaceId() : null);
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ETHNICITY_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getEthnicityId());
+                    value = getDictionaryLabel(sc != null ? sc.getPatient().getEthnicityId() : null);
                     break;
                 case SampleWebMeta.CLIN_PROVIDER_LAST_NAME:
-                    setLabel(grp, pr != null ? sc.getProvider().getLastName() : null);
+                    if (sc != null)
+                        value = sc.getProvider() != null ? sc.getProvider().getLastName() : null;
                     break;
                 case SampleWebMeta.CLIN_PROVIDER_FIRST_NAME:
-                    setLabel(grp, pr != null ? sc.getProvider().getFirstName() : null);
+                    if (sc != null)
+                        value = sc.getProvider() != null ? sc.getProvider().getFirstName() : null;
                     break;
                 case SampleWebMeta.CLIN_PROVIDER_PHONE:
-                    setLabel(grp, sc.getProviderPhone());
+                    value = sc != null ? sc.getProviderPhone() : null;
                     break;
-                default:
-                    allSet = true;
-                    break;
-
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the sample from the passed map and sets the labels for the
-     * neonatal fields in the passed label group; "colFieldMap" is used to find
-     * out which field is showing in which column; doesn't do anything if the
-     * sample id is the same as the id in the group
-     */
-    private void setNeonatalLabels(LabelGroup grp, Integer sampleId,
-                                   HashMap<Integer, SampleManager1> smMap,
-                                   HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SampleNeonatalViewDO sc;
-        SampleManager1 sm;
-        Date bd;
-        Datetime bt, bdt;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        sm = smMap.get(sampleId);
-        sc = getSampleNeonatal(sm);
-        if (sc == null)
-            return;
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+                /*
+                 * neonatal columns
+                 */
                 case SampleWebMeta.NEO_PATIENT_ID:
-                    setNumberLabel(grp, sc.getPatientId());
+                    value = sn != null ? sn.getPatientId() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_LAST_NAME:
-                    setLabel(grp, sc.getPatient().getLastName());
+                    value = sn != null ? sn.getPatient().getLastName() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_FIRST_NAME:
-                    setLabel(grp, sc.getPatient().getFirstName());
+                    value = sn != null ? sn.getPatient().getFirstName() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_BIRTH_DATE:
-                    bdt = null;
-                    /*
-                     * set the combination of birth date and time
-                     */
-                    if (sc.getPatient().getBirthDate() != null) {
-                        bd = sc.getPatient().getBirthDate().getDate();
-                        bt = sc.getPatient().getBirthTime();
-                        if (bt == null) {
-                            bd.setHours(0);
-                            bd.setMinutes(0);
-                        } else {
-                            bd.setHours(bt.getDate().getHours());
-                            bd.setMinutes(bt.getDate().getMinutes());
-                        }
-
-                        bdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, bd);
+                    if (rd.birthDateTime == null) {
+                        /*
+                         * combine the birth date and time to form the label for
+                         * this column; "birthDateTime" is set to empty string
+                         * and not null so that it isn't tried to be created
+                         * again until the sample changes; at that time it gets
+                         * set to null before entering the switch-case
+                         */
+                        dt = getDateTime(sn.getPatient().getBirthDate(), sn.getPatient()
+                                                                           .getBirthTime());
+                        rd.birthDateTime = dt != null ? getDateTimeLabel(dt,
+                                                                         Messages.get()
+                                                                                 .gen_dateTimePattern())
+                                                     : "";
                     }
-                    setDateTimeLabel(grp, bdt, Messages.get().gen_dateTimePattern());
+                    value = rd.birthDateTime;
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_MULTIPLE_UNIT:
-                    setLabel(grp, sc.getPatient().getAddress().getMultipleUnit());
+                    value = sn != null ? sn.getPatient().getAddress().getMultipleUnit() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_STREET_ADDRESS:
-                    setLabel(grp, sc.getPatient().getAddress().getStreetAddress());
+                    value = sn != null ? sn.getPatient().getAddress().getStreetAddress() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_CITY:
-                    setLabel(grp, sc.getPatient().getAddress().getCity());
+                    value = sn != null ? sn.getPatient().getAddress().getCity() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_STATE:
-                    setLabel(grp, sc.getPatient().getAddress().getState());
+                    value = sn != null ? sn.getPatient().getAddress().getState() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_ZIP_CODE:
-                    setLabel(grp, sc.getPatient().getAddress().getZipCode());
+                    value = sn != null ? sn.getPatient().getAddress().getZipCode() : null;
                     break;
                 case SampleWebMeta.NEO_PATIENT_GENDER_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getGenderId());
+                    value = getDictionaryLabel(sn != null ? sn.getPatient().getGenderId() : null);
                     break;
                 case SampleWebMeta.NEO_PATIENT_RACE_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getRaceId());
+                    value = getDictionaryLabel(sn != null ? sn.getPatient().getRaceId() : null);
                     break;
                 case SampleWebMeta.NEO_PATIENT_ETHNICITY_ID:
-                    setDictionaryLabel(grp, sc.getPatient().getEthnicityId());
+                    value = getDictionaryLabel(sn != null ? sn.getPatient().getEthnicityId() : null);
                     break;
                 case SampleWebMeta.NEO_IS_NICU:
-                    setLabel(grp, sc.getIsNicu());
+                    value = getYesNoLabel(sn != null ? sn.getIsNicu() : null);
                     break;
                 case SampleWebMeta.NEO_BIRTH_ORDER:
-                    setNumberLabel(grp, sc.getBirthOrder());
+                    value = sn != null ? sn.getBirthOrder() : null;
                     break;
                 case SampleWebMeta.NEO_GESTATIONAL_AGE:
-                    setNumberLabel(grp, sc.getGestationalAge());
+                    value = sn != null ? sn.getGestationalAge() : null;
                     break;
                 case SampleWebMeta.NEO_FEEDING_ID:
-                    setDictionaryLabel(grp, sc.getFeedingId());
+                    value = getDictionaryLabel(sn != null ? sn.getFeedingId() : null);
                     break;
                 case SampleWebMeta.NEO_WEIGHT:
-                    setDictionaryLabel(grp, sc.getWeight());
+                    value = sn != null ? sn.getWeight() : null;
                     break;
                 case SampleWebMeta.NEO_IS_TRANSFUSED:
-                    setLabel(grp, "Y".equals(sc.getIsTransfused()) ? Messages.get().gen_yes()
-                                                                  : Messages.get().gen_no());
+                    value = getYesNoLabel(sn != null ? sn.getIsTransfused() : null);
                     break;
                 case SampleWebMeta.NEO_TRANSFUSION_DATE:
-                    setDateTimeLabel(grp, sc.getTransfusionDate(), Messages.get().gen_datePattern());
+                    value = getDateTimeLabel(sn != null ? sn.getTransfusionDate() : null,
+                                             Messages.get().gen_datePattern());
                     break;
                 case SampleWebMeta.NEO_IS_REPEAT:
-                    setLabel(grp, "Y".equals(sc.getIsRepeat()) ? Messages.get().gen_yes()
-                                                              : Messages.get().gen_no());
+                    value = getYesNoLabel(sn != null ? sn.getIsRepeat() : null);
                     break;
                 case SampleWebMeta.NEO_COLLECTION_AGE:
-                    setNumberLabel(grp, sc.getCollectionAge());
+                    value = sn != null ? sn.getCollectionAge() : null;
                     break;
                 case SampleWebMeta.NEO_IS_COLLECTION_VALID:
-                    setLabel(grp, "Y".equals(sc.getIsCollectionValid()) ? Messages.get().gen_yes()
-                                                                       : Messages.get().gen_no());
+                    value = getYesNoLabel(sn != null ? sn.getIsCollectionValid() : null);
                     break;
                 case SampleWebMeta.NEO_FORM_NUMBER:
-                    setLabel(grp, sc.getFormNumber());
+                    value = sn != null ? sn.getFormNumber() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ID:
-                    setNumberLabel(grp, sc.getNextOfKinId());
+                    value = sn != null ? sn.getNextOfKinId() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_LAST_NAME:
-                    setLabel(grp, sc.getNextOfKin().getLastName());
+                    value = sn != null ? sn.getNextOfKin().getLastName() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_MIDDLE_NAME:
-                    setLabel(grp, sc.getNextOfKin().getMiddleName());
+                    value = sn != null ? sn.getNextOfKin().getMiddleName() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_FIRST_NAME:
-                    setLabel(grp, sc.getNextOfKin().getFirstName());
+                    value = sn != null ? sn.getNextOfKin().getFirstName() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_RELATION_ID:
-                    setDictionaryLabel(grp, sc.getNextOfKinRelationId());
+                    value = getDictionaryLabel(sn != null ? sn.getNextOfKinRelationId() : null);
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE:
-                    setDateTimeLabel(grp,
-                                     sc.getNextOfKin().getBirthDate(),
-                                     Messages.get().gen_datePattern());
+                    value = getDateTimeLabel(sn != null ? sn.getNextOfKin().getBirthDate() : null,
+                                             Messages.get().gen_datePattern());
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID:
-                    setLabel(grp, sc.getNextOfKin().getNationalId());
+                    value = sn != null ? sn.getNextOfKin().getNationalId() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT:
-                    setLabel(grp, sc.getNextOfKin().getAddress().getMultipleUnit());
+                    value = sn != null ? sn.getNextOfKin().getAddress().getMultipleUnit() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS:
-                    setLabel(grp, sc.getPatient().getAddress().getStreetAddress());
+                    value = sn != null ? sn.getNextOfKin().getAddress().getStreetAddress() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_CITY:
-                    setLabel(grp, sc.getPatient().getAddress().getCity());
+                    value = sn != null ? sn.getNextOfKin().getAddress().getCity() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STATE:
-                    setLabel(grp, sc.getPatient().getAddress().getState());
+                    value = sn != null ? sn.getNextOfKin().getAddress().getState() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_ZIP_CODE:
-                    setLabel(grp, sc.getPatient().getAddress().getZipCode());
+                    value = sn != null ? sn.getNextOfKin().getAddress().getZipCode() : null;
+                    break;
+                case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_HOME_PHONE:
+                    value = sn != null ? sn.getNextOfKin().getAddress().getHomePhone() : null;
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_GENDER_ID:
-                    setDictionaryLabel(grp, sc.getNextOfKin().getGenderId());
+                    value = getDictionaryLabel(sn != null ? sn.getNextOfKin().getGenderId() : null);
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_RACE_ID:
-                    setDictionaryLabel(grp, sc.getNextOfKin().getRaceId());
+                    value = getDictionaryLabel(sn != null ? sn.getNextOfKin().getRaceId() : null);
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ETHNICITY_ID:
-                    setDictionaryLabel(grp, sc.getNextOfKin().getEthnicityId());
+                    value = getDictionaryLabel(sn != null ? sn.getNextOfKin().getEthnicityId()
+                                                         : null);
                     break;
                 case SampleWebMeta.NEO_PROVIDER_LAST_NAME:
-                    setLabel(grp, sc.getProvider().getLastName());
+                    if (sn != null)
+                        value = sn.getProvider() != null ? sn.getProvider().getLastName() : null;
                     break;
                 case SampleWebMeta.NEO_PROVIDER_FIRST_NAME:
-                    setLabel(grp, sc.getProvider().getFirstName());
+                    if (sn != null)
+                        value = sn.getProvider() != null ? sn.getProvider().getFirstName() : null;
                     break;
-                default:
-                    allSet = true;
-                    break;
-            }
-            if (allSet)
-                break;
-        }
-    }
-
-    /**
-     * If the passed sample id is different from the id in the passed label
-     * group, gets the sample from the passed map and sets the labels for the pt
-     * fields in the passed label group; "colFieldMap" is used to find out which
-     * field is showing in which column; doesn't do anything if the sample id is
-     * the same as the id in the group
-     */
-    private void setPTLabels(LabelGroup grp, Integer sampleId,
-                             HashMap<Integer, SampleManager1> smMap,
-                             HashMap<Integer, String> colFieldMap, int startCol) throws Exception {
-        boolean allSet;
-        String field;
-        SamplePTDO sc;
-        SampleManager1 sm;
-
-        if (sampleId.equals(grp.id))
-            return;
-
-        grp.id = sampleId;
-        if (grp.labels == null)
-            grp.labels = new ArrayList<String>();
-        else
-            grp.labels.clear();
-        allSet = false;
-        sm = smMap.get(sampleId);
-        sc = getSamplePT(sm);
-        if (sc == null)
-            return;
-        /*
-         * set the label for each column
-         */
-        while (startCol < colFieldMap.size()) {
-            field = colFieldMap.get(startCol++ );
-            switch (field) {
+                /*
+                 * pt columns
+                 */
                 case SampleWebMeta.PT_PT_PROVIDER_ID:
-                    setDictionaryLabel(grp, sc.getPTProviderId());
+                    value = getDictionaryLabel(spt != null ? spt.getPTProviderId() : null);
                     break;
                 case SampleWebMeta.PT_SERIES:
-                    setLabel(grp, sc.getSeries());
+                    value = spt != null ? spt.getSeries() : null;
                     break;
                 case SampleWebMeta.PT_DUE_DATE:
-                    setDateTimeLabel(grp, sc.getDueDate(), Messages.get().gen_dateTimePattern());
+                    value = getDateTimeLabel(spt != null ? spt.getDueDate() : null,
+                                             Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.RECEIVED_BY_ID:
-                    setLabel(grp, userCache.getSystemUser(getSample(sm).getReceivedById())
-                                           .getLoginName());
+                    value = s.getReceivedById() != null ? userCache.getSystemUser(s.getReceivedById())
+                                                                   .getLoginName()
+                                                       : null;
                     break;
                 default:
-                    allSet = true;
-                    break;
-
+                    throw new InconsistencyException("Unknown column " + column);
             }
-            if (allSet)
-                break;
+            cell = row.createCell(i);
+            cell.setCellValue(DataBaseUtil.toString(value));
         }
     }
 
     /**
-     * Converts the passed number to string and adds it to the labels of the
-     * passed group
+     * Returns a Datetime object created by combining the passed date and time;
+     * if the passed time is null, the time is set as 0 hours and 0 minutes;
+     * returns null if the passed date is null
      */
-    private void setNumberLabel(LabelGroup grp, Number n) {
-        String val;
+    private Datetime getDateTime(Datetime date, Datetime time) {
+        Date cd;
+        Datetime cdt;
 
-        val = null;
-        if (n != null)
-            val = DataBaseUtil.toString(n);
-        setLabel(grp, val);
+        cdt = null;
+        /*
+         * set the combination of collection date and time
+         */
+        if (date != null) {
+            cd = (Date)date.getDate().clone();
+            if (time == null) {
+                cd.setHours(0);
+                cd.setMinutes(0);
+            } else {
+                cd.setHours(time.getDate().getHours());
+                cd.setMinutes(time.getDate().getMinutes());
+            }
+
+            cdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, cd);
+        }
+
+        return cdt;
     }
 
     /**
-     * Formats the passed date-time using the passed pattern and adds it to the
-     * labels of the passed group
+     * Returns a string version of the passed Datetime object formatted using
+     * the passed pattern; returns null if the Datetime object is null
      */
-    private void setDateTimeLabel(LabelGroup grp, Datetime dt, String pattern) {
+    private String getDateTimeLabel(Datetime dt, String pattern) {
         String val;
 
         val = null;
         if (dt != null)
             val = ReportUtil.toString(dt, pattern);
-        setLabel(grp, val);
+
+        return val;
     }
 
     /**
-     * Gets the dictionary record for the passed id and adds its entry to the
-     * labels of the passed group
+     * Returns the dictionary entry for the passed id or null if the id is null
      */
-    private void setDictionaryLabel(LabelGroup grp, Integer dictId) throws Exception {
+    private String getDictionaryLabel(Integer dictId) throws Exception {
         String val;
 
         val = null;
         if (dictId != null)
             val = dictionaryCache.getById(dictId).getEntry();
-        setLabel(grp, val);
+
+        return val;
     }
 
     /**
-     * Adds the passed string to the labels of the passed group; if the string
-     * is empty or null, adds the empty string
+     * Returns "Yes" or "No" based on the value of the passed flag ("Y"/"N");
+     * returns null if the flag is null; the flag can be null if the column was
+     * selected by the user but is not valid for the row e.g. analysis
+     * is_reportable for a row showing aux data
      */
-    private void setLabel(LabelGroup grp, String val) {
-        if ( !DataBaseUtil.isEmpty(val))
-            grp.labels.add(val);
-        else
-            grp.labels.add("");
-    }
+    private String getYesNoLabel(String flag) {
+        if (flag == null)
+            return null;
 
-    /**
-     * Add cells to the passed row and fills them with the labels in the passed
-     * groups
-     */
-    private void setCells(Row row, ArrayList<LabelGroup> grps) {
-        int start;
-        Cell cell;
-
-        for (LabelGroup grp : grps) {
-            start = row.getPhysicalNumberOfCells();
-            for (String l : grp.labels) {
-                cell = row.createCell(start++ );
-                cell.setCellValue(l);
-            }
-        }
+        return "Y".equals(flag) ? Messages.get().gen_yes() : Messages.get().gen_no();
     }
 
     /**
@@ -3584,11 +3242,6 @@ public class DataView1Bean {
                                               currCell.getNumericCellValue()))
                         return false;
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
-                    if ( !DataBaseUtil.isSame(prevCell.getBooleanCellValue(),
-                                              currCell.getBooleanCellValue()))
-                        return false;
-                    break;
             }
         }
 
@@ -3596,23 +3249,40 @@ public class DataView1Bean {
     }
 
     /**
-     * This class is used to hold the data for cells belonging to a group like
-     * sample or analysis etc.
-     */
-    private class LabelGroup {
-        Integer           id;
-        ArrayList<String> labels;
+     * Some rows in the report have the same data in all columns except the
+     * analyte and value, because they belong to the same sample, sample item or
+     * analysis; but the data for some of those columns is obtained by looping
+     * e.g. analysis received by or combining two fields e.g. collected
+     * date-time; this class holds such data so that it can be resused until the
+     * sample, sample item or analysis changes
+     */ 
+    private class RowData {
+        Integer                  sampleId, sampleItemId, analysisId;
+        String                   collDateTime, projName, completedBy, releasedBy, analysisQAs,
+                        birthDateTime;
+        SampleOrganizationViewDO repToOrg;
+        SampleItemViewDO         sampleItem;
+        AnalysisViewDO           analysis;
+
+        public void clear() {
+            sampleId = null;
+            sampleItemId = null;
+            analysisId = null;
+            collDateTime = null;
+            projName = null;
+            completedBy = null;
+            releasedBy = null;
+            analysisQAs = null;
+            birthDateTime = null;
+            repToOrg = null;
+            sampleItem = null;
+            analysis = null;
+        }
     }
 
     /**
      * This class is used for sorting the list of aux data fetched for
-     * generating the data view report; the class is used when results are also
-     * fetched and the query for aux data is restricted to the samples that the
-     * results belong to; in that case, the sample ids are divided into subsets,
-     * a query is run for each subset and the final list is the combination of
-     * the aux data returned by all queries; this class is needed then because
-     * the final list needs to be sorted by accession number and analyte name,
-     * which isn't the case at the time of combining the lists
+     * generating the data view report
      */
     private class DataViewComparator implements Comparator<DataViewAuxDataFetch1VO> {
         public int compare(DataViewAuxDataFetch1VO aux1, DataViewAuxDataFetch1VO aux2) {
@@ -3626,9 +3296,8 @@ public class DataView1Bean {
             name2 = aux2.getAuxFieldAnalyteName();
 
             /*
-             * if the accession numbers are different then we don't compare the
-             * names of the analytes; if the numbers are the same then the names
-             * are compared
+             * names of the analytes are compared only if the accession numbers
+             * are different
              */
             diff = accNum1 - accNum2;
             if (diff != 0) {

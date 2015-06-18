@@ -25,7 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.*;
+import static org.openelis.manager.IOrderManager1Accessor.*;
 import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
@@ -50,10 +50,10 @@ import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
@@ -67,7 +67,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.exception.ParseException;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.PatientMeta;
@@ -135,7 +135,7 @@ public class SampleManagerOrderHelperBean {
     private AuxDataHelperBean         auxDataHelper;
 
     @EJB
-    private OrderManager1Bean         orderManager1;
+    private IOrderManager1Bean         orderManager1;
 
     private static final Logger       log             = Logger.getLogger("openelis");
 
@@ -151,7 +151,7 @@ public class SampleManagerOrderHelperBean {
                                                  ValidationErrorsList e) throws Exception {
         Integer accession;
         SampleDO data;
-        OrderManager1 om;
+        IOrderManager1 om;
         SampleTestReturnVO ret;
 
         data = getSample(sm);
@@ -163,13 +163,13 @@ public class SampleManagerOrderHelperBean {
             accession = 0;
 
         om = orderManager1.fetchById(orderId,
-                                     OrderManager1.Load.SAMPLE_DATA,
-                                     OrderManager1.Load.ORGANIZATION);
+                                     IOrderManager1.Load.SAMPLE_DATA,
+                                     IOrderManager1.Load.ORGANIZATION);
         if (om == null)
             throw new InconsistencyException(Messages.get()
                                                      .sample_orderIdInvalidException(accession,
                                                                                      orderId));
-        else if (!Constants.order().SEND_OUT.equals(om.getOrder().getType()))
+        else if (!Constants.iorder().SEND_OUT.equals(om.getIorder().getType()))
             throw new InconsistencyException(Messages.get()
                                                      .sample_orderIdInvalidException(accession,
                                                                                      orderId));
@@ -261,14 +261,14 @@ public class SampleManagerOrderHelperBean {
      * next item sequence in the sample to be greater than the sequence of the
      * last item.
      */
-    private void copySampleItems(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+    private void copySampleItems(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
         int i;
         Integer accession;
-        OrderContainerDO oc;
+        IOrderContainerDO oc;
         DictionaryDO dict;
         SampleItemViewDO item;
         ArrayList<SampleItemViewDO> items;
-        ArrayList<OrderContainerDO> ocs;
+        ArrayList<IOrderContainerDO> ocs;
 
         ocs = getContainers(om);
         if (ocs == null)
@@ -383,7 +383,7 @@ public class SampleManagerOrderHelperBean {
      * Adds analyses to the sample from the tests specifed in the order. Adds
      * any unresolved prep tests to the returned VO.
      */
-    private SampleTestReturnVO copyTests(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+    private SampleTestReturnVO copyTests(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
         String tmName;
         SampleItemViewDO item;
         SampleTestReturnVO ret;
@@ -417,11 +417,11 @@ public class SampleManagerOrderHelperBean {
         anaMap = null;
         if (getAnalytes(om) != null) {
             anaMap = new HashMap<Integer, ArrayList<Integer>>();
-            for (OrderTestAnalyteViewDO ota : getAnalytes(om)) {
-                anaIds = anaMap.get(ota.getOrderTestId());
+            for (IOrderTestAnalyteViewDO ota : getAnalytes(om)) {
+                anaIds = anaMap.get(ota.getIorderTestId());
                 if (anaIds == null) {
                     anaIds = new ArrayList<Integer>();
-                    anaMap.put(ota.getOrderTestId(), anaIds);
+                    anaMap.put(ota.getIorderTestId(), anaIds);
                 }
                 anaIds.add(ota.getAnalyteId());
             }
@@ -432,7 +432,7 @@ public class SampleManagerOrderHelperBean {
          * added and the analytes to be marked reportable, as per the order
          */
         orderTestMap = new HashMap<String, ArrayList<OrderTest>>();
-        for (OrderTestViewDO ot : getTests(om)) {
+        for (IOrderTestViewDO ot : getTests(om)) {
             tmName = getTestMethodName(ot.getTestName(), ot.getMethodName());
             orderTests = orderTestMap.get(tmName);
             if (orderTests == null) {
@@ -453,12 +453,12 @@ public class SampleManagerOrderHelperBean {
      * Adds organizations like report-to and bill-to, to sample based on the
      * organizations specified in the order
      */
-    private void copyOrganizations(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+    private void copyOrganizations(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
         Integer accession;
         String attention;
         OrganizationDO repOrg, billOrg, secOrg, shipOrg;
-        OrderOrganizationViewDO orepOrg, obillOrg;
-        ArrayList<OrderOrganizationViewDO> osecOrgs;
+        IOrderOrganizationViewDO orepOrg, obillOrg;
+        ArrayList<IOrderOrganizationViewDO> osecOrgs;
         SamplePrivateWellViewDO well;
 
         /*
@@ -470,13 +470,13 @@ public class SampleManagerOrderHelperBean {
 
         orepOrg = null;
         obillOrg = null;
-        osecOrgs = new ArrayList<OrderOrganizationViewDO>();
+        osecOrgs = new ArrayList<IOrderOrganizationViewDO>();
 
         /*
          * find out if organizations of various types are specified in the order
          */
         if (getOrganizations(om) != null) {
-            for (OrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
+            for (IOrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
                 if (Constants.dictionary().ORG_REPORT_TO.equals(otmpOrg.getTypeId()))
                     orepOrg = otmpOrg;
                 else if (Constants.dictionary().ORG_BILL_TO.equals(otmpOrg.getTypeId()))
@@ -492,7 +492,7 @@ public class SampleManagerOrderHelperBean {
          */
         repOrg = null;
         attention = null;
-        shipOrg = om.getOrder().getOrganization();
+        shipOrg = om.getIorder().getOrganization();
         if (orepOrg != null) {
             if ("Y".equals(orepOrg.getOrganizationIsActive())) {
                 repOrg = createOrganization(orepOrg);
@@ -503,8 +503,8 @@ public class SampleManagerOrderHelperBean {
                                                                               orepOrg.getOrganizationName())));
             }
         } else if ("Y".equals(shipOrg.getIsActive())) {
-            repOrg = om.getOrder().getOrganization();
-            attention = om.getOrder().getOrganizationAttention();
+            repOrg = om.getIorder().getOrganization();
+            attention = om.getIorder().getOrganizationAttention();
         } else {
             e.add(new FormErrorWarning(Messages.get().sample_inactiveOrgWarning(accession,
                                                                                 shipOrg.getName())));
@@ -556,7 +556,7 @@ public class SampleManagerOrderHelperBean {
          * add secondary report-to organizations if any were specified, but only
          * if they are active
          */
-        for (OrderOrganizationViewDO osecOrg : osecOrgs) {
+        for (IOrderOrganizationViewDO osecOrg : osecOrgs) {
             if ( (repOrg == null || !osecOrg.getOrganizationId().equals(repOrg.getId())) &&
                 "Y".equals(osecOrg.getOrganizationIsActive())) {
                 secOrg = createOrganization(osecOrg);
@@ -578,7 +578,7 @@ public class SampleManagerOrderHelperBean {
      * Adds an internal note to the sample from the "sample" note defined in the
      * order.
      */
-    private void copyNotes(SampleManager1 sm, OrderManager1 om) throws Exception {
+    private void copyNotes(SampleManager1 sm, IOrderManager1 om) throws Exception {
         NoteViewDO note;
         SystemUserVO user;
 
@@ -696,6 +696,7 @@ public class SampleManagerOrderHelperBean {
                                   ValidationErrorsList e) throws Exception {
         Integer orgId;
         OrganizationDO orgDO;
+        SampleOrganizationViewDO sorgDO;
         String orgCode;
 
         orgCode = dataMap.get("organization.name");
@@ -709,11 +710,12 @@ public class SampleManagerOrderHelperBean {
                 try {
                     orgDO = organization.fetchById(orgId);
                     if ("Y".equals(orgDO.getIsActive())) {
-                        addOrganization(sm,
-                                        createSampleOrganization(orgDO,
-                                                                 sm.getNextUID(),
-                                                                 dataMap.get("organization.attention"),
-                                                                 Constants.dictionary().ORG_REPORT_TO));
+                        sorgDO = createSampleOrganization(orgDO,
+                                                          sm.getNextUID(),
+                                                          dataMap.get("organization.attention"),
+                                                          Constants.dictionary().ORG_REPORT_TO);
+                        addOrganization(sm, sorgDO);
+                        checkIsHoldRefuseSample(orgDO, e);
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
                                                            .eorderImport_inactiveOrgWarning(orgCode,
@@ -837,12 +839,8 @@ public class SampleManagerOrderHelperBean {
                                                                .eorderImport_multipleLocalTerms(firstName,
                                                                                                 "provider.first_name")));
                     } else {
-                        providerDO = new ProviderDO(iflnVOs.get(0).getId(),
-                                                    iflnVOs.get(0).getLastName(),
-                                                    iflnVOs.get(0).getFirstName(),
-                                                    null,
-                                                    null,
-                                                    null);
+                        providerDO = new ProviderDO(iflnVOs.get(0).getId(), iflnVOs.get(0).getLastName(),
+                                                    iflnVOs.get(0).getFirstName(), null, null, null, null, null);
                         if (scVDO != null) {
                             scVDO.setProvider(providerDO);
                             scVDO.setProviderId(providerDO.getId());
@@ -1265,7 +1263,7 @@ public class SampleManagerOrderHelperBean {
      * Returns a newly created OrganizationDO, filled from the
      * OrderOrganizationViewDO
      */
-    private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
+    private OrganizationDO createOrganization(IOrderOrganizationViewDO org) {
         OrganizationDO data;
         AddressDO addr;
 

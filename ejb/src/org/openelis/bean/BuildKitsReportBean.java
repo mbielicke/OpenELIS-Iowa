@@ -74,7 +74,7 @@ public class BuildKitsReportBean {
     private LabelReportBean     labelReport;
 
     @EJB
-    private OrderBean           order;
+    private IOrderBean           iorder;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -166,11 +166,11 @@ public class BuildKitsReportBean {
         // find the order record
         //
         try {
-            order.fetchById(orderId);
+            iorder.fetchById(orderId);
         } catch (NotFoundException e) {
             throw new NotFoundException("An order record with id " + orderId + " does not exist");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Iorder lookup failed", e);
             throw e;
         }
 

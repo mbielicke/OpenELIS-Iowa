@@ -10,8 +10,8 @@
 	<queryString>
 		<![CDATA[SELECT
      aux_data.sort_order,
-     analyte.name analyte_name,
-     aux_data.value aux_data_value
+     analyte.name as analyte_name,
+     aux_data.value as aux_data_value
 FROM
      aux_data
      join aux_field on aux_data.aux_field_id = aux_field.id
@@ -22,11 +22,13 @@ WHERE
      aux_data.is_reportable = 'Y' and
      (aux_data.type_id is null or
       aux_data.type_id in (select d.id from dictionary d where d.system_name != 'aux_dictionary'))
+
 UNION
+
 SELECT
      aux_data.sort_order,
-     analyte.name analyte_name,
-     dictionary.entry aux_data_value
+     analyte.name as analyte_name,
+     dictionary.entry as aux_data_value
 FROM
      aux_data
      join aux_field on aux_data.aux_field_id = aux_field.id
@@ -37,7 +39,7 @@ WHERE
      aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID} and
      aux_data.is_reportable = 'Y' and
      aux_data.type_id = (select d.id from dictionary d where d.system_name = 'aux_dictionary')
-ORDER BY aux_data.sort_order]]>
+ORDER BY sort_order]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
 	<field name="analyte_name" class="java.lang.String"/>
