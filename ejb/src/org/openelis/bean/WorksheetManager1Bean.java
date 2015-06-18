@@ -1144,7 +1144,7 @@ public class WorksheetManager1Bean {
 
                         apList = pMap.get(data.getAnalyteId());
                         apVDO = null;
-                        if (apList.size() > 0)
+                        if (apList != null && apList.size() > 0)
                             apVDO = apList.get(0);
                         if (apVDO != null) {
                             col = formatColumnMap.get("p1");
@@ -2582,13 +2582,15 @@ public class WorksheetManager1Bean {
 
                 apList = pMap.get(wrVDO.getAnalyteId());
                 apVDO = null;
-                for (AnalyteParameterViewDO ap : apList) {
-                    if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
-                        if (ap.getUnitOfMeasureId() != null) {
-                            apVDO = ap;
-                            break;
-                        } else if (apVDO == null) {
-                            apVDO = ap;
+                if (apList != null && apList.size() > 0) {
+                    for (AnalyteParameterViewDO ap : apList) {
+                        if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                            if (ap.getUnitOfMeasureId() != null) {
+                                apVDO = ap;
+                                break;
+                            } else if (apVDO == null) {
+                                apVDO = ap;
+                            }
                         }
                     }
                 }

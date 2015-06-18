@@ -1066,13 +1066,15 @@ public class WorksheetExcelHelperBean {
 
                         apList = pMap.get(wrVDO.getAnalyteId());
                         apVDO = null;
-                        for (AnalyteParameterViewDO ap: apList) {
-                            if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
-                                if (ap.getUnitOfMeasureId() != null) {
-                                    apVDO = ap;
-                                    break;
-                                } else if (apVDO == null) {
-                                    apVDO = ap;
+                        if (apList != null && apList.size() > 0) {
+                            for (AnalyteParameterViewDO ap: apList) {
+                                if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                                    if (ap.getUnitOfMeasureId() != null) {
+                                        apVDO = ap;
+                                        break;
+                                    } else if (apVDO == null) {
+                                        apVDO = ap;
+                                    }
                                 }
                             }
                         }
@@ -1195,7 +1197,7 @@ public class WorksheetExcelHelperBean {
 
                         apList = pMap.get(wqrVDO.getAnalyteId());
                         apVDO = null;
-                        if (apList.size() > 0)
+                        if (apList != null && apList.size() > 0)
                             apVDO = apList.get(0);
                         if (apVDO != null) {
                             if (("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
