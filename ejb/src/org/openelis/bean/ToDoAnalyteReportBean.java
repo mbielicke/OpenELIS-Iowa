@@ -180,7 +180,7 @@ public class ToDoAnalyteReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String section, test, prepTest, analysisStatus, userName, orderBy, printer, printstat, dir;
+        String section, test, prepTest, prepTestLimitter, analysisStatus, userName, orderBy, printer, printstat, dir;
         Timestamp fromDate, toDate;
 
         /*
@@ -222,10 +222,13 @@ public class ToDoAnalyteReportBean {
         else
             test = "";
 
-        if ( !DataBaseUtil.isEmpty(prepTest))
+        if ( !DataBaseUtil.isEmpty(prepTest)) {
             prepTest = " and t1.id " + prepTest;
-        else
+            prepTestLimitter = " and a1.test_id = t1.id";
+        } else {
             prepTest = "";
+            prepTestLimitter = "";
+        }
 
         userName = User.getName(ctx);
 
@@ -246,6 +249,7 @@ public class ToDoAnalyteReportBean {
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
             jparam.put("PREP_TEST", prepTest);
+            jparam.put("PREP_TEST_LIMITTER", prepTestLimitter);
             jparam.put("STATUS", analysisStatus);
             jparam.put("ORDER_BY", orderBy);
             jparam.put("USER_NAME", userName);
