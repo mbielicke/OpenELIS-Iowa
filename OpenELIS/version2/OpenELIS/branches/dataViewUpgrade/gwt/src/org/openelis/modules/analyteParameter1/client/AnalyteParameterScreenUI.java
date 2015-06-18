@@ -549,10 +549,15 @@ public class AnalyteParameterScreenUI extends Screen {
                         if (sampleTypeId == null) {
                             event.cancel();
                             setError(Messages.get().analyteParameter_selectSampleTypeBeforeUnit());
+                            return;
                         } else {
                             disableAndEnableUnits(sampleTypeId);
                         }
                     }
+                    if (isState(ADD))
+                        setDone(Messages.get().gen_enterInformationPressCommit());
+                    else 
+                        clearStatus();
                 }
             }
         });
@@ -1612,7 +1617,7 @@ public class AnalyteParameterScreenUI extends Screen {
             row = model.get(i);
             unitId = row.getKey();
             types = unitTypesMap.get(unitId);
-            row.setEnabled(types.contains(typeId));
+            unitOfMeasure.setItemEnabled(unitId, types.contains(typeId));
         }
     }
 

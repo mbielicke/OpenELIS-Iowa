@@ -72,7 +72,7 @@ import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -508,7 +508,7 @@ public class ShippingScreen extends Screen implements
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

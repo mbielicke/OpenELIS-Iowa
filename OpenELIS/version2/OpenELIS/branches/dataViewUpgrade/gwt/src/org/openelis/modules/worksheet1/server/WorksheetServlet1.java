@@ -41,6 +41,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
@@ -102,6 +103,21 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
+    public ArrayList<WorksheetViewDO> queryForLookup(Query query) throws Exception {
+        ArrayList<IdNameVO> idVOs;
+        ArrayList<Integer> ids;
+        
+        try {
+            idVOs = worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+            ids = new ArrayList<Integer>();
+            for (IdNameVO vo : idVOs)
+                ids.add(vo.getId());
+            return worksheet.fetchByIds(ids);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public WorksheetManager1 fetchForUpdate(Integer worksheetId) throws Exception {
         try {
             return worksheetManager1.fetchForUpdate(worksheetId);
@@ -135,9 +151,10 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
     }
     
     public WorksheetResultsTransferVO transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
+                                                      ArrayList<SampleManager1> sampleMans,
+                                                      boolean ignoreWarnings) throws Exception {
         try {
-            return worksheetManager1.transferResults(wm, waVDOs, sampleMans);
+            return worksheetManager1.transferResults(wm, waVDOs, sampleMans, ignoreWarnings);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

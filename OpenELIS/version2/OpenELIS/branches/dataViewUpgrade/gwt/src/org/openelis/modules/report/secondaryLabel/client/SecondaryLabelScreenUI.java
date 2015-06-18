@@ -61,6 +61,8 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
+import org.openelis.ui.widget.table.event.CellEditedEvent;
+import org.openelis.ui.widget.table.event.CellEditedHandler;
 import org.openelis.ui.widget.table.event.RowAddedEvent;
 import org.openelis.ui.widget.table.event.RowAddedHandler;
 import org.openelis.ui.widget.table.event.RowDeletedEvent;
@@ -101,7 +103,8 @@ public class SecondaryLabelScreenUI extends Screen {
     protected Dropdown<String>                 printer;
 
     @UiField
-    protected Button                           removeRowButton, printButton;
+    protected Button                           removeRowButton, printButton, add1Button, set1Button,
+                                               remove1Button;
 
     @UiField
     protected Table                            table;
@@ -181,7 +184,8 @@ public class SecondaryLabelScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? testName : printButton;
+                setFocus(false);
+                return forward ? entry : entry;
             }
         });
 
@@ -232,6 +236,25 @@ public class SecondaryLabelScreenUI extends Screen {
                 return forward ? removeRowButton : printer;
             }
         });
+        
+        table.addCellEditedHandler(new CellEditedHandler() {
+            @Override
+            public void onCellUpdated(CellEditedEvent event) {
+                int r;
+                Integer n;
+                SecondaryLabelVO data;
+                                
+                if (event.getCol() == 3) {
+                    r = event.getRow();
+                    data = table.getRowAt(r).getData();
+                    n = table.getValueAt(r,  3);
+                    data.setLabelQty(n);
+                    table.clearExceptions(r,  3);
+                    if (n == null || n < 1)
+                        table.addException(r, 3, new Exception(Messages.get().secondaryLabel_invalidQtyException()));
+                }
+            }
+        });
 
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
@@ -271,7 +294,37 @@ public class SecondaryLabelScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? entry : table;
+                return forward ? add1Button : removeRowButton;
+            }
+        });
+
+        addScreenHandler(add1Button, "add1Button", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                add1Button.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? set1Button : printButton;
+            }
+        });
+
+        addScreenHandler(set1Button, "set1Button", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                set1Button.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? remove1Button : add1Button;
+            }
+        });
+
+        addScreenHandler(remove1Button, "remove1Button", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                remove1Button.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? entry : set1Button;
             }
         });
 
@@ -332,10 +385,8 @@ public class SecondaryLabelScreenUI extends Screen {
         ArrayList<SecondaryLabelVO> labels;
 
         finishEditing();
-        clearErrors();
 
         validation = validate();
-
         if (validation.getStatus() != VALID) {
             setError(Messages.get().secondaryLabel_correctErrorsPrint());
             return;
@@ -368,11 +419,45 @@ public class SecondaryLabelScreenUI extends Screen {
              * print the same labels again
              */
             table.setModel(null);
-
             secondaryLabelReportScreen.runReport(labels);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    @UiHandler("add1Button")
+    protected void add1(ClickEvent event) {
+        setLabelQty(1);
+    }
+
+    @UiHandler("set1Button")
+    protected void set1(ClickEvent event) {
+        setLabelQty(0);
+    }
+
+    @UiHandler("remove1Button")
+    protected void remove1(ClickEvent event) {
+        setLabelQty(-1);
+    }
+
+    private void setLabelQty(int numberFlag) {
+        Integer n;
+        SecondaryLabelVO data;
+        
+        finishEditing();
+        table.clearExceptions();
+        for (int i = 0; i < table.getRowCount(); i++) {
+            data = table.getRowAt(i).getData();
+            n = data.getLabelQty();
+            if (numberFlag == 0)
+                n = 1;
+            else if (n != null) 
+                n += numberFlag;
+            data.setLabelQty(n);
+            table.setValueAt(i, 3, n);
+            if (n != null && n < 1)
+                table.addException(i, 3, new Exception(Messages.get().secondaryLabel_invalidQtyException()));
         }
     }
 
@@ -448,6 +533,7 @@ public class SecondaryLabelScreenUI extends Screen {
                 data = new SecondaryLabelVO();
                 data.setSampleId(sm.getSample().getId());
                 data.setAnalysisId(ana.getId());
+                data.setLabelQty(test.getLabelQty());
 
                 accessionNumber.setValue(accNum);
 

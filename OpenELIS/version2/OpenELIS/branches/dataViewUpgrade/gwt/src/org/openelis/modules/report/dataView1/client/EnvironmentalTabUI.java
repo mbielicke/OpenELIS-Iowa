@@ -117,10 +117,10 @@ public class EnvironmentalTabUI extends Screen {
         });
 
         addScreenHandler(envCollector,
-                         SampleWebMeta.getEnvCollector(),
+                         SampleWebMeta.getEnvCollectorHeader(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 envCollector.setValue(getValue(SampleWebMeta.getEnvCollector()));
+                                 envCollector.setValue(getValue(SampleWebMeta.getEnvCollectorHeader()));
                              }
 
                              public void onStateChange(StateChangeEvent event) {

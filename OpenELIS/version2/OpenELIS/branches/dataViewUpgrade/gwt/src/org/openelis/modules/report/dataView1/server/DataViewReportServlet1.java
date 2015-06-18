@@ -38,6 +38,8 @@ import org.openelis.modules.report.dataView1.client.DataViewServiceInt1;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 
+import sun.security.provider.certpath.OCSPResponse.ResponseStatus;
+
 @WebServlet("/openelis/dataViewReport1")
 public class DataViewReportServlet1 extends RemoteServlet implements DataViewServiceInt1 {
 
@@ -117,6 +119,10 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
 
     @Override
     public void stopReport() {
-        session.setAttribute("DataViewStopReport", Boolean.TRUE);
+        ReportStatus status;
+        
+        //session.setAttribute("DataViewStopReport", Boolean.TRUE);
+        status = (ReportStatus)session.getAttribute("DataViewReportStatus");
+        status.setStatus(ReportStatus.Status.CANCEL);
     }
 }

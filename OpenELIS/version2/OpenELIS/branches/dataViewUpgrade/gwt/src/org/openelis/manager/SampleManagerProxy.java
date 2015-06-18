@@ -192,7 +192,7 @@ public class SampleManagerProxy {
     }
 
     private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
-        OrderManager man;
+        IOrderManager man;
 
         if (data.getOrderId() == null)
             return;
@@ -203,8 +203,8 @@ public class SampleManagerProxy {
             if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
                 Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
                 Constants.domain().SDWIS.equals(data.getDomain())) {
-                man = OrderManager.fetchById(data.getOrderId());
-                if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
+                man = IOrderManager.fetchById(data.getOrderId());
+                if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType()))
                     errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                            SampleMeta.getOrderId()));
             }

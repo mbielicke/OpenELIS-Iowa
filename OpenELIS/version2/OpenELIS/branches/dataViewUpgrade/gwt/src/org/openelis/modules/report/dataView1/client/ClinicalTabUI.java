@@ -106,10 +106,10 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientLastName,
-                         SampleWebMeta.getClinicalPatientLastName(),
+                         SampleWebMeta.getClinicalPatientLastNameHeader(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientLastName.setValue(getValue(SampleWebMeta.getClinicalPatientLastName()));
+                                 clinicalPatientLastName.setValue(getValue(SampleWebMeta.getClinicalPatientLastNameHeader()));
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -122,10 +122,10 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientFirstName,
-                         SampleWebMeta.getClinicalPatientFirstName(),
+                         SampleWebMeta.getClinicalPatientFirstNameHeader(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientFirstName.setValue(getValue(SampleWebMeta.getClinicalPatientFirstName()));
+                                 clinicalPatientFirstName.setValue(getValue(SampleWebMeta.getClinicalPatientFirstNameHeader()));
                              }
 
                              public void onStateChange(StateChangeEvent event) {

@@ -226,10 +226,10 @@ public class SDWISTabUI extends Screen {
                          });
 
         addScreenHandler(sdwisCollector,
-                         SampleWebMeta.getSDWISCollector(),
+                         SampleWebMeta.getSDWISCollectorHeader(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 sdwisCollector.setValue(getValue(SampleWebMeta.getSDWISCollector()));
+                                 sdwisCollector.setValue(getValue(SampleWebMeta.getSDWISCollectorHeader()));
                              }
 
                              public void onStateChange(StateChangeEvent event) {

@@ -25,13 +25,27 @@
 */
 package org.openelis.modules.worksheetCompletion1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
@@ -79,9 +93,11 @@ import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -89,6 +105,7 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.ActionEvent;
@@ -120,20 +137,6 @@ import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
@@ -768,6 +771,14 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
 
+        bus.addHandler(WorksheetManagerModifiedEvent.getType(), new WorksheetManagerModifiedEvent.Handler() {
+            public void onManagerModified(WorksheetManagerModifiedEvent event) {
+                manager = event.getManager();
+                setData();
+                fireDataChange();
+            }
+        });
+        
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(UPDATE)) {
@@ -912,7 +923,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                         commitUpdate(null);
                     }
                 } else {
-                    commitTransfer();
+                    commitTransfer(false);
                 }
                 break;
         }
@@ -955,7 +966,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         WorksheetService1.get().update(manager, flag, updateCall);
     }
     
-    private void commitTransfer() {
+    private void commitTransfer(final boolean ignoreWarnings) {
         ArrayList<WorksheetAnalysisViewDO> waVDOs;
         
         finishEditing();
@@ -1035,6 +1046,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
+                    if (!e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarnings)
+                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
+                            commitTransfer(true);
                 }
                 
                 public void failure(Throwable e) {
@@ -1045,7 +1059,7 @@ public class WorksheetCompletionScreenUI extends Screen {
             };
         }
 
-        WorksheetService1.get().transferResults(manager, waVDOs, sampleMans, transferCall);
+        WorksheetService1.get().transferResults(manager, waVDOs, sampleMans, ignoreWarnings, transferCall);
     }
     
     @SuppressWarnings("unused")
@@ -1833,6 +1847,29 @@ public class WorksheetCompletionScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates a string containing the message that there are warnings on the
+     * screen, followed by all warning messages, followed by the question
+     * whether the data should be committed
+     */
+    private String getWarnings(ArrayList<Exception> warnings, boolean isConfirm) {
+        StringBuilder b;
+
+        b = new StringBuilder();
+        b.append(Messages.get().gen_warningDialogLine1()).append("\n");
+        if (warnings != null) {
+            for (Exception ex : warnings) {
+                if (ex instanceof Warning || ex instanceof Caution)
+                    b.append(" * ").append(ex.getMessage()).append("\n");
+            }
+        }
+
+        if (isConfirm)
+            b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        return b.toString();
     }
 
     private Integer getWorksheetId() {

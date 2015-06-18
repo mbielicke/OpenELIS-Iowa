@@ -30,13 +30,13 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.OrderBean;
-import org.openelis.bean.OrderManager1Bean;
+import org.openelis.bean.IOrderBean;
+import org.openelis.bean.IOrderManager1Bean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderReturnVO;
+import org.openelis.domain.IOrderReturnVO;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.manager.OrderManager1;
-import org.openelis.manager.OrderManager1.Load;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.manager.IOrderManager1.Load;
 import org.openelis.modules.order1.client.OrderServiceInt1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -47,13 +47,13 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     private static final long serialVersionUID = 1L;
 
     @EJB
-    private OrderManager1Bean orderManager1;
+    private IOrderManager1Bean orderManager1;
 
     @EJB
-    private OrderBean         order;
+    private IOrderBean         order;
 
     @Override
-    public OrderManager1 getInstance(String type) throws Exception {
+    public IOrderManager1 getInstance(String type) throws Exception {
         try {
             return orderManager1.getInstance(type);
         } catch (Exception anyE) {
@@ -62,7 +62,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 fetchById(Integer orderId, Load... elements) throws Exception {
+    public IOrderManager1 fetchById(Integer orderId, Load... elements) throws Exception {
         try {
             return orderManager1.fetchById(orderId, elements);
         } catch (Exception anyE) {
@@ -71,7 +71,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+    public ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> orderIds, Load... elements) throws Exception {
         try {
             return orderManager1.fetchByIds(orderIds, elements);
         } catch (Exception anyE) {
@@ -80,7 +80,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+    public ArrayList<IOrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                  Load... elements) throws Exception {
         try {
             return orderManager1.fetchByQuery(fields, first, max, elements);
@@ -90,7 +90,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 fetchWith(OrderManager1 om, Load... elements) throws Exception {
+    public IOrderManager1 fetchWith(IOrderManager1 om, Load... elements) throws Exception {
         try {
             return orderManager1.fetchWith(om, elements);
         } catch (Exception anyE) {
@@ -109,7 +109,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 fetchForUpdate(Integer orderId) throws Exception {
+    public IOrderManager1 fetchForUpdate(Integer orderId) throws Exception {
         try {
             return orderManager1.fetchForUpdate(orderId);
         } catch (Exception anyE) {
@@ -118,7 +118,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 fetchForUpdate(Integer orderId, Load... elements) throws Exception {
+    public IOrderManager1 fetchForUpdate(Integer orderId, Load... elements) throws Exception {
         try {
             return orderManager1.fetchForUpdate(orderId, elements);
         } catch (Exception anyE) {
@@ -127,7 +127,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchForUpdate(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+    public ArrayList<IOrderManager1> fetchForUpdate(ArrayList<Integer> orderIds, Load... elements) throws Exception {
         try {
             return orderManager1.fetchForUpdate(orderIds, elements);
         } catch (Exception anyE) {
@@ -136,7 +136,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 unlock(Integer orderId, Load... elements) throws Exception {
+    public IOrderManager1 unlock(Integer orderId, Load... elements) throws Exception {
         try {
             return orderManager1.unlock(orderId, elements);
         } catch (Exception anyE) {
@@ -145,7 +145,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public ArrayList<OrderManager1> unlock(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+    public ArrayList<IOrderManager1> unlock(ArrayList<Integer> orderIds, Load... elements) throws Exception {
         try {
             return orderManager1.unlock(orderIds, elements);
         } catch (Exception anyE) {
@@ -153,7 +153,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         }
     }
 
-    public OrderReturnVO duplicate(Integer id) throws Exception {
+    public IOrderReturnVO duplicate(Integer id) throws Exception {
         try {
             return orderManager1.duplicate(id);
         } catch (Exception anyE) {
@@ -162,7 +162,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception {
+    public IOrderManager1 update(IOrderManager1 om, boolean ignoreWarnings) throws Exception {
         try {
             return orderManager1.update(om, ignoreWarnings);
         } catch (Exception anyE) {
@@ -179,7 +179,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         }
     }
 
-    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public IOrderReturnVO addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
         try {
             return orderManager1.addAuxGroups(om, groupIds);
         } catch (Exception anyE) {
@@ -187,7 +187,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         }
     }
 
-    public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public IOrderManager1 removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
         try {
             return orderManager1.removeAuxGroups(om, groupIds);
         } catch (Exception anyE) {
@@ -196,7 +196,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+    public IOrderReturnVO addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
         try {
             return orderManager1.addTest(om, id, isTest, index);
         } catch (Exception anyE) {
@@ -205,7 +205,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception {
+    public IOrderManager1 removeTests(IOrderManager1 om, ArrayList<Integer> ids) throws Exception {
         try {
             return orderManager1.removeTests(om, ids);
         } catch (Exception anyE) {

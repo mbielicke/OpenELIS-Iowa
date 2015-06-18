@@ -37,7 +37,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -47,10 +47,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 public class ItemTreePopoutLookup extends Screen implements 
                                                     HasActionHandlers<ItemTreePopoutLookup.Action> {
 
-    private OrderManager                   manager;
+    private IOrderManager                   manager;
     private ItemTab                        itemTab;
     private AppButton                      okButton;
-    private HashMap<Integer, OrderManager> combinedMap;
+    private HashMap<Integer, IOrderManager> combinedMap;
     
     public enum Action {
         OK
@@ -111,7 +111,7 @@ public class ItemTreePopoutLookup extends Screen implements
         return addHandler(handler, ActionEvent.getType());
     }
     
-    public void setManager(OrderManager manager, HashMap<Integer, OrderManager> combinedMap) {
+    public void setManager(IOrderManager manager, HashMap<Integer, IOrderManager> combinedMap) {
         this.manager = manager;
         this.combinedMap = combinedMap;
         DataChangeEvent.fire(this);

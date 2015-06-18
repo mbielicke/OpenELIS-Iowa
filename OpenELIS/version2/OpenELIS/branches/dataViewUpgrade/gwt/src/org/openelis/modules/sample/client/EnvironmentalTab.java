@@ -63,7 +63,7 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.widget.WindowInt;
 
@@ -738,7 +738,7 @@ public class EnvironmentalTab extends Screen {
 
         window.setBusy();
         try {
-            list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new TableDataRow(4);

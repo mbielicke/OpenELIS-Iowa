@@ -32,7 +32,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderOrganizationViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
@@ -56,8 +56,8 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.OrderManager;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.manager.IOrderManager;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.ui.widget.WindowInt;
 
@@ -66,7 +66,7 @@ import com.google.gwt.user.client.Window;
 
 public class OrganizationTab extends Screen {
     
-    private OrderManager          manager;    
+    private IOrderManager          manager;    
     private TableWidget           table;
     private AutoComplete<Integer> organizationName;
     private AppButton             removeOrganizationButton, addOrganizationButton;
@@ -111,7 +111,7 @@ public class OrganizationTab extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (OrganizationDO data : list) {
                         row = new TableDataRow(4);
@@ -147,7 +147,7 @@ public class OrganizationTab extends Screen {
                 Object val;
                 OrganizationDO org;
                 AddressDO addr;
-                OrderOrganizationViewDO data;
+                IOrderOrganizationViewDO data;
                 TableDataRow row;
                 
                 r = event.getRow();
@@ -223,7 +223,7 @@ public class OrganizationTab extends Screen {
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try {
-                    manager.getOrganizations().addOrganization(new OrderOrganizationViewDO());
+                    manager.getOrganizations().addOrganization(new IOrderOrganizationViewDO());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -311,7 +311,7 @@ public class OrganizationTab extends Screen {
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-        OrderOrganizationViewDO data;
+        IOrderOrganizationViewDO data;
         ArrayList<TableDataRow> model;
         TableDataRow row;
 
@@ -343,7 +343,7 @@ public class OrganizationTab extends Screen {
         return model;
     }
     
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }

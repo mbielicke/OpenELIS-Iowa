@@ -51,21 +51,15 @@
               <ui:text from="{msg.patient_birth}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalPatientBirthTime" />
+              <w:CheckBox ui:field="neonatalPatientAddrMultipleUnit" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
-              <ui:text from="{msg.gen_time}" />
+              <ui:text from="{msg.address_aptSuite}" />
             </td>
           </tr>
           <tr>
             <td>
               <g:HorizontalPanel width="56px" />
-            </td>
-            <td>
-              <w:CheckBox ui:field="neonatalPatientAddrMultipleUnit" />
-            </td>
-            <td class="{res.style.LeftAlignPrompt}">
-              <ui:text from="{msg.address_aptSuite}" />
             </td>
             <td>
               <w:CheckBox ui:field="neonatalPatientAddrStreetAddress" />
@@ -91,16 +85,16 @@
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_zipcode}" />
             </td>
-          </tr>
-          <tr>
-            <td>
-              <g:HorizontalPanel width="56px" />
-            </td>
             <td>
               <w:CheckBox ui:field="neonatalPatientGenderId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_gender}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
             </td>
             <td>
               <w:CheckBox ui:field="neonatalPatientRaceId" />

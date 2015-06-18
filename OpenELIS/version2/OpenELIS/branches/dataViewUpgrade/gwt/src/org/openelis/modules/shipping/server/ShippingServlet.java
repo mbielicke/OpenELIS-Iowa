@@ -63,7 +63,7 @@ public class ShippingServlet extends RemoteServlet implements ShippingServiceInt
     
     public ShippingViewDO fetchByOrderId(Integer id) throws Exception {
         try {        
-            return shipping.fetchByOrderId(id);
+            return shipping.fetchByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

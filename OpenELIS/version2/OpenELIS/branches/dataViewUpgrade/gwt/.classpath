@@ -10,6 +10,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path=".apt_generated"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

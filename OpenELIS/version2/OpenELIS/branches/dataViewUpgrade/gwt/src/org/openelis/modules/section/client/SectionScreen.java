@@ -79,7 +79,7 @@ import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
 import org.openelis.meta.SectionMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -359,7 +359,7 @@ public class SectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

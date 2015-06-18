@@ -41,10 +41,10 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -57,11 +57,11 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.NoteManager;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderTestAnalyteManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
+import org.openelis.manager.IOrderTestAnalyteManager;
+import org.openelis.manager.IOrderTestManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -77,7 +77,7 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 public abstract class ImportOrder {
-    protected OrderManager         orderMan;
+    protected IOrderManager         orderMan;
 
     protected AuxFieldGroupManager auxFieldGroupMan;
 
@@ -99,7 +99,7 @@ public abstract class ImportOrder {
 
         auxData = new AuxDataDO();
         auxData.setReferenceId(orderId);
-        auxData.setReferenceTableId(Constants.table().ORDER);
+        auxData.setReferenceTableId(Constants.table().IORDER);
 
         orderMan = null;
         auxFieldGroupMan = null;
@@ -127,15 +127,15 @@ public abstract class ImportOrder {
 
     protected void loadOrganizations(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         boolean addWarning;
-        OrderViewDO order;
+        IOrderViewDO order;
         OrganizationDO shipTo;
-        OrderOrganizationManager orderOrgMan;
+        IOrderOrganizationManager orderOrgMan;
         SampleOrganizationManager samOrgMan;
-        OrderOrganizationViewDO ordOrg, ordReportTo;
+        IOrderOrganizationViewDO ordOrg, ordReportTo;
         SampleOrganizationViewDO samReportTo, samBillTo;
 
         if (orderMan == null)
-            orderMan = OrderManager.fetchById(orderId);
+            orderMan = IOrderManager.fetchById(orderId);
 
         orderOrgMan = orderMan.getOrganizations();
         samOrgMan = man.getOrganizations();
@@ -185,7 +185,7 @@ public abstract class ImportOrder {
          * if report-to was not found then set the ship-to as the report-to, but
          * only if ship-to is active
          */
-        order = orderMan.getOrder();
+        order = orderMan.getIorder();
         shipTo = order.getOrganization();
         if (samReportTo == null) {
             if ("Y".equals(shipTo.getIsActive()))
@@ -214,14 +214,14 @@ public abstract class ImportOrder {
 
     protected void loadSampleItems(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         int addedIndex;
-        OrderContainerManager containerMan;
-        OrderContainerDO container;
+        IOrderContainerManager containerMan;
+        IOrderContainerDO container;
         SampleItemManager itemMan;
         SampleItemViewDO item;
         DictionaryDO dict;
 
         if (orderMan == null)
-            orderMan = OrderManager.fetchById(orderId);
+            orderMan = IOrderManager.fetchById(orderId);
 
         containerMan = orderMan.getContainers();
         itemMan = man.getSampleItems();
@@ -271,15 +271,15 @@ public abstract class ImportOrder {
         Query query;
         QueryData testField, methodField;
         ArrayList<QueryData> fields;
-        OrderTestViewDO orderTest;
-        OrderTestManager orderTestMan;
+        IOrderTestViewDO orderTest;
+        IOrderTestManager orderTestMan;
         TestViewDO test;
         SampleItemManager itemMan;
         HashMap<Integer, TestManager> testMap;
 
         try {
             if (orderMan == null)
-                orderMan = OrderManager.fetchById(orderId);
+                orderMan = IOrderManager.fetchById(orderId);
 
             orderTestMan = orderMan.getTests();
             itemMan = manager.getSampleItems();
@@ -345,7 +345,7 @@ public abstract class ImportOrder {
         NoteManager ordNoteMan, samNoteMan;
 
         if (orderMan == null)
-            orderMan = OrderManager.fetchById(orderId);
+            orderMan = IOrderManager.fetchById(orderId);
 
         ordNoteMan = orderMan.getSampleNotes();
         if (ordNoteMan.count() == 0)
@@ -471,7 +471,7 @@ public abstract class ImportOrder {
                                                   .orderAuxDataNotFoundError(auxData.getAnalyteName())));
     }
 
-    protected SampleOrganizationViewDO createSampleOrganization(OrderOrganizationViewDO org,
+    protected SampleOrganizationViewDO createSampleOrganization(IOrderOrganizationViewDO org,
                                                                 Integer typeId) {
         SampleOrganizationViewDO data;
 
@@ -490,7 +490,7 @@ public abstract class ImportOrder {
         return data;
     }
 
-    protected SampleOrganizationViewDO createSampleOrganization(OrderViewDO order, Integer typeId) {
+    protected SampleOrganizationViewDO createSampleOrganization(IOrderViewDO order, Integer typeId) {
         SampleOrganizationViewDO data;
         OrganizationDO org;
         AddressDO addr;
@@ -513,7 +513,7 @@ public abstract class ImportOrder {
         return data;
     }
 
-    private void loadAnalysis(OrderTestViewDO orderTest, OrderTestAnalyteManager orderTestAnaMan,
+    private void loadAnalysis(IOrderTestViewDO orderTest, IOrderTestAnalyteManager orderTestAnaMan,
                               SampleItemManager itemMan, HashMap<Integer, TestManager> testMap) throws Exception {
         int sequence, anaIndex;
         Integer testId;
@@ -549,7 +549,7 @@ public abstract class ImportOrder {
         setAnalytesReportable(orderTestAnaMan, anaMan.getAnalysisResultAt(anaIndex));
     }
 
-    private void setAnalytesReportable(OrderTestAnalyteManager analyteMan,
+    private void setAnalytesReportable(IOrderTestAnalyteManager analyteMan,
                                        AnalysisResultManager resultMan) {
         int i;
         boolean reportable;

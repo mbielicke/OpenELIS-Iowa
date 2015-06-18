@@ -42,7 +42,7 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -833,13 +833,13 @@ public class BuildKitsScreen extends Screen {
     }
 
     private void loadReportScreen() throws Exception {
-        OrderViewDO order;
+        IOrderViewDO order;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
         InventoryItemManager man;
 
         man = manager.getInventoryItem();
-        order = manager.getOrder();
+        order = manager.getIorder();
         receipt = manager.getInventoryReceipt();
         location = receipt.getInventoryLocations().get(0);
 

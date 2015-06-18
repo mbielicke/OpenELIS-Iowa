@@ -80,8 +80,8 @@ import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
-import org.openelis.modules.organization.client.OrganizationService;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.LastPageException;
@@ -1154,7 +1154,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         disp = new ArrayList<String>();
         try {
-            orgs = OrganizationService.get().fetchByIdOrName(search);
+            orgs = OrganizationService1Impl.INSTANCE.fetchByIdOrName(search);
             for (OrganizationDO data : orgs) {
                 addr = data.getAddress();
                 disp.clear();
@@ -1231,7 +1231,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = PanelService.get().fetchByName(search);
+            list = PanelService1Impl.INSTANCE.fetchByName(search);
             for (PanelDO data : list) {
                 row = new TableDataRow(data.getId(), data.getName());
                 row.data = data;
