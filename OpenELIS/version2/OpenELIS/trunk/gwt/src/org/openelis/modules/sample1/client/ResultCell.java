@@ -86,12 +86,10 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
     }
     
     public SafeHtml bulkRender(Object value) {
-        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        SafeHtmlBuilder builder;
         
-        builder.appendHtmlConstant("<td>");
+        builder = new SafeHtmlBuilder();
         builder.appendEscaped(display(value));
-        builder.appendHtmlConstant("</td>");
-        
         return builder.toSafeHtml();
     }
 
