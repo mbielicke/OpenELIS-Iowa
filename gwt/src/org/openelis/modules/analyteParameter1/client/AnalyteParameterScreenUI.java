@@ -628,7 +628,7 @@ public class AnalyteParameterScreenUI extends Screen {
                         prevNode = parent.getChildAt(index + 1);
                     else
                         prevNode = null;
-                    tree.clearExceptions(r, c);
+                    tree.clearEndUserExceptions(r, c);
                     switch (c) {
                         case 0:
                             /*
