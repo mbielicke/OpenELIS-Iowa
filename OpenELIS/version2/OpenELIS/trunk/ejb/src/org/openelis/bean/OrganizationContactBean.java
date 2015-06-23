@@ -120,10 +120,11 @@ public class OrganizationContactBean {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
-        if (entity != null)
+        if (entity != null) {
             manager.remove(entity);
+            addressBean.delete(data.getAddress());
+        }
     }
 
     public void validate(OrganizationContactDO data) throws Exception {

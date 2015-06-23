@@ -98,8 +98,8 @@ public class ProviderLocationBean {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         if (entity != null) {
-            addressBean.delete(data.getAddress());
             manager.remove(entity);
+            addressBean.delete(data.getAddress());
         }
     }
 

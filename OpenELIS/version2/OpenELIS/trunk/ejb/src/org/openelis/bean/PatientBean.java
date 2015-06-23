@@ -175,6 +175,7 @@ public class PatientBean {
     }  
     
     public PatientDO update(PatientDO data) throws Exception {
+        Integer deleteId;
         Patient entity;
         
         if (!data.isChanged() && !data.getAddress().isChanged()) {
@@ -188,9 +189,10 @@ public class PatientBean {
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Patient.class, data.getId());
+        deleteId = null;
         if (address.isEmpty(data.getAddress())) {
             if (data.getAddress().getId() != null) {
-                address.delete(data.getAddress());                
+                deleteId = data.getAddress().getId();
                 data.getAddress().setId(null);
             }
         } else {
@@ -212,6 +214,9 @@ public class PatientBean {
         entity.setRaceId(data.getRaceId());
         entity.setEthnicityId(data.getEthnicityId());
         entity.setNationalId(data.getNationalId());
+        
+        if (deleteId != null)
+            address.delete(deleteId);                
 
         lock.unlock(Constants.table().PATIENT, data.getId());
         
