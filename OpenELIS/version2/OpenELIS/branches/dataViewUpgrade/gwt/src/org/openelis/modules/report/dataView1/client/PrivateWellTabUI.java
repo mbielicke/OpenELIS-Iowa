@@ -328,6 +328,6 @@ public class PrivateWellTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().PRIVATEWELL.equals(domain));
+        canEdit = Constants.domain().PRIVATEWELL.equals(domain);
     }
 }

@@ -54,8 +54,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     CLIENT_REFERENCE = "_sample.clientReference",
                     CLIENT_REFERENCE_HEADER = "_sample.clientReferenceHeader",
                     RELEASED_DATE = "_sample.releasedDate",
-                    RELEASED_DATE_FROM = "_display.releasedDateFrom",
-                    RELEASED_DATE_TO = "_display.releasedDateTo",
+                    RELEASED_DATE_FROM = "_sample.releasedDateFrom",
+                    RELEASED_DATE_TO = "_sample.releasedDateTo",
 
                     // sample environmental
                     ENV_ID = "_sampleEnvironmental.id",
@@ -182,8 +182,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
                     CLIN_PATIENT_FIRST_NAME_HEADER = "_clinicalPatient.firstNameHeader",
                     CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
-                    CLIN_PATIENT_BIRTH_DATE_FROM = "display.patientBirthDateFrom",
-                    CLIN_PATIENT_BIRTH_DATE_TO = "display.patientBirthDateTo",
+                    CLIN_PATIENT_BIRTH_DATE_FROM = "_clinicalPatient.birthDateFrom",
+                    CLIN_PATIENT_BIRTH_DATE_TO = "_clinicalPatient.birthDateTo",
                     CLIN_PATIENT_BIRTH_TIME = "_clinicalPatient.birthTime",
                     CLIN_PATIENT_GENDER_ID = "_clinicalPatient.genderId",
                     CLIN_PATIENT_RACE_ID = "_clinicalPatient.raceId",

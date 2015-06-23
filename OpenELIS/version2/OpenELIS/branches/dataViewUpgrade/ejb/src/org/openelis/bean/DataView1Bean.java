@@ -862,8 +862,8 @@ public class DataView1Bean {
         /*
          * create the event log for data view
          */
-        source = Messages.get().dataView_eventLogMessage(sampleIds.size(),
-                                                         userCache.getSystemUser().getLoginName());
+        source = Messages.get().dataView_eventLogMessage(userCache.getSystemUser().getLoginName(),
+                                                         sampleIds.size());
         try {
             eventLog.add(new EventLogDO(null,
                                         Constants.dictionary().LOG_TYPE_REPORT,

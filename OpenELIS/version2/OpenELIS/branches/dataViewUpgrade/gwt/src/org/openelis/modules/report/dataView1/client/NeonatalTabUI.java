@@ -30,10 +30,12 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -83,14 +85,19 @@ public class NeonatalTabUI extends Screen {
     protected EventBus                 parentBus;
 
     protected DataView1VO              data;
+    
+    protected ModulePermission     patientPermission;
 
     protected String                   domain;
 
-    protected boolean                  canEdit;
+    protected boolean                  canEditDomain, canEditPatient;
 
     public NeonatalTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        
+        patientPermission = UserCache.getPermission().getModule("dataview_patient");
+        
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -107,7 +114,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -124,7 +131,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientLastName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -140,7 +147,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientFirstName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -157,7 +164,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientBirthDate.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -175,7 +182,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalPatientAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                            canEdit);
+                                                                            canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -193,7 +200,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalPatientAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                             canEdit);
+                                                                             canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -210,7 +217,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrCity.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -227,7 +234,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrState.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -244,7 +251,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -261,7 +268,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientGenderId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -278,7 +285,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientRaceId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -295,7 +302,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -311,7 +318,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsNicu.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalIsNicu.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -327,7 +334,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalBirthOrder.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalBirthOrder.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -343,7 +350,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalGestationalAge.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalGestationalAge.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -359,7 +366,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalFeedingId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalFeedingId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -375,7 +382,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalWeight.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalWeight.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -391,7 +398,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsTransfused.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalIsTransfused.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -407,7 +414,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalTransfusionDate.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalTransfusionDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -423,7 +430,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsRepeat.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalIsRepeat.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -439,7 +446,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalCollectionAge.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalCollectionAge.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -455,7 +462,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsCollectionValid.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalIsCollectionValid.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -471,7 +478,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalFormNumber.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalFormNumber.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -487,7 +494,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -503,7 +510,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinLastName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -519,7 +526,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinMiddleName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinMiddleName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -536,7 +543,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinFirstName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -553,7 +560,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinRelationId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinRelationId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -570,7 +577,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinBirthDate.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -587,7 +594,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinNationalId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinNationalId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -605,7 +612,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                              canEdit);
+                                                                              canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -623,7 +630,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                               canEdit);
+                                                                               canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -640,7 +647,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinAddrCity.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -657,7 +664,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinAddrState.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -675,7 +682,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrZipCode.setEnabled(isState(DEFAULT) &&
-                                                                         canEdit);
+                                                                         canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -693,7 +700,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrHomePhone.setEnabled(isState(DEFAULT) &&
-                                                                           canEdit);
+                                                                           canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -710,7 +717,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinGenderId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -727,7 +734,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinRaceId.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalNextOfKinRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -745,7 +752,7 @@ public class NeonatalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinEthnicityId.setEnabled(isState(DEFAULT) &&
-                                                                         canEdit);
+                                                                         canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -762,7 +769,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalProviderLastName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalProviderLastName.setEnabled(isState(DEFAULT) && canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -779,7 +786,7 @@ public class NeonatalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalProviderFirstName.setEnabled(isState(DEFAULT) && canEdit);
+                                 neonatalProviderFirstName.setEnabled(isState(DEFAULT) && canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -789,7 +796,7 @@ public class NeonatalTabUI extends Screen {
 
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                fieldsDisabledLabel.setText(canEdit ? null : Messages.get()
+                fieldsDisabledLabel.setText(canEditDomain ? null : Messages.get()
                                                                      .dataView_tabFieldsDisabled());
             }
         });
@@ -820,6 +827,44 @@ public class NeonatalTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
+    
+    public Validation validate() {
+        Widget w;
+        CheckBox cb;
+        Validation validation;
+        
+        validation = super.validate();
+        
+        if ( !canEditDomain)
+            return validation;
+        
+        /*
+         * show an error if the checkbox for a patient field has been checked
+         * but the user doesn't have the permission to view patient or patient
+         * related domain fields like "feeding"; this can happen if the screen
+         * is loaded from a file that had those fields checked; this validation
+         * is done only if neonatal domain is selected on Query tab, because
+         * otherwise this tab's fields don't get added to the list of columns
+         * sent to the back-end
+         */
+        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+            w = entry.getValue().widget;
+            if (w instanceof CheckBox) {
+                cb = (CheckBox)w;
+                if ("Y".equals(cb.getValue()) &&
+                    !canEditPatient &&
+                    (entry.getKey().startsWith("_neonatal") || entry.getKey()
+                                                                    .startsWith("_sampleNeonatal"))) {
+                    validation.addException(new Exception(Messages.get()
+                                                                  .dataView_noPermToViewPatientException()));
+                    validation.setStatus(Validation.Status.ERRORS);
+                    break;
+                }
+            }
+        }
+        
+        return validation;
+    }
 
     /**
      * Adds the keys for all checked checkboxes to the list of columns shown in
@@ -829,7 +874,7 @@ public class NeonatalTabUI extends Screen {
         Widget w;
         CheckBox cb;
 
-        if ( !canEdit)
+        if ( !canEditDomain)
             return;
 
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
@@ -849,6 +894,7 @@ public class NeonatalTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().NEONATAL.equals(domain));
+        canEditDomain = Constants.domain().NEONATAL.equals(domain);
+        canEditPatient = patientPermission != null;
     }
 }

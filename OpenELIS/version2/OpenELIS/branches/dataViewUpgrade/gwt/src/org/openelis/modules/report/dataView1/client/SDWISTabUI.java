@@ -303,6 +303,6 @@ public class SDWISTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().SDWIS.equals(domain));
+        canEdit = Constants.domain().SDWIS.equals(domain);
     }
 }

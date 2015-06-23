@@ -76,8 +76,9 @@ public class QueryTabUI extends Screen {
 
     @UiField
     protected Calendar                collectionDateFrom, collectionDateTo, receivedDateFrom,
-                    receivedDateTo, enteredDateFrom, enteredDateTo, analysisCompletedDateFrom,
-                    analysisCompletedDateTo, analysisReleasedDateFrom, analysisReleasedDateTo;
+                    receivedDateTo, enteredDateFrom, enteredDateTo, releasedDateFrom,
+                    releasedDateTo, analysisCompletedDateFrom, analysisCompletedDateTo,
+                    analysisReleasedDateFrom, analysisReleasedDateTo;
 
     @UiField
     protected TextBox<String>         clientReference, reportTo, analysisTestName,
@@ -248,7 +249,39 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? clientReference : enteredDateFrom;
+                                 return forward ? releasedDateFrom : enteredDateFrom;
+                             }
+                         });
+
+        addScreenHandler(releasedDateFrom,
+                         SampleWebMeta.getReleasedDateFrom(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 releasedDateFrom.setValue(getReleasedDateFrom());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 releasedDateFrom.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? releasedDateTo : enteredDateTo;
+                             }
+                         });
+
+        addScreenHandler(releasedDateTo,
+                         SampleWebMeta.getReleasedDateTo(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 releasedDateTo.setValue(getReleasedDateTo());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 releasedDateTo.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? clientReference : releasedDateFrom;
                              }
                          });
 
@@ -264,7 +297,7 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? projectId : enteredDateTo;
+                                 return forward ? projectId : releasedDateTo;
                              }
                          });
 
@@ -423,7 +456,7 @@ public class QueryTabUI extends Screen {
                          SampleWebMeta.getAnalysisReleasedDateFrom(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisReleasedDateFrom.setValue(getReleasedDateFrom());
+                                 analysisReleasedDateFrom.setValue(getAnalysisReleasedDateFrom());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -598,6 +631,10 @@ public class QueryTabUI extends Screen {
                 setFromToValues(SampleWebMeta.getEnteredDateFrom(),
                                 SampleWebMeta.getEnteredDateTo(),
                                 f.getQuery());
+            else if (SampleWebMeta.getReleasedDate().equals(f.getKey()))
+                setFromToValues(SampleWebMeta.getReleasedDateFrom(),
+                                SampleWebMeta.getReleasedDateTo(),
+                                f.getQuery());
             else if (SampleWebMeta.getAnalysisCompletedDate().equals(f.getKey()))
                 setFromToValues(SampleWebMeta.getAnalysisCompletedDateFrom(),
                                 SampleWebMeta.getAnalysisCompletedDateTo(),
@@ -648,6 +685,12 @@ public class QueryTabUI extends Screen {
                      SampleWebMeta.getEnteredDate(),
                      QueryData.Type.DATE,
                      fields);
+        
+        addQueryData(releasedDateFrom,
+                     releasedDateTo,
+                     SampleWebMeta.getReleasedDate(),
+                     QueryData.Type.DATE,
+                     fields);
 
         addQueryData(clientReference, SampleWebMeta.getClientReference(), fields);
         addQueryData(projectId, SampleWebMeta.getProjectId(), fields);
@@ -692,9 +735,113 @@ public class QueryTabUI extends Screen {
 
     public Validation validate() {
         int pairsFilled;
+        boolean fromEmpty, toEmpty;
         Validation validation;
 
-        pairsFilled = validateFromToFields();
+        pairsFilled = 7;
+
+        /*
+         * for each pair of "from" and "to" widgets for a database field like
+         * accession number, add "Field Required" error if one widget has a
+         * value and the other doesn't; keep track of the number of pairs where
+         * both widgets have a value
+         */
+        fromEmpty = DataBaseUtil.isEmpty(accessionNumberFrom.getValue());
+        toEmpty = DataBaseUtil.isEmpty(accessionNumberTo.getValue());
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                accessionNumberTo.addException(new Exception(Messages.get()
+                                                                     .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            accessionNumberFrom.addException(new Exception(Messages.get()
+                                                                   .gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
+        fromEmpty = collectionDateFrom.getValue() == null;
+        toEmpty = collectionDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                collectionDateTo.addException(new Exception(Messages.get()
+                                                                    .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            collectionDateFrom.addException(new Exception(Messages.get()
+                                                                  .gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
+        fromEmpty = receivedDateFrom.getValue() == null;
+        toEmpty = receivedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                receivedDateTo.addException(new Exception(Messages.get()
+                                                                  .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            receivedDateFrom.addException(new Exception(Messages.get().gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
+        fromEmpty = enteredDateFrom.getValue() == null;
+        toEmpty = enteredDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                enteredDateTo.addException(new Exception(Messages.get()
+                                                                 .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            enteredDateFrom.addException(new Exception(Messages.get().gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+        
+        fromEmpty = releasedDateFrom.getValue() == null;
+        toEmpty = releasedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                releasedDateTo.addException(new Exception(Messages.get()
+                                                                          .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            releasedDateFrom.addException(new Exception(Messages.get()
+                                                                        .gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
+        fromEmpty = analysisCompletedDateFrom.getValue() == null;
+        toEmpty = analysisCompletedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                analysisCompletedDateTo.addException(new Exception(Messages.get()
+                                                                           .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            analysisCompletedDateFrom.addException(new Exception(Messages.get()
+                                                                         .gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
+        fromEmpty = analysisReleasedDateFrom.getValue() == null;
+        toEmpty = analysisReleasedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                analysisReleasedDateTo.addException(new Exception(Messages.get()
+                                                                          .gen_fieldRequiredException()));
+            }
+        } else if ( !toEmpty) {
+            analysisReleasedDateFrom.addException(new Exception(Messages.get()
+                                                                        .gen_fieldRequiredException()));
+        } else {
+            pairsFilled-- ;
+        }
+
         validation = super.validate();
 
         /*
@@ -741,6 +888,14 @@ public class QueryTabUI extends Screen {
 
     private Datetime getEnteredDateTo() {
         return getDatetime(SampleWebMeta.getEnteredDateTo(), enteredDateTo);
+    }
+    
+    private Datetime getReleasedDateFrom() {
+        return getDatetime(SampleWebMeta.getReleasedDateFrom(), releasedDateFrom);
+    }
+
+    private Datetime getReleasedDateTo() {
+        return getDatetime(SampleWebMeta.getReleasedDateTo(), releasedDateTo);
     }
 
     private String getClientReference() {
@@ -798,7 +953,7 @@ public class QueryTabUI extends Screen {
         return getDatetime(SampleWebMeta.getAnalysisCompletedDateTo(), analysisCompletedDateTo);
     }
 
-    private Datetime getReleasedDateFrom() {
+    private Datetime getAnalysisReleasedDateFrom() {
         return getDatetime(SampleWebMeta.getAnalysisReleasedDateFrom(), analysisReleasedDateFrom);
     }
 
@@ -944,103 +1099,6 @@ public class QueryTabUI extends Screen {
             field.setKey(key);
 
         return field;
-    }
-
-    /**
-     * For each pair of "from" and "to" widgets for a database field like
-     * accession number, adds "Field Required" error if one widget has a value
-     * and the other doesn't; returns the number of pairs where both widgets
-     * have a value
-     */
-    private int validateFromToFields() {
-        int pairsFilled;
-        boolean fromEmpty, toEmpty;
-
-        pairsFilled = 6;
-
-        fromEmpty = analysisCompletedDateFrom.getValue() == null;
-        toEmpty = analysisCompletedDateTo.getValue() == null;
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                analysisCompletedDateTo.addException(new Exception(Messages.get()
-                                                                           .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            analysisCompletedDateFrom.addException(new Exception(Messages.get()
-                                                                         .gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        fromEmpty = analysisReleasedDateFrom.getValue() == null;
-        toEmpty = analysisReleasedDateTo.getValue() == null;
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                analysisReleasedDateTo.addException(new Exception(Messages.get()
-                                                                          .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            analysisReleasedDateFrom.addException(new Exception(Messages.get()
-                                                                        .gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        fromEmpty = DataBaseUtil.isEmpty(accessionNumberFrom.getValue());
-        toEmpty = DataBaseUtil.isEmpty(accessionNumberTo.getValue());
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                accessionNumberTo.addException(new Exception(Messages.get()
-                                                                     .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            accessionNumberFrom.addException(new Exception(Messages.get()
-                                                                   .gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        fromEmpty = collectionDateFrom.getValue() == null;
-        toEmpty = collectionDateTo.getValue() == null;
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                collectionDateTo.addException(new Exception(Messages.get()
-                                                                    .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            collectionDateFrom.addException(new Exception(Messages.get()
-                                                                  .gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        fromEmpty = receivedDateFrom.getValue() == null;
-        toEmpty = receivedDateTo.getValue() == null;
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                receivedDateTo.addException(new Exception(Messages.get()
-                                                                  .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            receivedDateFrom.addException(new Exception(Messages.get().gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        fromEmpty = enteredDateFrom.getValue() == null;
-        toEmpty = enteredDateTo.getValue() == null;
-        if ( !fromEmpty) {
-            if (toEmpty) {
-                enteredDateTo.addException(new Exception(Messages.get()
-                                                                 .gen_fieldRequiredException()));
-            }
-        } else if ( !toEmpty) {
-            enteredDateFrom.addException(new Exception(Messages.get().gen_fieldRequiredException()));
-        } else {
-            pairsFilled-- ;
-        }
-
-        return pairsFilled;
     }
 
     /**
