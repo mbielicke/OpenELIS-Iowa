@@ -2,9 +2,9 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
-public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
+public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
   /**
    * Translated "QA Event".
@@ -1184,6 +1184,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Prep")
   @Key("analysis.samplePrep")
   String analysis_samplePrep();
+
+  /**
+   * Translated "Sample type not present in test definition".
+   * 
+   * @return translated "Sample type not present in test definition"
+   */
+  @DefaultMessage("Sample type not present in test definition")
+  @Key("analysis.sampleTypeInvalid")
+  String analysis_sampleTypeInvalid();
+
+  /**
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition".
+   * 
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition")
+  @Key("analysis.sampleTypeInvalidWarning")
+  String analysis_sampleTypeInvalidWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing".
