@@ -1532,6 +1532,7 @@ public class WorksheetItemTabUI extends Screen {
         toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
         toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
         toDO.setStatusId(fromDO.getStatusId());
+        toDO.setTypeId(fromDO.getTypeId());
         toDO.setCollectionDate(fromDO.getCollectionDate());
         toDO.setReceivedDate(fromDO.getReceivedDate());
         toDO.setDueDays(fromDO.getDueDays());

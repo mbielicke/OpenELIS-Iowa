@@ -38,10 +38,10 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, analysisStatusId, changeFlagsId, dueDays, id,
-                       formatId, fromOtherId, priority, qcId, qcLotId, testId, timeHolding,
-                       timeTaAverage, unitOfMeasureId, worksheetAnalysisId, worksheetId,
-                       worksheetItemId;
+    protected Integer  analysisId, analysisStatusId, analysisTypeId, changeFlagsId,
+                       dueDays, id, formatId, fromOtherId, priority, qcId, qcLotId,
+                       testId, timeHolding, timeTaAverage, unitOfMeasureId, worksheetAnalysisId,
+                       worksheetId, worksheetItemId;
     protected String   accessionNumber, description, methodName, sectionName, systemUsers,
                        testName, unitOfMeasure, worksheetDescription;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate,
@@ -59,7 +59,8 @@ public class WorksheetAnalysisViewVO extends DataObject {
                                    String testName, String methodName, Integer timeTaAverage,
                                    Integer timeHolding, String sectionName, Integer unitOfMeasureId,
                                    String unitOfMeasure, Integer analysisStatusId,
-                                   Date collectionDate, Date collectionTime, Date receivedDate, Integer priority) {
+                                   Integer analysisTypeId, Date collectionDate,
+                                   Date collectionTime, Date receivedDate, Integer priority) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setWorksheetId(worksheetId);
@@ -85,6 +86,7 @@ public class WorksheetAnalysisViewVO extends DataObject {
         setUnitOfMeasureId(unitOfMeasureId);
         setUnitOfMeasure(unitOfMeasure);
         setAnalysisStatusId(analysisStatusId);
+        setAnalysisTypeId(analysisTypeId);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
@@ -289,6 +291,14 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     public void setAnalysisStatusId(Integer analysisStatusId) {
         this.analysisStatusId = analysisStatusId;
+    }
+
+    public Integer getAnalysisTypeId() {
+        return analysisTypeId;
+    }
+
+    public void setAnalysisTypeId(Integer analysisTypeId) {
+        this.analysisTypeId = analysisTypeId;
     }
 
     public Datetime getCollectionDate() {

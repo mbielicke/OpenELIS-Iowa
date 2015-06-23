@@ -45,16 +45,16 @@ import org.openelis.ui.common.Datetime;
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetId",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, wav.formatId, wav.worksheetDescription, " +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
-                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, " +
-                        "wav.timeHolding, wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.analysisStatusId, wav.collectionDate, " +
-                        "wav.collectionTime, wav.receivedDate, wav.priority)"
+                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, wav.sectionName, " +
+                        "wav.unitOfMeasureId, wav.unitOfMeasure, wav.analysisStatusId, wav.analysisTypeId, wav.collectionDate, wav.collectionTime, wav.receivedDate, " +
+                        "wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId = :worksheetId order by wav.worksheetItemId, wav.id"),
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetIds",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, wav.formatId, wav.worksheetDescription, " +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
-                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, " +
-                        "wav.timeHolding, wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.analysisStatusId, wav.collectionDate, " +
-                        "wav.collectionTime, wav.receivedDate, wav.priority)"
+                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, wav.sectionName, " +
+                        "wav.unitOfMeasureId, wav.unitOfMeasure, wav.analysisStatusId, wav.analysisTypeId, wav.collectionDate, wav.collectionTime, wav.receivedDate, " +
+                        "wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId in (:worksheetIds) order by wav.worksheetId, wav.worksheetItemId, wav.id")})
 @Entity
 @Table(name = "worksheet_analysis_view")
@@ -135,6 +135,9 @@ public class WorksheetAnalysisView  {
     
     @Column(name = "analysis_status_id")
     private Integer                     analysisStatusId;
+    
+    @Column(name = "analysis_type_id")
+    private Integer                     analysisTypeId;
     
     @Column(name = "collection_date")
     private Date                        collectionDate;
@@ -246,6 +249,10 @@ public class WorksheetAnalysisView  {
 
     public Integer getAnalysisStatusId() {
         return analysisStatusId;
+    }
+    
+    public Integer getAnalysisTypeId() {
+        return analysisTypeId;
     }
     
     public Datetime getCollectionDate() {
