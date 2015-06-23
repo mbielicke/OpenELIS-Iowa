@@ -106,7 +106,6 @@ public class WorksheetCheckBoxCell implements CellEditor, CellRenderer, IsWidget
     /**
      * Returns the current widget set as this cells editor.
      */
-    @SuppressWarnings("rawtypes")
     public void startEditing(Object value, Container container, NativeEvent event) {
         query = false;
         editor.setQueryMode(false);
@@ -122,7 +121,6 @@ public class WorksheetCheckBoxCell implements CellEditor, CellRenderer, IsWidget
         editor.setFocus(true);
     }
     
-    @SuppressWarnings("rawtypes")
     public void startEditingQuery(QueryData qd, Container container, NativeEvent event) {        
         query = true;
         editor.setQueryMode(true);
@@ -174,6 +172,8 @@ public class WorksheetCheckBoxCell implements CellEditor, CellRenderer, IsWidget
         else 
             value = qd.getQuery();
         
+        editor.setValue(value);
+        
         render(value,table,row,col);
     }
 
@@ -222,12 +222,9 @@ public class WorksheetCheckBoxCell implements CellEditor, CellRenderer, IsWidget
             else
                 algn = HasHorizontalAlignment.ALIGN_CENTER.getTextAlignString();
             
-            builder.appendHtmlConstant("<td align='"+algn+"'>");
+            builder.appendHtmlConstant("<span align='"+algn+"'>");
             builder.appendHtmlConstant(getCheckDiv((String)value).getElement().getString());
-            builder.appendHtmlConstant("</td>");
-        } else {
-            builder.appendHtmlConstant("<td>");
-            builder.appendHtmlConstant("</td>");
+            builder.appendHtmlConstant("</span>");
         }
         
         return builder.toSafeHtml();
@@ -248,6 +245,11 @@ public class WorksheetCheckBoxCell implements CellEditor, CellRenderer, IsWidget
         div.setStyleName(style);
         
         return div;
+    }
+    
+    public void setCss(CheckboxCSS css) {
+        this.css = css;
+        css.ensureInjected();
     }
     
     public void setAlign(String align) {

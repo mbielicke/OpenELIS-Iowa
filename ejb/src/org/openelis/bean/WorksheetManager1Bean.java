@@ -1634,6 +1634,7 @@ public class WorksheetManager1Bean {
                     waVDO.setUnitOfMeasureId(waVDO1.getUnitOfMeasureId());
                     waVDO.setUnitOfMeasure(waVDO1.getUnitOfMeasure());
                     waVDO.setStatusId(waVDO1.getStatusId());
+                    waVDO.setTypeId(waVDO1.getTypeId());
                     waVDO.setCollectionDate(waVDO1.getCollectionDate());
                     waVDO.setReceivedDate(waVDO1.getReceivedDate());
                     waVDO.setDueDays(waVDO1.getDueDays());
@@ -2235,6 +2236,11 @@ public class WorksheetManager1Bean {
             if (waVDO.getCompletedDate() != null &&
                 DataBaseUtil.isDifferent(waVDO.getCompletedDate(), aVDO.getCompletedDate())) {
                 aVDO.setCompletedDate(waVDO.getCompletedDate());
+                update = true;
+            }
+
+            if (DataBaseUtil.isDifferent(waVDO.getTypeId(), aVDO.getTypeId())) {
+                aVDO.setTypeId(waVDO.getTypeId());
                 update = true;
             }
 

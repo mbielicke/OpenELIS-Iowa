@@ -39,7 +39,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
     private static final long serialVersionUID = 1L;
 
     protected boolean _statusChanged, _unitChanged;
-    protected Integer dueDays, qcId, statusId, testId, unitOfMeasureId, worksheetId;
+    protected Integer dueDays, qcId, statusId, testId, typeId, unitOfMeasureId, worksheetId;
     protected String description, methodName, sectionName, testName, unitOfMeasure;
     protected Datetime collectionDate, expireDate, receivedDate;
     
@@ -53,8 +53,8 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
                                    Integer changeFlagsId, String description, Integer testId,
                                    String testName, String methodName, String sectionName,
                                    Integer unitOfMeasureId, String unitOfMeasure,
-                                   Integer statusId, Date collectionDate, Date receivedDate,
-                                   Integer dueDays, Date expireDate) {
+                                   Integer statusId, Integer typeId, Date collectionDate,
+                                   Date receivedDate, Integer dueDays, Date expireDate) {
         super(id, worksheetItemId, accessionNumber, analysisId, qcLotId, worksheetAnalysisId,
               systemUsers, startedDate, completedDate, fromOtherId, changeFlagsId);
         setWorksheetId(worksheetId);
@@ -67,6 +67,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
         setUnitOfMeasureId(unitOfMeasureId);
         setUnitOfMeasure(unitOfMeasure);
         setStatusId(statusId);
+        setTypeId(typeId);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setDueDays(dueDays);
@@ -152,6 +153,15 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+        _statusChanged = true;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
         _statusChanged = true;
     }
 
