@@ -205,6 +205,6 @@ public class PTTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().PT.equals(domain));
+        canEdit = Constants.domain().PT.equals(domain);
     }
 }

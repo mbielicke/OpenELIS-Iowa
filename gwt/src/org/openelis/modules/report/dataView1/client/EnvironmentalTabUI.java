@@ -336,6 +336,6 @@ public class EnvironmentalTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().ENVIRONMENTAL.equals(domain));
+        canEdit = Constants.domain().ENVIRONMENTAL.equals(domain);
     }
 }

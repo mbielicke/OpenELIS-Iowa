@@ -14,7 +14,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" height="200px">
+    <g:layer top="0px" height="225px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>
@@ -86,6 +86,21 @@
                   <c:Calendar ui:field="enteredDateTo" begin="0" end="4" width="125px" />
                 </td>
               </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_released}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="releasedDateFrom" begin="0" end="4"
+                    width="125px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="releasedDateTo" begin="0" end="4" width="125px" />
+                </td>
+              </tr>
               <tr colspan="2">
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.sample_clntRef}:" />
@@ -121,7 +136,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="205px" bottom="30px">
+    <g:layer top="235px" bottom="30px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>
@@ -202,7 +217,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="340px" bottom="0px">
+    <g:layer top="370px" bottom="0px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>

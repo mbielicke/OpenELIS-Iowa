@@ -4111,13 +4111,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_dataView();
 
   /**
-   * Translated "Data View: Considering {0,number,#0} samples for user ''{1}''".
+   * Translated "Data View: Running for user ''{0}'' with {1,number,#0} samples ".
    * 
-   * @return translated "Data View: Considering {0,number,#0} samples for user ''{1}''"
+   * @return translated "Data View: Running for user ''{0}'' with {1,number,#0} samples "
    */
-  @DefaultMessage("Data View: Considering {0,number,#0} samples for user ''{1}''")
+  @DefaultMessage("Data View: Running for user ''{0}'' with {1,number,#0} samples ")
   @Key("dataView.eventLogMessage")
-  String dataView_eventLogMessage(Integer arg0,  String arg1);
+  String dataView_eventLogMessage(String arg0,  Integer arg1);
 
   /**
    * Translated "Exclude All".
@@ -4372,6 +4372,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_nextOfKinZipcode();
 
   /**
+   * Translated "You do not have the permission to view patient fields".
+   * 
+   * @return translated "You do not have the permission to view patient fields"
+   */
+  @DefaultMessage("You do not have the permission to view patient fields")
+  @Key("dataView.noPermToViewPatientException")
+  String dataView_noPermToViewPatientException();
+
+  /**
    * Translated "Open Query".
    * 
    * @return translated "Open Query"
@@ -4579,15 +4588,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_selAtleastOneField();
 
   /**
-   * Translated "Please select fields from only one domain".
-   * 
-   * @return translated "Please select fields from only one domain"
-   */
-  @DefaultMessage("Please select fields from only one domain")
-  @Key("dataView.selFieldsOneDomain")
-  String dataView_selFieldsOneDomain();
-
-  /**
    * Translated "Select Analysis Fields For Output".
    * 
    * @return translated "Select Analysis Fields For Output"
@@ -4696,11 +4696,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_selectSdwisField();
 
   /**
-   * Translated "This tab''s fields are disabled because another domain has been selected on Query tab".
+   * Translated "These fields can be selected only after choosing this domain on Query tab.".
    * 
-   * @return translated "This tab''s fields are disabled because another domain has been selected on Query tab"
+   * @return translated "These fields can be selected only after choosing this domain on Query tab."
    */
-  @DefaultMessage("This tab''s fields are disabled because another domain has been selected on Query tab")
+  @DefaultMessage("These fields can be selected only after choosing this domain on Query tab.")
   @Key("dataView.tabFieldsDisabled")
   String dataView_tabFieldsDisabled();
 

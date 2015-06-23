@@ -30,10 +30,12 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -73,14 +75,19 @@ public class ClinicalTabUI extends Screen {
     protected EventBus                 parentBus;
 
     protected DataView1VO              data;
+    
+    protected ModulePermission     patientPermission;
 
     protected String                   domain;
 
-    protected boolean                  canEdit;
-
+    protected boolean                  canEditDomain, canEditPatient;
+    
     public ClinicalTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        
+        patientPermission = UserCache.getPermission().getModule("dataview_patient");
+        
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -97,7 +104,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientId.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -113,7 +120,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientLastName.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -129,7 +136,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientFirstName.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -146,7 +153,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientBirthDate.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -163,7 +170,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientNationalId.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientNationalId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -181,7 +188,7 @@ public class ClinicalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                            canEdit);
+                                                                            canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -199,7 +206,7 @@ public class ClinicalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                             canEdit);
+                                                                             canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -216,7 +223,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrCity.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -233,7 +240,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrState.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -250,7 +257,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -268,7 +275,7 @@ public class ClinicalTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrHomePhone.setEnabled(isState(DEFAULT) &&
-                                                                         canEdit);
+                                                                         canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -285,7 +292,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientGenderId.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -302,7 +309,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientRaceId.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -319,7 +326,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -335,7 +342,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalProviderLastName.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalProviderLastName.setEnabled(isState(DEFAULT) && canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -352,7 +359,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalProviderFirstName.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalProviderFirstName.setEnabled(isState(DEFAULT) && canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -368,7 +375,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalProviderPhone.setEnabled(isState(DEFAULT) && canEdit);
+                                 clinicalProviderPhone.setEnabled(isState(DEFAULT) && canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -378,7 +385,7 @@ public class ClinicalTabUI extends Screen {
 
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                fieldsDisabledLabel.setText(canEdit ? null : Messages.get()
+                fieldsDisabledLabel.setText(canEditDomain ? null : Messages.get()
                                                                      .dataView_tabFieldsDisabled());
             }
         });
@@ -409,6 +416,40 @@ public class ClinicalTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
+    
+    public Validation validate() {
+        Widget w;
+        CheckBox cb;
+        Validation validation;
+        
+        validation = super.validate();
+        
+        if ( !canEditDomain)
+            return validation;
+        
+        /*
+         * show an error if the checkbox for a patient field has been checked
+         * but the user doesn't have the permission to view patient fields; this
+         * can happen if the screen is loaded from a file that had those fields
+         * checked; this validation is done only if no domain or clinical domain
+         * is selected on Query tab, because otherwise this tab's fields don't
+         * get added to the list sent to the back-end
+         */
+        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+            w = entry.getValue().widget;
+            if (w instanceof CheckBox) {
+                cb = (CheckBox)w;
+                if ("Y".equals(cb.getValue()) && !canEditPatient && entry.getKey().startsWith("_clinical")) {
+                    validation.addException(new Exception(Messages.get()
+                                                          .dataView_noPermToViewPatientException()));
+                    validation.setStatus(Validation.Status.ERRORS);
+                    break;
+                }
+            }
+        }
+        
+        return validation;
+    }
 
     /**
      * Adds the keys for all checked checkboxes to the list of columns shown in
@@ -418,7 +459,7 @@ public class ClinicalTabUI extends Screen {
         Widget w;
         CheckBox cb;
 
-        if ( !canEdit)
+        if ( !canEditDomain)
             return;
 
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
@@ -438,6 +479,7 @@ public class ClinicalTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = (domain == null || Constants.domain().CLINICAL.equals(domain));
+        canEditDomain = Constants.domain().CLINICAL.equals(domain);
+        canEditPatient = patientPermission != null;
     }
 }

@@ -387,7 +387,7 @@ public class DataViewScreenUI extends Screen {
      */
     @UiHandler("executeQueryButton")
     protected void executeQuery(ClickEvent event) {
-        int before, numDomains;
+        int before;
         boolean excludeResults, excludeAuxData;
         QueryData field;
         String domain;
@@ -400,63 +400,41 @@ public class DataViewScreenUI extends Screen {
         columns = new ArrayList<String>();
 
         /*
-         * find out which columns are selected in each tab; also, find out
-         * columns from how many domains have been selected
+         * find out which columns are selected in each tab
          */
         commonTab.addColumns(columns);
 
-        numDomains = 0;
         domain = null;
 
         before = columns.size();
         environmentalTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().ENVIRONMENTAL;
-        }
 
         before = columns.size();
         privateWellTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().PRIVATEWELL;
-        }
 
         before = columns.size();
         sdwisTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().SDWIS;
-        }
 
         before = columns.size();
         clinicalTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().CLINICAL;
-        }
 
         before = columns.size();
         neonatalTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().NEONATAL;
-        }
 
         before = columns.size();
         ptTab.addColumns(columns);
-        if (columns.size() > before) {
-            numDomains++ ;
+        if (columns.size() > before)
             domain = Constants.domain().PT;
-        }
-
-        /*
-         * columns from only one domain must be selected
-         */
-        if (numDomains > 1) {
-            setError(Messages.get().dataView_selFieldsOneDomain());
-            return;
-        }
 
         /*
          * if both results and aux data are excluded then at least one column
@@ -503,6 +481,7 @@ public class DataViewScreenUI extends Screen {
         data.setAuxFields(null);
         data.setColumns(columns);
         setBusy(Messages.get().gen_querying());
+        
         /*
          * if the user has excluded both results and aux data, don't show the
          * filter screen, just generate the report; otherwise fetch the analytes
