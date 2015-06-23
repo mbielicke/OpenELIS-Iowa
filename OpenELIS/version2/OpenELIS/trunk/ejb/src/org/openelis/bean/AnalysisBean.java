@@ -365,16 +365,32 @@ public class AnalysisBean {
 
             /*
              * don't allow missing unit if the test definition does not have any
-             * empty unit
+             * empty unit; also, don't allow the sample item to have a sample
+             * type that isn't present in the test definition
              */
-            if (data.getUnitOfMeasureId() == null && !tm.getSampleTypes().hasEmptyUnit())
-                e.add(new FormErrorException(Messages.get()
-                                                     .analysis_unitRequiredException(accession,
-                                                                                     sequence,
-                                                                                     test,
-                                                                                     method)));
+            if (data.getUnitOfMeasureId() == null) {
+                if ( !tm.getSampleTypes().hasEmptyUnit())
+                    e.add(new FormErrorException(Messages.get()
+                                                         .analysis_unitRequiredException(accession,
+                                                                                         sequence,
+                                                                                         test,
+                                                                                         method)));
+                /*
+                 * this check is done only if the sample type is not null, to
+                 * avoid showing the user two errors for the same problem;
+                 * null sample type is part of sample item validation
+                 */
+                if (item != null && item.getTypeOfSampleId() != null &&
+                    !tm.getSampleTypes().hasType(item.getTypeOfSampleId()))
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .analysis_sampleTypeInvalidWarning(accession,
+                                                                                          sequence,
+                                                                                          test,
+                                                                                          method)));
+            }
+            
             /*
-             * validate unit & sample type
+             * validate sample type & unit 
              */
             if (data.getUnitOfMeasureId() != null && item != null &&
                 !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(), item.getTypeOfSampleId()))
