@@ -202,23 +202,13 @@ public abstract class EditNoteLookupUI extends Screen {
 
         noteTree.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
-                Node item, parent;
+                Node item;
 
                 item = noteTree.getNodeAt(event.getSelectedItem());
-                if ("note".equals(item.getType())) {
+                if ("note".equals(item.getType()))
                     preview.setValue((String)item.getData(), true);
-                    /*
-                     * set the category's name as the subject if it already
-                     * hasn't been specified and if the subject is showing
-                     */
-                    if (subject.isEnabled() && subject.isVisible() &&
-                        DataBaseUtil.isEmpty(subject.getValue())) {
-                        parent = item.getParent();
-                        subject.setValue((String)parent.getCell(0));
-                    }
-                } else {
+                else
                     preview.setValue("", true);
-                }
             }
         });
 
@@ -382,15 +372,28 @@ public abstract class EditNoteLookupUI extends Screen {
     @UiHandler("pasteButton")
     protected void paste(ClickEvent event) {
         int cursorPos;
+        Node item;
         String selected, current;
 
+        /*
+         * set the category's name as the subject if it already
+         * hasn't been specified and if the subject is showing
+         */
+        item = noteTree.getNodeAt(noteTree.getSelectedNode());
+        if (subject.isEnabled() && subject.isVisible() &&
+            DataBaseUtil.isEmpty(subject.getValue()) && item != null) {
+            if ("note".equals(item.getType()))
+                item = item.getParent();
+            subject.setValue((String)item.getCell(0));
+        }
+        
         selected = preview.getValue();
         cursorPos = 0;
         /*
          * copy from preview to the cursor's position in the note's text
          */
         current = text.getValue();
-        if ( !DataBaseUtil.isEmpty(current)) {
+        if (!DataBaseUtil.isEmpty(current)) {
             cursorPos = text.getCursorPos();
             selected = DataBaseUtil.concatWithSeparator(current.substring(0, cursorPos),
                                                         selected,

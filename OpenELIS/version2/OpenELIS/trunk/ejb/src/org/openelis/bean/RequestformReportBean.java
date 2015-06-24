@@ -72,7 +72,8 @@ public class RequestformReportBean {
                                                             .setRequired(true));
 
             p.add(new Prompt("USE_NUM_FORMS", Prompt.Type.CHECK).setPrompt("Use # of forms:")
-                                                                .setDefaultValue("N"));
+                                                                .setDefaultValue("N")
+                                                                .setHidden(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
