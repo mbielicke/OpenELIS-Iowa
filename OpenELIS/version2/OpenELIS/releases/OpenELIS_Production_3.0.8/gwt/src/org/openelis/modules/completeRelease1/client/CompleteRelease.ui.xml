@@ -1,0 +1,281 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="30px">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+        <g:HorizontalPanel>
+          <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
+            text="{msg.gen_query}" toggles="true" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
+            text="{msg.gen_update}" toggles="true" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="complete" leftIcon="{res.icon.completeIcon}"
+            text="{msg.gen_complete}" toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="release" leftIcon="{res.icon.reviewAndReleaseIcon}"
+            text="{msg.gen_release}" toggles="true" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+            text="{msg.gen_commit}" />
+          <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
+            text="{msg.gen_abort}" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Menu ui:field="optionsMenu" selfShow="true">
+            <w:display>
+              <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                rightIcon="{res.icon.OptionsButtonImage}" />
+            </w:display>
+            <w:MenuItem ui:field="unreleaseAnalysis" icon="{res.icon.unreleaseIcon}"
+              display="{msg.completeRelease_unrelease}" />
+            <w:CheckMenuItem ui:field="previewFinalReport" display="{msg.finalreport_preview}" />
+            <w:MenuItem ui:field="queryByWorksheet" display="{msg.completeRelease_queryByWorksheet}" />
+            <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
+              selfShow="true" showBelow="false"
+            >
+              <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
+              <w:MenuItem ui:field="historySampleSpecific" display="{msg.sample_specific}" />
+              <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
+              <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.analysis_analysis}" />
+              <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
+              <w:MenuItem ui:field="historyStorage" display="{msg.storage_storage}" />
+              <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
+              <w:MenuItem ui:field="historyAnalysisQA" display="{msg.analysis_qaEvents}" />
+              <w:MenuItem ui:field="historyAuxData" display="{msg.aux_data}" />
+            </w:Menu>
+          </w:Menu>
+          <w:Button css="{res.buttonPanel}" ui:field="details" leftIcon="{res.icon.fieldLookupIcon}"
+            text="{msg.gen_details}" />
+        </g:HorizontalPanel>
+      </g:AbsolutePanel>
+    </g:layer>
+    <g:layer top="25px" bottom="254px">
+      <g:LayoutPanel>
+        <g:layer right="0px" left="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="25px">
+              <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
+                <t:Column width="115" label="{msg.sample_accessionNum}" sortable="true">
+                  <t:TextBoxCell>
+                    <w:TextBox field="Integer" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="192" label="{msg.gen_test}" sortable="true">
+                  <t:TextBoxCell>
+                    <w:TextBox case="LOWER" field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="192" label="{msg.gen_method}" sortable="true">
+                  <t:TextBoxCell>
+                    <w:TextBox case="LOWER" field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="101" label="{msg.analysis_status}" sortable="true">
+                  <t:DropdownCell>
+                    <w:Dropdown width="100" ui:field="analysisStatus" field="Integer" />
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="100" label="{msg.sample_status}" sortable="true">
+                  <t:DropdownCell>
+                    <w:Dropdown width="100" ui:field="sampleStatus" field="Integer" />
+                  </t:DropdownCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+    <g:layer height="284px" bottom="0px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_sample}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:SampleTabUI ui:field="sampleTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_environmental}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:EnvironmentalTabUI ui:field="environmentalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_privateWell}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:PrivateWellTabUI ui:field="privateWellTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_sdwis}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:SDWISTabUI ui:field="sdwisTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_neonatal}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:NeonatalTabUI ui:field="neonatalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_clinical}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:ClinicalTabUI ui:field="clinicalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_pt}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:PTTabUI ui:field="ptTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sampleQuickEntry_quickEntry}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:QuickEntryTabUI ui:field="quickEntryTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sampleItem_sampleItem}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:SampleItemTabUI ui:field="sampleItemTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.analysis_analysis}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AnalysisTabUI ui:field="analysisTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.test_results}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:ResultTabUI ui:field="resultTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.analysis_notes}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AnalysisNotesTabUI ui:field="analysisNotesTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_notes}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:SampleNotesTabUI ui:field="sampleNotesTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.storage_storage}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:StorageTabUI ui:field="storageTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.qaEvent_qaEvents}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:QAEventTabUI ui:field="qaEventTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.aux_data}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <a:AuxDataTabUI ui:field="auxDataTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.attachment_attachment}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AttachmentTabUI ui:field="attachmentTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+      </w:TabLayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
