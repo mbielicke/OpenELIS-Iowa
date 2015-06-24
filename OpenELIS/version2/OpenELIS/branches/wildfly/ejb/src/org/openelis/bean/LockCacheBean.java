@@ -29,10 +29,18 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 
@@ -48,8 +56,12 @@ public class LockCacheBean {
     private int maxLocks = 0;
     
     private HashMap<Lock.Key, Lock> locks = new HashMap<Lock.Key, Lock>();
+    private HashMap<Transaction,TransactionSync> transactions = new HashMap<Transaction,TransactionSync>();
 
     private static final Logger     log   = Logger.getLogger("openelis");
+    
+    @Resource(lookup="java:/TransactionManager")
+    private TransactionManager transactionManager;
 
     /**
      * Returns a lock a record specified by key
@@ -69,7 +81,25 @@ public class LockCacheBean {
     public void add(Lock lock) {
         locks.put(lock.key, lock);
         maxLocks = Math.max(maxLocks, locks.size());
+        getSync().add(lock.key);
         log.info("Added - "+lock.toString());
+    }
+    
+    public TransactionSync getSync() {
+    	TransactionSync sync;
+    	Transaction transaction;
+    	
+        transaction = getTransaction();
+        sync = transactions.get(transaction);
+        if(sync == null) {
+            sync = new TransactionSync(transaction);
+            try {
+            	transaction.registerSynchronization(sync);
+            } catch (Exception e) {
+            	log.log(Level.SEVERE,e.getMessage(),e);
+            }
+        }
+        return sync;
     }
 
     /**
@@ -131,21 +161,21 @@ public class LockCacheBean {
         }
     }
 
-    @javax.ejb.Lock(LockType.WRITE)
-    public void rollback(int transaction) {
-    	ArrayList<Lock> userLocks;
-    	
-    	userLocks = new ArrayList<Lock>();
-    	for (Lock l : locks.values()) {
-    		if (l.transaction == transaction) {
-    			userLocks.add(l);
-    		}
-    	}
-    	
-    	for (Lock l : userLocks) {
-    		locks.remove(l.key);
-    	}
-    }
+//    @javax.ejb.Lock(LockType.WRITE)
+//    public void rollback(int transaction) {
+//    	ArrayList<Lock> userLocks;
+//    	
+//    	userLocks = new ArrayList<Lock>();
+//    	for (Lock l : locks.values()) {
+//    		if (l.transaction == transaction) {
+//    			userLocks.add(l);
+//    		}
+//    	}
+//    	
+//    	for (Lock l : userLocks) {
+//    		locks.remove(l.key);
+//    	}
+//    }
     /**
      * A simple class to manage lock records. The class is used internally by
      * LockCacheBean and LockBean.
@@ -155,19 +185,17 @@ public class LockCacheBean {
         protected Key  key;
         protected long expires;
         protected String username, sessionId;
-        protected int transaction;
 
         public Lock(Integer tableId, Integer id) {
             this.key = new Key(tableId, id);
         }
 
         public Lock(Integer tableId, Integer id, String username, long expires,
-                    String sessionId, int transaction) {
+                    String sessionId) {
             this(tableId, id);
             this.username = username;
             this.expires = expires;
             this.sessionId = sessionId;
-            this.transaction = transaction;
         }
 
         @Override
@@ -195,8 +223,6 @@ public class LockCacheBean {
             sb.append(username);
             sb.append(":");
             sb.append(sessionId);
-            sb.append(":");
-            sb.append(transaction);
             return sb.toString();
         }
 
@@ -228,5 +254,41 @@ public class LockCacheBean {
                 return false;
             }
         }
+    }
+    
+    private Transaction getTransaction() {
+    	try {
+    		return transactionManager.getTransaction();
+    	} catch (Exception e) {
+    		log.log(Level.SEVERE,"Failed to get Transaction",e);
+    		return null;
+    	}
+    }
+    
+    private class TransactionSync implements Synchronization {
+    	List<Lock.Key> locks = new ArrayList<Lock.Key>();
+    	Transaction transaction;
+    	
+    	public TransactionSync(Transaction transaction) {
+    		this.transaction = transaction;
+    	}
+    	
+    	@Override
+    	public void beforeCompletion() {
+    		
+    	}
+    	@Override
+    	public void afterCompletion(int status) {
+    		if(Status.STATUS_COMMITTED != status) {
+    			for(Lock.Key key : locks) {
+    				remove(key);
+    			}
+    		}
+    		transactions.remove(transaction);
+    	}
+    	
+    	public void add(Lock.Key lock) {
+    		locks.add(lock);
+    	}
     }
 }
