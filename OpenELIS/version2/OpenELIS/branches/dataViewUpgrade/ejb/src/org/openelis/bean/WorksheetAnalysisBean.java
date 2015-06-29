@@ -348,8 +348,9 @@ public class WorksheetAnalysisBean {
                                             waVVO.getTestId(), waVVO.getTestName(),
                                             waVVO.getMethodName(), waVVO.getSectionName(),
                                             waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
-                                            waVVO.getAnalysisStatusId(), collectionDate,
-                                            receivedDate, (Integer)null, (Date)null);
+                                            waVVO.getAnalysisStatusId(), waVVO.getAnalysisTypeId(),
+                                            collectionDate, receivedDate, (Integer)null,
+                                            (Date)null);
         if (waVVO.getAnalysisId() != null) {
             //
             // Compute and set the number of days until the analysis is 

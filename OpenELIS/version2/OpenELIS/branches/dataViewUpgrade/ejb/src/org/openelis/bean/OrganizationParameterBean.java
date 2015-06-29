@@ -84,9 +84,6 @@ public class OrganizationParameterBean {
             o.addAll(query.getResultList());
         }
 
-        if (o.isEmpty())
-            throw new NotFoundException();
-
         return DataBaseUtil.toArrayList(o);
     }
 

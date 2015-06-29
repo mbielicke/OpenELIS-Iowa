@@ -7,6 +7,13 @@
 	background: white;
 }
 
+.PopupPanelWithBorder {
+    background: #F0F0F0;
+    border-style: groove;
+    border-width: 5px;
+    border-color: green
+}
+
 .Form {
 	margin: 4px 8px;
 }

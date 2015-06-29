@@ -1035,7 +1035,8 @@ public class WorksheetExcelHelperBean {
                 } else {
                     setCellValue(cell, wrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("T"+waVDO.getTestId());
                         if (pMap == null) {
@@ -1065,22 +1066,24 @@ public class WorksheetExcelHelperBean {
 
                         apList = pMap.get(wrVDO.getAnalyteId());
                         apVDO = null;
-                        for (AnalyteParameterViewDO ap: apList) {
-                            if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
-                                if (ap.getUnitOfMeasureId() != null) {
-                                    apVDO = ap;
-                                    break;
-                                } else if (apVDO == null) {
-                                    apVDO = ap;
+                        if (apList != null && apList.size() > 0) {
+                            for (AnalyteParameterViewDO ap: apList) {
+                                if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                                    if (ap.getUnitOfMeasureId() != null) {
+                                        apVDO = ap;
+                                        break;
+                                    } else if (apVDO == null) {
+                                        apVDO = ap;
+                                    }
                                 }
                             }
                         }
                         if (apVDO != null) {
-                            if ("p_1".equals(name) && apVDO.getP1() != null) {
+                            if (("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
                                 setCellValue(cell, df.format(apVDO.getP1()));
-                            } else if ("p_2".equals(name) && apVDO.getP2() != null) {
+                            } else if (("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
                                 setCellValue(cell, df.format(apVDO.getP2()));
-                            } else if ("p_3".equals(name) && apVDO.getP3() != null) {
+                            } else if (("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
                                 setCellValue(cell, df.format(apVDO.getP3()));
                             }
                         }
@@ -1163,7 +1166,8 @@ public class WorksheetExcelHelperBean {
                 } else {
                     setCellValue(cell, wqrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("Q"+qcId);
                         if (pMap == null) {
@@ -1193,14 +1197,14 @@ public class WorksheetExcelHelperBean {
 
                         apList = pMap.get(wqrVDO.getAnalyteId());
                         apVDO = null;
-                        if (apList.size() > 0)
+                        if (apList != null && apList.size() > 0)
                             apVDO = apList.get(0);
                         if (apVDO != null) {
-                            if ("p_1".equals(name) && apVDO.getP1() != null) {
+                            if (("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
                                 setCellValue(cell, String.valueOf(apVDO.getP1()));
-                            } else if ("p_2".equals(name) && apVDO.getP2() != null) {
+                            } else if (("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
                                 setCellValue(cell, String.valueOf(apVDO.getP2()));
-                            } else if ("p_3".equals(name) && apVDO.getP3() != null) {
+                            } else if (("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
                                 setCellValue(cell, String.valueOf(apVDO.getP3()));
                             }
                         }

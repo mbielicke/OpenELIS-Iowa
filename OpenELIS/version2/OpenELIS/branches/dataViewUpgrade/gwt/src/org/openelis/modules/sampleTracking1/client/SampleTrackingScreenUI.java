@@ -3745,7 +3745,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     /**
      * Adds a warning to the node if the unit assigned to the analysis it is
-     * showing, isn't valid for the passed type
+     * showing, isn't valid for the passed type or if the test doesn't have the
+     * type
      */
     private void validateSampleType(Node node, Integer typeId) {
         AnalysisViewDO ana;
@@ -3758,14 +3759,19 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         try {
             tm = get(ana.getTestId(), TestManager.class);
-            if (ana.getUnitOfMeasureId() != null &&
-                !tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
+            tree.clearEndUserExceptions(node, 0);
+            if (ana.getUnitOfMeasureId() != null) {
+                if (!tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
                 tree.addException(node,
                                   0,
                                   new FormErrorWarning(Messages.get()
                                                                .analysis_unitInvalidForSampleType()));
-            else
-                tree.clearExceptions(node, 0);
+            } else if ( !tm.getSampleTypes().hasType(typeId)) {
+                tree.addException(node,
+                                  0,
+                                  new FormErrorWarning(Messages.get()
+                                                               .analysis_sampleTypeInvalid()));
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

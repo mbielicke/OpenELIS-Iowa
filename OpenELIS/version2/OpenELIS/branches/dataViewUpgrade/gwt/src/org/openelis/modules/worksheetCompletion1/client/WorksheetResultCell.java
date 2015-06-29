@@ -84,9 +84,7 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
     public SafeHtml bulkRender(Object value) {
         SafeHtmlBuilder builder = new SafeHtmlBuilder();
         
-        builder.appendHtmlConstant("<td>");
         builder.appendEscaped(display(value));
-        builder.appendHtmlConstant("</td>");
         
         return builder.toSafeHtml();
     }
@@ -124,6 +122,7 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
         // TODO Auto-generated method stub
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Object finishEditing() {
         String display, dictId;
@@ -186,6 +185,7 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
      * If the model is not null then sets the editor to be a dropdown and sets
      * the model in the dropdown. Sets the editor to be a textbox otherwise.
      */
+    @SuppressWarnings("unchecked")
     public void setModel(ArrayList<Item<String>> model) {
         Dropdown<String> dd;
 

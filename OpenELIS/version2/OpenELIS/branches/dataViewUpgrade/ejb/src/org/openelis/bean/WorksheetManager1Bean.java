@@ -1115,8 +1115,9 @@ public class WorksheetManager1Bean {
                         if (col != null && (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                             data.setValueAt(col, qcaVDO.getValue());
                     }
-                    if (formatColumnMap.containsKey("p_1") || formatColumnMap.containsKey("p_2") ||
-                        formatColumnMap.containsKey("p_3")) { 
+                    if (formatColumnMap.containsKey("p1") || formatColumnMap.containsKey("p2") ||
+                        formatColumnMap.containsKey("p3") || formatColumnMap.containsKey("p_1") ||
+                        formatColumnMap.containsKey("p_2") || formatColumnMap.containsKey("p_3")) { 
                         pMap = apMap.get("Q"+qcaVDO.getQcId());
                         if (pMap == null) {
                             pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
@@ -1143,17 +1144,29 @@ public class WorksheetManager1Bean {
 
                         apList = pMap.get(data.getAnalyteId());
                         apVDO = null;
-                        if (apList.size() > 0)
+                        if (apList != null && apList.size() > 0)
                             apVDO = apList.get(0);
                         if (apVDO != null) {
+                            col = formatColumnMap.get("p1");
+                            if (apVDO.getP1() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP1()));
                             col = formatColumnMap.get("p_1");
                             if (apVDO.getP1() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                                 data.setValueAt(col, df.format(apVDO.getP1()));
+                            col = formatColumnMap.get("p2");
+                            if (apVDO.getP2() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP2()));
                             col = formatColumnMap.get("p_2");
                             if (apVDO.getP2() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                                 data.setValueAt(col, df.format(apVDO.getP2()));
+                            col = formatColumnMap.get("p3");
+                            if (apVDO.getP3() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP3()));
                             col = formatColumnMap.get("p_3");
                             if (apVDO.getP3() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
@@ -1621,6 +1634,7 @@ public class WorksheetManager1Bean {
                     waVDO.setUnitOfMeasureId(waVDO1.getUnitOfMeasureId());
                     waVDO.setUnitOfMeasure(waVDO1.getUnitOfMeasure());
                     waVDO.setStatusId(waVDO1.getStatusId());
+                    waVDO.setTypeId(waVDO1.getTypeId());
                     waVDO.setCollectionDate(waVDO1.getCollectionDate());
                     waVDO.setReceivedDate(waVDO1.getReceivedDate());
                     waVDO.setDueDays(waVDO1.getDueDays());
@@ -2225,6 +2239,11 @@ public class WorksheetManager1Bean {
                 update = true;
             }
 
+            if (DataBaseUtil.isDifferent(waVDO.getTypeId(), aVDO.getTypeId())) {
+                aVDO.setTypeId(waVDO.getTypeId());
+                update = true;
+            }
+
             if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(), aVDO.getUnitOfMeasureId())) {
                 try {
                     aHelper.changeAnalysisUnit(sMan, aVDO.getId(), waVDO.getUnitOfMeasureId());
@@ -2540,8 +2559,9 @@ public class WorksheetManager1Bean {
                 }
             }
             
-            if (formatColumnMap.containsKey("p_1") || formatColumnMap.containsKey("p_2") ||
-                formatColumnMap.containsKey("p_3")) { 
+            if (formatColumnMap.containsKey("p1") || formatColumnMap.containsKey("p2") ||
+                formatColumnMap.containsKey("p3") || formatColumnMap.containsKey("p_1") ||
+                formatColumnMap.containsKey("p_2") || formatColumnMap.containsKey("p_3")) { 
                 pMap = apMap.get("T"+waVDO.getTestId());
                 if (pMap == null) {
                     pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
@@ -2568,25 +2588,39 @@ public class WorksheetManager1Bean {
 
                 apList = pMap.get(wrVDO.getAnalyteId());
                 apVDO = null;
-                for (AnalyteParameterViewDO ap : apList) {
-                    if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
-                        if (ap.getUnitOfMeasureId() != null) {
-                            apVDO = ap;
-                            break;
-                        } else if (apVDO == null) {
-                            apVDO = ap;
+                if (apList != null && apList.size() > 0) {
+                    for (AnalyteParameterViewDO ap : apList) {
+                        if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                            if (ap.getUnitOfMeasureId() != null) {
+                                apVDO = ap;
+                                break;
+                            } else if (apVDO == null) {
+                                apVDO = ap;
+                            }
                         }
                     }
                 }
                 if (apVDO != null) {
+                    col = formatColumnMap.get("p1");
+                    if (apVDO.getP1() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP1()));
                     col = formatColumnMap.get("p_1");
                     if (apVDO.getP1() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
                         wrVDO.setValueAt(col, df.format(apVDO.getP1()));
+                    col = formatColumnMap.get("p2");
+                    if (apVDO.getP2() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP2()));
                     col = formatColumnMap.get("p_2");
                     if (apVDO.getP2() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
                         wrVDO.setValueAt(col, df.format(apVDO.getP2()));
+                    col = formatColumnMap.get("p3");
+                    if (apVDO.getP3() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP3()));
                     col = formatColumnMap.get("p_3");
                     if (apVDO.getP3() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))

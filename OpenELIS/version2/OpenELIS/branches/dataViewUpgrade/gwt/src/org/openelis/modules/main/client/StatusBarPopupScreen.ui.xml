@@ -15,7 +15,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+  <g:SplitLayoutPanel styleName="{res.style.PopupPanelWithBorder}">
     <g:center>
       <g:LayoutPanel>
         <g:layer left="5px" right="5px" top="10%" height="30%">

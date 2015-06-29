@@ -38,6 +38,7 @@ import org.openelis.domain.DataView1VO;
 import org.openelis.domain.TestAnalyteDataView1VO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
@@ -651,12 +652,16 @@ public class DataViewScreenUI extends Screen {
         if (statusScreen == null) {
             statusScreen = new StatusBarPopupScreenUI() {
                 @Override
+                public boolean isStopVisible() {
+                    return true;
+                }
+                
+                @Override
                 public void stop() {
                     /*
                      * set the attribute in the session that would tell the bean
                      * that the report should be stopped
                      */
-                    message.setText(Messages.get().dataView_pleaseWait());
                     DataViewReportService1.get().stopReport();
                 }
             };
@@ -696,7 +701,7 @@ public class DataViewScreenUI extends Screen {
                          */
                         if (statusPanel.isShowing()) {
                             statusScreen.setStatus(status);
-                            this.schedule(1000);
+                            this.schedule(50);
                         }
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
@@ -705,7 +710,7 @@ public class DataViewScreenUI extends Screen {
                 }
             };
         }
-        timer.schedule(1000);
+        timer.schedule(50);
     }
 
     /**

@@ -114,16 +114,19 @@ public class SampleEnvironmentalBean  {
     }
 
     public SampleEnvironmentalDO update(SampleEnvironmentalDO data) throws Exception {
+        Integer deleteId;
         SampleEnvironmental entity;
+        
 
         if (! data.isChanged() && !data.getLocationAddress().isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
+        deleteId = null;
         entity = manager.find(SampleEnvironmental.class, data.getId());
         if (addressBean.isEmpty(data.getLocationAddress())) {
             if (data.getLocationAddress().getId() != null) {
-                addressBean.delete(data.getLocationAddress());                
+                deleteId = data.getLocationAddress().getId();
                 data.getLocationAddress().setId(null);
             }
         } else {
@@ -143,16 +146,26 @@ public class SampleEnvironmentalBean  {
         entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
         entity.setLocationAddressId(data.getLocationAddress().getId());
+
+        if (deleteId != null)
+            addressBean.delete(deleteId);                
+
         return data;
     }
 
     public void delete(SampleEnvironmentalDO data) throws Exception {
+        Integer deleteId;
         SampleEnvironmental entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleEnvironmental.class, data.getId());
-        if (entity != null)
+        if (entity != null) {
+            deleteId = entity.getLocationAddressId();
             manager.remove(entity);
+            if (deleteId != null)
+                addressBean.delete(deleteId);
+                
+        }
     }
 }

@@ -33,6 +33,9 @@
 	<parameter name="PREP_TEST" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
+	<parameter name="PREP_TEST_LIMITTER" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT s.id as s_id, s.accession_number, s.collection_date, s.collection_time, se.priority,
        t.name as t_name, m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id,
@@ -51,8 +54,8 @@
        left join method m1 on m1.id = t1.method_id
        left join dictionary d2 on d2.id = a1.status_id
  WHERE s.entered_date between $P{FROM} and $P{TO}
-       $P!{STATUS} $P!{TEST} $P!{SECTION}
-ORDER BY $P{ORDER_BY} ]]>
+       $P!{STATUS} $P!{TEST} $P!{SECTION} $P!{PREP_TEST_LIMITTER}
+ORDER BY $P!{ORDER_BY}]]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.Integer"/>

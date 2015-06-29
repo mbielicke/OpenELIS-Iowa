@@ -78,7 +78,7 @@ public class ApplicationBean {
                         "chart_type_fixed", "clinical", "cost_center_unknown", "environmental",
                         "instrument_log_completed", "instrument_log_pending",
                         "laboratory_location_ic", "log_level_error", "log_level_info",
-                        "log_type_report", "log_type_data_transmission", "micrograms_per_liter",
+                        "log_type_data_transmission", "micrograms_per_liter",
                         "nanograms_per_liter", "nanograms_per_milliliter", "newborn",
                         "order_recurrence_unit_days", "order_recurrence_unit_months",
                         "order_recurrence_unit_years", "order_status_back_ordered",
@@ -175,7 +175,6 @@ public class ApplicationBean {
         Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
-        Constants.dictionary().LOG_TYPE_REPORT = dictId(map, "log_type_report");
         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map,
                                                                    "log_type_data_transmission");
         Constants.dictionary().MICROGRAMS_PER_LITER = dictId(map, "micrograms_per_liter");

@@ -1007,7 +1007,7 @@ public class SampleManager1Bean {
                 else
                     addSampleInternalNote(sm, data);
         }
-
+        
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
             setAttachments(sm, null);
             for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids,
@@ -3354,11 +3354,17 @@ public class SampleManager1Bean {
     }
 
     /**
-     * If the passed status is not null, increments its percent completion by
-     * the passed amount
+     * If the passed status is not null and its status is not "Cancel",
+     * increments its percent completion by the passed amount; "Cancel" status
+     * means that the user wants to stop the report
      */
     private void updateStatus(ReportStatus status, int increment) {
-        if (status != null)
+        if (status == null)
+            return;
+        
+        if (ReportStatus.Status.CANCEL.equals(status.getStatus()))
+            status.setMessage(Messages.get().dataView_pleaseWait());
+        else
             status.setPercentComplete(status.getPercentComplete() + increment);
     }
 }

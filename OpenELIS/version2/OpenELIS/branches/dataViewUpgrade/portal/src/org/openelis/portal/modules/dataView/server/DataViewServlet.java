@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.DataView1Bean;
+import org.openelis.bean.DataViewReportBean;
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.IdNameVO;
@@ -47,7 +47,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
     private SessionCacheBean  session;
 
     @EJB
-    private DataView1Bean     dataView;
+    private DataViewReportBean     dataView;
 
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         try {

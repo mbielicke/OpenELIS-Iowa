@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("dataViewReport1")
-public interface DataViewServiceInt1 extends XsrfProtectedService {
+public interface DataViewReportServiceInt1 extends XsrfProtectedService {
 
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception;
 

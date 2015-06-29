@@ -524,7 +524,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     @UiHandler("addItemButton")
     protected void addItem(ClickEvent event) {
         Node node;
-        
+
         node = new Node(2);
         node.setType(SAMPLE_ITEM_LEAF);
         node.setOpen(true);
@@ -539,7 +539,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         String uid;
         Node node;
         AnalysisViewDO ana;
-        
+
         node = tree.getNodeAt(tree.getSelectedNode());
         if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
             /*
@@ -608,7 +608,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     @UiHandler("popoutTreeButton")
     protected void popoutTree(ClickEvent event) {
         ModalWindow modal;
-        
+
         if (sampleItemPopout == null) {
             sampleItemPopout = new SampleItemPopoutLookupUI() {
                 @Override
@@ -915,7 +915,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     /**
      * Goes through the children of the node showing the item and adds a warning
      * to a child if the unit assigned to its analysis isn't valid for the
-     * sample item's sample type.
+     * sample item's sample type or if the test doesn't have the sample type
      */
     private void validateSampleType(Node node, Integer typeId) {
         String uid;
@@ -930,14 +930,19 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         try {
             tm = getTestManager(ana.getTestId());
-            if (ana.getUnitOfMeasureId() != null &&
-                !tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
+            tree.clearEndUserExceptions(node, 0);
+            if (ana.getUnitOfMeasureId() != null) {
+                if (!tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
                 tree.addException(node,
                                   0,
                                   new FormErrorWarning(Messages.get()
                                                                .analysis_unitInvalidForSampleType()));
-            else
-                tree.clearExceptions(node, 0);
+            } else if ( !tm.getSampleTypes().hasType(typeId)) {
+                tree.addException(node,
+                                  0,
+                                  new FormErrorWarning(Messages.get()
+                                                               .analysis_sampleTypeInvalid()));
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

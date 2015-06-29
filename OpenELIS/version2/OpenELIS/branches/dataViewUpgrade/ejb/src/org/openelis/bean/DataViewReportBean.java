@@ -108,7 +108,7 @@ import org.w3c.dom.Node;
 
 @Stateless
 @SecurityDomain("openelis")
-public class DataView1Bean {
+public class DataViewReportBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
@@ -514,12 +514,12 @@ public class DataView1Bean {
                 for (int i = 0; i < range.size() - 1; i++ ) {
                     builder.clearWhereClause();
                     buildWhereForAux(builder, data, moduleName, ids.subList(range.get(i),
-                                                                            range.get(i + 1)));
+                                                                            range.get(i + 1)), null);
                     auxiliary.addAll(fetchAnalytesAndValues(builder, fields));
                 }
             } else {
                 builder.clearWhereClause();
-                buildWhereForAux(builder, data, moduleName, null);
+                buildWhereForAux(builder, data, moduleName, null, null);
                 auxiliary = (List<DataViewAuxDataFetch1VO>)fetchAnalytesAndValues(builder, fields);
             }
             log.log(Level.INFO, "Fetched " + auxiliary.size() + " aux data");
@@ -866,7 +866,7 @@ public class DataView1Bean {
                                                          sampleIds.size());
         try {
             eventLog.add(new EventLogDO(null,
-                                        Constants.dictionary().LOG_TYPE_REPORT,
+                                        dictionaryCache.getIdBySystemName("log_type_report"),
                                         source,
                                         null,
                                         null,
@@ -963,14 +963,6 @@ public class DataView1Bean {
     }
 
     /**
-     * Returns the clause for the module with the passed name for the logged in
-     * user
-     */
-    private String getClause(String moduleName) throws Exception {
-        return userCache.getPermission().getModule(moduleName).getClause();
-    }
-
-    /**
      * Creates a "where" clause from the query fields in the passed VO and sets
      * it in the passed query builder; if "moduleName" is specified, the clause
      * from security for that module for the logged in user is added to the
@@ -982,16 +974,8 @@ public class DataView1Bean {
          * if moduleName is not null then this query is being executed for the
          * web
          */
-        if (moduleName != null) {
-            builder.addWhere("(" + getClause(moduleName) + ")");
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                             Constants.dictionary().SAMPLE_ERROR);
-            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                             Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
-        }
+        if (moduleName != null)
+            buildWhereForWeb(builder, moduleName);        
 
         /*
          * this is done so that the alias for "sampleItem" gets added to the
@@ -1016,21 +1000,15 @@ public class DataView1Bean {
      * "where" clause; the "where" clause is used for fetching aux data
      */
     private void buildWhereForAux(QueryBuilderV2 builder, DataView1VO data, String moduleName,
-                                  List<Integer> sampleIds) throws Exception {
+                                  List<Integer> sampleIds,
+                                  String analyteClause) throws Exception {
         builder.constructWhere(data.getQueryFields());
         /*
-         * if moduleName is not null, then this query is being executed for the
+         * if moduleName is not null then this query is being executed for the
          * web
          */
         if (moduleName != null) {
-            builder.addWhere("(" + getClause(moduleName) + ")");
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                             Constants.dictionary().SAMPLE_ERROR);
-            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                             Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
+            buildWhereForWeb(builder, moduleName);
 
             /*
              * this is done so that the alias for "sampleItem" gets added to the
@@ -1053,6 +1031,15 @@ public class DataView1Bean {
          */
         builder.addWhere(SampleWebMeta.getAuxDataAuxFieldId() + "=" +
                          SampleWebMeta.getAuxDataFieldId());
+        
+        /*
+         * Add the clause for limiting the aux data by analytes only if the user
+         * selected some specific analytes and not all of them. This eliminates
+         * the unnecessary time spent on excluding those aux data from the
+         * records returned by the query
+         */
+        if ( !DataBaseUtil.isEmpty(analyteClause))
+            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + analyteClause);
 
         if (sampleIds != null) {
             builder.addWhere(SampleWebMeta.getAuxDataReferenceId() + " in (" +
@@ -1060,6 +1047,22 @@ public class DataView1Bean {
             builder.addWhere(SampleWebMeta.getAuxDataReferenceTableId() + "=" +
                              Constants.table().SAMPLE);
         }
+    }
+
+    /**
+     * Adds "where" clauses to the builder so that the external users can see
+     * only certain samples; for example, the ones not in error and with at
+     * least one released and reportable analysis
+     */
+    private void buildWhereForWeb(QueryBuilderV2 builder, String moduleName) throws Exception {
+        builder.addWhere("(" + userCache.getPermission().getModule(moduleName).getClause() + ")");
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                         Constants.dictionary().ORG_REPORT_TO);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
+                         Constants.dictionary().ANALYSIS_RELEASED);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
     }
 
     /**
@@ -1245,10 +1248,7 @@ public class DataView1Bean {
                                                       ArrayList<Integer> unselAnalyteIds,
                                                       DataView1VO data) throws Exception {
         Query query;
-        ArrayList<QueryData> fields;
         ArrayList<String> orderBy;
-
-        fields = data.getQueryFields();
 
         builder.setSelect("distinct new org.openelis.domain.DataViewResultFetch1VO(" +
                           SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + "," +
@@ -1259,36 +1259,7 @@ public class DataView1Bean {
                           SampleWebMeta.getResultTypeId() + "," + SampleWebMeta.getResultValue() +
                           ") ");
 
-        builder.constructWhere(fields);
-        /*
-         * if moduleName is not null then this query is being executed for the
-         * web
-         */
-        if (moduleName != null) {
-            builder.addWhere("(" + getClause(moduleName) + ")");
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                             Constants.dictionary().SAMPLE_ERROR);
-            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                             Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
-        }
-
-        /*
-         * this is done so that the alias for "sampleItem" gets added to the
-         * query, otherwise the query will not execute
-         */
-        builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
-
-        /*
-         * the user wants to see only reportable results
-         */
-        if ("N".equals(data.getIncludeNotReportableResults()))
-            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
-
-        builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
-        builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
+        buildWhereForResult(builder, data, moduleName);
 
         /*
          * add the clause for limiting the results by analytes only if the user
@@ -1298,7 +1269,7 @@ public class DataView1Bean {
          */
         if (unselAnalyteIds != null && unselAnalyteIds.size() > 0)
             builder.addWhere(SampleWebMeta.getResultAnalyteId() +
-                             getAnalyteClause(testAnaResultMap.keySet(), unselAnalyteIds) + ")");
+                             getAnalyteClause(testAnaResultMap.keySet(), unselAnalyteIds));
 
         orderBy = new ArrayList<String>();
         orderBy.add(SampleWebMeta.getAccessionNumber());
@@ -1307,7 +1278,7 @@ public class DataView1Bean {
 
         builder.setOrderBy(DataBaseUtil.concatWithSeparator(orderBy, ", "));
         query = manager.createQuery(builder.getEJBQL());
-        builder.setQueryParams(query, fields);
+        builder.setQueryParams(query, data.getQueryFields());
         return query.getResultList();
     }
 
@@ -1362,7 +1333,7 @@ public class DataView1Bean {
             builder.setOrderBy("");
             for (int i = 0; i < range.size() - 1; i++ ) {
                 builder.clearWhereClause();
-                buildWhereForAuxOutput(builder,
+                buildWhereForAux(builder,
                                        data,
                                        moduleName,
                                        ids.subList(range.get(i), range.get(i + 1)),
@@ -1381,7 +1352,7 @@ public class DataView1Bean {
             Collections.sort(auxiliary, new DataViewComparator());
         } else {
             builder.clearWhereClause();
-            buildWhereForAuxOutput(builder, data, moduleName, null, analyteClause);
+            buildWhereForAux(builder, data, moduleName, null, analyteClause);
             builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
                                SampleWebMeta.getAuxDataFieldAnalyteName());
             query = manager.createQuery(builder.getEJBQL());
@@ -1390,72 +1361,6 @@ public class DataView1Bean {
         }
 
         return auxiliary;
-    }
-
-    /**
-     * Creates a "where" clause from the passed arguments and sets it in the
-     * passed query builder; if "moduleName" is specified, the clause from
-     * security for that module for the logged in user is added to the "where"
-     * clause; the "where" clause is used in the query for generating the report
-     */
-    private void buildWhereForAuxOutput(QueryBuilderV2 builder, DataView1VO data,
-                                        String moduleName, List<Integer> sampleIds,
-                                        String analyteClause) throws Exception {
-        builder.constructWhere(data.getQueryFields());
-        /*
-         * If moduleName is present, then it means that this report is being run
-         * for the samples belonging to the list of organizations specified in
-         * this user's system_user_module for a specific domain.
-         */
-        if (moduleName != null) {
-            builder.addWhere("(" + getClause(moduleName) + ")");
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                             Constants.dictionary().SAMPLE_ERROR);
-            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                             Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
-
-            /*
-             * this is done so that the alias for "sampleItem" gets added to the
-             * query, otherwise the query will not execute
-             */
-            builder.addWhere(SampleWebMeta.getItemId() + "=" +
-                             SampleWebMeta.getAnalysisSampleItemId());
-        }
-
-        /*
-         * the user wants to see only reportable aux data
-         */
-        if ("N".equals(data.getIncludeNotReportableAuxData()))
-            builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
-
-        builder.addWhere(SampleWebMeta.getAuxDataValue() + "!=" + "null");
-
-        /*
-         * This is done to add the clause for the aux field's analyte's name to
-         * the query even if the query is not restricted by analyte id because
-         * the user wants to see aux data for all analytes. Otherwise, in that
-         * case the clause for name won't get added.
-         */
-        builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + "!=" + "null");
-
-        /*
-         * Add the clause for limiting the aux data by analytes only if the user
-         * selected some specific analytes and not all of them. This eliminates
-         * the unnecessary time spent on excluding those aux data from the
-         * records returned by the query
-         */
-        if ( !DataBaseUtil.isEmpty(analyteClause))
-            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() + analyteClause);
-
-        if (sampleIds != null) {
-            builder.addWhere(SampleWebMeta.getAuxDataReferenceId() + " in (" +
-                             DataBaseUtil.concatWithSeparator(sampleIds, ",") + ")");
-            builder.addWhere(SampleWebMeta.getAuxDataReferenceTableId() + "=" +
-                             Constants.table().SAMPLE);
-        }
     }
 
     /**
@@ -1481,16 +1386,8 @@ public class DataView1Bean {
          * for the samples belonging to the list of organizations specified in
          * this user's system_user_module for a specific domain.
          */
-        if (moduleName != null) {
-            builder.addWhere("(" + getClause(moduleName) + ")");
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-            builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                             Constants.dictionary().SAMPLE_ERROR);
-            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                             Constants.dictionary().ANALYSIS_RELEASED);
-            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
-        }
+        if (moduleName != null)
+            buildWhereForWeb(builder, moduleName);
 
         builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
 
@@ -1570,22 +1467,24 @@ public class DataView1Bean {
         RowData rd;
         Cell cell;
         CellStyle style;
+        ArrayList<Integer> maxChars;
         ArrayList<ResultViewDO> smResults;
         HashMap<String, Integer> colAnaMap;
 
         wb = new XSSFWorkbook();
         sheet = wb.createSheet();
-        sheet.setDefaultColumnWidth(20);
 
         /*
          * create the header row and set its style
          */
         headerRow = sheet.createRow(0);
         style = createHeaderStyle(wb);
+        maxChars = new ArrayList<Integer>();
         for (i = 0; i < headers.size(); i++ ) {
             cell = headerRow.createCell(i);
             cell.setCellValue(headers.get(i));
-            cell.setCellStyle(style);
+            setMaxChars(cell, maxChars);
+            cell.setCellStyle(style);            
         }
 
         numRes = results == null ? 0 : results.size();
@@ -1789,7 +1688,7 @@ public class DataView1Bean {
              * fill the passed row's cells for all columns except the ones for
              * analytes and values
              */
-            setCells(samId, itemId, anaId, smMap, rd, colFieldMap, moduleName, currRow);
+            setCells(samId, itemId, anaId, smMap, rd, colFieldMap, moduleName, currRow, maxChars);
 
             if (addResRow) {
                 /*
@@ -1798,9 +1697,11 @@ public class DataView1Bean {
                  */
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(res.getAnalyteName());
+                setMaxChars(cell, maxChars);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 if ( !anaOverridden && !samOverridden)
                     cell.setCellValue(resVal);
+                setMaxChars(cell, maxChars);
 
                 /*
                  * find out if this analyte has any column analytes; if it does,
@@ -1848,6 +1749,7 @@ public class DataView1Bean {
                                 colAnaMap.put(colRes.getAnalyte(), anaIndex);
                                 cell = headerRow.createCell(anaIndex);
                                 cell.setCellValue(colRes.getAnalyte());
+                                setMaxChars(cell, maxChars);
                                 cell.setCellStyle(style);
                                 cell = currRow.createCell(anaIndex);
                             } else if (anaIndex == currCol) {
@@ -1862,6 +1764,7 @@ public class DataView1Bean {
                              */
                             if ( !anaOverridden && !samOverridden)
                                 cell.setCellValue(getValue(colRes.getValue(), colRes.getTypeId()));
+                            setMaxChars(cell, maxChars);
                         }
                     }
                 }
@@ -1873,8 +1776,10 @@ public class DataView1Bean {
                  */
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(aux.getAuxFieldAnalyteName());
+                setMaxChars(cell, maxChars);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(auxVal);
+                setMaxChars(cell, maxChars);
             }
 
             prevAnaId = anaId;
@@ -1899,8 +1804,8 @@ public class DataView1Bean {
         /*
          * make each column wide enough to show the longest string in it
          */
-        // for (i = 0; i < headerRow.getPhysicalNumberOfCells(); i++ )
-        // sheet.autoSizeColumn(i);
+        for (i = 0; i < headerRow.getPhysicalNumberOfCells(); i++ )
+            sheet.setColumnWidth(i, maxChars.get(i)*256);
 
         return wb;
     }
@@ -1912,13 +1817,8 @@ public class DataView1Bean {
      * that attribute from the session; returns false otherwise
      */
     private boolean reportStopped(ReportStatus status) {
-        // Object stop;
-
-        // stop = (Boolean)session.getAttribute("DataViewStopReport");
-        // if (Boolean.TRUE.equals(stop)) {
         if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
             status.setMessage(Messages.get().report_stopped());
-            // session.removeAttribute("DataViewStopReport");
             return true;
         }
 
@@ -1934,11 +1834,11 @@ public class DataView1Bean {
         Font font;
 
         font = wb.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());
+        font.setColor(IndexedColors.WHITE.getIndex());        
         style = wb.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_LEFT);
         style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);        
         style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
         style.setFont(font);
 
@@ -2503,11 +2403,14 @@ public class DataView1Bean {
      * ids are null, because those cells need to be blank; "colFieldMap"
      * specifies which column is showing which field; the passed RowData holds
      * data that needs to be recomputed when the sample, item or analysis
-     * changes, but stays the same otherwise e.g. analysis received by
+     * changes, but stays the same otherwise e.g. analysis received by;
+     * "maxChars" is keeps track of the maximum number of characters in each
+     * column and is updated as a new value is put in a cell
      */
     private void setCells(Integer sampleId, Integer sampleItemId, Integer analysisId,
                           HashMap<Integer, SampleManager1> smMap, RowData rd,
-                          HashMap<Integer, String> colFieldMap, String moduleName, Row row) throws Exception {
+                          HashMap<Integer, String> colFieldMap, String moduleName, Row row,
+                          ArrayList<Integer> maxChars) throws Exception {
         boolean runForWeb;
         String column;
         Object value;
@@ -3129,6 +3032,7 @@ public class DataView1Bean {
             }
             cell = row.createCell(i);
             cell.setCellValue(DataBaseUtil.toString(value));
+            setMaxChars(cell, maxChars);
         }
     }
 
@@ -3142,9 +3046,6 @@ public class DataView1Bean {
         Datetime cdt;
 
         cdt = null;
-        /*
-         * set the combination of collection date and time
-         */
         if (date != null) {
             cd = (Date)date.getDate().clone();
             if (time == null) {
@@ -3200,6 +3101,23 @@ public class DataView1Bean {
 
         return "Y".equals(flag) ? Messages.get().gen_yes() : Messages.get().gen_no();
     }
+    
+    /**
+     * The passed list contains the maximum number of characters in each column
+     * of the sheet; if the passed cell's value has more characters than the
+     * current number for the cell's column, the number in the list is updated
+     */
+    private void setMaxChars(Cell cell, ArrayList<Integer> maxChars) {
+        int col, chars;
+        String val;
+
+        col = cell.getColumnIndex();
+        if (col > maxChars.size()-1)
+            maxChars.add(0);
+        val = cell.getStringCellValue();
+        chars = !DataBaseUtil.isEmpty(val) ? val.length() : 0; 
+        maxChars.set(col, Math.max(chars, maxChars.get(col)));
+    }
 
     /**
      * Returns true if each cell in the first row has the same data as the
@@ -3231,18 +3149,8 @@ public class DataView1Bean {
             if (prevType != currType)
                 return false;
 
-            switch (prevType) {
-                case Cell.CELL_TYPE_STRING:
-                    if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(),
-                                              currCell.getStringCellValue()))
-                        return false;
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    if ( !DataBaseUtil.isSame(prevCell.getNumericCellValue(),
-                                              currCell.getNumericCellValue()))
-                        return false;
-                    break;
-            }
+            if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(), currCell.getStringCellValue()))
+                return false;
         }
 
         return true;
@@ -3253,7 +3161,7 @@ public class DataView1Bean {
      * analyte and value, because they belong to the same sample, sample item or
      * analysis; but the data for some of those columns is obtained by looping
      * e.g. analysis received by or combining two fields e.g. collected
-     * date-time; this class holds such data so that it can be resused until the
+     * date-time; this class holds such data so that it can be reused until the
      * sample, sample item or analysis changes
      */ 
     private class RowData {

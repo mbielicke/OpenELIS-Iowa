@@ -35,6 +35,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -385,8 +386,12 @@ public class ClinicalTabUI extends Screen {
 
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                fieldsDisabledLabel.setText(canEditDomain ? null : Messages.get()
-                                                                     .dataView_tabFieldsDisabled());
+                String dtxt, ptxt;
+                
+                dtxt = canEditDomain ? null : Messages.get().dataView_tabFieldsDisabled();
+                ptxt = canEditPatient ? null : Messages.get().dataView_patientFieldsDisabled();
+                
+                fieldsDisabledLabel.setText(DataBaseUtil.concatWithSeparator(dtxt, " ", ptxt));
             }
         });
 

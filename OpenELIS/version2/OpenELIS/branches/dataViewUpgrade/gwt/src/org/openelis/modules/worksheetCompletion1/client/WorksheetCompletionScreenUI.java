@@ -84,7 +84,6 @@ import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
-import org.openelis.modules.pws.client.StatusBarPopupScreenUI;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
@@ -137,6 +136,7 @@ import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
+import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
@@ -1602,7 +1602,17 @@ public class WorksheetCompletionScreenUI extends Screen {
 
     private void createStatusBarPopup() {
         if (statusScreen == null) {
-            statusScreen = new StatusBarPopupScreenUI();
+            statusScreen = new StatusBarPopupScreenUI() {
+                @Override
+                public boolean isStopVisible() {
+                    return false;
+                }
+                
+                @Override
+                public void stop() {
+                    // ignore
+                }
+            };
 
             /*
              * initialize and show the popup screen
