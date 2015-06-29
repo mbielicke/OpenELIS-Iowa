@@ -31,17 +31,15 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
-import org.openelis.bean.DataView1Bean;
+import org.openelis.bean.DataViewReportBean;
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.DataView1VO;
-import org.openelis.modules.report.dataView1.client.DataViewServiceInt1;
+import org.openelis.modules.report.dataView1.client.DataViewReportServiceInt1;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 
-import sun.security.provider.certpath.OCSPResponse.ResponseStatus;
-
 @WebServlet("/openelis/dataViewReport1")
-public class DataViewReportServlet1 extends RemoteServlet implements DataViewServiceInt1 {
+public class DataViewReportServlet1 extends RemoteServlet implements DataViewReportServiceInt1 {
 
     private static final long  serialVersionUID = 1L;
 
@@ -49,7 +47,7 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
     private SessionCacheBean   session;
 
     @EJB
-    private DataView1Bean      dataView1;
+    private DataViewReportBean      dataView1;
 
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
         try {
@@ -121,7 +119,6 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewSer
     public void stopReport() {
         ReportStatus status;
         
-        //session.setAttribute("DataViewStopReport", Boolean.TRUE);
         status = (ReportStatus)session.getAttribute("DataViewReportStatus");
         status.setStatus(ReportStatus.Status.CANCEL);
     }

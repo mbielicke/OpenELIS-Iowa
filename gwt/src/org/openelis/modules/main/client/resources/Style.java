@@ -8,6 +8,8 @@ public interface Style extends CssResource {
 	
 	public String WhiteContentPanel();
 	
+	public String PopupPanelWithBorder();
+	
 	public String Form();
 	
 	public String FormTitle();

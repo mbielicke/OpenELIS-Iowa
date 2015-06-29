@@ -82,7 +82,7 @@ public class DataViewAuxDataFetch1VO implements Serializable {
     }
 
     public void setAuxFieldAnalyteName(String auxFieldAnalyteName) {
-        this.auxFieldAnalyteName = auxFieldAnalyteName;
+        this.auxFieldAnalyteName = DataBaseUtil.trim(auxFieldAnalyteName);
     }
 
     public Integer getTypeId() {

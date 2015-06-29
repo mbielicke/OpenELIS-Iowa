@@ -132,7 +132,6 @@ public class AuxDataBean {
 
         map = new HashMap<Integer, DictionaryViewDO>();
         if (ids.size() > 0) {
-            log.log(Level.INFO, "Fetching dictionaries for aux data");
             ds = dictionary.fetchByIds(DataBaseUtil.toArrayList(ids));
             for (DictionaryViewDO data : ds)
                 map.put(data.getId(), data);

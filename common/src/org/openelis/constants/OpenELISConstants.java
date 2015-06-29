@@ -1186,6 +1186,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_samplePrep();
 
   /**
+   * Translated "Sample type not present in test definition".
+   * 
+   * @return translated "Sample type not present in test definition"
+   */
+  @DefaultMessage("Sample type not present in test definition")
+  @Key("analysis.sampleTypeInvalid")
+  String analysis_sampleTypeInvalid();
+
+  /**
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition".
+   * 
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Sample type not present in test definition")
+  @Key("analysis.sampleTypeInvalidWarning")
+  String analysis_sampleTypeInvalidWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing".
    * 
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing"
@@ -4111,11 +4129,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_dataView();
 
   /**
-   * Translated "Data View: Running for user ''{0}'' with {1,number,#0} samples ".
+   * Translated "Data View: Running for user ''{0}'' with {1,number,#0} samples".
    * 
-   * @return translated "Data View: Running for user ''{0}'' with {1,number,#0} samples "
+   * @return translated "Data View: Running for user ''{0}'' with {1,number,#0} samples"
    */
-  @DefaultMessage("Data View: Running for user ''{0}'' with {1,number,#0} samples ")
+  @DefaultMessage("Data View: Running for user ''{0}'' with {1,number,#0} samples")
   @Key("dataView.eventLogMessage")
   String dataView_eventLogMessage(String arg0,  Integer arg1);
 
@@ -4435,6 +4453,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_patientCity();
 
   /**
+   * Translated "Patient-related fields cannot be selected. ".
+   * 
+   * @return translated "Patient-related fields cannot be selected. "
+   */
+  @DefaultMessage("Patient-related fields cannot be selected. ")
+  @Key("dataView.patientFieldsDisabled")
+  String dataView_patientFieldsDisabled();
+
+  /**
    * Translated "Patient First Name".
    * 
    * @return translated "Patient First Name"
@@ -4498,11 +4525,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_patientZipcode();
 
   /**
-   * Translated "Please Wait...".
+   * Translated "Stopping report. Please Wait...".
    * 
-   * @return translated "Please Wait..."
+   * @return translated "Stopping report. Please Wait..."
    */
-  @DefaultMessage("Please Wait...")
+  @DefaultMessage("Stopping report. Please Wait...")
   @Key("dataView.pleaseWait")
   String dataView_pleaseWait();
 
@@ -15440,6 +15467,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Generating Data View...")
   @Key("report.genDataView")
   String report_genDataView();
+
+  /**
+   * Translated "No Status".
+   * 
+   * @return translated "No Status"
+   */
+  @DefaultMessage("No Status")
+  @Key("report.noStatus")
+  String report_noStatus();
 
   /**
    * Translated "Outputing report".

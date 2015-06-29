@@ -38,6 +38,7 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -72,12 +73,19 @@ public class OrganizationContactBean {
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
-        Query query;
+        Query query;        
+        List<OrganizationContactDO> o;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("OrganizationContact.FetchByOrganizationIds");
-        query.setParameter("ids", ids);
+        o = new ArrayList<OrganizationContactDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(o);
     }
 
     public OrganizationContactDO add(OrganizationContactDO data) throws Exception {
@@ -120,10 +128,11 @@ public class OrganizationContactBean {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
-        if (entity != null)
+        if (entity != null) {
             manager.remove(entity);
+            addressBean.delete(data.getAddress());
+        }
     }
 
     public void validate(OrganizationContactDO data) throws Exception {

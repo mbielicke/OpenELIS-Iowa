@@ -154,7 +154,7 @@ public class SampleQAEventBean {
         entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
         entity.setIsBillable(data.getIsBillable());
-
+        
         return data;
     }
 
@@ -168,10 +168,10 @@ public class SampleQAEventBean {
         if (entity != null)
             manager.remove(entity);
     }
-
+    
     public void validate(SampleQaEventViewDO data, Integer accession) throws Exception {
         ValidationErrorsList e;
-
+        
         e = new ValidationErrorsList();
         if (data.getTypeId() == null)
             e.add(new FormErrorException(Messages.get()

@@ -9,11 +9,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
-public class DataViewReportService1 implements DataViewServiceInt1, DataViewServiceInt1Async {
+public class DataViewReportService1 implements DataViewReportServiceInt1, DataViewReportServiceInt1Async {
 
     static DataViewReportService1 instance;
 
-    DataViewServiceInt1Async      service;
+    DataViewReportServiceInt1Async      service;
 
     public static DataViewReportService1 get() {
         if (instance == null)
@@ -23,7 +23,7 @@ public class DataViewReportService1 implements DataViewServiceInt1, DataViewServ
     }
 
     private DataViewReportService1() {
-        service = (DataViewServiceInt1Async)GWT.create(DataViewServiceInt1.class);
+        service = (DataViewReportServiceInt1Async)GWT.create(DataViewReportServiceInt1.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 

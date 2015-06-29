@@ -5,7 +5,7 @@ import org.openelis.ui.common.ReportStatus;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface DataViewServiceInt1Async {
+public interface DataViewReportServiceInt1Async {
 
     public void fetchTestAnalyteAndAuxField(DataView1VO data, AsyncCallback<DataView1VO> callback);
 
