@@ -771,7 +771,6 @@ public class OrganizationScreenUI extends Screen {
     @UiHandler("query")
     protected void query(ClickEvent event) {
         manager = new OrganizationManager1();
-        ;
         setData();
         setState(QUERY);
         fireDataChange();
