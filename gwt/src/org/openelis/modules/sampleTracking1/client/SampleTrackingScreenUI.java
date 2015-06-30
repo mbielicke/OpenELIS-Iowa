@@ -1347,6 +1347,51 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected void collapse(ClickEvent event) {
         tree.collapse();
     }
+    
+    /**
+     * Fetches samples "similar" to the one selected in the tree; the
+     * "similarity" is specific to the domain of the sample
+     */
+    @UiHandler("similarButton")
+    protected void similar(ClickEvent event) {
+        UUID data;
+        SampleManager1 sm;
+        QueryData field;
+        ArrayList<QueryData> fields;
+        
+        data = tree.getNodeAt(tree.getSelectedNode()).getData();
+        sm = managers.get(data.sampleId);
+        
+        /*
+         * this feature is only available for the clinical domain for now
+         */
+        if (!Constants.domain().CLINICAL.equals(sm.getSample().getDomain()))
+            return;
+        
+        fields = new ArrayList<QueryData>();
+        /*
+         * the domain is set here to make sure that no PT samples for the
+         * patient are fetched; this can happen if a PT sample has clinical as
+         * the additional domain; fetched samples should have the same patient
+         * id as the selected sample
+         */
+        field = new QueryData();
+        field.setKey(SampleMeta.getDomain());
+        field.setQuery(Constants.domain().CLINICAL);
+        field.setType(QueryData.Type.STRING);
+        fields.add(field);
+        
+        field = new QueryData();
+        field.setKey(SampleMeta.getClinicalPatientId());
+        field.setQuery(sm.getSampleClinical().getPatient().getId().toString());
+        field.setType(QueryData.Type.INTEGER);
+        fields.add(field);
+        
+        query = new Query();
+        query.setFields(fields);
+        query.setRowsPerPage(ROWS_PER_PAGE);
+        executeQuery(query);
+    }
 
     /**
      * Puts the screen in query state, sets the manager to null and instantiates
