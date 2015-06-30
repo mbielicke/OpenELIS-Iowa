@@ -2,9 +2,9 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
-public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
+public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
   /**
    * Translated "QA Event".
@@ -20534,6 +20534,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Position")
   @Key("worksheet.position")
   String worksheet_position();
+
+  /**
+   * Translated "Print - Labels".
+   * 
+   * @return translated "Print - Labels"
+   */
+  @DefaultMessage("Print - Labels")
+  @Key("worksheet.printLabels")
+  String worksheet_printLabels();
+
+  /**
+   * Translated "Print - Worksheet".
+   * 
+   * @return translated "Print - Worksheet"
+   */
+  @DefaultMessage("Print - Worksheet")
+  @Key("worksheet.printWorksheet")
+  String worksheet_printWorksheet();
 
   /**
    * Translated "QC Link".
