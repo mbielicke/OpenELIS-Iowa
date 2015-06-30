@@ -85,6 +85,7 @@ import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.pws.client.StatusBarPopupScreenUI;
+import org.openelis.modules.report.client.WorksheetLabelReportScreen;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
@@ -153,6 +154,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     private PopupPanel                                    statusPanel;
     private StatusBarPopupScreenUI                        statusScreen;
     private Timer                                         exportTimer, importTimer;
+    private WorksheetLabelReportScreen                    worksheetLabelReportScreen;
     private WorksheetManager1                             manager;
     private WorksheetPrintReportScreen                    worksheetPrintReportScreen;
 
@@ -172,7 +174,8 @@ public class WorksheetCompletionScreenUI extends Screen {
     @UiField
     protected Menu                                        optionsMenu;
     @UiField
-    protected MenuItem                                    print, worksheetHistory;
+    protected MenuItem                                    printLabels, printWorksheet,
+                                                          worksheetHistory;
     @UiField
     protected TabLayoutPanel                              tabPanel;
     @UiField
@@ -365,15 +368,23 @@ public class WorksheetCompletionScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
-                print.setEnabled(isState(DISPLAY));
+                printWorksheet.setEnabled(isState(DISPLAY));
+                printLabels.setEnabled(isState(DISPLAY));
                 worksheetHistory.setEnabled(isState(DISPLAY));
             }
         });
         
-        print.addCommand(new Command() {
+        printWorksheet.addCommand(new Command() {
             @Override
             public void execute() {
-                print();
+                printWorksheet();
+            }
+        });
+
+        printLabels.addCommand(new Command() {
+            @Override
+            public void execute() {
+                printLabels();
             }
         });
 
@@ -1151,7 +1162,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         SampleService1.get().unlock(sampleIds, sampleElements, unlockSamplesCall);
     }
 
-    protected void print() {
+    protected void printWorksheet() {
         ScreenWindow modal;
 
         try {
@@ -1159,7 +1170,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                 worksheetPrintReportScreen = new WorksheetPrintReportScreen();
 
                 /*
-                 * we need to make sure that the value of SHIPPING_ID gets set
+                 * we need to make sure that the value of WORKSHEET_ID gets set
                  * the first time the screen is brought up
                  */
                 DeferredCommand.addCommand(new Command() {
@@ -1176,6 +1187,37 @@ public class WorksheetCompletionScreenUI extends Screen {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(Messages.get().print());
             modal.setContent(worksheetPrintReportScreen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    protected void printLabels() {
+        ScreenWindow modal;
+
+        try {
+            if (worksheetLabelReportScreen == null) {
+                worksheetLabelReportScreen = new WorksheetLabelReportScreen();
+
+                /*
+                 * we need to make sure that the value of WORKSHEET_ID gets set 
+                 * the first time the screen is brought up
+                 */
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID",
+                                                                 manager.getWorksheet().getId());
+                    }
+                });
+            } else {
+                worksheetLabelReportScreen.reset();
+                worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID", manager.getWorksheet()
+                                                                                .getId());
+            }
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().print());
+            modal.setContent(worksheetLabelReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
