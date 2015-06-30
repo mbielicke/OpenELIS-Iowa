@@ -201,7 +201,7 @@
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
             </g:layer>
             <g:layer top="0px" bottom="20px" right="14px" width="40%">
-              <w:TitledPanel title="{msg.sample_providerOrganizationInfo}">
+              <w:TitledPanel title="{msg.sample_organizationInfo}">
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
                     <tr>
