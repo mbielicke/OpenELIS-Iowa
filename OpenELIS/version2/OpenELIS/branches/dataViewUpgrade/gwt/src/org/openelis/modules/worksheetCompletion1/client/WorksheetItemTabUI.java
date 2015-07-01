@@ -124,7 +124,7 @@ public class WorksheetItemTabUI extends Screen {
     protected Button                                      editMultipleButton, selectAllButton,
                                                           unselectAllButton;
     @UiField
-    protected Dropdown<Integer>                           analysisStatusId, qcLink;
+    protected Dropdown<Integer>                           analysisStatusId, analysisTypeId, qcLink;
     @UiField
     protected Table                                       worksheetItemTable;
 
@@ -225,22 +225,24 @@ public class WorksheetItemTabUI extends Screen {
                 
                 if (!isState(UPDATE) || !canEdit || event.getCol() == 1 || event.getCol() == 2 ||
                     event.getCol() == 3 || event.getCol() == 4 || event.getCol() == 5 ||
-                    event.getCol() == 6 || event.getCol() == 9) {
+                    event.getCol() == 6 || event.getCol() == 10) {
                     event.cancel();
                 } else if (!getUpdateTransferMode() && (event.getCol() == 0 || event.getCol() == 7 ||
-                                                        event.getCol() == 8 || event.getCol() == 10)) {
+                                                        event.getCol() == 8 || event.getCol() == 9 ||
+                                                        event.getCol() == 11)) {
                     event.cancel();
                 } else if (getUpdateTransferMode() && event.getCol() != 0 && event.getCol() != 7 &&
-                                                      event.getCol() != 8 && event.getCol() != 10) {
+                                                      event.getCol() != 8 && event.getCol() != 9 &&
+                                                      event.getCol() != 11) {
                     event.cancel();
                 } else {
                     data = manager.getObject((String)worksheetItemTable.getRowAt(event.getRow()).getData());
                     accessionNumber = worksheetItemTable.getValueAt(event.getRow(), 2);
                     if (data instanceof WorksheetItemDO ||
-                        ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 10)) {
+                        ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 11)) {
                         event.cancel();
                     } else if (data instanceof WorksheetAnalysisViewDO) {
-                        if (event.getCol() >= 10) {
+                        if (event.getCol() >= 11) {
                             event.cancel();
                         } else {
                             waVDO = (WorksheetAnalysisViewDO)data;
@@ -251,7 +253,7 @@ public class WorksheetItemTabUI extends Screen {
                             }
                         }
                     } else if (data instanceof WorksheetQcResultViewDO) {
-                        if (event.getCol() < 11) {
+                        if (event.getCol() < 12) {
                             event.cancel();
                         } else {
                             wqrVDO = (WorksheetQcResultViewDO)data;
@@ -269,7 +271,7 @@ public class WorksheetItemTabUI extends Screen {
                             Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(waVDO.getSectionName(),
                                                                                                          Messages.get().edit()));
                             event.cancel();
-                        } else if (event.getCol() >= 11) {
+                        } else if (event.getCol() >= 12) {
                             rgRow = resultGroupMap.get(((WorksheetResultViewDO)data).getTestAnalyteId());
                             rg = rgRow.get(event.getCol() - 1);
                             testId = waVDO.getTestId();
@@ -369,10 +371,12 @@ public class WorksheetItemTabUI extends Screen {
                     case 8:
                         waVDO.setStatusId((Integer)val);
                         break;
-                    case 10:
-                        wrVDO.setIsReportable((String)val);
+                    case 9:
+                        waVDO.setTypeId((Integer)val);
                         break;
                     case 11:
+                        wrVDO.setIsReportable((String)val);
+                        break;
                     case 12:
                     case 13:
                     case 14:
@@ -402,9 +406,10 @@ public class WorksheetItemTabUI extends Screen {
                     case 38:
                     case 39:
                     case 40:
+                    case 41:
                         value = (Value)val;
                         if (wrVDO != null) {
-                            wrVDO.setValueAt(c - 11, value.getDisplay());
+                            wrVDO.setValueAt(c - 12, value.getDisplay());
                             if (scriptletRunner != null) {
                                 tm = testManagers.get(waVDO.getTestId());
                                 if (tm != null && tm.getTest().getScriptletId() != null) {
@@ -427,7 +432,7 @@ public class WorksheetItemTabUI extends Screen {
                                 }
                             }
                         } else if (wqrVDO != null) {
-                            wqrVDO.setValueAt(c - 11, value.getDisplay());
+                            wqrVDO.setValueAt(c - 12, value.getDisplay());
                         }
                         break;
                 }
@@ -603,6 +608,15 @@ public class WorksheetItemTabUI extends Screen {
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         }
         analysisStatusId.setModel(model);
+
+        //
+        // load analysis type dropdown model
+        //
+        dictList  = CategoryCache.getBySystemName("analysis_type");
+        model = new ArrayList<Item<Integer>>();
+        for (DictionaryDO resultDO : dictList)
+            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        analysisTypeId.setModel(model);
     }
     
     public void setData(WorksheetManager1 manager) {
@@ -645,38 +659,38 @@ public class WorksheetItemTabUI extends Screen {
                                 wrVDO = manager.result.get(waVDO, r);
                                 row = worksheetItemTable.getRowAt(rowIndex);
                                 if (!manager.getUid(wrVDO).equals(row.getData()) || 
-                                    DataBaseUtil.isDifferent(wrVDO.getAnalyteName(), row.getCell(9)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getIsReportable(), row.getCell(10)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(0), row.getCell(11)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(1), row.getCell(12)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(2), row.getCell(13)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(3), row.getCell(14)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(4), row.getCell(15)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(5), row.getCell(16)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(6), row.getCell(17)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(7), row.getCell(18)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(8), row.getCell(19)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(9), row.getCell(20)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(10), row.getCell(21)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(11), row.getCell(22)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(12), row.getCell(23)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(13), row.getCell(24)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(14), row.getCell(25)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(15), row.getCell(26)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(16), row.getCell(27)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(17), row.getCell(28)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(18), row.getCell(29)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(19), row.getCell(30)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(20), row.getCell(31)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(21), row.getCell(32)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(22), row.getCell(33)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(23), row.getCell(34)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(24), row.getCell(35)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(25), row.getCell(36)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(26), row.getCell(37)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(27), row.getCell(38)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(28), row.getCell(39)) ||
-                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(29), row.getCell(40))) {
+                                    DataBaseUtil.isDifferent(wrVDO.getAnalyteName(), row.getCell(10)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getIsReportable(), row.getCell(11)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(0), row.getCell(12)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(1), row.getCell(13)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(2), row.getCell(14)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(3), row.getCell(15)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(4), row.getCell(16)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(5), row.getCell(17)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(6), row.getCell(18)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(7), row.getCell(19)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(8), row.getCell(20)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(9), row.getCell(21)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(10), row.getCell(22)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(11), row.getCell(23)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(12), row.getCell(24)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(13), row.getCell(25)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(14), row.getCell(26)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(15), row.getCell(27)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(16), row.getCell(28)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(17), row.getCell(29)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(18), row.getCell(30)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(19), row.getCell(31)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(20), row.getCell(32)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(21), row.getCell(33)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(22), row.getCell(34)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(23), row.getCell(35)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(24), row.getCell(36)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(25), row.getCell(37)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(26), row.getCell(38)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(27), row.getCell(39)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(28), row.getCell(40)) ||
+                                    DataBaseUtil.isDifferent(wrVDO.getValueAt(29), row.getCell(41))) {
                                     redraw = true;
                                     break items;
                                 }
@@ -687,37 +701,37 @@ public class WorksheetItemTabUI extends Screen {
                                 wqrVDO = manager.qcResult.get(waVDO, r);
                                 row = worksheetItemTable.getRowAt(rowIndex);
                                 if (!manager.getUid(wqrVDO).equals(row.getData()) || 
-                                    DataBaseUtil.isDifferent(wqrVDO.getAnalyteName(), row.getCell(9)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(0), row.getCell(11)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(1), row.getCell(12)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(2), row.getCell(13)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(3), row.getCell(14)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(4), row.getCell(15)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(5), row.getCell(16)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(6), row.getCell(17)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(7), row.getCell(18)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(8), row.getCell(19)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(9), row.getCell(20)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(10), row.getCell(21)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(11), row.getCell(22)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(12), row.getCell(23)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(13), row.getCell(24)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(14), row.getCell(25)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(15), row.getCell(26)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(16), row.getCell(27)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(17), row.getCell(28)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(18), row.getCell(29)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(19), row.getCell(30)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(20), row.getCell(31)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(21), row.getCell(32)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(22), row.getCell(33)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(23), row.getCell(34)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(24), row.getCell(35)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(25), row.getCell(36)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(26), row.getCell(37)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(27), row.getCell(38)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(28), row.getCell(39)) ||
-                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(29), row.getCell(40))) {
+                                    DataBaseUtil.isDifferent(wqrVDO.getAnalyteName(), row.getCell(10)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(0), row.getCell(12)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(1), row.getCell(13)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(2), row.getCell(14)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(3), row.getCell(15)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(4), row.getCell(16)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(5), row.getCell(17)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(6), row.getCell(18)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(7), row.getCell(19)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(8), row.getCell(20)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(9), row.getCell(21)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(10), row.getCell(22)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(11), row.getCell(23)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(12), row.getCell(24)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(13), row.getCell(25)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(14), row.getCell(26)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(15), row.getCell(27)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(16), row.getCell(28)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(17), row.getCell(29)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(18), row.getCell(30)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(19), row.getCell(31)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(20), row.getCell(32)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(21), row.getCell(33)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(22), row.getCell(34)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(23), row.getCell(35)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(24), row.getCell(36)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(25), row.getCell(37)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(26), row.getCell(38)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(27), row.getCell(39)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(28), row.getCell(40)) ||
+                                    DataBaseUtil.isDifferent(wqrVDO.getValueAt(29), row.getCell(41))) {
                                     redraw = true;
                                     break items;
                                 }
@@ -732,7 +746,8 @@ public class WorksheetItemTabUI extends Screen {
                                 DataBaseUtil.isDifferent(waVDO.getTestName(), row.getCell(5)) ||
                                 DataBaseUtil.isDifferent(waVDO.getMethodName(), row.getCell(6)) ||
                                 DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(), row.getCell(7)) ||
-                                DataBaseUtil.isDifferent(waVDO.getStatusId(), row.getCell(8))) {
+                                DataBaseUtil.isDifferent(waVDO.getStatusId(), row.getCell(8)) ||
+                                DataBaseUtil.isDifferent(waVDO.getTypeId(), row.getCell(9))) {
                                 redraw = true;
                                 break items;
                             }
@@ -839,15 +854,16 @@ public class WorksheetItemTabUI extends Screen {
                     logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
 
-                rowSize = Math.min(headers.size(), 30) + 11;
-                for (i = 11; i < rowSize; i++) {
+                rowSize = Math.min(headers.size(), 30) + 12;
+                for (i = 12; i < rowSize; i++) {
                     if (i == worksheetItemTable.getColumnCount())
                         worksheetItemTable.addColumn();
                     col = worksheetItemTable.getColumnAt(i);
-                    col.setLabel(headers.get(i - 11).getName());
+                    col.setLabel(headers.get(i - 12).getName());
                     col.setCellRenderer(new WorksheetResultCell());
                     col.setWidth(150);
                 }
+                
                 while (rowSize < worksheetItemTable.getColumnCount())
                     worksheetItemTable.removeColumnAt(rowSize);
 
@@ -902,6 +918,7 @@ public class WorksheetItemTabUI extends Screen {
                                 row.setCell(7, new AutoCompleteValue());
                             }
                             row.setCell(8, waDO.getStatusId());
+                            row.setCell(9, waDO.getTypeId());
                             
                             for (k = 0; k < manager.result.count(waDO); k++) {
                                 wrVDO = manager.result.get(waDO, k);
@@ -916,19 +933,20 @@ public class WorksheetItemTabUI extends Screen {
                                     row.setCell(6, "");
                                     row.setCell(7, new AutoCompleteValue());
                                     row.setCell(8, "");
+                                    row.setCell(9, "");
                                 }
-                                row.setCell(9, wrVDO.getAnalyteName());
-                                row.setCell(10, wrVDO.getIsReportable());
-                                for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new WorksheetResultCell.Value(wrVDO.getValueAt(l - 11), wrVDO.getValueAt(l - 11)));
+                                row.setCell(10, wrVDO.getAnalyteName());
+                                row.setCell(11, wrVDO.getIsReportable());
+                                for (l = 12; l < rowSize; l++)
+                                    row.setCell(l, new WorksheetResultCell.Value(wrVDO.getValueAt(l - 12), wrVDO.getValueAt(l - 12)));
                                 row.setData(manager.getUid(wrVDO)); 
                                 model.add(row);
                                 r++;
                             }
                             if (k == 0) {
-                                row.setCell(9, "NO ANAlYTES FOOUND");
-                                row.setCell(10, null);
-                                for (l = 11; l < rowSize; l++)
+                                row.setCell(10, "NO ANAlYTES FOUND");
+                                row.setCell(11, null);
+                                for (l = 12; l < rowSize; l++)
                                     row.setCell(l, new WorksheetResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
@@ -942,6 +960,7 @@ public class WorksheetItemTabUI extends Screen {
                             row.setCell(6, "");
                             row.setCell(7, new AutoCompleteValue());
                             row.setCell(8, "");
+                            row.setCell(9, "");
                             
                             for (k = 0; k < manager.qcResult.count(waDO); k++) {
                                 wqrVDO = manager.qcResult.get(waDO, k);
@@ -956,19 +975,20 @@ public class WorksheetItemTabUI extends Screen {
                                     row.setCell(6, "");
                                     row.setCell(7, new AutoCompleteValue());
                                     row.setCell(8, "");
+                                    row.setCell(9, "");
                                 }
-                                row.setCell(9, wqrVDO.getAnalyteName());
-                                row.setCell(10, null);
-                                for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new WorksheetResultCell.Value(wqrVDO.getValueAt(l - 11), wqrVDO.getValueAt(l - 11)));
+                                row.setCell(10, wqrVDO.getAnalyteName());
+                                row.setCell(11, null);
+                                for (l = 12; l < rowSize; l++)
+                                    row.setCell(l, new WorksheetResultCell.Value(wqrVDO.getValueAt(l - 12), wqrVDO.getValueAt(l - 12)));
                                 row.setData(manager.getUid(wqrVDO)); 
                                 model.add(row);
                                 r++;
                             }
                             if (k == 0) {
-                                row.setCell(9, "NO ANAlYTES FOOUND");
-                                row.setCell(10, null);
-                                for (l = 11; l < rowSize; l++)
+                                row.setCell(10, "NO ANAlYTES FOUND");
+                                row.setCell(11, null);
+                                for (l = 12; l < rowSize; l++)
                                     row.setCell(l, new WorksheetResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
