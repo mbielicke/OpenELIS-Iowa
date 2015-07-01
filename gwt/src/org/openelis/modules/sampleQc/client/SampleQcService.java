@@ -26,8 +26,6 @@
 package org.openelis.modules.sampleQc.client;
 
 import org.openelis.domain.SampleQcVO;
-import org.openelis.modules.order1.client.OrderServiceInt1;
-import org.openelis.modules.order1.client.OrderServiceInt1Async;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.screen.Callback;
 

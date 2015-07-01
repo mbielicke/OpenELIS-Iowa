@@ -140,8 +140,6 @@ public class SampleQcScreenUI extends Screen {
 
     protected HashMap<Integer, QcManager>                          qms;
 
-    protected HashMap<Integer, Integer>                            relatedWorksheets;
-
     protected HashMap<Integer, String>                             analysisStatus, worksheetStatus,
                     worksheetFormatName, worksheetFormatCategories, qcType;
 
@@ -279,6 +277,8 @@ public class SampleQcScreenUI extends Screen {
         Validation validation;
 
         finishEditing();
+        sm = null;
+        tree.setRoot(getRoot());
         validation = validate();
 
         if (Validation.Status.ERRORS.equals(validation.getStatus())) {
@@ -376,6 +376,13 @@ public class SampleQcScreenUI extends Screen {
         }
         try {
             status = SampleQcService.get().export(sqc);
+            if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
+                setError(status.getMessage());
+            } else if (status.getMessage() != null) {
+                setDone(status.getMessage());
+            } else {
+                setDone(Messages.get().complete());
+            }
         } catch (Exception e) {
             window.setError(Messages.get().gen_failed());
             Window.alert(e.getMessage());
@@ -460,9 +467,6 @@ public class SampleQcScreenUI extends Screen {
                                             if (wms.get(wm.getWorksheet().getId()) == null)
                                                 wms.put(wm.getWorksheet().getId(), wm);
                                             if (wm.getWorksheet().getRelatedWorksheetId() != null) {
-                                                relatedWorksheets.put(wm.getWorksheet().getId(),
-                                                                      wm.getWorksheet()
-                                                                        .getRelatedWorksheetId());
                                                 if ( !wms.containsKey(wm.getWorksheet()
                                                                         .getRelatedWorksheetId()))
                                                     wids.add(wm.getWorksheet()
@@ -506,6 +510,7 @@ public class SampleQcScreenUI extends Screen {
                                             }
                                             tree.setRoot(getRoot());
                                         }
+                                        setDone(Messages.get().complete());
                                     }
 
                                     public void notFound() {
@@ -520,7 +525,6 @@ public class SampleQcScreenUI extends Screen {
 
                                     public void finish() {
                                         fireDataChange();
-                                        clearStatus();
                                     }
                                 };
                             }
@@ -528,7 +532,7 @@ public class SampleQcScreenUI extends Screen {
                                                                worksheetElements,
                                                                fetchWorksheetsByIdsCall);
                         } else {
-                            tree.setRoot(getRoot());
+                            setDone(Messages.get().gen_noRecordsFound());
                         }
                     }
 
