@@ -37,17 +37,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FieldErrorException;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.TableFieldErrorException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -74,14 +63,24 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.IOrderManager;
+import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -340,7 +339,7 @@ public class InventoryReceiptScreen extends Screen {
                                 if (exceptions != null) {
                                     for (int i = 0; i < exceptions.size(); i++) {
                                         ex = exceptions.get(i);
-                                        if ("fieldRequiredException".equals(ex.getMessage())) {
+                                        if (Messages.get().fieldRequiredException().equals(ex.getMessage())) {
                                             exceptions.remove(i);
                                             break;
                                         }                                        
@@ -636,7 +635,7 @@ public class InventoryReceiptScreen extends Screen {
                     if(exceptions != null && event.getData() != null) {
                         for (i = 0; i < exceptions.size(); i++) {
                             ex = exceptions.get(i);
-                            if ("lotNumRequiredForOrderItemException".equals(ex.getMessage())) {
+                            if (Messages.get().lotNumRequiredForOrderItemException().equals(ex.getMessage())) {
                                 exceptions.remove(i);
                                 break;
                             }                                        
@@ -661,9 +660,9 @@ public class InventoryReceiptScreen extends Screen {
                     if(exceptions != null && event.getData() != null) {
                         for (i = 0; i < exceptions.size(); i++) {
                             ex = exceptions.get(i);
-                            if ("storageLocReqForItemException".equals(ex.getMessage()) || 
-                                "itemNotExistAtLocationException".equals(ex.getMessage()) ||
-                                "itemExistAtLocationException".equals(ex.getMessage())) {
+                            if (Messages.get().storageLocReqForItemException().equals(ex.getMessage()) || 
+                                Messages.get().itemNotExistAtLocationException().equals(ex.getMessage()) ||
+                                Messages.get().itemExistAtLocationException().equals(ex.getMessage())) {
                                 exceptions.remove(i);
                                 break;
                             }                                        

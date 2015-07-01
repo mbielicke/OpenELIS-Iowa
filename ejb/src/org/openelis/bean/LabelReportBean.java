@@ -217,4 +217,21 @@ public class LabelReportBean {
         f.print("^FO30,165^BY3^BCN,90,Y,N,N^FD"+tubeNumber+"^FS");    //barcoded tube number
         f.print("^PQ1,,1,^XZ");
     }
+    
+    /*
+     * Print a worksheet analysis label
+     */
+    public void worksheetAnalysisSmallLabel(PrintStream f, String accession, String worksheetPosition,
+                                            String name1, String name2, String started,
+                                            String users) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,30^AQ^FD"+accession+"  ("+worksheetPosition+")^FS");
+        f.print("^FO60,60^AP^FD"+name1+"^FS");
+        f.print("^FO60,80^AP^FD"+name2+"^FS");
+        f.print("^FO60,100^AP^FD"+started+"^FS");
+        f.print("^FO60,120^AP^FD"+users+"^FS");
+        f.print("^PQ1,,1,^XZ");
+
+    }
 }

@@ -110,7 +110,9 @@
             <r:Column width="70" label="{msg.analyteParameter_p3}" />
             <r:Leaf key="analyte">
               <r:LeafColumn>
-                <t:LabelCell />
+                <t:TextBoxCell>
+                  <w:TextBox field="String" />
+                </t:TextBoxCell>
               </r:LeafColumn>
               <r:LeafColumn>
                 <t:DropdownCell>

@@ -23,43 +23,36 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQc.client;
+package org.openelis.modules.report.client;
 
-import org.openelis.domain.SampleQcVO;
+import java.util.ArrayList;
+
+import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.screen.Callback;
+import org.openelis.ui.common.data.Query;
+import org.openelis.constants.Messages;
+import org.openelis.gwt.screen.ScreenDef;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class SampleQcService implements SampleQcServiceInt, SampleQcServiceIntAsync {
+/**
+ * This class is used to execute reports on behalf of those screens that don't
+ * implement ReportScreen like Shipping and Fill Order
+ */
+public class WorksheetLabelReportScreen extends ReportScreen<Query> {
 
-    private static SampleQcService  instance;
-
-    private SampleQcServiceIntAsync service;
-
-    public static SampleQcService get() {
-        if (instance == null)
-            instance = new SampleQcService();
-
-        return instance;
+    public WorksheetLabelReportScreen() throws Exception {
+        drawScreen(new ScreenDef());
+        setName(Messages.get().print());
     }
-
-    private SampleQcService() {
-        service = (SampleQcServiceIntAsync)GWT.create(SampleQcServiceInt.class);
+    
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return WorksheetLabelReportService.get().getPrompts();
     }
 
     @Override
-    public void export(SampleQcVO sqc, AsyncCallback<ReportStatus> callback) {
-        service.export(sqc, callback);
-    }
-
-    @Override
-    public ReportStatus export(SampleQcVO sqc) throws Exception {
-        Callback<ReportStatus> callback;
-
-        callback = new Callback<ReportStatus>();
-        service.export(sqc, callback);
-        return callback.getResult();
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        WorksheetLabelReportService.get().runReport(query, callback);
     }
 }

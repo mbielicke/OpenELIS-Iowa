@@ -559,6 +559,16 @@ public class AnalyteParameterScreenUI extends Screen {
                     else 
                         clearStatus();
                 }
+                
+                /*
+                 * this makes sure that if an error is not supposed to be shown
+                 * on clicking a cell, any previously shown error gets removed,
+                 * no matter which cell is clicked
+                 */
+                if (isState(ADD))
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                else 
+                    clearStatus();
             }
         });
 

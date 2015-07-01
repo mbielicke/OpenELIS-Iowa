@@ -258,8 +258,7 @@ public class DataExchangeExportBean {
      * message; it is not used to query for samples since that is already given
      * by the list.
      */
-    public ReportStatus export(ArrayList<Integer> accessions,
-                               ExchangeCriteriaManager cm) throws Exception {
+    public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception {
         EOrderDO eo;
         ReportStatus status;
         ArrayList<Integer> ids;
@@ -279,8 +278,8 @@ public class DataExchangeExportBean {
         ids = getSamples(accessions);
         if (ids.size() == 0)
             throw new NotFoundException();
-        
-        log.log(Level.FINE, "Fetching"+ ids.size()+" samples");
+
+        log.log(Level.FINE, "Fetching" + ids.size() + " samples");
         sms = sampleManager.fetchByIds(ids,
                                        SampleManager1.Load.ORGANIZATION,
                                        SampleManager1.Load.PROJECT,
@@ -299,7 +298,7 @@ public class DataExchangeExportBean {
             eols = null;
             if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
                 getSample(sm).getOrderId() != null) {
-                log.log(Level.FINE, "Fetching eorder with id "+ getSample(sm).getOrderId());
+                log.log(Level.FINE, "Fetching eorder with id " + getSample(sm).getOrderId());
                 try {
                     eo = eOrder.fetchById(getSample(sm).getOrderId());
                     eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
@@ -344,7 +343,7 @@ public class DataExchangeExportBean {
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("sample_qc_exchange_criteria_name"),
+                            .systemVariable_missingInvalidSystemVariable("sample_qc_exchange_criteria"),
                     e);
             throw e;
         }
@@ -358,13 +357,11 @@ public class DataExchangeExportBean {
             addEventLog(Messages.get().dataExchange_noCriteriaFoundException(name),
                         Constants.dictionary().LOG_LEVEL_ERROR);
             log.log(Level.SEVERE, Messages.get().dataExchange_noCriteriaFoundException(name), e);
-            status.setMessage("Messages.get().dataExchange_noCriteriaFoundException(name)");
-            return status;
+            throw e;
         } catch (Exception e) {
             addEventLog(e.getMessage(), Constants.dictionary().LOG_LEVEL_ERROR);
             log.log(Level.SEVERE, e.getMessage(), e);
-            status.setMessage(e.getMessage());
-            return status;
+            throw e;
         }
 
         if (DataBaseUtil.isEmpty(cm.getExchangeCriteria().getDestinationUri()))
@@ -401,9 +398,8 @@ public class DataExchangeExportBean {
             analysisQcAnalytes = new ArrayList<WorksheetQcResultViewVO>();
             for (Integer qcaid : qcaids) {
                 for (WorksheetQcResultViewVO wqcrvvo : qcAnalytes) {
-                    if (wqcrvvo.getId().equals(qcaid)) {
+                    if (wqcrvvo.getId().equals(qcaid))
                         analysisQcAnalytes.add(wqcrvvo);
-                    }
                 }
             }
             sqc.addQcAnalytes(analysisQcAnalytes);
@@ -446,10 +442,14 @@ public class DataExchangeExportBean {
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to generate xml for accession number:  " +
                                   getSample(sm).getAccessionNumber(), e);
+            status.setMessage("Failed to generate xml");
+            return status;
         } finally {
             messageEnd();
         }
 
+        status.setStatus(ReportStatus.Status.SAVED);
+        status.setMessage("XML writted to " + cm.getExchangeCriteria().getDestinationUri());
         return status;
     }
 
@@ -594,8 +594,8 @@ public class DataExchangeExportBean {
     /**
      * The method exports a sample using the criteria manager's information.
      */
-    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Date releaseStart, Date releaseEnd,
-                               Object... optional) throws Exception {
+    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Date releaseStart,
+                               Date releaseEnd, Object... optional) throws Exception {
         Integer accession;
         URI uri;
         Document doc;
@@ -613,7 +613,8 @@ public class DataExchangeExportBean {
              * generate a simple xml and use a simple buffer in case we have an
              * error
              */
-            log.log(Level.FINE, "Generating xml for accession number:  " + getSample(sm).getAccessionNumber());
+            log.log(Level.FINE, "Generating xml for accession number:  " +
+                                getSample(sm).getAccessionNumber());
             doc = dataExchangeXMLMapper.getXML(sm, cm, releaseStart, releaseEnd, optional);
             dom = new DOMSource(doc);
             transformer.transform(dom, new StreamResult(transformerStream));
@@ -621,7 +622,8 @@ public class DataExchangeExportBean {
             /*
              * open and copy to destination
              */
-            log.log(Level.FINE, "Sending transformed xml to the destination:  " + cm.getExchangeCriteria().getDestinationUri());
+            log.log(Level.FINE, "Sending transformed xml to the destination:  " +
+                                cm.getExchangeCriteria().getDestinationUri());
             uri = new URI(cm.getExchangeCriteria().getDestinationUri());
             if ("file".equals(uri.getScheme())) {
                 outfile = new File(uri.getPath() + File.separator + accession.toString() +

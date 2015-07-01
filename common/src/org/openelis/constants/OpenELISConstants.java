@@ -16495,6 +16495,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_organization();
 
   /**
+   * Translated "Organization Info".
+   * 
+   * @return translated "Organization Info"
+   */
+  @DefaultMessage("Organization Info")
+  @Key("sample.organizationInfo")
+  String sample_organizationInfo();
+
+  /**
    * Translated "Accession # {0,number,#0}: Last name is required for a patient".
    * 
    * @return translated "Accession # {0,number,#0}: Last name is required for a patient"
@@ -16817,15 +16826,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Fully login environmental sample and analysis related information.")
   @Key("sampleEnvironmental.loginDescription")
   String sampleEnvironmental_loginDescription();
-
-  /**
-   * Translated "Organization Info".
-   * 
-   * @return translated "Organization Info"
-   */
-  @DefaultMessage("Organization Info")
-  @Key("sampleEnvironmental.organizationInfo")
-  String sampleEnvironmental_organizationInfo();
 
   /**
    * Translated "Sample Environmental".
@@ -21434,6 +21434,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Position")
   @Key("worksheet.position")
   String worksheet_position();
+
+  /**
+   * Translated "Print - Labels".
+   * 
+   * @return translated "Print - Labels"
+   */
+  @DefaultMessage("Print - Labels")
+  @Key("worksheet.printLabels")
+  String worksheet_printLabels();
+
+  /**
+   * Translated "Print - Worksheet".
+   * 
+   * @return translated "Print - Worksheet"
+   */
+  @DefaultMessage("Print - Worksheet")
+  @Key("worksheet.printWorksheet")
+  String worksheet_printWorksheet();
 
   /**
    * Translated "QC Link".

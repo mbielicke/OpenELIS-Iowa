@@ -137,7 +137,7 @@ public class QaEventBean {
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-
+    
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchAll() throws Exception {
         Query query;
@@ -190,8 +190,9 @@ public class QaEventBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + QaEventMeta.getId() + "," +
-                          QaEventMeta.getName() + "," + QaEventMeta.getTestName() + ")");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          QaEventMeta.getId() + "," + QaEventMeta.getName() + "," +
+                          QaEventMeta.getTestName() + ")");
         builder.constructWhere(fields);
         builder.setOrderBy(QaEventMeta.getName() + "," + QaEventMeta.getTestName());
 
