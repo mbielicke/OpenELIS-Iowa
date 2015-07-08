@@ -9,9 +9,9 @@ public interface DataViewReportServiceInt1Async {
 
     public void fetchTestAnalyteAndAuxField(DataView1VO data, AsyncCallback<DataView1VO> callback);
 
-    public void runReport(DataView1VO data, AsyncCallback<ReportStatus> callback);
+    public void runReportForInternal(DataView1VO data, AsyncCallback<ReportStatus> callback);
 
-    public void openQuery(AsyncCallback<DataView1VO> callback);
+    public void loadQuery(AsyncCallback<DataView1VO> callback);
 
     public void saveQuery(DataView1VO data, AsyncCallback<ReportStatus> callback);
 

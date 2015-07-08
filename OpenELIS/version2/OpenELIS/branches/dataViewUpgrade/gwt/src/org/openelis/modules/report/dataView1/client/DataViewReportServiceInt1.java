@@ -11,9 +11,9 @@ public interface DataViewReportServiceInt1 extends XsrfProtectedService {
 
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception;
 
-    public ReportStatus runReport(DataView1VO data) throws Exception;
+    public ReportStatus runReportForInternal(DataView1VO data) throws Exception;
 
-    public DataView1VO openQuery() throws Exception;
+    public DataView1VO loadQuery() throws Exception;
 
     public ReportStatus saveQuery(DataView1VO data) throws Exception;
     

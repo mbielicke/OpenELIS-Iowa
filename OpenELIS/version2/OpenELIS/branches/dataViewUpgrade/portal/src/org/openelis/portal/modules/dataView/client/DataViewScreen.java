@@ -32,13 +32,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
+import org.openelis.domain.DataViewAnalyteVO;
+import org.openelis.domain.DataViewValueVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ResultDataViewVO;
-import org.openelis.domain.TestAnalyteDataView1VO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
@@ -962,7 +960,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onCellUpdated(CellEditedEvent event) {
-                updateTestAnalyte((TestAnalyteDataView1VO)ui.getAnalyteTable()
+                updateTestAnalyte((DataViewAnalyteVO)ui.getAnalyteTable()
                                                            .getRowAt(event.getRow())
                                                            .getData(),
                                   (String)ui.getAnalyteTable().getValueAt(event.getRow(),
@@ -981,7 +979,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onCellUpdated(CellEditedEvent event) {
-                updateAuxData((AuxFieldDataView1VO)ui.getAuxTable()
+                updateAuxData((DataViewAnalyteVO)ui.getAuxTable()
                                                     .getRowAt(event.getRow())
                                                     .getData(),
                               (String)ui.getAuxTable().getValueAt(event.getRow(), event.getCol()));
@@ -1282,7 +1280,7 @@ public class DataViewScreen extends Screen {
         if (data.getTestAnalytes() == null || data.getTestAnalytes().size() < 1)
             return model;
 
-        for (TestAnalyteDataView1VO ana : data.getTestAnalytes()) {
+        for (DataViewAnalyteVO ana : data.getTestAnalytes()) {
             row = new Row(2);
             row.setCell(0, "N");
             row.setCell(1, ana.getAnalyteName());
@@ -1303,7 +1301,7 @@ public class DataViewScreen extends Screen {
         if (data.getAuxFields() == null || data.getAuxFields().size() < 1)
             return model;
 
-        for (AuxFieldDataView1VO aux : data.getAuxFields()) {
+        for (DataViewAnalyteVO aux : data.getAuxFields()) {
             row = new Row(2);
             row.setCell(0, "N");
             row.setCell(1, aux.getAnalyteName());
@@ -1323,7 +1321,7 @@ public class DataViewScreen extends Screen {
         for (int i = 0; i < ui.getAnalyteTable().getRowCount(); i++) {
             ui.getAnalyteTable().setValueAt(i, 0, newVal);
             row = ui.getAnalyteTable().getRowAt(i);
-            updateTestAnalyte((TestAnalyteDataView1VO)row.getData(), newVal);
+            updateTestAnalyte((DataViewAnalyteVO)row.getData(), newVal);
         }
     }
     
@@ -1337,25 +1335,25 @@ public class DataViewScreen extends Screen {
         for (int i = 0; i < ui.getAuxTable().getRowCount(); i++) {
             ui.getAuxTable().setValueAt(i, 0, newVal);
             row = ui.getAuxTable().getRowAt(i);
-            updateAuxData((AuxFieldDataView1VO)row.getData(), newVal);
+            updateAuxData((DataViewAnalyteVO)row.getData(), newVal);
         }
     }
 
-    private void updateTestAnalyte(TestAnalyteDataView1VO data, String val) {
-        ArrayList<ResultDataViewVO> list;
-
-        data.setIsIncluded(val);
-        list = data.getResults();
-        for (ResultDataViewVO res : list)
-            res.setIsIncluded(val);
-    }
-
-    private void updateAuxData(AuxFieldDataView1VO data, String val) {
-        ArrayList<AuxDataDataViewVO> list;
+    private void updateTestAnalyte(DataViewAnalyteVO data, String val) {
+        ArrayList<DataViewValueVO> list;
 
         data.setIsIncluded(val);
         list = data.getValues();
-        for (AuxDataDataViewVO value : list)
+        for (DataViewValueVO res : list)
+            res.setIsIncluded(val);
+    }
+
+    private void updateAuxData(DataViewAnalyteVO data, String val) {
+        ArrayList<DataViewValueVO> list;
+
+        data.setIsIncluded(val);
+        list = data.getValues();
+        for (DataViewValueVO value : list)
             value.setIsIncluded(val);
     }
 
@@ -1367,14 +1365,13 @@ public class DataViewScreen extends Screen {
         Widget widget;
         CheckBox cb;
         ArrayList<String> columns;
-        ArrayList<TestAnalyteDataView1VO> taList;
-        ArrayList<AuxFieldDataView1VO> afList;
+        ArrayList<DataViewAnalyteVO> taList, afList;
 
         numTA = 0;
         numAux = 0;
         taList = data.getTestAnalytes();
         if (taList != null) {
-            for (TestAnalyteDataView1VO ta : taList) {
+            for (DataViewAnalyteVO ta : taList) {
                 if ("Y".equals(ta.getIsIncluded()))
                     numTA++ ;
             }
@@ -1383,7 +1380,7 @@ public class DataViewScreen extends Screen {
         if (numTA == 0) {
             afList = data.getAuxFields();
             if (afList != null) {
-                for (AuxFieldDataView1VO af : afList) {
+                for (DataViewAnalyteVO af : afList) {
                     if ("Y".equals(af.getIsIncluded()))
                         numAux++ ;
                 }

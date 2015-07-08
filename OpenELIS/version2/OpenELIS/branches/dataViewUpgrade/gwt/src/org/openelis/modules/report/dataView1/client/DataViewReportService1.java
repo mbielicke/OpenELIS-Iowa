@@ -42,16 +42,16 @@ public class DataViewReportService1 implements DataViewReportServiceInt1, DataVi
     }
 
     @Override
-    public void openQuery(AsyncCallback<DataView1VO> callback) {
-        service.openQuery(callback);
+    public void loadQuery(AsyncCallback<DataView1VO> callback) {
+        service.loadQuery(callback);
     }
 
     @Override
-    public DataView1VO openQuery() throws Exception {
+    public DataView1VO loadQuery() throws Exception {
         Callback<DataView1VO> callback;
 
         callback = new Callback<DataView1VO>();
-        service.openQuery(callback);
+        service.loadQuery(callback);
         return callback.getResult();
     }
 
@@ -70,16 +70,16 @@ public class DataViewReportService1 implements DataViewReportServiceInt1, DataVi
     }
 
     @Override
-    public void runReport(DataView1VO data, AsyncCallback<ReportStatus> callback) {
-        service.runReport(data, callback);
+    public void runReportForInternal(DataView1VO data, AsyncCallback<ReportStatus> callback) {
+        service.runReportForInternal(data, callback);
     }
 
     @Override
-    public ReportStatus runReport(DataView1VO data) throws Exception {
+    public ReportStatus runReportForInternal(DataView1VO data) throws Exception {
         Callback<ReportStatus> callback;
 
         callback = new Callback<ReportStatus>();
-        service.runReport(data, callback);
+        service.runReportForInternal(data, callback);
         return callback.getResult();
     }
 

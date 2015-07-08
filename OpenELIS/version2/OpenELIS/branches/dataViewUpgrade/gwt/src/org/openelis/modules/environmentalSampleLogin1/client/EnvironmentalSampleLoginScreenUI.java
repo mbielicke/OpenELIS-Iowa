@@ -3162,8 +3162,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             /*
              * if the system variable was found, its value must point to an
              * existing dictionary entry; so if an exception is thrown on trying
-             * to look up the dictionary, the user must be informed of it
-             * even if it's a NotFoundException
+             * to look up the dictionary, the user must be informed of it even
+             * if it's a NotFoundException
              */
             if (domainScriptletVariable != null) {
                 try {

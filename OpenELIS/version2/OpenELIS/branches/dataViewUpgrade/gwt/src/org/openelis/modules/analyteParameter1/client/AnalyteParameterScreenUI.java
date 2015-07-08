@@ -554,10 +554,6 @@ public class AnalyteParameterScreenUI extends Screen {
                             disableAndEnableUnits(sampleTypeId);
                         }
                     }
-                    if (isState(ADD))
-                        setDone(Messages.get().gen_enterInformationPressCommit());
-                    else 
-                        clearStatus();
                 }
                 
                 /*

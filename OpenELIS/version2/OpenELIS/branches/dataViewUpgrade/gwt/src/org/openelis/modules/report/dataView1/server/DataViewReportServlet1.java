@@ -47,17 +47,17 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewRep
     private SessionCacheBean   session;
 
     @EJB
-    private DataViewReportBean      dataView1;
+    private DataViewReportBean      dataViewReport;
 
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
         try {
-            return dataView1.fetchTestAnalyteAndAuxField(data);
+            return dataViewReport.fetchTestAnalyteAndAuxField(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public DataView1VO openQuery() throws Exception {
+    public DataView1VO loadQuery() throws Exception {
         List<String> paths;
         HttpSession session;
 
@@ -65,7 +65,7 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewRep
         paths = (List<String>)session.getAttribute("upload");
         if (paths != null && paths.size() > 0) {
             try {
-                return dataView1.openQuery(paths.get(0));
+                return dataViewReport.loadQuery(paths.get(0));
             } catch (Exception anyE) {
                 throw serializeForGWT(anyE);
             } finally {
@@ -80,7 +80,7 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewRep
         ReportStatus st;
 
         try {
-            st = dataView1.saveQuery(data);
+            st = dataViewReport.saveQuery(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -91,11 +91,11 @@ public class DataViewReportServlet1 extends RemoteServlet implements DataViewRep
         return st;
     }
 
-    public ReportStatus runReport(DataView1VO data) throws Exception {
+    public ReportStatus runReportForInternal(DataView1VO data) throws Exception {
         ReportStatus st;
 
         try {
-            st = dataView1.runReport(data);
+            st = dataViewReport.runReportForInternal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

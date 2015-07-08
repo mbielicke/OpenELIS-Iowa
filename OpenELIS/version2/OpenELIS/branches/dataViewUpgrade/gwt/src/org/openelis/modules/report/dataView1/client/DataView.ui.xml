@@ -64,16 +64,6 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_privateWell}" />
-          </w:customHeader>
-          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
-            <g:layer>
-              <d:PrivateWellTabUI ui:field="privateWellTab" />
-            </g:layer>
-          </g:LayoutPanel>
-        </w:tab>
-        <w:tab>
-          <w:customHeader>
             <w:TabWidget text="{msg.sample_sdwis}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">

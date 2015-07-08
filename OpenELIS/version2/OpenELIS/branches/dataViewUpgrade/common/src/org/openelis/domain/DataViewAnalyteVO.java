@@ -31,16 +31,17 @@ import java.util.ArrayList;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * This class is used for managing the analytes and results that will be part of
- * the spreadsheet delivered as a result of executing a data dump
+ * This class contains the data for an analyte and a list of result or aux data
+ * values for it. They are shown to the user so that one or more of them can be
+ * selected to be included in the data view report.
  */
-public class AuxFieldDataView1VO implements Serializable {
+public class DataViewAnalyteVO implements Serializable {
 
     private static final long             serialVersionUID = 1L;
 
     protected Integer                     analyteId;
-    protected String                      analyteName;   
-    protected ArrayList<AuxDataDataViewVO>    values;
+    protected String                      analyteName;
+    protected ArrayList<DataViewValueVO> values;
     protected String                      isIncluded;
 
     public String getAnalyteName() {
@@ -50,7 +51,7 @@ public class AuxFieldDataView1VO implements Serializable {
     public void setAnalyteName(String analyteName) {
         this.analyteName = DataBaseUtil.trim(analyteName);
     }
-    
+
     public Integer getAnalyteId() {
         return analyteId;
     }
@@ -58,7 +59,7 @@ public class AuxFieldDataView1VO implements Serializable {
     public void setAnalyteId(Integer analyteId) {
         this.analyteId = analyteId;
     }
-    
+
     public String getIsIncluded() {
         return isIncluded;
     }
@@ -67,11 +68,11 @@ public class AuxFieldDataView1VO implements Serializable {
         this.isIncluded = DataBaseUtil.trim(isIncluded);
     }
 
-    public ArrayList<AuxDataDataViewVO> getValues() {
+    public ArrayList<DataViewValueVO> getValues() {
         return values;
     }
 
-    public void setValues(ArrayList<AuxDataDataViewVO> values) {
+    public void setValues(ArrayList<DataViewValueVO> values) {
         this.values = values;
     }
 }

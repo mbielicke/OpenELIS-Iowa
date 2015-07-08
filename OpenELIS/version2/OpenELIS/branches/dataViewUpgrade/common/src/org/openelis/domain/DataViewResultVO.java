@@ -30,12 +30,11 @@ import java.io.Serializable;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * This class is used in the query to fetch the result analytes and values shown
- * to the user, so that he/she can choose the analytes and values shown in the
- * file generated for data view
+ * This class is used in the queries for data view report. The data fetched
+ * could then be used to either show analytes and values to the user or to
+ * generate the output file.
  */
-
-public class DataViewResultFetch1VO implements Serializable {
+public class DataViewResultVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,7 +43,7 @@ public class DataViewResultFetch1VO implements Serializable {
 
     protected String          analyteName, value;
 
-    public DataViewResultFetch1VO(Integer sampleId, Integer sampleAccessionNumber,
+    public DataViewResultVO(Integer sampleId, Integer sampleAccessionNumber,
                                   Integer sampleItemId, Integer analysisId, Integer id,
                                   Integer analyteId, String analysisName, Integer typeId,
                                   String value) {
@@ -58,8 +57,19 @@ public class DataViewResultFetch1VO implements Serializable {
         setTypeId(typeId);
         setValue(value);
     }
+    
+    public DataViewResultVO(Integer sampleId, Integer sampleAccessionNumber,
+                                  Integer analyteId, String analysisName, Integer typeId,
+                                  String value) {
+        setSampleId(sampleId);
+        setSampleAccessionNumber(sampleAccessionNumber);
+        setAnalyteId(analyteId);
+        setAnalyteName(analysisName);
+        setTypeId(typeId);
+        setValue(value);
+    }
 
-    public DataViewResultFetch1VO(Integer sampleId, Integer sampleAccessionNumber,
+    public DataViewResultVO(Integer sampleId, Integer sampleAccessionNumber,
                                   Integer sampleItemId, Integer analysisId) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);

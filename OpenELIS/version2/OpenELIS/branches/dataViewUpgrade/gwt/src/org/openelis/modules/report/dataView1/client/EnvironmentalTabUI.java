@@ -25,10 +25,12 @@
  */
 package org.openelis.modules.report.dataView1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;

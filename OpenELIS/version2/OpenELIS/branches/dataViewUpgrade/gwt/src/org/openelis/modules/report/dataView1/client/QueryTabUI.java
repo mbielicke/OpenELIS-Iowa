@@ -47,6 +47,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -646,6 +647,15 @@ public class QueryTabUI extends Screen {
             else
                 fieldValues.put(f.getKey(), f.getQuery());
         }
+    }
+    
+    public void setState(State state) {
+        super.setState(state);
+        /*
+         * the widgets in the tabs for domains may need to be enabled or
+         * disabled based on the current domain
+         */
+        parentBus.fireEvent(new DomainChangeEvent(getDomain()));
     }
 
     public void onDataChange() {
