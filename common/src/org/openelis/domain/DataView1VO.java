@@ -44,8 +44,7 @@ public class DataView1VO implements Serializable {
                     includeNotReportableResults, excludeAuxData, includeNotReportableAuxData;
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<String>                columns;
-    protected ArrayList<TestAnalyteDataView1VO> testAnalytes;
-    protected ArrayList<AuxFieldDataView1VO>    auxFields;
+    protected ArrayList<DataViewAnalyteVO> testAnalytes, auxFields;
     
     public DataView1VO() {
     }
@@ -106,19 +105,19 @@ public class DataView1VO implements Serializable {
         this.columns = columns;
     }
 
-    public ArrayList<TestAnalyteDataView1VO> getTestAnalytes() {
+    public ArrayList<DataViewAnalyteVO> getTestAnalytes() {
         return testAnalytes;
     }
 
-    public void setTestAnalytes(ArrayList<TestAnalyteDataView1VO> testAnalytes) {
+    public void setTestAnalytes(ArrayList<DataViewAnalyteVO> testAnalytes) {
         this.testAnalytes = testAnalytes;
     }
 
-    public ArrayList<AuxFieldDataView1VO> getAuxFields() {
+    public ArrayList<DataViewAnalyteVO> getAuxFields() {
         return auxFields;
     }
 
-    public void setAuxFields(ArrayList<AuxFieldDataView1VO> auxFields) {
+    public void setAuxFields(ArrayList<DataViewAnalyteVO> auxFields) {
         this.auxFields = auxFields;
     }
 }

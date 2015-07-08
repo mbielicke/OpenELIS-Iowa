@@ -47,11 +47,11 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
     private SessionCacheBean  session;
 
     @EJB
-    private DataViewReportBean     dataView;
+    private DataViewReportBean     dataViewReport;
 
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         try {
-            return dataView.fetchProjectListForPortal();
+            return dataViewReport.fetchProjectListForPortal();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -66,7 +66,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
         data.setIncludeNotReportableResults("N");
         data.setIncludeNotReportableAuxData("N");
         try {
-            return dataView.fetchAnalyteAndAuxFieldForPortal(data);
+            return dataViewReport.fetchAnalyteAndAuxFieldForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -83,7 +83,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
         data.setIncludeNotReportableResults("N");
         data.setIncludeNotReportableAuxData("N");
         try {
-            st = dataView.runReportForPortal(data);
+            st = dataViewReport.runReportForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

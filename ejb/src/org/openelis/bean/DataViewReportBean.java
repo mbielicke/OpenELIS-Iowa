@@ -68,16 +68,14 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
-import org.openelis.domain.DataViewAuxDataFetch1VO;
-import org.openelis.domain.DataViewResultFetch1VO;
+import org.openelis.domain.DataViewAnalyteVO;
+import org.openelis.domain.DataViewResultVO;
+import org.openelis.domain.DataViewValueVO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
@@ -86,11 +84,9 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePTDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.domain.TestAnalyteDataView1VO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -106,6 +102,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * @author akampoow
+ *
+ */
 @Stateless
 @SecurityDomain("openelis")
 public class DataViewReportBean {
@@ -153,6 +153,8 @@ public class DataViewReportBean {
                     EXCLUDE_AUX = "excludeAuxData",
                     INCLUDE_NOT_REP_AUX = "includeNotReportableAuxData",
                     QUERY_FIELDS = "query_fields", COLUMNS = "columns";
+    
+    private static final int DEFAULT_MAX_SAMPLES = 1000000; 
 
     @RolesAllowed("w_dataview-select")
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
@@ -215,7 +217,7 @@ public class DataViewReportBean {
 
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public ReportStatus runReport(DataView1VO data) throws Exception {
+    public ReportStatus runReportForInternal(DataView1VO data) throws Exception {
         return runReport(data, null, false);
     }
 
@@ -225,7 +227,7 @@ public class DataViewReportBean {
      * columns
      */
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public DataView1VO openQuery(String url) throws Exception {
+    public DataView1VO loadQuery(String url) throws Exception {
         int i, j;
         DataView1VO data;
         Document doc;
@@ -391,28 +393,29 @@ public class DataViewReportBean {
     }
 
     /**
-     * Executes a query created from the query fields in the VO to fetch results
-     * and aux data; if moduleName is not null, includes the clause for the
-     * module with that name in the query; doesn't fetch results or aux data if
-     * excludeResults or excludeAuxData is set to "Y"; the returned VO contains
-     * two lists, one for analytes linked to results and another one for
-     * analytes linked to aux data; each element of these lists also has the
-     * list of values for each analyte; if excludeResultOverride is set to "Y",
-     * the analytes and values linked to samples and analyses with result
-     * override qa events are excluded from the lists
+     * This method is called to show analytes and values to the user, so that
+     * one or more of them can be selected to be shown in the generated report.
+     * 
+     * @param data
+     *        the VO that contains the query fields used for fetching the
+     *        analytes and values
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; this parameter is usually specified only for
+     *        external users
+     * @return a VO that contains the fetched analytes and values
+     * @throws Exception
      */
     private DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data, String moduleName) throws Exception {
         boolean excludeOverride, excludeRes, excludeAux;
         Integer max;
         String value;
         QueryBuilderV2 builder;
-        ArrayList<QueryData> fields;
-        List<DataViewResultFetch1VO> results;
-        List<DataViewAuxDataFetch1VO> auxiliary;
+        List<DataViewResultVO> results, auxiliary;
         ArrayList<SampleQaEventViewDO> sqas;
         ArrayList<AnalysisQaEventViewDO> aqas;
         ArrayList<DictionaryViewDO> dictionaries;
-        ArrayList<Integer> ids, range;
         HashSet<Integer> sampleIds, analysisIds, dictIds;
         HashMap<Integer, DictionaryViewDO> dictMap;
 
@@ -420,11 +423,8 @@ public class DataViewReportBean {
         excludeRes = "Y".equals(data.getExcludeResults());
         excludeAux = "Y".equals(data.getExcludeAuxData());
 
-        fields = data.getQueryFields();
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-
-        fields = data.getQueryFields();
 
         results = null;
         auxiliary = null;
@@ -436,30 +436,17 @@ public class DataViewReportBean {
             value = systemVariable.fetchByName("data_view_max_samples").getValue();
             max = Integer.valueOf(value);
         } catch (Exception e) {
-            log.log(Level.SEVERE,
+            log.log(Level.INFO,
                     Messages.get()
                             .systemVariable_missingInvalidSystemVariable("data_view_max_samples"),
                     e);
-            throw e;
+            max = DEFAULT_MAX_SAMPLES;
         }
 
         if ( !excludeRes) {
-            /*
-             * fetch results
-             */
-            log.log(Level.INFO, "Before fetching results");
-            builder.setSelect("distinct new org.openelis.domain.DataViewResultFetch1VO(" +
-                              SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() +
-                              ", " + SampleWebMeta.getItemId() + ", " +
-                              SampleWebMeta.getResultAnalysisid() + "," +
-                              SampleWebMeta.getResultId() + "," +
-                              SampleWebMeta.getResultAnalyteId() + "," +
-                              SampleWebMeta.getResultAnalyteName() + "," +
-                              SampleWebMeta.getResultTypeId() + "," +
-                              SampleWebMeta.getResultValue() + ") ");
-            buildWhereForResult(builder, data, moduleName);
-            results = (List<DataViewResultFetch1VO>)fetchAnalytesAndValues(builder, fields);
-            log.log(Level.INFO, "Fetched " + results.size() + " results");
+            log.log(Level.FINER, "Before fetching results");
+            results = fetchResults(moduleName, builder, null, null, data);
+            log.log(Level.FINER, "Fetched " + results.size() + " results");
         }
 
         /*
@@ -472,7 +459,7 @@ public class DataViewReportBean {
         analysisIds = new HashSet<Integer>();
         dictIds = new HashSet<Integer>();
         if (results != null) {
-            for (DataViewResultFetch1VO res : results) {
+            for (DataViewResultVO res : results) {
                 sampleIds.add(res.getSampleId());
                 analysisIds.add(res.getAnalysisId());
                 if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()))
@@ -486,43 +473,9 @@ public class DataViewReportBean {
         }
 
         if ( !excludeAux) {
-            /*
-             * fetch aux data
-             */
-            log.log(Level.INFO, "Before fetching aux data");
-            builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetch1VO(" +
-                              SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() +
-                              "," + SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
-                              SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
-                              SampleWebMeta.getAuxDataTypeId() + ", " +
-                              SampleWebMeta.getAuxDataValue() + ") ");
-            /*
-             * if results were fetched, limit the aux data to only the samples
-             * that the results belong to
-             */
-            if (sampleIds.size() > 0) {
-                /*
-                 * the list of sample ids is broken into subsets and the query
-                 * is executed for each subset; the where clause is rebuilt for
-                 * each subset because the sample ids are different and there's
-                 * no easy way to just reset them and keep the rest of the
-                 * clause the same
-                 */
-                auxiliary = new ArrayList<DataViewAuxDataFetch1VO>();
-                ids = DataBaseUtil.toArrayList(sampleIds);
-                range = DataBaseUtil.createSubsetRange(ids.size());
-                for (int i = 0; i < range.size() - 1; i++ ) {
-                    builder.clearWhereClause();
-                    buildWhereForAux(builder, data, moduleName, ids.subList(range.get(i),
-                                                                            range.get(i + 1)), null);
-                    auxiliary.addAll(fetchAnalytesAndValues(builder, fields));
-                }
-            } else {
-                builder.clearWhereClause();
-                buildWhereForAux(builder, data, moduleName, null, null);
-                auxiliary = (List<DataViewAuxDataFetch1VO>)fetchAnalytesAndValues(builder, fields);
-            }
-            log.log(Level.INFO, "Fetched " + auxiliary.size() + " aux data");
+            log.log(Level.FINER, "Before fetching aux data");
+            auxiliary = fetchAuxData(moduleName, builder, null, null, sampleIds, data);
+            log.log(Level.FINER, "Fetched " + auxiliary.size() + " aux data");
         }
 
         if ( (results == null || results.isEmpty()) && (auxiliary == null || auxiliary.isEmpty()))
@@ -534,7 +487,7 @@ public class DataViewReportBean {
          * exception if the number of samples exceeds the maximum allowed limit
          */
         if (auxiliary != null) {
-            for (DataViewAuxDataFetch1VO aux : auxiliary) {
+            for (DataViewResultVO aux : auxiliary) {
                 sampleIds.add(aux.getSampleId());
                 if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId()))
                     dictIds.add(Integer.valueOf(aux.getValue()));
@@ -568,13 +521,6 @@ public class DataViewReportBean {
             }
         }
 
-        /*
-         * if the list of sample ids is empty it means that overridden samples
-         * and analyses are to be excluded and all fetched samples are
-         * overridden, so nothing will results or aux data will be returned;
-         * similarly, nothing will be returned if only results are to be
-         * included and all fetched analyses are overridden
-         */
         if ( (sampleIds.size() == 0 || ( !excludeRes && excludeAux && analysisIds.size() == 0)))
             throw new NotFoundException();
 
@@ -594,21 +540,32 @@ public class DataViewReportBean {
          * aux data and set them in the returned VO
          */
         if ( !excludeRes)
-            data.setTestAnalytes(getTestAnalytes(results, sampleIds, analysisIds, dictMap));
+            data.setTestAnalytes(getAnalytes(results, sampleIds, analysisIds, dictMap));
 
         if ( !excludeAux)
-            data.setAuxFields(getAuxFields(auxiliary, sampleIds, dictMap));
+            data.setAuxFields(getAnalytes(auxiliary, sampleIds, null, dictMap));
 
         return data;
     }
 
     /**
-     * creates an Excel file for the selected columns, analytes and values in
-     * the passed VO; if results and/or aux data are excluded, the file shows
-     * upto analysis level data; the data for the file is fetched using the
-     * query fields in the VO, the selected analytes and the clause for the
-     * passed module; if the passed flag is true, only reportable column
-     * analytes are shown; the returned status contains the path to the file
+     * Generates an Excel file based on the data in the passed VO, the passed
+     * name and the passed flag
+     * 
+     * @param data
+     *        the VO that contains the columns, analytes and values selected by
+     *        the user; it also contains the query fields used to fetch the data
+     *        for generating the file
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; this parameter is usually specified only for
+     *        external users
+     * @param showReportableColumnsOnly
+     *        if true, only reportable column analytes are shown; this parameter
+     *        is usually specified only for external users
+     * @return ReportStatus that contains the path to the generated file
+     * @throws Exception
      */
     private ReportStatus runReport(DataView1VO data, String moduleName,
                                    boolean showReportableColumnsOnly) throws Exception {
@@ -621,22 +578,17 @@ public class DataViewReportBean {
         OutputStream out;
         Path path;
         ArrayList<String> headers;
-        List<DataViewResultFetch1VO> results, noResAux;
-        List<DataViewAuxDataFetch1VO> auxiliary;
+        List<DataViewResultVO> results, noResAux, auxiliary;
         ArrayList<Integer> unselAnalyteIds;
-        ArrayList<TestAnalyteDataView1VO> testAnalytes;
-        ArrayList<AuxFieldDataView1VO> auxFields;
+        ArrayList<DataViewAnalyteVO> testAnalytes, auxFields;
         ArrayList<SampleManager1> sms;
         ArrayList<SampleManager1.Load> load;
         HashSet<String> resultValues, auxValues;
         HashSet<Integer> analysisIds, sampleIds;
-        HashMap<Integer, String> colFieldMap;
         HashMap<Integer, HashSet<String>> testAnaResMap, auxFieldValMap;
         HashMap<Integer, SampleManager1> smMap;
 
         status = new ReportStatus();
-        if (reportStopped(status))
-            return status;
 
         excludeRes = "Y".equals(data.getExcludeResults());
         excludeAux = "Y".equals(data.getExcludeAuxData());
@@ -652,17 +604,12 @@ public class DataViewReportBean {
 
         load = new ArrayList<SampleManager1.Load>();
         headers = new ArrayList<String>();
-        colFieldMap = new HashMap<Integer, String>();
 
         /*
          * get the labels to be displayed in the headers for the various
-         * columns; the passed map keeps track of which column is showing which
-         * field; optional parts of the manager e.g. organization are only
-         * fetched if the user selected some column(s) belonging to them e.g.
-         * organization name; load elements for those parts are added to the
-         * passed list, based on the selected columns
+         * columns; Note: load parameter is changed based on selected columns
          */
-        headers = getHeaders(data.getColumns(), colFieldMap, load);
+        headers = getHeaders(data.getColumns(), load);
 
         /*
          * always fetch sample and analysis qa events to make sure that
@@ -692,22 +639,20 @@ public class DataViewReportBean {
             value = systemVariable.fetchByName("data_view_max_samples").getValue();
             max = Integer.valueOf(value);
         } catch (Exception e) {
-            log.log(Level.SEVERE,
+            log.log(Level.INFO,
                     Messages.get()
                             .systemVariable_missingInvalidSystemVariable("data_view_max_samples"),
                     e);
-            throw e;
+            max = DEFAULT_MAX_SAMPLES;
         }
 
         if (excludeRes && excludeAux) {
             /*
              * fetch the data for the case when both results and aux data are
-             * excluded; make a set of analysis ids for fetching managers and a
-             * set of sample ids to know whether the maximum allowed number of
-             * samples has been exceeded
+             * excluded; make a set of analysis ids for fetching managers
              */
             noResAux = fetchNoResultAuxData(moduleName, builder, data);
-            for (DataViewResultFetch1VO nra : noResAux) {
+            for (DataViewResultVO nra : noResAux) {
                 analysisIds.add(nra.getAnalysisId());
                 sampleIds.add(nra.getSampleId());
             }
@@ -723,19 +668,19 @@ public class DataViewReportBean {
                      * it's found in the map
                      */
                     testAnaResMap = new HashMap<Integer, HashSet<String>>();
-                    for (TestAnalyteDataView1VO ana : testAnalytes) {
+                    for (DataViewAnalyteVO ana : testAnalytes) {
                         /*
                          * create the list of analytes not selected by the user
-                         * so that a decision can be made about including them
-                         * or the selected analytes or none of the two in the
-                         * query to generate the report
+                         * so that a decision can be made about including either
+                         * them or the selected analytes or none of the two in
+                         * the query to generate the report
                          */
                         if ("N".equals(ana.getIsIncluded())) {
                             unselAnalyteIds.add(ana.getAnalyteId());
                             continue;
                         }
                         resultValues = new HashSet<String>();
-                        for (ResultDataViewVO res : ana.getResults()) {
+                        for (DataViewValueVO res : ana.getValues()) {
                             if ("Y".equals(res.getIsIncluded()))
                                 resultValues.add(res.getValue());
                         }
@@ -744,8 +689,8 @@ public class DataViewReportBean {
                 }
 
                 /*
-                 * fetch fields related to results based on the analytes and
-                 * values selected by the user
+                 * fetch results based on the analytes and values selected by
+                 * the user
                  */
                 if (testAnaResMap != null && testAnaResMap.size() > 0) {
                     log.log(Level.FINE, "Before fetching results");
@@ -759,20 +704,22 @@ public class DataViewReportBean {
 
                     /*
                      * make a set of analysis ids from the fetched results for
-                     * fetching the managers; the set of sample ids is used to
-                     * restrict the aux data to only those samples that the
-                     * results belong to and also to know whether the maximum
-                     * allowed number of samples has been exceeded
+                     * fetching the managers
                      */
-                    for (DataViewResultFetch1VO res : results) {
+                    for (DataViewResultVO res : results) {
                         analysisIds.add(res.getAnalysisId());
                         sampleIds.add(res.getSampleId());
                     }
                 }
             }
 
-            if (reportStopped(status))
+            /*
+             * the user wants to stop the report
+             */
+            if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
+                status.setMessage(Messages.get().report_stopped());
                 return status;
+            }
 
             /*
              * number of samples fetched must not exceed the maximum allowed
@@ -792,19 +739,19 @@ public class DataViewReportBean {
                      * the file if it's found in the map
                      */
                     auxFieldValMap = new HashMap<Integer, HashSet<String>>();
-                    for (AuxFieldDataView1VO af : auxFields) {
+                    for (DataViewAnalyteVO af : auxFields) {
                         /*
                          * create the list of analytes not selected by the user
-                         * so that a decision can be made about including them
-                         * or the selected analytes or none of the two in the
-                         * query to generate the report
+                         * so that a decision can be made about including either
+                         * them or the selected analytes or none of the two in
+                         * the query to generate the report
                          */
                         if ("N".equals(af.getIsIncluded())) {
                             unselAnalyteIds.add(af.getAnalyteId());
                             continue;
                         }
                         auxValues = new HashSet<String>();
-                        for (AuxDataDataViewVO val : af.getValues()) {
+                        for (DataViewValueVO val : af.getValues()) {
                             if ("Y".equals(val.getIsIncluded()))
                                 auxValues.add(val.getValue());
                         }
@@ -834,7 +781,7 @@ public class DataViewReportBean {
                      * restricted by the results' sample ids
                      */
                     if (results == null || results.size() == 0) {
-                        for (DataViewAuxDataFetch1VO aux : auxiliary)
+                        for (DataViewResultVO aux : auxiliary)
                             sampleIds.add(aux.getSampleId());
                     }
                 }
@@ -848,8 +795,13 @@ public class DataViewReportBean {
             (noResAux == null || noResAux.size() == 0))
             throw new NotFoundException();
 
-        if (reportStopped(status))
+        /*
+         * the user wants to stop the report
+         */
+        if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
+            status.setMessage(Messages.get().report_stopped());
             return status;
+        }
 
         /*
          * number of samples fetched must not exceed the allowed limit
@@ -884,8 +836,7 @@ public class DataViewReportBean {
          * if analysis ids are present, managers are fetched by them and with
          * the load element SINGLEANALYSIS; this makes sure that only the
          * analyses and results linked to the analytes selected by the user are
-         * fetched and not all analyses and results belonging to a sample;
-         * otherwise managers are fetched by sample ids
+         * fetched; otherwise managers are fetched by sample ids
          */
         if (analysisIds.size() > 0) {
             load.add(SampleManager1.Load.SINGLEANALYSIS);
@@ -908,9 +859,7 @@ public class DataViewReportBean {
 
         /*
          * create a workbook from the data structures created above; the passed
-         * status is updated every time, a new row is added to the workbook; set
-         * the structures to null to free up memory after the workbook has been
-         * created; write the workbook to a file and set its path in the status
+         * status is updated every time a new row is added to the workbook
          */
         wb = getWorkbook(results,
                          auxiliary,
@@ -920,10 +869,18 @@ public class DataViewReportBean {
                          moduleName,
                          showReportableColumnsOnly,
                          headers,
-                         colFieldMap,
                          data,
                          smMap,
                          status);
+        
+        /*
+         * the user wants to stop the report
+         */
+        if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
+            status.setMessage(Messages.get().report_stopped());
+            return status;
+        }
+        
         smMap = null;
         results = null;
         auxiliary = null;
@@ -931,8 +888,10 @@ public class DataViewReportBean {
         testAnaResMap = null;
         auxFieldValMap = null;
         headers = null;
-        colFieldMap = null;
-
+        
+        /*
+         * write the workbook to a file and set its path in the status
+         */
         if (wb != null) {
             out = null;
             try {
@@ -947,7 +906,7 @@ public class DataViewReportBean {
                       .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Failed to output the file for data view", e);
                 throw e;
             } finally {
                 try {
@@ -964,9 +923,21 @@ public class DataViewReportBean {
 
     /**
      * Creates a "where" clause from the query fields in the passed VO and sets
-     * it in the passed query builder; if "moduleName" is specified, the clause
-     * from security for that module for the logged in user is added to the
-     * "where" clause; the "where" clause is used for fetching results
+     * it in the passed query builder; the "where" clause is used for fetching
+     * results
+     * 
+     * @param builder
+     *        the query builder that will be used to fetch data based on the
+     *        "where" clause created by this method
+     * @param data
+     *        the VO that contains the fields that the user wants to query by
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; this parameter is usually specified only for
+     *        external users; if this is specified, the module's clause is added
+     *        to the "where" clause
+     * @throws Exception
      */
     private void buildWhereForResult(QueryBuilderV2 builder, DataView1VO data, String moduleName) throws Exception {
         builder.constructWhere(data.getQueryFields());
@@ -995,9 +966,27 @@ public class DataViewReportBean {
 
     /**
      * Creates a "where" clause from the query fields in the passed VO and sets
-     * it in the passed query builder; if "moduleName" is specified, the clause
-     * from security for that module for the logged in user is added to the
-     * "where" clause; the "where" clause is used for fetching aux data
+     * it in the passed query builder; the "where" clause is used for fetching
+     * aux data
+     * 
+     * @param builder
+     *        the query builder that will be used to fetch data based on the
+     *        "where" clause created by this method
+     * @param data
+     *        the VO that contains the fields that the user wants to query by
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; this parameter is usually specified only for
+     *        external users; the module's clause is added to the "where" clause
+     * @param sampleIds
+     *        a list of sample ids; a clause is added to the "where" clause to
+     *        restrict the fetched aux data to only these samples
+     * @param analyteClause
+     *        a clause for fetching aux data either linked to analytes selected
+     *        by the user or not linked to the analytes not selected by the
+     *        user; it's added to the "where" clause
+     * @throws Exception
      */
     private void buildWhereForAux(QueryBuilderV2 builder, DataView1VO data, String moduleName,
                                   List<Integer> sampleIds,
@@ -1050,9 +1039,19 @@ public class DataViewReportBean {
     }
 
     /**
-     * Adds "where" clauses to the builder so that the external users can see
-     * only certain samples; for example, the ones not in error and with at
-     * least one released and reportable analysis
+     * Creates a "where" clause for restricting external users to only certain
+     * samples e.g. the ones not in error and sets the clause in the passed
+     * query builder
+     * 
+     * @param builder
+     *        the query builder that will be used to fetch data based on the
+     *        "where" clause created by this method
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; the module's clause is added to the "where"
+     *        clause
+     * @throws Exception
      */
     private void buildWhereForWeb(QueryBuilderV2 builder, String moduleName) throws Exception {
         builder.addWhere("(" + userCache.getPermission().getModule(moduleName).getClause() + ")");
@@ -1066,173 +1065,81 @@ public class DataViewReportBean {
     }
 
     /**
-     * Runs the query passed query builder's query by setting the parameters
-     * from the passed list of QueryData; the returned list contains either VOs
-     * for either results or aux data; it is used to show analytes and values to
-     * the user, so that they can be selected to be included in the report
-     */
-    private List fetchAnalytesAndValues(QueryBuilderV2 builder, ArrayList<QueryData> fields) throws Exception {
-        Query query;
-
-        query = manager.createQuery(builder.getEJBQL());
-        builder.setQueryParams(query, fields);
-        return query.getResultList();
-    }
-
-    /**
      * Returns the list of analytes linked to the results in the passed list;
      * each element in the returned list also has the list of values for the
      * analyte; a result's value is included in the list only if its sample and
      * analysis ids are found in the passed lists of sample and analysis ids;
      * the passed map is used to find dictionary entries for values of that type
      */
-    private ArrayList<TestAnalyteDataView1VO> getTestAnalytes(List<DataViewResultFetch1VO> results,
+    private ArrayList<DataViewAnalyteVO> getAnalytes(List<DataViewResultVO> results,
                                                               HashSet<Integer> sampleIds,
                                                               HashSet<Integer> analysisIds,
                                                               HashMap<Integer, DictionaryViewDO> dictMap) {
         Integer analyteId, dictId;
-        String value;
-        TestAnalyteDataView1VO testAnalyte;
-        ResultDataViewVO result;
-        HashSet<String> values;
-        ArrayList<TestAnalyteDataView1VO> testAnalytes;
-        ArrayList<ResultDataViewVO> dispResults;
-        HashMap<Integer, TestAnalyteDataView1VO> testAnalyteMap;
-        HashMap<Integer, HashSet<String>> analyteValuesMap;
+        String val;
+        DataViewAnalyteVO dvAna;
+        DataViewValueVO dvVal;
+        HashSet<String> vals;
+        ArrayList<DataViewAnalyteVO> anas;
+        ArrayList<DataViewValueVO> dvVals;
+        HashMap<Integer, DataViewAnalyteVO> dvAnaMap;
+        HashMap<Integer, HashSet<String>> anaValMap;
 
         /*
          * create the list of analytes from the passed list of results; create
          * the list of values for each analyte and set it in the VO for that
          * analyte
          */
-        testAnalytes = new ArrayList<TestAnalyteDataView1VO>();
-        testAnalyteMap = new HashMap<Integer, TestAnalyteDataView1VO>();
-        analyteValuesMap = new HashMap<Integer, HashSet<String>>();
-        values = null;
-        for (DataViewResultFetch1VO res : results) {
+        anas = new ArrayList<DataViewAnalyteVO>();
+        dvAnaMap = new HashMap<Integer, DataViewAnalyteVO>();
+        anaValMap = new HashMap<Integer, HashSet<String>>();
+        vals = null;
+        for (DataViewResultVO res : results) {
             if ( !sampleIds.contains(res.getSampleId()) ||
-                !analysisIds.contains(res.getAnalysisId()))
+                (analysisIds != null && !analysisIds.contains(res.getAnalysisId())))
                 continue;
             analyteId = res.getAnalyteId();
-            testAnalyte = testAnalyteMap.get(analyteId);
+            dvAna = dvAnaMap.get(analyteId);
             /*
              * a VO is created for an analyte only once, no matter how many
              * times it appears in the passed list of results
              */
-            if (testAnalyte == null) {
-                testAnalyte = new TestAnalyteDataView1VO();
-                testAnalyte.setAnalyteId(analyteId);
-                testAnalyte.setAnalyteName(res.getAnalyteName());
-                testAnalyte.setIsIncluded("N");
-                dispResults = new ArrayList<ResultDataViewVO>();
-                testAnalyte.setResults(dispResults);
-                testAnalytes.add(testAnalyte);
-                testAnalyteMap.put(analyteId, testAnalyte);
-                values = new HashSet<String>();
-                analyteValuesMap.put(analyteId, values);
+            if (dvAna == null) {
+                dvAna = new DataViewAnalyteVO();
+                dvAna.setAnalyteId(analyteId);
+                dvAna.setAnalyteName(res.getAnalyteName());
+                dvAna.setIsIncluded("N");
+                dvVals = new ArrayList<DataViewValueVO>();
+                dvAna.setValues(dvVals);
+                anas.add(dvAna);
+                dvAnaMap.put(analyteId, dvAna);
+                vals = new HashSet<String>();
+                anaValMap.put(analyteId, vals);
             } else {
-                dispResults = testAnalyte.getResults();
-                values = analyteValuesMap.get(analyteId);
+                dvVals = dvAna.getValues();
+                vals = anaValMap.get(analyteId);
             }
 
-            value = res.getValue();
+            val = res.getValue();
             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId())) {
-                dictId = Integer.parseInt(value);
-                value = dictMap.get(dictId).getEntry();
+                dictId = Integer.parseInt(val);
+                val = dictMap.get(dictId).getEntry();
             }
 
             /*
              * don't allow the same value to be shown more than once for an
              * analyte
              */
-            if (values.contains(value))
+            if (vals.contains(val))
                 continue;
-            values.add(value);
+            vals.add(val);
 
-            result = new ResultDataViewVO();
-            result.setValue(value);
-            result.setIsIncluded("N");
-            dispResults.add(result);
+            dvVal = new DataViewValueVO();
+            dvVal.setValue(val);
+            dvVal.setIsIncluded("N");
+            dvVals.add(dvVal);
         }
-        return testAnalytes;
-    }
-
-    /**
-     * Returns the list of analytes linked to the aux data in the passed list;
-     * each element in the returned list also has the list of values for the
-     * analyte; an aux data's value is included in the list only if its sample
-     * id is found in the passed lists of sample and analysis ids; the passed
-     * map is used to find dictionary entries for values of that type
-     */
-    private ArrayList<AuxFieldDataView1VO> getAuxFields(List<DataViewAuxDataFetch1VO> auxiliary,
-                                                        HashSet<Integer> sampleIds,
-                                                        HashMap<Integer, DictionaryViewDO> dictMap) throws Exception {
-        Integer analyteId, dictId;
-        String value;
-        AuxFieldDataView1VO auxField;
-        AuxDataDataViewVO auxData;
-        HashSet<String> values;
-        ArrayList<AuxFieldDataView1VO> auxFields;
-        ArrayList<AuxDataDataViewVO> dispAuxiliary;
-        HashMap<Integer, AuxFieldDataView1VO> auxFieldMap;
-        HashMap<Integer, HashSet<String>> analyteValuesMap;
-
-        /*
-         * create the list of analytes from the passed list of aux data; create
-         * the list of values for each analyte and set it in the VO for that
-         * analyte
-         */
-        dispAuxiliary = null;
-        auxFields = new ArrayList<AuxFieldDataView1VO>();
-        auxFieldMap = new HashMap<Integer, AuxFieldDataView1VO>();
-        analyteValuesMap = new HashMap<Integer, HashSet<String>>();
-        values = null;
-        for (DataViewAuxDataFetch1VO aux : auxiliary) {
-            if ( !sampleIds.contains(aux.getSampleId()))
-                continue;
-            analyteId = aux.getAuxFieldAnalyteId();
-            auxField = auxFieldMap.get(analyteId);
-            /*
-             * a VO is created for an analyte only once, no matter how many
-             * times it appears in the passed list of aux data
-             */
-            if (auxField == null) {
-                auxField = new AuxFieldDataView1VO();
-                auxField.setAnalyteId(aux.getAuxFieldAnalyteId());
-                auxField.setAnalyteName(aux.getAuxFieldAnalyteName());
-                auxField.setIsIncluded("N");
-                dispAuxiliary = new ArrayList<AuxDataDataViewVO>();
-                auxField.setValues(dispAuxiliary);
-                auxFields.add(auxField);
-                auxFieldMap.put(analyteId, auxField);
-                values = new HashSet<String>();
-                analyteValuesMap.put(analyteId, values);
-            } else {
-                dispAuxiliary = auxField.getValues();
-                values = analyteValuesMap.get(analyteId);
-            }
-
-            value = aux.getValue();
-
-            if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId())) {
-                dictId = Integer.parseInt(value);
-                value = dictMap.get(dictId).getEntry();
-            }
-
-            /*
-             * don't allow the same value to be shown more than once for an
-             * analyte
-             */
-            if (values.contains(value))
-                continue;
-            values.add(value);
-
-            auxData = new AuxDataDataViewVO();
-            auxData.setValue(value);
-            auxData.setIsIncluded("N");
-            dispAuxiliary.add(auxData);
-        }
-        return auxFields;
+        return anas;
     }
 
     /**
@@ -1242,7 +1149,7 @@ public class DataViewReportBean {
      * query by either selected or not selected analytes, based on which is
      * smaller in size
      */
-    private List<DataViewResultFetch1VO> fetchResults(String moduleName,
+    private List<DataViewResultVO> fetchResults(String moduleName,
                                                       QueryBuilderV2 builder,
                                                       HashMap<Integer, HashSet<String>> testAnaResultMap,
                                                       ArrayList<Integer> unselAnalyteIds,
@@ -1250,7 +1157,7 @@ public class DataViewReportBean {
         Query query;
         ArrayList<String> orderBy;
 
-        builder.setSelect("distinct new org.openelis.domain.DataViewResultFetch1VO(" +
+        builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
                           SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + "," +
                           SampleWebMeta.getItemId() + "," + SampleWebMeta.getResultAnalysisid() +
                           "," + SampleWebMeta.getResultId() + "," +
@@ -1289,7 +1196,7 @@ public class DataViewReportBean {
      * query by either selected or not selected analytes, based on which is
      * smaller in size
      */
-    private List<DataViewAuxDataFetch1VO> fetchAuxData(String moduleName,
+    private List<DataViewResultVO> fetchAuxData(String moduleName,
                                                        QueryBuilderV2 builder,
                                                        HashMap<Integer, HashSet<String>> auxFieldValueMap,
                                                        ArrayList<Integer> unselAnalyteIds,
@@ -1297,9 +1204,9 @@ public class DataViewReportBean {
         String analyteClause;
         Query query;
         ArrayList<Integer> ids, range;
-        List<DataViewAuxDataFetch1VO> auxiliary;
+        List<DataViewResultVO> auxiliary;
 
-        builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetch1VO(" +
+        builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
                           SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + "," +
                           SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
                           SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
@@ -1327,7 +1234,7 @@ public class DataViewReportBean {
              * subset because the sample ids are different and there's no easy
              * way to just reset them and keep the rest of the clause the same
              */
-            auxiliary = new ArrayList<DataViewAuxDataFetch1VO>();
+            auxiliary = new ArrayList<DataViewResultVO>();
             ids = DataBaseUtil.toArrayList(sampleIds);
             range = DataBaseUtil.createSubsetRange(ids.size());
             builder.setOrderBy("");
@@ -1368,7 +1275,7 @@ public class DataViewReportBean {
      * excluded; if "moduleName" is not null, the clause from security for that
      * module for the logged in user is added to the "where" clause
      */
-    private List<DataViewResultFetch1VO> fetchNoResultAuxData(String moduleName,
+    private List<DataViewResultVO> fetchNoResultAuxData(String moduleName,
                                                               QueryBuilderV2 builder,
                                                               DataView1VO data) throws Exception {
         Query query;
@@ -1376,7 +1283,7 @@ public class DataViewReportBean {
 
         fields = data.getQueryFields();
 
-        builder.setSelect("distinct new org.openelis.domain.DataViewResultFetch1VO(" +
+        builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
                           SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ", " +
                           SampleWebMeta.getItemId() + ", " + SampleWebMeta.getAnalysisId() + ")");
 
@@ -1434,24 +1341,51 @@ public class DataViewReportBean {
     }
 
     /**
-     * Creates and returns a workbook where "headers" specifies the headers for
-     * the columns; each row shows fields from some part of a sample and
-     * analytes and values if the lists of result and aux data VO are not null;
-     * an analyte and value are shown only if they are present in
-     * "testAnaResMap" or "auxFieldValMap", which means that they were selected
-     * by the user; if the passed boolean flag is true, only reportable column
-     * analytes are shown; "colFieldMap" specifies which column is showing which
-     * field; the percent completion in the passed ReportStatus is updated every
-     * time a new row is added; the data is taken for the passed map of managers
+     * Creates and returns a workbook that gets converted to an Excel file; each
+     * row in the workbook shows fields from some part of a sample and analytes
+     * and values
+     * 
+     * @param results
+     *        the list of VOs containing result info to be shown
+     * @param auxiliary
+     *        the list of VOs containing aux data info to be shown
+     * @param noResAux
+     *        the list of VOs containing info to be shown when both results and
+     *        aux data are excluded
+     * @param testAnaResMap
+     *        the map containing result analytes and values selected by the
+     *        user; if an analyte or value is not in the map, the result is not
+     *        shown
+     * @param auxFieldValMap
+     *        the map containing aux data analytes and values selected by the
+     *        user; if an analyte or value is not in the map, the aux data is
+     *        not shown
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations
+     * @param showReportableColumnsOnly
+     *        if true, only reportable column analytes are shown
+     * @param headers
+     *        the list of labels for the column headers
+     * @param data
+     *        the VO containing the user's choices for the data shown e.g. the
+     *        meta keys for selected columns and "include" and "exclude" flags
+     * @param smMap
+     *        the map that provides the data for the columns belonging to
+     *        various parts of a sample e.g. domain, organization, project etc.
+     * @param status
+     *        the percent completion in this ReportStatus is updated every time
+     *        a new row is added to the workbook
      */
-    private XSSFWorkbook getWorkbook(List<DataViewResultFetch1VO> results,
-                                     List<DataViewAuxDataFetch1VO> auxiliary,
-                                     List<DataViewResultFetch1VO> noResAux,
+    private XSSFWorkbook getWorkbook(List<DataViewResultVO> results,
+                                     List<DataViewResultVO> auxiliary,
+                                     List<DataViewResultVO> noResAux,
                                      HashMap<Integer, HashSet<String>> testAnaResMap,
                                      HashMap<Integer, HashSet<String>> auxFieldValMap,
                                      String moduleName, boolean showReportableColumnsOnly,
                                      ArrayList<String> headers,
-                                     HashMap<Integer, String> colFieldMap, DataView1VO data,
+                                     DataView1VO data,
                                      HashMap<Integer, SampleManager1> smMap, ReportStatus status) throws Exception {
         boolean excludeOverride, excludeRes, excludeAux, samOverridden, anaOverridden, addResRow, addAuxRow, addNoResAuxRow;
         int i, j, resIndex, auxIndex, noResAuxIndex, rowIndex, numRes, numAux, numNoResAux, lastCol, currCol;
@@ -1460,8 +1394,7 @@ public class DataViewReportBean {
         SampleManager1 sm;
         XSSFWorkbook wb;
         XSSFSheet sheet;
-        DataViewResultFetch1VO res, noRA;
-        DataViewAuxDataFetch1VO aux;
+        DataViewResultVO res, noRA, aux;
         ResultViewDO rowRes, colRes;
         Row headerRow, currRow, prevRow;
         RowData rd;
@@ -1490,6 +1423,9 @@ public class DataViewReportBean {
         numRes = results == null ? 0 : results.size();
         numAux = auxiliary == null ? 0 : auxiliary.size();
         numNoResAux = noResAux == null ? 0 : noResAux.size();
+        excludeOverride = "Y".equals(data.getExcludeResultOverride());
+        excludeRes = "Y".equals(data.getExcludeResults());
+        excludeAux = "Y".equals(data.getExcludeAuxData());
 
         resIndex = 0;
         auxIndex = 0;
@@ -1519,10 +1455,6 @@ public class DataViewReportBean {
         colAnaMap = new HashMap<String, Integer>();
         rd = new RowData();
 
-        excludeOverride = "Y".equals(data.getExcludeResultOverride());
-        excludeRes = "Y".equals(data.getExcludeResults());
-        excludeAux = "Y".equals(data.getExcludeAuxData());
-
         status.setMessage(Messages.get().report_genDataView());
         status.setPercentComplete(0);
         session.setAttribute("DataViewReportStatus", status);
@@ -1532,8 +1464,13 @@ public class DataViewReportBean {
          * are no more elements left in each of them to read from
          */
         while (resIndex < numRes || auxIndex < numAux || noResAuxIndex < numNoResAux) {
-            if (reportStopped(status))
+            /*
+             * the user wants to stop the report
+             */
+            if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
+                status.setMessage(Messages.get().report_stopped());
                 return null;
+            }
 
             status.setPercentComplete(100 * (resIndex + auxIndex + noResAuxIndex) /
                                       (numRes + numAux + numNoResAux));
@@ -1624,7 +1561,7 @@ public class DataViewReportBean {
                 /*
                  * don't show any data for this analysis if it's overridden and
                  * such analyses are excluded; whether the analysis is
-                 * overridden is checked even if such samples are not excluded
+                 * overridden is checked even if such analyses are not excluded
                  * because overridden values are not shown in the report
                  */
                 if ( !anaId.equals(prevAnaId)) {
@@ -1644,32 +1581,31 @@ public class DataViewReportBean {
                     }
                 }
 
-                if (anaOverridden && excludeOverride)
+                if (anaOverridden && excludeOverride) {
                     addResRow = false;
-            }
-
-            if (addResRow) {
-                /*
-                 * the value of this result was selected by the user; add a row
-                 * for it
-                 */
-                resVal = getValue(testAnaResMap,
-                                  res.getAnalyteId(),
-                                  res.getValue(),
-                                  res.getTypeId());
-                if (resVal != null)
-                    currRow = sheet.createRow(rowIndex++ );
-                else
-                    addResRow = false;
+                } else {
+                    /*
+                     * if this result's value was selected by the user, add a
+                     * row for it
+                     */
+                    resVal = getValue(testAnaResMap,
+                                      res.getAnalyteId(),
+                                      res.getValue(),
+                                      res.getTypeId());
+                    if (resVal != null)
+                        currRow = sheet.createRow(rowIndex++ );
+                    else
+                        addResRow = false;
+                }
             }
 
             if (addAuxRow) {
                 /*
-                 * the value of this aux data was selected by the user; add a
+                 * if this aux data's value of was selected by the user, add a
                  * row for it
                  */
                 auxVal = getValue(auxFieldValMap,
-                                  aux.getAuxFieldAnalyteId(),
+                                  aux.getAnalyteId(),
                                   aux.getValue(),
                                   aux.getTypeId());
                 if (auxVal != null)
@@ -1688,7 +1624,7 @@ public class DataViewReportBean {
              * fill the passed row's cells for all columns except the ones for
              * analytes and values
              */
-            setCells(samId, itemId, anaId, smMap, rd, colFieldMap, moduleName, currRow, maxChars);
+            setCells(samId, itemId, anaId, smMap, rd, data.getColumns(), moduleName, currRow, maxChars);
 
             if (addResRow) {
                 /*
@@ -1775,7 +1711,7 @@ public class DataViewReportBean {
                  * set the analyte name and aux data value
                  */
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                cell.setCellValue(aux.getAuxFieldAnalyteName());
+                cell.setCellValue(aux.getAnalyteName());
                 setMaxChars(cell, maxChars);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 cell.setCellValue(auxVal);
@@ -1802,27 +1738,15 @@ public class DataViewReportBean {
         }
 
         /*
-         * make each column wide enough to show the longest string in it
+         * make each column wide enough to show the longest string in it; the
+         * width for each column is set as the maximum number of characters in
+         * that column multiplied by 256 because the default width of one
+         * character is 1/256 units in Excel
          */
         for (i = 0; i < headerRow.getPhysicalNumberOfCells(); i++ )
             sheet.setColumnWidth(i, maxChars.get(i)*256);
 
         return wb;
-    }
-
-    /**
-     * Checks whether the attribute for stopping the report has been set in the
-     * session; returns true if it is; also sets the message in the passed
-     * status to inform the user that the report has been stopped and removes
-     * that attribute from the session; returns false otherwise
-     */
-    private boolean reportStopped(ReportStatus status) {
-        if (ReportStatus.Status.CANCEL.equals(status.getStatus())) {
-            status.setMessage(Messages.get().report_stopped());
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -1845,17 +1769,19 @@ public class DataViewReportBean {
         return style;
     }
 
+
     /**
      * Creates the list of header labels for the report by going through
-     * "columns"; it's the list of meta keys for the columns selected by the
-     * user; the headers are in the same order as the keys and not in some fixed
-     * order; populates the passed map by making the column index as the key and
-     * the meta key for that column as the value; if some column is for a part
-     * of sample manager, that's fetched using a load element e.g. organization,
-     * adds the load element for it to "load"
+     * "columns"
+     * @param columns
+     *        is a list of meta keys selected for output
+     * @param load
+     *        is modified based on selected columns in order for the sample
+     *        manager to fetch elements such as organization
+     * @return header labels
+     * @throws Exception
      */
     private ArrayList<String> getHeaders(ArrayList<String> columns,
-                                         HashMap<Integer, String> colFieldMap,
                                          ArrayList<SampleManager1.Load> load) throws Exception {
         String column;
         boolean fetchOrg, fetchUser, fetchProv;
@@ -2052,42 +1978,6 @@ public class DataViewReportBean {
                     break;
                 case SampleWebMeta.LOCATION_ADDR_COUNTRY:
                     headers.add(Messages.get().dataView_locationCountry());
-                    break;
-                /*
-                 * private well fields
-                 */
-                case SampleWebMeta.WELL_OWNER:
-                    headers.add(Messages.get().owner());
-                    break;
-                case SampleWebMeta.WELL_COLLECTOR:
-                    headers.add(Messages.get().collector());
-                    break;
-                case SampleWebMeta.WELL_WELL_NUMBER:
-                    headers.add(Messages.get().wellNum());
-                    break;
-                case SampleWebMeta.WELL_REPORT_TO_ADDR_WORK_PHONE:
-                    headers.add(Messages.get().address_phone());
-                    break;
-                case SampleWebMeta.WELL_REPORT_TO_ADDR_FAX_PHONE:
-                    headers.add(Messages.get().faxNumber());
-                    break;
-                case SampleWebMeta.WELL_LOCATION:
-                    headers.add(Messages.get().location());
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_MULTIPLE_UNIT:
-                    headers.add(Messages.get().dataView_locationAptSuite());
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_STREET_ADDRESS:
-                    headers.add(Messages.get().dataView_locationAddress());
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_CITY:
-                    headers.add(Messages.get().dataView_locationCity());
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_STATE:
-                    headers.add(Messages.get().dataView_locationState());
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_ZIP_CODE:
-                    headers.add(Messages.get().dataView_locationZipCode());
                     break;
                 /*
                  * sdwis fields
@@ -2324,7 +2214,6 @@ public class DataViewReportBean {
                 default:
                     throw new InconsistencyException("Unknown column " + column);
             }
-            colFieldMap.put(i, column);
         }
 
         /*
@@ -2409,14 +2298,13 @@ public class DataViewReportBean {
      */
     private void setCells(Integer sampleId, Integer sampleItemId, Integer analysisId,
                           HashMap<Integer, SampleManager1> smMap, RowData rd,
-                          HashMap<Integer, String> colFieldMap, String moduleName, Row row,
+                          ArrayList<String> columns, String moduleName, Row row,
                           ArrayList<Integer> maxChars) throws Exception {
         boolean runForWeb;
         String column;
         Object value;
         SampleDO s;
         SampleEnvironmentalDO se;
-        SamplePrivateWellViewDO spw;
         SampleSDWISViewDO ss;
         SampleManager1 sm;
         SampleClinicalViewDO sc;
@@ -2429,7 +2317,6 @@ public class DataViewReportBean {
         sm = smMap.get(sampleId);
         s = getSample(sm);
         se = getSampleEnvironmental(sm);
-        spw = getSamplePrivateWell(sm);
         ss = getSampleSDWIS(sm);
         sc = getSampleClinical(sm);
         sn = getSampleNeonatal(sm);
@@ -2535,8 +2422,8 @@ public class DataViewReportBean {
         /*
          * set the label for each column
          */
-        for (int i = 0; i < colFieldMap.size(); i++ ) {
-            column = colFieldMap.get(i);
+        for (int i = 0; i < columns.size(); i++ ) {
+            column = columns.get(i);
             value = null;
             switch (column) {
             /*
@@ -2736,42 +2623,6 @@ public class DataViewReportBean {
                     break;
                 case SampleWebMeta.LOCATION_ADDR_COUNTRY:
                     value = se != null ? se.getLocationAddress().getCountry() : null;
-                    break;
-                /*
-                 * private well columns
-                 */
-                case SampleWebMeta.WELL_OWNER:
-                    value = spw != null ? spw.getOwner() : null;
-                    break;
-                case SampleWebMeta.WELL_COLLECTOR:
-                    value = spw != null ? spw.getCollector() : null;
-                    break;
-                case SampleWebMeta.WELL_WELL_NUMBER:
-                    value = spw != null ? spw.getWellNumber() : null;
-                    break;
-                case SampleWebMeta.WELL_REPORT_TO_ADDR_WORK_PHONE:
-                    value = spw != null ? spw.getReportToAddress().getWorkPhone() : null;
-                    break;
-                case SampleWebMeta.WELL_REPORT_TO_ADDR_FAX_PHONE:
-                    value = spw != null ? spw.getReportToAddress().getFaxPhone() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION:
-                    value = spw != null ? spw.getLocation() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_MULTIPLE_UNIT:
-                    value = spw != null ? spw.getLocationAddress().getMultipleUnit() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_STREET_ADDRESS:
-                    value = spw != null ? spw.getLocationAddress().getStreetAddress() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_CITY:
-                    value = spw != null ? spw.getLocationAddress().getCity() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_STATE:
-                    value = spw != null ? spw.getLocationAddress().getState() : null;
-                    break;
-                case SampleWebMeta.WELL_LOCATION_ADDR_ZIP_CODE:
-                    value = spw != null ? spw.getLocationAddress().getZipCode() : null;
                     break;
                 /*
                  * sdwis columns
@@ -3192,16 +3043,16 @@ public class DataViewReportBean {
      * This class is used for sorting the list of aux data fetched for
      * generating the data view report
      */
-    private class DataViewComparator implements Comparator<DataViewAuxDataFetch1VO> {
-        public int compare(DataViewAuxDataFetch1VO aux1, DataViewAuxDataFetch1VO aux2) {
+    private class DataViewComparator implements Comparator<DataViewResultVO> {
+        public int compare(DataViewResultVO aux1, DataViewResultVO aux2) {
             int diff;
             Integer accNum1, accNum2;
             String name1, name2;
 
             accNum1 = aux1.getSampleAccessionNumber();
             accNum2 = aux2.getSampleAccessionNumber();
-            name1 = aux1.getAuxFieldAnalyteName();
-            name2 = aux2.getAuxFieldAnalyteName();
+            name1 = aux1.getAnalyteName();
+            name2 = aux2.getAnalyteName();
 
             /*
              * names of the analytes are compared only if the accession numbers

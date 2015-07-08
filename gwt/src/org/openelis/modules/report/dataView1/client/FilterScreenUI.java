@@ -31,10 +31,11 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.AuxFieldDataView1VO;
+import org.openelis.domain.DataViewAnalyteVO;
 import org.openelis.domain.DataView1VO;
+import org.openelis.domain.DataViewValueVO;
 import org.openelis.domain.ResultDataViewVO;
-import org.openelis.domain.TestAnalyteDataView1VO;
+import org.openelis.domain.DataViewAnalyteVO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -119,13 +120,13 @@ public abstract class FilterScreenUI extends Screen {
             @Override
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                TestAnalyteDataView1VO data;
+                DataViewAnalyteVO data;
                 String val;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = testAnalyteTable.getValueAt(r, c);
-                data = (TestAnalyteDataView1VO)testAnalyteTable.getRowAt(r).getData();
+                data = (DataViewAnalyteVO)testAnalyteTable.getRowAt(r).getData();
                 switch (c) {
                     case 0:
                         /*
@@ -253,13 +254,13 @@ public abstract class FilterScreenUI extends Screen {
             @Override
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                AuxFieldDataView1VO data;
+                DataViewAnalyteVO data;
                 String val;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = auxFieldTable.getValueAt(r, c);
-                data = (AuxFieldDataView1VO)auxFieldTable.getRowAt(r).getData();
+                data = (DataViewAnalyteVO)auxFieldTable.getRowAt(r).getData();
                 switch (c) {
                     case 0:
                         /*
@@ -424,7 +425,7 @@ public abstract class FilterScreenUI extends Screen {
 
     private ArrayList<Row> getTestAnalyteTableModel() {
         ArrayList<Row> model;
-        ArrayList<TestAnalyteDataView1VO> analytes;
+        ArrayList<DataViewAnalyteVO> analytes;
         Row row;
 
         model = new ArrayList<Row>();
@@ -433,7 +434,7 @@ public abstract class FilterScreenUI extends Screen {
 
         analytes = data.getTestAnalytes();
         if (analytes != null) {
-            for (TestAnalyteDataView1VO ana : analytes) {
+            for (DataViewAnalyteVO ana : analytes) {
                 row = new Row(2);
                 row.setCell(0, "N");
                 row.setCell(1, ana.getAnalyteName());
@@ -447,8 +448,8 @@ public abstract class FilterScreenUI extends Screen {
 
     private ArrayList<Row> getResultTableModel(int index) {
         ArrayList<Row> model;
-        ArrayList<ResultDataViewVO> results;
-        TestAnalyteDataView1VO data;
+        ArrayList<DataViewValueVO> results;
+        DataViewAnalyteVO data;
         Row row;
 
         model = new ArrayList<Row>();
@@ -456,9 +457,9 @@ public abstract class FilterScreenUI extends Screen {
             return model;
 
         row = testAnalyteTable.getRowAt(index);
-        data = (TestAnalyteDataView1VO)row.getData();
-        results = data.getResults();
-        for (ResultDataViewVO res : results) {
+        data = (DataViewAnalyteVO)row.getData();
+        results = data.getValues();
+        for (DataViewValueVO res : results) {
             row = new Row(2);
             row.setCell(0, res.getIsIncluded());
             row.setCell(1, res.getValue());
@@ -470,7 +471,7 @@ public abstract class FilterScreenUI extends Screen {
 
     private ArrayList<Row> getAuxFieldTableModel() {
         ArrayList<Row> model;
-        ArrayList<AuxFieldDataView1VO> auxFields;
+        ArrayList<DataViewAnalyteVO> auxFields;
         Row row;
 
         model = new ArrayList<Row>();
@@ -479,7 +480,7 @@ public abstract class FilterScreenUI extends Screen {
 
         auxFields = data.getAuxFields();
         if (auxFields != null) {
-            for (AuxFieldDataView1VO aux : auxFields) {
+            for (DataViewAnalyteVO aux : auxFields) {
                 row = new Row(2);
                 row.setCell(0, "N");
                 row.setCell(1, aux.getAnalyteName());
@@ -493,8 +494,8 @@ public abstract class FilterScreenUI extends Screen {
 
     private ArrayList<Row> getAuxDataTableModel(int index) {
         ArrayList<Row> model;
-        ArrayList<AuxDataDataViewVO> auxiliary;
-        AuxFieldDataView1VO data;
+        ArrayList<DataViewValueVO> auxiliary;
+        DataViewAnalyteVO data;
         Row row;
 
         model = new ArrayList<Row>();
@@ -502,9 +503,9 @@ public abstract class FilterScreenUI extends Screen {
             return model;
 
         row = auxFieldTable.getRowAt(index);
-        data = (AuxFieldDataView1VO)row.getData();
+        data = (DataViewAnalyteVO)row.getData();
         auxiliary = data.getValues();
-        for (AuxDataDataViewVO aux : auxiliary) {
+        for (DataViewValueVO aux : auxiliary) {
             row = new Row(2);
             row.setCell(0, aux.getIsIncluded());
             row.setCell(1, aux.getValue());
@@ -519,7 +520,7 @@ public abstract class FilterScreenUI extends Screen {
      * their results
      */
     private void updateAllTestAnalyte(String newVal) {
-        TestAnalyteDataView1VO data;
+        DataViewAnalyteVO data;
         Object val;
         Row row;
         ArrayList<Row> model;
@@ -529,7 +530,7 @@ public abstract class FilterScreenUI extends Screen {
             val = (String)testAnalyteTable.getValueAt(i, 0);
             if ( !DataBaseUtil.isSame(newVal, val)) {
                 row = model.get(i);
-                data = (TestAnalyteDataView1VO)row.getData();
+                data = (DataViewAnalyteVO)row.getData();
                 data.setIsIncluded(newVal);
                 testAnalyteTable.setValueAt(i, 0, newVal);
                 updateResultsForAnalyte(data, newVal);
@@ -541,15 +542,15 @@ public abstract class FilterScreenUI extends Screen {
      * Sets the passed value as the "include" flag for all results of the passed
      * test analyte
      */
-    private void updateResultsForAnalyte(TestAnalyteDataView1VO data, String val) {
+    private void updateResultsForAnalyte(DataViewAnalyteVO data, String val) {
         int r;
-        TestAnalyteDataView1VO sel;
-        ResultDataViewVO res;
-        ArrayList<ResultDataViewVO> list;
+        DataViewAnalyteVO sel;
+        DataViewValueVO res;
+        ArrayList<DataViewValueVO> list;
 
-        list = data.getResults();
+        list = data.getValues();
         r = testAnalyteTable.getSelectedRow();
-        sel = r > -1 ? (TestAnalyteDataView1VO)testAnalyteTable.getRowAt(r).getData() : null;
+        sel = r > -1 ? (DataViewAnalyteVO)testAnalyteTable.getRowAt(r).getData() : null;
         for (int i = 0; i < list.size(); i++ ) {
             res = list.get(i);
             /*
@@ -572,17 +573,17 @@ public abstract class FilterScreenUI extends Screen {
      * aux data
      */
     private void updateAllAuxField(String newVal) {
-        ArrayList<Row> model;
         Row row;
-        AuxFieldDataView1VO data;
         Object val;
+        DataViewAnalyteVO data;
+        ArrayList<Row> model;
 
         model = auxFieldTable.getModel();
         for (int i = 0; i < model.size(); i++ ) {
             val = (String)auxFieldTable.getValueAt(i, 0);
             if ( !DataBaseUtil.isSame(newVal, val)) {
                 row = model.get(i);
-                data = (AuxFieldDataView1VO)row.getData();
+                data = (DataViewAnalyteVO)row.getData();
                 data.setIsIncluded(newVal);
                 auxFieldTable.setValueAt(i, 0, newVal);
                 updateAuxDataForAnalyte(data, newVal);
@@ -594,15 +595,15 @@ public abstract class FilterScreenUI extends Screen {
      * Sets the passed value as the "include" flag for all aux data of the
      * passed aux field
      */
-    private void updateAuxDataForAnalyte(AuxFieldDataView1VO data, String val) {
+    private void updateAuxDataForAnalyte(DataViewAnalyteVO data, String val) {
         int r;
-        AuxFieldDataView1VO sel;
-        AuxDataDataViewVO aux;
-        ArrayList<AuxDataDataViewVO> list;
+        DataViewAnalyteVO sel;
+        DataViewValueVO aux;
+        ArrayList<DataViewValueVO> list;
 
         list = data.getValues();
         r = auxFieldTable.getSelectedRow();
-        sel = r > -1 ? (AuxFieldDataView1VO)auxFieldTable.getRowAt(r).getData() : null;
+        sel = r > -1 ? (DataViewAnalyteVO)auxFieldTable.getRowAt(r).getData() : null;
         for (int i = 0; i < list.size(); i++ ) {
             aux = list.get(i);
             /*

@@ -158,7 +158,7 @@
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer bottom="30px" height="40px" left="0px" right="0px">
+    <g:layer bottom="15px" height="40px" left="0px" right="0px">
       <g:HTMLPanel>
         <w:Label ui:field="fieldsDisabledLabel" styleName="{res.style.WarningLabel}" />
       </g:HTMLPanel>

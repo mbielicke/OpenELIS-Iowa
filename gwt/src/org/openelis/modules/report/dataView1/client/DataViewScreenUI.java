@@ -32,10 +32,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.AuxFieldDataView1VO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
-import org.openelis.domain.TestAnalyteDataView1VO;
+import org.openelis.domain.DataViewAnalyteVO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.main.client.StatusBarPopupScreenUI;
@@ -50,6 +49,7 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TabLayoutPanel;
@@ -99,9 +99,6 @@ public class DataViewScreenUI extends Screen {
     protected EnvironmentalTabUI           environmentalTab;
 
     @UiField(provided = true)
-    protected PrivateWellTabUI             privateWellTab;
-
-    @UiField(provided = true)
     protected SDWISTabUI                   sdwisTab;
 
     @UiField(provided = true)
@@ -135,7 +132,6 @@ public class DataViewScreenUI extends Screen {
         queryTab = new QueryTabUI(this);
         commonTab = new CommonTabUI(this);
         environmentalTab = new EnvironmentalTabUI(this);
-        privateWellTab = new PrivateWellTabUI(this);
         sdwisTab = new SDWISTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
@@ -243,20 +239,6 @@ public class DataViewScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                privateWellTab.onDataChange();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                privateWellTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return null;
-            }
-        });
-
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisTab.onDataChange();
@@ -323,6 +305,16 @@ public class DataViewScreenUI extends Screen {
             }
         });
     }
+    
+    /**
+     * This is overridden because the tabs need to be enabled or disabled based
+     * on the data on the screen e.g. on opening a query; otherwise,
+     * StateChangeEvent won't be fired because the screen's state never changes
+     */
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
 
     /**
      * Sets the VO in the tabs
@@ -331,7 +323,6 @@ public class DataViewScreenUI extends Screen {
         queryTab.setData(data);
         commonTab.setData(data);
         environmentalTab.setData(data);
-        privateWellTab.setData(data);
         sdwisTab.setData(data);
         clinicalTab.setData(data);
         neonatalTab.setData(data);
@@ -367,7 +358,6 @@ public class DataViewScreenUI extends Screen {
         columns = new ArrayList<String>();
         commonTab.addColumns(columns);
         environmentalTab.addColumns(columns);
-        privateWellTab.addColumns(columns);
         sdwisTab.addColumns(columns);
         clinicalTab.addColumns(columns);
         neonatalTab.addColumns(columns);
@@ -411,11 +401,6 @@ public class DataViewScreenUI extends Screen {
         environmentalTab.addColumns(columns);
         if (columns.size() > before)
             domain = Constants.domain().ENVIRONMENTAL;
-
-        before = columns.size();
-        privateWellTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().PRIVATEWELL;
 
         before = columns.size();
         sdwisTab.addColumns(columns);
@@ -529,7 +514,7 @@ public class DataViewScreenUI extends Screen {
         data = null;
 
         try {
-            data = (DataView1VO)DataViewReportService1.get().openQuery();
+            data = (DataView1VO)DataViewReportService1.get().loadQuery();
             if (data == null) {
                 Window.alert(Messages.get().report_fileNameNotValidException());
             } else {
@@ -590,14 +575,13 @@ public class DataViewScreenUI extends Screen {
                 @Override
                 public void runReport() {
                     int numTA, numAux;
-                    ArrayList<TestAnalyteDataView1VO> testAnas;
-                    ArrayList<AuxFieldDataView1VO> auxFields;
+                    ArrayList<DataViewAnalyteVO> testAnas, auxFields;
 
                     numTA = 0;
                     numAux = 0;
                     testAnas = data.getTestAnalytes();
                     if (testAnas != null) {
-                        for (TestAnalyteDataView1VO ta : testAnas) {
+                        for (DataViewAnalyteVO ta : testAnas) {
                             if ("Y".equals(ta.getIsIncluded()))
                                 numTA++ ;
                         }
@@ -610,7 +594,7 @@ public class DataViewScreenUI extends Screen {
                     if (numTA == 0) {
                         auxFields = data.getAuxFields();
                         if (auxFields != null) {
-                            for (AuxFieldDataView1VO af : auxFields) {
+                            for (DataViewAnalyteVO af : auxFields) {
                                 if ("Y".equals(af.getIsIncluded()))
                                     numAux++ ;
                             }
