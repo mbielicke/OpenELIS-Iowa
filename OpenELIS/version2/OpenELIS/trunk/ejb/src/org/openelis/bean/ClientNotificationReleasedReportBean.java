@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,16 +55,16 @@ import org.openelis.utils.ReportUtil;
 @SecurityDomain("openelis")
 public class ClientNotificationReleasedReportBean {
     @EJB
-    private SampleBean                sample;
-
-    @EJB
-    private SystemVariableBean        systemVariable;
-
-    @EJB
     private AnalysisReportFlagsBean   analysisReportFlags;
 
     @EJB
     private OrganizationParameterBean organizationParameter;
+
+    @EJB
+    private SampleBean                sample;
+
+    @EJB
+    private SystemVariableBean        systemVariable;
 
     private static final Logger       log = Logger.getLogger("openelis");
 
@@ -74,12 +74,12 @@ public class ClientNotificationReleasedReportBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {
-        String from;
-        Date lastRunDate, currentRunDate, now;
-        SystemVariableDO lastRun;
-        Calendar cal;
-        DateFormat df;
         ArrayList<ClientNotificationVO> resultList;
+        Calendar cal;
+        Date currentRunDate, lastRunDate, now;
+        DateFormat df;
+        String from;
+        SystemVariableDO lastRun;
 
         /*
          * subtracting 1 minute from the current time for end date
@@ -117,122 +117,123 @@ public class ClientNotificationReleasedReportBean {
     }
 
     protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
-        Integer accession, lastAccession, sampleId;
-        String email, lastEmail, to, collectedDt, ref, filter, filterValue;
-        EmailFilter parsed;
-        StringBuilder contents;
-        ArrayList<ClientNotificationVO> l;
-        ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
-        HashMap<String, ArrayList<ClientNotificationVO>> emails;
+        EmailFilter parsed;
+        HashSet<Integer> analysisIds;
         HashMap<String, EmailFilter> parsedEmails;
-
-        emails = new HashMap<String, ArrayList<ClientNotificationVO>>();
-        parsedEmails = new HashMap<String, EmailFilter>();
+        Integer accession, lastAccession;
+        String collectedDate, email, emailParam, filter, filterValue, lastEmail, ref;
+        StringBuilder contents;
 
         /*
          * Group unique samples for each email address.
          */
+        analysisIds = new HashSet<Integer>();
+        contents = new StringBuilder();
+        parsedEmails = new HashMap<String, EmailFilter>();
         lastAccession = -1;
-        lastEmail = "";
+        lastEmail = "xyzzy";
         for (ClientNotificationVO data : resultList) {
             accession = data.getAccessionNumber();
-            email = data.getEmail();
-            if (parsedEmails.get(email) == null) {
-                parsed = organizationParameter.decodeEmail(email);
-                parsedEmails.put(email, parsed);
+            emailParam = data.getEmail();
+            if (parsedEmails.get(emailParam) == null) {
+                parsed = organizationParameter.decodeEmail(emailParam);
+                parsedEmails.put(emailParam, parsed);
             } else {
-                parsed = parsedEmails.get(email);
+                parsed = parsedEmails.get(emailParam);
             }
             email = parsed.getEmail();
             filter = parsed.getFilter();
             filterValue = parsed.getfilterValue();
-            if (filter != null)
+            if (filter != null) {
                 switch (filter) {
                     case "C:":
                         /*
                          * reference field 1 should be collector
                          */
-                        if ( !data.getReferenceField1().contains(filterValue))
+                        if (!data.getReferenceField1().contains(filterValue))
                             continue;
                         break;
                     case "R:":
                         /*
                          * reference field 3 should be client reference string
                          */
-                        if ( !data.getReferenceField3().contains(filterValue))
+                        if (!data.getReferenceField3().contains(filterValue))
                             continue;
                         break;
                     case "P:":
                         // TODO add provider to data object
-                        if ( !data.getReferenceField2().contains(filterValue))
+                        if (!data.getReferenceField2().contains(filterValue))
                             continue;
                         break;
                     default:
                         // do nothing if the filter is invalid
                 }
-            l = emails.get(email);
-            if (l == null) {
-                l = new ArrayList<ClientNotificationVO>();
-                l.add(data);
-                emails.put(email, l);
-            } else if (accession > lastAccession || !lastEmail.equals(email)) {
-                l.add(data);
             }
-            lastAccession = accession;
-            lastEmail = email;
-        }
 
-        collectedDt = null;
-        contents = new StringBuilder();
-        sampleIds = new ArrayList<Integer>();
+            if (!lastEmail.equals(email)) {
+                if (!"xyzzy".equals(lastEmail) && contents.length() > 0) {
+                    printFooter(contents);
+                    try {
+                        ReportUtil.sendEmail(from,
+                                             lastEmail,
+                                             "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
+                                             contents.toString());
+                    } catch (Exception e) {
+                        log.log(Level.SEVERE, "Could not send email to " + lastEmail, e);
+                    }
+                    contents.setLength(0);
+                    lastAccession = -1;
+                }
+                lastEmail = email;
+                printHeader(contents);
+            }
 
-        /*
-         * Generate emails for each email address from the emails map.
-         */
-
-        for (Entry<String, ArrayList<ClientNotificationVO>> entry : emails.entrySet()) {
-            contents.setLength(0);
-
-            printHeader(contents);
-
-            to = entry.getKey();
-            l = entry.getValue();
-            for (ClientNotificationVO data : l) {
+            if (!lastAccession.equals(accession)) {
+                collectedDate = null;
                 if (data.getCollectionDate() != null)
-                    collectedDt = DataBaseUtil.concatWithSeparator(ReportUtil.toString(data.getCollectionDate(),
-                                                                                       Messages.get()
-                                                                                               .datePattern()),
-                                                                   " ",
-                                                                   ReportUtil.toString(data.getCollectionTime(),
-                                                                                       Messages.get()
-                                                                                               .timePattern()));
+                    collectedDate = DataBaseUtil.concatWithSeparator(ReportUtil.toString(data.getCollectionDate(),
+                                                                                         Messages.get()
+                                                                                                 .datePattern()),
+                                                                     " ",
+                                                                     ReportUtil.toString(data.getCollectionTime(),
+                                                                                         Messages.get()
+                                                                                                 .timePattern()));
                 ref = getReferenceFields(data.getReferenceField1(),
                                          data.getReferenceField2(),
                                          data.getReferenceField3(),
                                          data.getProjectName());
-                sampleId = data.getAccessionNumber();
                 printBody(contents,
-                          sampleId,
+                          accession,
                           ReportUtil.toString(data.getReceivedDate(), Messages.get()
                                                                               .dateTimePattern()),
-                          collectedDt,
+                          collectedDate,
                           ref);
-
-                sampleIds.add(sampleId);
+                lastAccession = accession;
             }
+            analysisIds.add(data.getAnalysisId());
+        }
+
+        if (contents.length() > 0) {
             printFooter(contents);
             try {
                 ReportUtil.sendEmail(from,
-                                     to,
+                                     lastEmail,
                                      "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
                                      contents.toString());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not send email to " + to, e);
+                log.log(Level.SEVERE, "Could not send email to " + lastEmail, e);
             }
         }
 
-        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
+        /*
+         * Updating analysis with notified_released flag set to Y (meaning email
+         * has been sent). If an exception occurs for updating the flag for an
+         * analysis, we don't throw an exception so that the flag can be updated
+         * for the remaining analyses. Email associated with the failed analysis
+         * will get multiple emails.
+         */
+        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(new ArrayList<Integer>(analysisIds));
         for (AnalysisReportFlagsDO anaData : anaList) {
             try {
                 analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
@@ -244,7 +245,6 @@ public class ClientNotificationReleasedReportBean {
                 log.log(Level.SEVERE, "Error occurred while updating report flags ", e);
             }
         }
-
     }
 
     protected void printHeader(StringBuilder con) {
@@ -300,8 +300,8 @@ public class ClientNotificationReleasedReportBean {
         StringBuffer b;
 
         b = new StringBuffer();
-        for (int i = 0; i < f.length; i++ ) {
-            if ( !DataBaseUtil.isEmpty(f[i])) {
+        for (int i = 0; i < f.length; i++) {
+            if (!DataBaseUtil.isEmpty(f[i])) {
                 if (b.length() > 0)
                     b.append(", ");
                 b.append(f[i].trim());
