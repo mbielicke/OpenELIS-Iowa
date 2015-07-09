@@ -320,12 +320,13 @@ import org.openelis.utils.Auditable;
                                    + " s.id = sc.sample_id and sc.provider_id = pv.id and si.id = a.sample_item_id and"
                                    + " a.id in (select arf.analysis_id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_received = 'N') and"
                                    + " a.id = aq.analysis_id and aq.type_id = d5.id and d5.system_name = 'qaevent_override' "
-                                   + "order by accession_number",
+                                   + "order by email, accession_number",
                            resultSetMapping = "Sample.FetchForClientEmailReceivedReportMapping"),
          @NamedNativeQuery(name = "Sample.FetchForClientEmailReleasedReport",
                            query = "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " se.collector ref_field1, se.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " se.collector ref_field1, se.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from sample s, sample_item si, outer(sample_project sp, project p), dictionary d1,"
                                    + " sample_organization so, dictionary d2, organization_parameter op, dictionary d3, sample_environmental se,"
                                    + " analysis a, dictionary d4 "
@@ -338,7 +339,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " se.collector ref_field1, se.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " se.collector ref_field1, se.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from analysis a, sample s, sample_item si, outer(sample_project sp, project p),  dictionary d1, dictionary d2,"
                                    + " sample_organization so, dictionary d3, organization_parameter op, dictionary d4, sample_environmental se,"
                                    + " test t, dictionary d5 "
@@ -352,7 +354,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " ss.collector ref_field1, ss.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " ss.collector ref_field1, ss.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from sample s, sample_item si, outer(sample_project sp, project p), dictionary d1,"
                                    + " sample_organization so, dictionary d2, organization_parameter op, dictionary d3, sample_sdwis ss,"
                                    + " analysis a, dictionary d4 "
@@ -365,7 +368,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " ss.collector ref_field1, ss.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " ss.collector ref_field1, ss.location ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from analysis a, sample s, sample_item si, outer(sample_project sp, project p),  dictionary d1, dictionary d2,"
                                    + " sample_organization so, dictionary d3, organization_parameter op, dictionary d4, sample_sdwis ss,"
                                    + " test t, dictionary d5 "
@@ -379,7 +383,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " spw.owner ref_field1, spw.location ref_field2, spw.collector ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " spw.owner ref_field1, spw.location ref_field2, spw.collector ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from sample s, sample_item si, outer(sample_project sp, project p), dictionary d1,"
                                    + " sample_private_well spw, organization_parameter op, dictionary d2,"
                                    + " analysis a, dictionary d3 "
@@ -391,7 +396,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " spw.owner ref_field1, spw.location ref_field2, spw.collector ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " spw.owner ref_field1, spw.location ref_field2, spw.collector ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from analysis a, sample s, sample_item si, outer(sample_project sp, project p),  dictionary d1, dictionary d2,"
                                    + " sample_private_well spw, organization_parameter op, dictionary d3, test t, dictionary d4 "
                                    + "where a.released_date between :start_released_date and :end_released_date and s.id = si.sample_id and a.sample_item_id = si.id and"
@@ -403,7 +409,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " CAST(pv.last_name AS varchar(30)) ref_field1, CAST(pv.first_name AS varchar(20)) ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " CAST(pv.last_name AS varchar(30)) ref_field1, CAST(pv.first_name AS varchar(20)) ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from sample s, sample_item si, outer(sample_project sp, project p), dictionary d1,"
                                    + " sample_organization so, dictionary d2, organization_parameter op, dictionary d3, sample_clinical sc,"
                                    + " outer provider pv, analysis a, dictionary d4 "
@@ -416,7 +423,8 @@ import org.openelis.utils.Auditable;
                                    + "UNION "
                                    + "select distinct s.accession_number, s.collection_date,"
                                    + " s.collection_time, s.received_date, op.value email,"
-                                   + " CAST(pv.last_name AS varchar(30)) ref_field1, CAST(pv.first_name AS varchar(20)) ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4 "
+                                   + " CAST(pv.last_name AS varchar(30)) ref_field1, CAST(pv.first_name AS varchar(20)) ref_field2, CAST(s.client_reference AS varchar(20)) ref_field3, CAST(p.name AS varchar(20)) ref_field4,"
+                                   + " a.id "
                                    + "from analysis a, sample s, sample_item si, outer(sample_project sp, project p),  dictionary d1, dictionary d2,"
                                    + " sample_organization so, dictionary d3, organization_parameter op, dictionary d4, sample_clinical sc,"
                                    + " outer provider pv, test t, dictionary d5 "
@@ -427,7 +435,7 @@ import org.openelis.utils.Auditable;
                                    + " so.organization_id  = op.organization_id and op.type_id = d4.id and d4.system_name = 'released_reportto_email' and"
                                    + " s.id = sc.sample_id and sc.provider_id = pv.id and a.test_id = t.id and t.reporting_method_id = d5.id and d5.system_name = 'analyses_released' and"
                                    + " a.id in (select arf.analysis_id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'N') "
-                                   + "order by accession_number",
+                                   + "order by email, accession_number",
                            resultSetMapping = "Sample.FetchForClientEmailReleasedReportMapping"),
          @NamedNativeQuery(name = "Sample.FetchForSampleStatusReport",
                            query = "select s.accession_number s_anum, s.received_date s_rec, s.collection_date s_col_date, s.collection_time s_col_time,"
@@ -585,7 +593,8 @@ import org.openelis.utils.Auditable;
                                                        @ColumnResult(name = "ref_field1"),
                                                        @ColumnResult(name = "ref_field2"),
                                                        @ColumnResult(name = "ref_field3"),
-                                                       @ColumnResult(name = "ref_field4")}),
+                                                       @ColumnResult(name = "ref_field4"),
+                                                       @ColumnResult(name = "a_id")}),
                        @SqlResultSetMapping(name = "Sample.FetchForSampleStatusReport",
                                             columns = {@ColumnResult(name = "s_anum"),
                                                        @ColumnResult(name = "s_rec"),
