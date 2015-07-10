@@ -41,10 +41,10 @@ import org.openelis.ui.common.Datetime;
 public class ClientNotificationVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    protected Integer         accessionNumber, sampleQaeventId, analysisQaeventId;
+    protected Integer         accessionNumber, analysisId, analysisQaeventId, sampleQaeventId;
     protected Datetime        collectionDate, collectionTime, receivedDate;
-    protected String          email, referenceField1, referenceField2, referenceField3,
-                    projectName, providerLastName;
+    protected String          email, projectName, providerLastName, referenceField1,
+                              referenceField2, referenceField3;
 
     public ClientNotificationVO() {
     }
@@ -53,7 +53,7 @@ public class ClientNotificationVO implements Serializable {
                                 Date receivedDate, String email, Integer sampleQaeventId,
                                 Integer analysisQaeventId, String referenceField1,
                                 String referenceField2, String referenceField3, String projectName,
-                                String providerLastName) {
+                                String providerLastName, Integer analysisId) {
         if (collectionTime instanceof Time)
             collectionTime = new Date(collectionTime.getTime());
         setAccessionNumber(accessionNumber);
@@ -68,6 +68,7 @@ public class ClientNotificationVO implements Serializable {
         setReferenceField3(referenceField3);
         setProjectName(projectName);
         setProviderLastName(providerLastName);
+        setAnalysisId(analysisId);
     }
 
     public Integer getAccessionNumber() {
@@ -164,5 +165,13 @@ public class ClientNotificationVO implements Serializable {
 
     public void setProviderLastName(String providerLastName) {
         this.providerLastName = DataBaseUtil.trim(providerLastName);
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
     }
 }
