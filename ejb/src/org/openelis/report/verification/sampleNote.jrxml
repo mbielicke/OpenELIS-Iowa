@@ -13,7 +13,7 @@
 FROM
      qaevent q
      join sample_qaevent sq on sq.qaevent_id = q.id
-     join dictionary d on d.id = q.type_id
+     join dictionary d on d.id = sq.type_id
 WHERE
      sq.sample_id = $P{SAMPLE_ID}
 ORDER BY q.reporting_sequence, sq.id]]>
