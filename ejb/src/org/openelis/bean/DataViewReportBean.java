@@ -60,6 +60,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.ejb3.annotation.TransactionTimeout;
@@ -73,7 +74,6 @@ import org.openelis.domain.DataView1VO;
 import org.openelis.domain.DataViewAnalyteVO;
 import org.openelis.domain.DataViewResultVO;
 import org.openelis.domain.DataViewValueVO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
@@ -102,10 +102,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-/**
- * @author akampoow
- *
- */
 @Stateless
 @SecurityDomain("openelis")
 public class DataViewReportBean {
@@ -129,9 +125,6 @@ public class DataViewReportBean {
     private AnalysisQAEventBean        analysisQAEvent;
 
     @EJB
-    private DictionaryBean             dictionary;
-
-    @EJB
     private SampleManager1Bean         sampleManager1;
 
     @EJB
@@ -143,35 +136,53 @@ public class DataViewReportBean {
     @EJB
     private EventLogBean               eventLog;
 
-    private static final SampleWebMeta meta = new SampleWebMeta();
+    private static final SampleWebMeta meta                = new SampleWebMeta();
 
-    private static final Logger        log  = Logger.getLogger("openelis");
+    private static final Logger        log                 = Logger.getLogger("openelis");
 
-    private static final String        DATA_VIEW = "data_view", FILTERS = "filters",
+    private static final String        DATA_VIEW           = "data_view", FILTERS = "filters",
                     EXCLUDE_RES_OVERRIDE = "excludeResultOverride", EXCLUDE_RES = "excludeResults",
                     INCLUDE_NOT_REP_RES = "includeNotReportableResults",
                     EXCLUDE_AUX = "excludeAuxData",
                     INCLUDE_NOT_REP_AUX = "includeNotReportableAuxData",
                     QUERY_FIELDS = "query_fields", COLUMNS = "columns";
-    
-    private static final int DEFAULT_MAX_SAMPLES = 1000000; 
 
+    private static final int           DEFAULT_MAX_SAMPLES = 1000000;
+
+    /**
+     * Fetches the list of projects based on the clause defined in the security
+     * module for data view for the logged in user; the fetched projects include
+     * all projects defined for all samples that have the organizations
+     * specified in the clause as their report-to; it also includes the projects
+     * specified in the clause
+     * 
+     * @return the list of fetched projects or an empty list if no clause is
+     *         specified for the module for data view for the logged in user
+     * @throws Exception
+     */
     @RolesAllowed("w_dataview-select")
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         String clause;
 
         clause = userCache.getPermission().getModule("w_dataview").getClause();
-        /*
-         * if clause is null, then the previous method returns an empty HashMap,
-         * so we need to check if the list is empty or not. We only return the
-         * list of projects
-         */
         if (clause != null)
             return project.fetchForOrganizations(clause);
 
         return new ArrayList<IdNameVO>();
     }
 
+    /**
+     * Fetches results and aux data based on the query fields specified in
+     * "data"
+     * 
+     * @param data
+     *        a VO containing the query fields specified by the user
+     * @return a VO containing two lists, one for analytes linked to results and
+     *         another for analytes linked to aux data; for each analyte in
+     *         these lists there's also the list of result of aux data values
+     *         entered for the analyte
+     * @throws Exception
+     */
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
@@ -187,6 +198,19 @@ public class DataViewReportBean {
         return fetchTestAnalyteAndAuxField(data, null);
     }
 
+    /**
+     * Fetches results and aux data based on the query fields specified in
+     * "data" and the clause from the security module for data view for the
+     * logged in user
+     * 
+     * @param data
+     *        a VO containing the query fields specified by the user
+     * @return a VO containing two lists, one for analytes linked to results and
+     *         another for analytes linked to aux data; for each analyte in
+     *         these lists, there's a list of result of aux data values entered
+     *         for the analyte
+     * @throws Exception
+     */
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataView1VO fetchAnalyteAndAuxFieldForPortal(DataView1VO data) throws Exception {
@@ -202,6 +226,20 @@ public class DataViewReportBean {
         return fetchTestAnalyteAndAuxField(data, "w_dataview");
     }
 
+    /**
+     * Runs the data view report for an external user based on the query fields,
+     * the selected columns and the selected analytes and values in "data"; the
+     * clause from the security module for data view for the user is included in
+     * the query for fetching the data for the report; also, only reportable
+     * columns analytes are shown
+     * 
+     * @param data
+     *        a VO that contains the user's preferences for running the report
+     *        e.g query fields, columns etc.
+     * @return the status of the report containing any messages informing the
+     *         user if the report completed or if it was stopped etc.
+     * @throws Exception
+     */
     @RolesAllowed("w_dataview-select")
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -215,6 +253,17 @@ public class DataViewReportBean {
         return runReport(data, "w_dataview", true);
     }
 
+    /**
+     * Runs the data view report for an internal user based on the query fields,
+     * the selected columns and the selected analytes and values in "data"
+     * 
+     * @param data
+     *        a VO that contains the user's preferences for running the report
+     *        e.g query fields, columns etc.
+     * @return the status of the report containing any messages informing the
+     *         user if the report completed or if it was stopped etc.
+     * @throws Exception
+     */
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ReportStatus runReportForInternal(DataView1VO data) throws Exception {
@@ -222,9 +271,13 @@ public class DataViewReportBean {
     }
 
     /**
-     * Returns a VO filled from the xml file located at the passed url; the VO
-     * contains the "include" and "exclude" filters, the query fields and
-     * columns
+     * Creates a VO from the xml file located at the passed url; the VO contains
+     * the "include" and "exclude" filters, the query fields and columns
+     * 
+     * @param url
+     *        the path to the xml file on the user's system
+     * @return the created VO
+     * @throws Exception
      */
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataView1VO loadQuery(String url) throws Exception {
@@ -297,9 +350,14 @@ public class DataViewReportBean {
     }
 
     /**
-     * Creates an xml document from the passed VO and saves it to a file;
-     * elements are created for the "include" and "exclude" filters, the query
-     * fields and columns; the returned status contains the path to the file
+     * Creates an xml document from "data" and saves it to a file; elements are
+     * created for the "include" and "exclude" filters, the query fields and
+     * columns
+     * 
+     * @param data
+     *        a VO whose data is converted to an xml file
+     * @return a status containing the path to the created file
+     * @throws Exception
      */
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ReportStatus saveQuery(DataView1VO data) throws Exception {
@@ -415,9 +473,7 @@ public class DataViewReportBean {
         List<DataViewResultVO> results, auxiliary;
         ArrayList<SampleQaEventViewDO> sqas;
         ArrayList<AnalysisQaEventViewDO> aqas;
-        ArrayList<DictionaryViewDO> dictionaries;
-        HashSet<Integer> sampleIds, analysisIds, dictIds;
-        HashMap<Integer, DictionaryViewDO> dictMap;
+        HashSet<Integer> sampleIds, analysisIds;
 
         excludeOverride = "Y".equals(data.getExcludeResultOverride());
         excludeRes = "Y".equals(data.getExcludeResults());
@@ -450,20 +506,17 @@ public class DataViewReportBean {
         }
 
         /*
-         * go through the fetched results to make lists of their sample,
-         * analysis ids and dictionary ids so that any qa events etc. linked to
-         * them can be fetched; throw an exception if the number of samples
-         * exceeds the maximum allowed limit
+         * go through the fetched results to make lists of their sample and
+         * analysis ids so that any qa events etc. linked to them can be
+         * fetched; throw an exception if the number of samples exceeds the
+         * maximum allowed limit
          */
         sampleIds = new HashSet<Integer>();
         analysisIds = new HashSet<Integer>();
-        dictIds = new HashSet<Integer>();
         if (results != null) {
             for (DataViewResultVO res : results) {
                 sampleIds.add(res.getSampleId());
                 analysisIds.add(res.getAnalysisId());
-                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()))
-                    dictIds.add(Integer.valueOf(res.getValue()));
             }
 
             if (sampleIds.size() > max)
@@ -482,16 +535,13 @@ public class DataViewReportBean {
             throw new NotFoundException();
 
         /*
-         * go through the fetched aux data to make lists of their dictionary ids
-         * so the dictionary entries linked to them can be fetched; throw an
-         * exception if the number of samples exceeds the maximum allowed limit
+         * go through the fetched aux data to make lists of their sample ids ;
+         * throw an exception if the number of samples exceeds the maximum
+         * allowed limit
          */
         if (auxiliary != null) {
-            for (DataViewResultVO aux : auxiliary) {
+            for (DataViewResultVO aux : auxiliary)
                 sampleIds.add(aux.getSampleId());
-                if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId()))
-                    dictIds.add(Integer.valueOf(aux.getValue()));
-            }
 
             if (sampleIds.size() > max)
                 throw new InconsistencyException(Messages.get()
@@ -525,25 +575,14 @@ public class DataViewReportBean {
             throw new NotFoundException();
 
         /*
-         * fetch all dictionary entries linked to values of results and aux data
-         */
-        dictMap = null;
-        if (dictIds.size() > 0) {
-            dictionaries = dictionary.fetchByIds(DataBaseUtil.toArrayList(dictIds));
-            dictMap = new HashMap<Integer, DictionaryViewDO>();
-            for (DictionaryViewDO dict : dictionaries)
-                dictMap.put(dict.getId(), dict);
-        }
-
-        /*
          * create the lists of analytes and values for the fetched results and
          * aux data and set them in the returned VO
          */
         if ( !excludeRes)
-            data.setTestAnalytes(getAnalytes(results, sampleIds, analysisIds, dictMap));
+            data.setTestAnalytes(getAnalytes(results, sampleIds, analysisIds));
 
         if ( !excludeAux)
-            data.setAuxFields(getAnalytes(auxiliary, sampleIds, null, dictMap));
+            data.setAuxFields(getAnalytes(auxiliary, sampleIds, null));
 
         return data;
     }
@@ -872,7 +911,7 @@ public class DataViewReportBean {
                          data,
                          smMap,
                          status);
-        
+
         /*
          * the user wants to stop the report
          */
@@ -880,7 +919,7 @@ public class DataViewReportBean {
             status.setMessage(Messages.get().report_stopped());
             return status;
         }
-        
+
         smMap = null;
         results = null;
         auxiliary = null;
@@ -888,7 +927,7 @@ public class DataViewReportBean {
         testAnaResMap = null;
         auxFieldValMap = null;
         headers = null;
-        
+
         /*
          * write the workbook to a file and set its path in the status
          */
@@ -924,49 +963,6 @@ public class DataViewReportBean {
     /**
      * Creates a "where" clause from the query fields in the passed VO and sets
      * it in the passed query builder; the "where" clause is used for fetching
-     * results
-     * 
-     * @param builder
-     *        the query builder that will be used to fetch data based on the
-     *        "where" clause created by this method
-     * @param data
-     *        the VO that contains the fields that the user wants to query by
-     * @param moduleName
-     *        the name of a security module for the logged in user; the module's
-     *        clause is used to restrict the fetched data to specific records
-     *        e.g. organizations; this parameter is usually specified only for
-     *        external users; if this is specified, the module's clause is added
-     *        to the "where" clause
-     * @throws Exception
-     */
-    private void buildWhereForResult(QueryBuilderV2 builder, DataView1VO data, String moduleName) throws Exception {
-        builder.constructWhere(data.getQueryFields());
-        /*
-         * if moduleName is not null then this query is being executed for the
-         * web
-         */
-        if (moduleName != null)
-            buildWhereForWeb(builder, moduleName);        
-
-        /*
-         * this is done so that the alias for "sampleItem" gets added to the
-         * query, otherwise the query will not execute
-         */
-        builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
-
-        /*
-         * the user wants to see only reportable results
-         */
-        if ("N".equals(data.getIncludeNotReportableResults()))
-            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
-
-        builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
-        builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
-    }
-
-    /**
-     * Creates a "where" clause from the query fields in the passed VO and sets
-     * it in the passed query builder; the "where" clause is used for fetching
      * aux data
      * 
      * @param builder
@@ -989,8 +985,7 @@ public class DataViewReportBean {
      * @throws Exception
      */
     private void buildWhereForAux(QueryBuilderV2 builder, DataView1VO data, String moduleName,
-                                  List<Integer> sampleIds,
-                                  String analyteClause) throws Exception {
+                                  List<Integer> sampleIds, String analyteClause) throws Exception {
         builder.constructWhere(data.getQueryFields());
         /*
          * if moduleName is not null then this query is being executed for the
@@ -1020,7 +1015,7 @@ public class DataViewReportBean {
          */
         builder.addWhere(SampleWebMeta.getAuxDataAuxFieldId() + "=" +
                          SampleWebMeta.getAuxDataFieldId());
-        
+
         /*
          * Add the clause for limiting the aux data by analytes only if the user
          * selected some specific analytes and not all of them. This eliminates
@@ -1057,24 +1052,34 @@ public class DataViewReportBean {
         builder.addWhere("(" + userCache.getPermission().getModule(moduleName).getClause() + ")");
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
                          Constants.dictionary().ORG_REPORT_TO);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
     }
 
     /**
-     * Returns the list of analytes linked to the results in the passed list;
-     * each element in the returned list also has the list of values for the
-     * analyte; a result's value is included in the list only if its sample and
-     * analysis ids are found in the passed lists of sample and analysis ids;
-     * the passed map is used to find dictionary entries for values of that type
+     * Creates a list where each element contains an analyte and all the values
+     * for it as found in "results";
+     * 
+     * @param results
+     *        a list of results or aux data fetched using the query fields
+     *        specified by the user in the front-end
+     * @param sampleIds
+     *        the ids of those samples whose result or aux data values should be
+     *        included in the list for their analyte as described above; if a
+     *        sample id isn't found in this list, it means that overridden
+     *        samples should be excluded and that sample is overridden
+     * @param analysisIds
+     *        the ids of those analyses whose result values should be included
+     *        in the list for their analyte as described above; if an analysis
+     *        id isn't found in this list, it means that overridden analyses
+     *        should be excluded and that analysis is overridden
+     * @return a list containing analytes and the values for those analytes
      */
     private ArrayList<DataViewAnalyteVO> getAnalytes(List<DataViewResultVO> results,
-                                                              HashSet<Integer> sampleIds,
-                                                              HashSet<Integer> analysisIds,
-                                                              HashMap<Integer, DictionaryViewDO> dictMap) {
+                                                     HashSet<Integer> sampleIds,
+                                                     HashSet<Integer> analysisIds) throws Exception {
         Integer analyteId, dictId;
         String val;
         DataViewAnalyteVO dvAna;
@@ -1123,7 +1128,7 @@ public class DataViewReportBean {
             val = res.getValue();
             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(val);
-                val = dictMap.get(dictId).getEntry();
+                val = getDictionaryLabel(dictId);
             }
 
             /*
@@ -1143,17 +1148,38 @@ public class DataViewReportBean {
     }
 
     /**
-     * Fetches results for generating the report; if "moduleName" is not null,
-     * the clause from security for that module for the logged in user is added
-     * to the "where" clause; the passed map and list are used to limit the
-     * query by either selected or not selected analytes, based on which is
+     * Fetches results either for showing selection lists of analytes and values
+     * to the user or for generating the report; if "unselAnalyteIds" is empty,
+     * it means that the user selected all the analytes shows to him/her, so a
+     * the query is not limited by certain analytes; otherwise
+     * "testAnaResultMap" and "unselAnalyteIds" are used to limit the query by
+     * either selected or not selected analytes, based on which one of them is
      * smaller in size
+     * 
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; the module's clause is added to the "where"
+     *        clause for the query executed to fetch the results
+     * @param builder
+     *        the query builder used to execute the query
+     * @param testAnaResultMap
+     *        a map specifying which analytes and values were selected by the
+     *        user to be shown in the report; if this method is called for
+     *        showing selection lists of analytes and values, this will be null
+     * @param unselAnalyteIds
+     *        the list of analytes that were not selected by the user; if this
+     *        method is called for showing selection lists of analytes and
+     *        values, this will be null
+     * @param data
+     *        the VO containing the query fields specified by the user, to be
+     *        used in the query executed to fetch the results
+     * @return the results fetched by executing the query
+     * @throws Exception
      */
-    private List<DataViewResultVO> fetchResults(String moduleName,
-                                                      QueryBuilderV2 builder,
-                                                      HashMap<Integer, HashSet<String>> testAnaResultMap,
-                                                      ArrayList<Integer> unselAnalyteIds,
-                                                      DataView1VO data) throws Exception {
+    private List<DataViewResultVO> fetchResults(String moduleName, QueryBuilderV2 builder,
+                                                HashMap<Integer, HashSet<String>> testAnaResultMap,
+                                                ArrayList<Integer> unselAnalyteIds, DataView1VO data) throws Exception {
         Query query;
         ArrayList<String> orderBy;
 
@@ -1166,7 +1192,28 @@ public class DataViewReportBean {
                           SampleWebMeta.getResultTypeId() + "," + SampleWebMeta.getResultValue() +
                           ") ");
 
-        buildWhereForResult(builder, data, moduleName);
+        builder.constructWhere(data.getQueryFields());
+        /*
+         * if moduleName is not null then this query is being executed for the
+         * web
+         */
+        if (moduleName != null)
+            buildWhereForWeb(builder, moduleName);
+
+        /*
+         * this is done so that the alias for "sampleItem" gets added to the
+         * query, otherwise the query will not execute
+         */
+        builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
+
+        /*
+         * the user wants to see only reportable results
+         */
+        if ("N".equals(data.getIncludeNotReportableResults()))
+            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
+
+        builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
+        builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
 
         /*
          * add the clause for limiting the results by analytes only if the user
@@ -1190,17 +1237,39 @@ public class DataViewReportBean {
     }
 
     /**
-     * Fetches aux data for generating the report; if "moduleName" is not null,
-     * the clause from security for that module for the logged in user is added
-     * to the "where" clause; the passed map and list are used to limit the
-     * query by either selected or not selected analytes, based on which is
+     * Fetches aux data either for showing selection lists of analytes and
+     * values to the user or for generating the report; if "unselAnalyteIds" is
+     * empty, it means that the user selected all the analytes shows to him/her,
+     * so a the query is not limited by certain analytes; otherwise
+     * "auxFieldValueMap" and "unselAnalyteIds" are used to limit the query by
+     * either selected or not selected analytes, based on which one of them is
      * smaller in size
+     * 
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; the module's clause is added to the "where"
+     *        clause for the query executed to fetch the aux data
+     * @param builder
+     *        the query builder used to execute the query
+     * @param auxFieldValueMap
+     *        a map specifying which analytes and values were selected by the
+     *        user to be shown in the report; if this method is called for
+     *        showing selection lists of analytes and values, this will be null
+     * @param unselAnalyteIds
+     *        the list of analytes that were not selected by the user; if this
+     *        method is called for showing selection lists of analytes and
+     *        values, this will be null
+     * @param data
+     *        the VO containing the query fields specified by the user, to be
+     *        used in the query executed to fetch the aux data
+     * @return the aux data fetched by executing the query
+     * @throws Exception
      */
-    private List<DataViewResultVO> fetchAuxData(String moduleName,
-                                                       QueryBuilderV2 builder,
-                                                       HashMap<Integer, HashSet<String>> auxFieldValueMap,
-                                                       ArrayList<Integer> unselAnalyteIds,
-                                                       HashSet<Integer> sampleIds, DataView1VO data) throws Exception {
+    private List<DataViewResultVO> fetchAuxData(String moduleName, QueryBuilderV2 builder,
+                                                HashMap<Integer, HashSet<String>> auxFieldValueMap,
+                                                ArrayList<Integer> unselAnalyteIds,
+                                                HashSet<Integer> sampleIds, DataView1VO data) throws Exception {
         String analyteClause;
         Query query;
         ArrayList<Integer> ids, range;
@@ -1241,10 +1310,10 @@ public class DataViewReportBean {
             for (int i = 0; i < range.size() - 1; i++ ) {
                 builder.clearWhereClause();
                 buildWhereForAux(builder,
-                                       data,
-                                       moduleName,
-                                       ids.subList(range.get(i), range.get(i + 1)),
-                                       analyteClause);
+                                 data,
+                                 moduleName,
+                                 ids.subList(range.get(i), range.get(i + 1)),
+                                 analyteClause);
                 query = manager.createQuery(builder.getEJBQL());
                 builder.setQueryParams(query, data.getQueryFields());
                 auxiliary.addAll(query.getResultList());
@@ -1272,12 +1341,23 @@ public class DataViewReportBean {
 
     /**
      * Fetches data for generating the report when both results and aux data are
-     * excluded; if "moduleName" is not null, the clause from security for that
-     * module for the logged in user is added to the "where" clause
+     * excluded
+     * 
+     * @param moduleName
+     *        the name of a security module for the logged in user; the module's
+     *        clause is used to restrict the fetched data to specific records
+     *        e.g. organizations; the module's clause is added to the "where"
+     *        clause for the query executed to fetch the data
+     * @param builder
+     *        the query builder used to execute the query
+     * @param data
+     *        the VO containing the query fields specified by the user, to be
+     *        used in the query executed to fetch the data
+     * @return the data fetched by executing the query
+     * @throws Exception
      */
-    private List<DataViewResultVO> fetchNoResultAuxData(String moduleName,
-                                                              QueryBuilderV2 builder,
-                                                              DataView1VO data) throws Exception {
+    private List<DataViewResultVO> fetchNoResultAuxData(String moduleName, QueryBuilderV2 builder,
+                                                        DataView1VO data) throws Exception {
         Query query;
         ArrayList<QueryData> fields;
 
@@ -1305,10 +1385,15 @@ public class DataViewReportBean {
     }
 
     /**
-     * The passed set contains the ids for selected analytes and the passed list
-     * contains the ids for not selected analytes; the method returns a clause
-     * for either excluding the unselected analytes or including the selected
-     * analytes based on which collection is smaller in size
+     * Creates a clause to be used in a query; the clause either includes the
+     * analytes in "selAnalytes" or excludes the analytes in "unselAnalytes"
+     * based on which one of them is smaller in size
+     * 
+     * @param selAnalytes
+     *        ids for analytes selected by the user to be shown in the report
+     * @param unselAnalytes
+     *        ids for analytes not selected by the user
+     * @return the created clause
      */
     private String getAnalyteClause(Set<Integer> selAnalytes, ArrayList<Integer> unselAnalytes) {
         StringBuffer buf;
@@ -1384,41 +1469,24 @@ public class DataViewReportBean {
                                      HashMap<Integer, HashSet<String>> testAnaResMap,
                                      HashMap<Integer, HashSet<String>> auxFieldValMap,
                                      String moduleName, boolean showReportableColumnsOnly,
-                                     ArrayList<String> headers,
-                                     DataView1VO data,
+                                     ArrayList<String> headers, DataView1VO data,
                                      HashMap<Integer, SampleManager1> smMap, ReportStatus status) throws Exception {
-        boolean excludeOverride, excludeRes, excludeAux, samOverridden, anaOverridden, addResRow, addAuxRow, addNoResAuxRow;
+        boolean excludeOverride, excludeRes, excludeAux, samOverridden, anaOverridden, addRow;
         int i, j, resIndex, auxIndex, noResAuxIndex, rowIndex, numRes, numAux, numNoResAux, lastCol, currCol;
-        Integer samId, prevSamId, itemId, anaId, prevAnaId, anaIndex;
-        String resVal, auxVal;
+        Integer samId, prevSamId, resAccNum, auxAccNum, itemId, anaId, prevAnaId, anaIndex;
+        String value;
         SampleManager1 sm;
         XSSFWorkbook wb;
         XSSFSheet sheet;
-        DataViewResultVO res, noRA, aux;
+        DataViewResultVO res;
         ResultViewDO rowRes, colRes;
-        Row headerRow, currRow, prevRow;
+        Row currRow, prevRow;
         RowData rd;
         Cell cell;
-        CellStyle style;
         ArrayList<Integer> maxChars;
         ArrayList<ResultViewDO> smResults;
         HashMap<String, Integer> colAnaMap;
-
-        wb = new XSSFWorkbook();
-        sheet = wb.createSheet();
-
-        /*
-         * create the header row and set its style
-         */
-        headerRow = sheet.createRow(0);
-        style = createHeaderStyle(wb);
-        maxChars = new ArrayList<Integer>();
-        for (i = 0; i < headers.size(); i++ ) {
-            cell = headerRow.createCell(i);
-            cell.setCellValue(headers.get(i));
-            setMaxChars(cell, maxChars);
-            cell.setCellStyle(style);            
-        }
+        HashMap<Integer, HashSet<String>> anaValMap;
 
         numRes = results == null ? 0 : results.size();
         numAux = auxiliary == null ? 0 : auxiliary.size();
@@ -1432,27 +1500,19 @@ public class DataViewReportBean {
         noResAuxIndex = 0;
         lastCol = 0;
         currCol = 0;
-        res = null;
-        aux = null;
-        noRA = null;
         rowIndex = 1;
-        samId = null;
         prevSamId = null;
-        itemId = null;
-        anaId = null;
         prevAnaId = null;
         anaIndex = null;
         samOverridden = false;
         anaOverridden = false;
-        addResRow = false;
-        addAuxRow = false;
-        addNoResAuxRow = false;
-        resVal = null;
-        auxVal = null;
         currRow = null;
         prevRow = null;
         sm = null;
+        wb = new XSSFWorkbook();
+        sheet = wb.createSheet();
         colAnaMap = new HashMap<String, Integer>();
+        maxChars = new ArrayList<Integer>();
         rd = new RowData();
 
         status.setMessage(Messages.get().report_genDataView());
@@ -1474,20 +1534,16 @@ public class DataViewReportBean {
 
             status.setPercentComplete(100 * (resIndex + auxIndex + noResAuxIndex) /
                                       (numRes + numAux + numNoResAux));
+            res = null;
+            addRow = true;
+            anaValMap = null;
+            value = null;
             if (excludeRes && excludeAux) {
-                if (noResAuxIndex < numNoResAux) {
-                    noRA = noResAux.get(noResAuxIndex++ );
-                    samId = noRA.getSampleId();
-                    itemId = noRA.getSampleItemId();
-                    anaId = noRA.getAnalysisId();
-                    addNoResAuxRow = true;
-                }
+                res = noResAux.get(noResAuxIndex++ );
             } else {
-                addAuxRow = false;
-                addResRow = false;
                 if (resIndex < numRes && auxIndex < numAux) {
-                    res = results.get(resIndex);
-                    aux = auxiliary.get(auxIndex);
+                    resAccNum = results.get(resIndex).getSampleAccessionNumber();
+                    auxAccNum = auxiliary.get(auxIndex).getSampleAccessionNumber();
                     /*
                      * if this result's accession number is less than or equal
                      * to this aux data's, add a row for this result, otherwise
@@ -1497,41 +1553,31 @@ public class DataViewReportBean {
                      * because the former is the field shown in the report and
                      * not the latter
                      */
-                    if (res.getSampleAccessionNumber() <= aux.getSampleAccessionNumber()) {
-                        addResRow = true;
-                        resIndex++ ;
-                        samId = res.getSampleId();
-                        itemId = res.getSampleItemId();
-                        anaId = res.getAnalysisId();
+                    if (resAccNum <= auxAccNum) {
+                        res = results.get(resIndex++ );
+                        anaValMap = testAnaResMap;
                     } else {
-                        addAuxRow = true;
-                        auxIndex++ ;
-                        samId = aux.getSampleId();
-                        itemId = null;
-                        anaId = null;
+                        res = auxiliary.get(auxIndex++ );
+                        anaValMap = auxFieldValMap;
                     }
                 } else if (resIndex < numRes) {
                     /*
                      * no more aux data left to show
                      */
-                    addResRow = true;
-                    res = results.get(resIndex);
-                    resIndex++ ;
-                    samId = res.getSampleId();
-                    itemId = res.getSampleItemId();
-                    anaId = res.getAnalysisId();
+                    res = results.get(resIndex++ );
+                    anaValMap = testAnaResMap;
                 } else if (auxIndex < numAux) {
                     /*
                      * no more results left to show
                      */
-                    addAuxRow = true;
-                    aux = auxiliary.get(auxIndex);
-                    auxIndex++ ;
-                    samId = aux.getSampleId();
-                    itemId = null;
-                    anaId = null;
+                    res = auxiliary.get(auxIndex++ );
+                    anaValMap = auxFieldValMap;
                 }
             }
+
+            samId = res.getSampleId();
+            itemId = res.getSampleItemId();
+            anaId = res.getAnalysisId();
 
             if ( !samId.equals(prevSamId)) {
                 /*
@@ -1557,165 +1603,142 @@ public class DataViewReportBean {
             if (samOverridden && excludeOverride)
                 continue;
 
-            if (addResRow) {
-                /*
-                 * don't show any data for this analysis if it's overridden and
-                 * such analyses are excluded; whether the analysis is
-                 * overridden is checked even if such analyses are not excluded
-                 * because overridden values are not shown in the report
-                 */
-                if ( !anaId.equals(prevAnaId)) {
-                    anaOverridden = false;
-                    if ( (getAnalysisQAs(sm) != null)) {
-                        for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
-                            if (aqa.getAnalysisId().equals(anaId) &&
-                                Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
-                                anaOverridden = true;
-                                if (excludeOverride) {
-                                    addResRow = false;
-                                    prevAnaId = anaId;
-                                }
-                                break;
+            /*
+             * don't show any data for this analysis if it's overridden and such
+             * analyses are excluded; whether the analysis is overridden is
+             * checked even if such analyses are not excluded because overridden
+             * values are not shown in the report
+             */
+            if (anaId != null && !anaId.equals(prevAnaId)) {
+                anaOverridden = false;
+                if ( (getAnalysisQAs(sm) != null)) {
+                    for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
+                        if (aqa.getAnalysisId().equals(anaId) &&
+                            Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
+                            anaOverridden = true;
+                            if (excludeOverride) {
+                                addRow = false;
+                                prevAnaId = anaId;
                             }
+                            break;
                         }
                     }
                 }
-
-                if (anaOverridden && excludeOverride) {
-                    addResRow = false;
-                } else {
-                    /*
-                     * if this result's value was selected by the user, add a
-                     * row for it
-                     */
-                    resVal = getValue(testAnaResMap,
-                                      res.getAnalyteId(),
-                                      res.getValue(),
-                                      res.getTypeId());
-                    if (resVal != null)
-                        currRow = sheet.createRow(rowIndex++ );
-                    else
-                        addResRow = false;
-                }
             }
 
-            if (addAuxRow) {
-                /*
-                 * if this aux data's value of was selected by the user, add a
-                 * row for it
-                 */
-                auxVal = getValue(auxFieldValMap,
-                                  aux.getAnalyteId(),
-                                  aux.getValue(),
-                                  aux.getTypeId());
-                if (auxVal != null)
-                    currRow = sheet.createRow(rowIndex++ );
-                else
-                    addAuxRow = false;
-            }
-
-            if (addNoResAuxRow)
-                currRow = sheet.createRow(rowIndex++ );
-
-            if ( !addResRow && !addAuxRow && !addNoResAuxRow)
+            if ( !addRow) {
                 continue;
+            } else if (anaValMap != null) {
+                /*
+                 * show this result or aux data only if its value was not
+                 * selected by the user
+                 */
+                value = getValue(anaValMap, res.getAnalyteId(), res.getValue(), res.getTypeId());
+                if (value == null)
+                    continue;
+            }
+
+            currRow = sheet.createRow(rowIndex++ );
 
             /*
              * fill the passed row's cells for all columns except the ones for
              * analytes and values
              */
-            setCells(samId, itemId, anaId, smMap, rd, data.getColumns(), moduleName, currRow, maxChars);
+            setBaseCells(sm,
+                         itemId,
+                         anaId,
+                         rd,
+                         data.getColumns(),
+                         moduleName != null,
+                         currRow,
+                         maxChars);
 
-            if (addResRow) {
+            if (value != null) {
                 /*
-                 * set the analyte name; set the value if the analysis or sample
-                 * is not overridden
+                 * this row is for either a result or aux data; show the analyte
                  */
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                cell.setCellValue(res.getAnalyteName());
+                setCellValue(cell, res.getAnalyteName());
                 setMaxChars(cell, maxChars);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                if ( !anaOverridden && !samOverridden)
-                    cell.setCellValue(resVal);
-                setMaxChars(cell, maxChars);
+                if (anaId != null) {
+                    /*
+                     * this row is for a result; show the value only if the
+                     * analysis and sample are not overridden
+                     */
+                    if ( !anaOverridden && !samOverridden)
+                        setCellValue(cell, value);
+                    setMaxChars(cell, maxChars);
 
-                /*
-                 * find out if this analyte has any column analytes; if it does,
-                 * add the column analytes to the header and their values in the
-                 * columns; if an analyte B is found first, it's added to the
-                 * header before another analyte A even if A's column appears to
-                 * the left of B's in any test
-                 */
-                smResults = getResults(sm);
-                for (i = 0; i < smResults.size(); i++ ) {
-                    rowRes = smResults.get(i);
-                    if ( !res.getId().equals(rowRes.getId()))
-                        continue;
-                    j = i + 1;
-                    if (j < smResults.size() && "Y".equals(smResults.get(j).getIsColumn())) {
-                        /*
-                         * this analyte has column analytes; "lastCol" is the
-                         * right-most column in the output; if an analyte
-                         * doesn't have a column yet, that column will be added
-                         * after "lastCol"; "currCol" keeps track of the current
-                         * column
-                         */
-                        if (lastCol == 0)
-                            lastCol = currRow.getPhysicalNumberOfCells();
-
-                        currCol = currRow.getPhysicalNumberOfCells();
-                        while (j < smResults.size()) {
-                            colRes = smResults.get(j++ );
-                            if ("N".equals(colRes.getIsColumn()))
-                                break;
-                            if (showReportableColumnsOnly && "N".equals(colRes.getIsReportable()))
-                                continue;
-                            anaIndex = colAnaMap.get(colRes.getAnalyte());
-
+                    /*
+                     * if this analyte has column analytes, show them in the
+                     * header and their values in the columns
+                     */
+                    smResults = getResults(sm);
+                    for (i = 0; i < smResults.size(); i++ ) {
+                        rowRes = smResults.get(i);
+                        if ( !res.getId().equals(rowRes.getId()))
+                            continue;
+                        j = i + 1;
+                        if (j < smResults.size() && "Y".equals(smResults.get(j).getIsColumn())) {
                             /*
-                             * if this column analyte name is not found in the
-                             * map, create a new column and start adding values
-                             * in it; set the value in this cell if the analyte
-                             * is shown in this column; if the analyte is not
-                             * shown in this column, find the column in which it
-                             * is shown and set the value
+                             * this analyte has column analytes; "lastCol" is
+                             * the right-most column in the workbook; if an
+                             * analyte doesn't have a column yet, that column
+                             * will be added after "lastCol"; "currCol" keeps
+                             * track of the current column
                              */
-                            if (anaIndex == null) {
-                                anaIndex = lastCol++ ;
-                                colAnaMap.put(colRes.getAnalyte(), anaIndex);
-                                cell = headerRow.createCell(anaIndex);
-                                cell.setCellValue(colRes.getAnalyte());
+                            if (lastCol == 0)
+                                lastCol = currRow.getPhysicalNumberOfCells();
+
+                            currCol = currRow.getPhysicalNumberOfCells();
+                            while (j < smResults.size()) {
+                                colRes = smResults.get(j++ );
+                                if ("N".equals(colRes.getIsColumn()))
+                                    break;
+                                if (showReportableColumnsOnly &&
+                                    "N".equals(colRes.getIsReportable()))
+                                    continue;
+                                anaIndex = colAnaMap.get(colRes.getAnalyte());
+
+                                /*
+                                 * if this column analyte's name is not found in
+                                 * the map, create a new column and start adding
+                                 * values in it; set the value in this cell if
+                                 * the analyte is shown in this column; if the
+                                 * analyte is not shown in this column, find the
+                                 * column in which it is shown and set the value
+                                 */
+                                if (anaIndex == null) {
+                                    anaIndex = lastCol++ ;
+                                    colAnaMap.put(colRes.getAnalyte(), anaIndex);
+                                    headers.add(colRes.getAnalyte());
+                                    setMaxChars(cell, maxChars);
+                                    cell = currRow.createCell(anaIndex);
+                                } else if (anaIndex == currCol) {
+                                    cell = currRow.createCell(currCol++ );
+                                } else {
+                                    cell = currRow.createCell(anaIndex);
+                                }
+
+                                /*
+                                 * set the value if the analysis and sample are
+                                 * not overridden
+                                 */
+                                if ( !anaOverridden && !samOverridden)
+                                    setCellValue(cell, getValue(colRes.getValue(),
+                                                                colRes.getTypeId()));
                                 setMaxChars(cell, maxChars);
-                                cell.setCellStyle(style);
-                                cell = currRow.createCell(anaIndex);
-                            } else if (anaIndex == currCol) {
-                                cell = currRow.createCell(currCol++ );
-                            } else {
-                                cell = currRow.createCell(anaIndex);
                             }
-
-                            /*
-                             * set the value if the analysis or sample is not
-                             * overridden
-                             */
-                            if ( !anaOverridden && !samOverridden)
-                                cell.setCellValue(getValue(colRes.getValue(), colRes.getTypeId()));
-                            setMaxChars(cell, maxChars);
                         }
                     }
+                } else {
+                    /*
+                     * this row is for an aux data; show the value
+                     */
+                    setCellValue(cell, value);
+                    setMaxChars(cell, maxChars);
                 }
-            }
-
-            if (addAuxRow) {
-                /*
-                 * set the analyte name and aux data value
-                 */
-                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                cell.setCellValue(aux.getAnalyteName());
-                setMaxChars(cell, maxChars);
-                cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                cell.setCellValue(auxVal);
-                setMaxChars(cell, maxChars);
             }
 
             prevAnaId = anaId;
@@ -1738,41 +1761,26 @@ public class DataViewReportBean {
         }
 
         /*
+         * add the header row and set the header labels for all columns
+         */
+        setHeaderCells(sheet, wb, headers, maxChars);
+
+        /*
          * make each column wide enough to show the longest string in it; the
          * width for each column is set as the maximum number of characters in
-         * that column multiplied by 256 because the default width of one
-         * character is 1/256 units in Excel
+         * that column multiplied by 256; this is because the default width of
+         * one character is 1/256 units in Excel
          */
-        for (i = 0; i < headerRow.getPhysicalNumberOfCells(); i++ )
-            sheet.setColumnWidth(i, maxChars.get(i)*256);
+        for (i = 0; i < maxChars.size(); i++ )
+            sheet.setColumnWidth(i, maxChars.get(i) * 256);
 
         return wb;
     }
 
     /**
-     * Creates the style to distinguish the header row from the other rows in
-     * the output
-     */
-    private CellStyle createHeaderStyle(XSSFWorkbook wb) {
-        CellStyle style;
-        Font font;
-
-        font = wb.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());        
-        style = wb.createCellStyle();
-        style.setAlignment(CellStyle.ALIGN_LEFT);
-        style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        style.setFillPattern(CellStyle.SOLID_FOREGROUND);        
-        style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        style.setFont(font);
-
-        return style;
-    }
-
-
-    /**
      * Creates the list of header labels for the report by going through
      * "columns"
+     * 
      * @param columns
      *        is a list of meta keys selected for output
      * @param load
@@ -2233,23 +2241,49 @@ public class DataViewReportBean {
     }
 
     /**
-     * Creates an element from the passed document and sets its name and text
-     * value as the passed arguments
+     * Creates an element from "doc"
+     * 
+     * @param doc
+     *        the document used to create the element
+     * @param name
+     *        the name of the created element
+     * @param text
+     *        the text of the created element
+     * @return the created element
      */
-    private Element toXML(Document doc, String name, String value) {
+    private Element toXML(Document doc, String name, String text) {
         Element elm;
 
         elm = doc.createElement(name);
-        if ( !DataBaseUtil.isEmpty(value))
-            elm.setTextContent(value);
+        if ( !DataBaseUtil.isEmpty(text))
+            elm.setTextContent(text);
         return elm;
     }
 
     /**
-     * The passed map's key is an analyte and the value is all the results or
-     * aux data selected by the user for the analyte; the method checks whether
-     * the passed value was selected by the user; if it was, returns the value
-     * or the dictionary entry for it, based on the type; otherwise returns null
+     * Determines if the analyte with id "analyteId" and "value" were selected
+     * by the user to be shown in the report
+     * 
+     * @param analyteValMap
+     *        a map whose key is the id of an analyte and whose value is all the
+     *        results or aux data values selected by the user for the analyte;
+     *        if the analyte itself was not selected, there won't be any values
+     *        for it in the map
+     * @param analyteId
+     *        the id of an analyte that may or may not have been selected by the
+     *        user
+     * @param value
+     *        a result or aux data value that may or may not have been selected
+     *        by the user; if "value" wasn't selected by the user, it won't be
+     *        present in the values for the analyte in the map
+     * @param typeId
+     *        the id of the dictionary record for the value's type e.g.
+     *        "Numeric"; if "value" is of type "Dictionary", the dictionary
+     *        entry for it is used to find it in the selected values for the
+     *        analyte instead of "value" itself
+     * @return "value" or the dictionary entry for it if the analyte and "value"
+     *         or the dictionary entry were found in the map; null otherwise
+     * @throws Exception
      */
     private String getValue(HashMap<Integer, HashSet<String>> analyteValMap, Integer analyteId,
                             String value, Integer typeId) throws Exception {
@@ -2268,8 +2302,19 @@ public class DataViewReportBean {
     }
 
     /**
-     * returns the value or the dictionary entry for it, based on the passed
-     * type; returns null is the value is empty or null
+     * Determines if "value" is empty or null and if it needs to be converted to
+     * a dictionary entry
+     * 
+     * @param value
+     *        a result or aux data value that may or may not have been selected
+     *        by the user to be shown in the report
+     * @param typeId
+     *        the id of the dictionary record for the value's type e.g.
+     *        "Numeric"; if "value" is of type "Dictionary", the dictionary
+     *        entry for it is obtained
+     * @return "value" or the dictionary entry for it, based on "typeId"; null
+     *         if the value is empty or null
+     * @throws Exception
      */
     private String getValue(String value, Integer typeId) throws Exception {
         Integer id;
@@ -2286,45 +2331,66 @@ public class DataViewReportBean {
     }
 
     /**
-     * Fills the passed row's cells for all columns except the ones for analytes
-     * and values; the sample, sample item and analysis for each row are
-     * specified by the passed ids; for aux data rows, sample item and analysis
-     * ids are null, because those cells need to be blank; "colFieldMap"
-     * specifies which column is showing which field; the passed RowData holds
-     * data that needs to be recomputed when the sample, item or analysis
-     * changes, but stays the same otherwise e.g. analysis received by;
-     * "maxChars" is keeps track of the maximum number of characters in each
-     * column and is updated as a new value is put in a cell
+     * Fills all cells in "row" except the ones for analytes and values; the
+     * filled cells include the ones for sample, domain, organization, sample
+     * item, analysis etc.
+     * 
+     * @param sm
+     *        the manager for the sample whose data or whose children's data is
+     *        being shown in the row
+     * @param sampleItemId
+     *        the id of the sample item whose data or whose children's data is
+     *        being shown in the row
+     * @param analysisId
+     *        the id of the analysis whose data or whose children's data is
+     *        being shown in the row
+     * @param rd
+     *        the object that contains data that stays the same between rows
+     *        that belong to the same sample, sample item or analysis, but needs
+     *        to be updated if one or more of them change; if one of these is
+     *        different between this row and the previous row, the appropriate
+     *        fields in the object are updated
+     * @param columns
+     *        the list of meta keys for the columns selected by the user
+     * @param forWeb
+     *        if true, the report is run for an external user, otherwise it's
+     *        run for an internal user; this is used to show different
+     *        information in the same column e.g qa event reporting text for
+     *        external users as opposed to name for internal ones
+     * @param row
+     *        the row whose cells are being filled
+     * @param maxChars
+     *        the list containing the maximum number of characters in each
+     *        column; it's updated a when new value is set in a cell
+     * @throws Exception
      */
-    private void setCells(Integer sampleId, Integer sampleItemId, Integer analysisId,
-                          HashMap<Integer, SampleManager1> smMap, RowData rd,
-                          ArrayList<String> columns, String moduleName, Row row,
-                          ArrayList<Integer> maxChars) throws Exception {
-        boolean runForWeb;
+    private void setBaseCells(SampleManager1 sm, Integer sampleItemId, Integer analysisId,
+                              RowData rd, ArrayList<String> columns, boolean forWeb, Row row,
+                              ArrayList<Integer> maxChars) throws Exception {
         String column;
         Object value;
         SampleDO s;
         SampleEnvironmentalDO se;
         SampleSDWISViewDO ss;
-        SampleManager1 sm;
         SampleClinicalViewDO sc;
         SampleNeonatalViewDO sn;
-        SamplePTDO spt;
+        SamplePTDO sp;
         Datetime dt;
         Cell cell;
         ArrayList<String> labels;
 
-        sm = smMap.get(sampleId);
         s = getSample(sm);
         se = getSampleEnvironmental(sm);
         ss = getSampleSDWIS(sm);
         sc = getSampleClinical(sm);
         sn = getSampleNeonatal(sm);
-        spt = getSamplePT(sm);
+        sp = getSamplePT(sm);
 
-        if ( !sampleId.equals(rd.sampleId)) {
+        labels = new ArrayList<String>();
+
+        if ( !s.getId().equals(rd.sampleId)) {
             rd.clear();
-            rd.sampleId = sampleId;
+            rd.sampleId = s.getId();
             /*
              * find the report-to organization
              */
@@ -2338,15 +2404,22 @@ public class DataViewReportBean {
             }
 
             /*
-             * find the first permanent project
+             * for external users show only the first permanent project;for
+             * internal users, show all projects;
              */
             if (getProjects(sm) != null) {
+                labels.clear();
                 for (SampleProjectViewDO data : getProjects(sm)) {
-                    if ("Y".equals(data.getIsPermanent())) {
-                        rd.projName = data.getProjectName();
-                        break;
+                    if (forWeb) {
+                        if ("Y".equals(data.getIsPermanent())) {
+                            labels.add(data.getProjectName());
+                            break;
+                        }
+                    } else {
+                        labels.add(data.getProjectName());
                     }
                 }
+                rd.projNames = DataBaseUtil.concatWithSeparator(labels, ", ");
             }
         }
 
@@ -2363,8 +2436,6 @@ public class DataViewReportBean {
         } else if (sampleItemId == null) {
             rd.sampleItem = null;
         }
-
-        runForWeb = moduleName != null;
 
         if (analysisId != null && !analysisId.equals(rd.analysisId)) {
             /*
@@ -2383,7 +2454,7 @@ public class DataViewReportBean {
             rd.completedBy = null;
             rd.releasedBy = null;
             if (getUsers(sm) != null) {
-                labels = new ArrayList<String>();
+                labels.clear();
                 for (AnalysisUserViewDO data : getUsers(sm)) {
                     if ( !data.getAnalysisId().equals(analysisId))
                         continue;
@@ -2403,17 +2474,16 @@ public class DataViewReportBean {
              */
             rd.analysisQAs = null;
             if (getAnalysisQAs(sm) != null) {
-                labels = new ArrayList<String>();
+                labels.clear();
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
                     if ( !data.getAnalysisId().equals(analysisId))
                         continue;
-                    if (runForWeb &&
-                        !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId()))
+                    if (forWeb && !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId()))
                         labels.add(data.getQaEventReportingText());
                     else
                         labels.add(data.getQaEventName());
                 }
-                rd.analysisQAs = DataBaseUtil.concatWithSeparator(labels, runForWeb ? " " : ", ");
+                rd.analysisQAs = DataBaseUtil.concatWithSeparator(labels, forWeb ? " " : ", ");
             }
         } else if (analysisId == null) {
             rd.analysis = null;
@@ -2468,7 +2538,7 @@ public class DataViewReportBean {
                     value = getDictionaryLabel(s.getStatusId());
                     break;
                 case SampleWebMeta.PROJECT_NAME:
-                    value = rd.projName;
+                    value = rd.projNames;
                     break;
                 case SampleWebMeta.CLIENT_REFERENCE_HEADER:
                     value = s.getClientReference();
@@ -2530,14 +2600,14 @@ public class DataViewReportBean {
                 case SampleWebMeta.ANALYSIS_TEST_NAME_HEADER:
                     value = null;
                     if (rd.analysis != null)
-                        value = runForWeb ? rd.analysis.getTestReportingDescription()
-                                         : rd.analysis.getTestName();
+                        value = forWeb ? rd.analysis.getTestReportingDescription()
+                                      : rd.analysis.getTestName();
                     break;
                 case SampleWebMeta.ANALYSIS_METHOD_NAME_HEADER:
                     value = null;
                     if (rd.analysis != null)
-                        value = runForWeb ? rd.analysis.getMethodReportingDescription()
-                                         : rd.analysis.getMethodName();
+                        value = forWeb ? rd.analysis.getMethodReportingDescription()
+                                      : rd.analysis.getMethodName();
                     break;
                 case SampleWebMeta.ANALYSIS_STATUS_ID_HEADER:
                     value = getDictionaryLabel(rd.analysis != null ? rd.analysis.getStatusId()
@@ -2864,13 +2934,13 @@ public class DataViewReportBean {
                  * pt columns
                  */
                 case SampleWebMeta.PT_PT_PROVIDER_ID:
-                    value = getDictionaryLabel(spt != null ? spt.getPTProviderId() : null);
+                    value = getDictionaryLabel(sp != null ? sp.getPTProviderId() : null);
                     break;
                 case SampleWebMeta.PT_SERIES:
-                    value = spt != null ? spt.getSeries() : null;
+                    value = sp != null ? sp.getSeries() : null;
                     break;
                 case SampleWebMeta.PT_DUE_DATE:
-                    value = getDateTimeLabel(spt != null ? spt.getDueDate() : null,
+                    value = getDateTimeLabel(sp != null ? sp.getDueDate() : null,
                                              Messages.get().gen_dateTimePattern());
                     break;
                 case SampleWebMeta.RECEIVED_BY_ID:
@@ -2882,15 +2952,65 @@ public class DataViewReportBean {
                     throw new InconsistencyException("Unknown column " + column);
             }
             cell = row.createCell(i);
-            cell.setCellValue(DataBaseUtil.toString(value));
+            setCellValue(cell, value);
             setMaxChars(cell, maxChars);
         }
     }
 
     /**
-     * Returns a Datetime object created by combining the passed date and time;
-     * if the passed time is null, the time is set as 0 hours and 0 minutes;
-     * returns null if the passed date is null
+     * Creates the header row in "sheet" from "headers"; sets a style on the
+     * header row to distinguish it from the other rows; updates "maxChars" to
+     * account for the header labels because the header row is added after the
+     * other rows have been added
+     * 
+     * @param sheet
+     *        the sheet that contains all rows in "wb"
+     * @param wb
+     *        the workbook that gets converted to an Excel file
+     * @param headers
+     *        the list of labels to be shown in the header row
+     * @param maxChars
+     *        the list containing the maximum number of characters in each
+     *        column of "sheet"
+     */
+    private void setHeaderCells(Sheet sheet, XSSFWorkbook wb, ArrayList<String> headers,
+                                ArrayList<Integer> maxChars) {
+        Cell cell;
+        Row row;
+        Font font;
+        CellStyle style;
+
+        /*
+         * create the style to distinguish the header row from the other rows in
+         * the output
+         */
+        font = wb.createFont();
+        font.setColor(IndexedColors.WHITE.getIndex());
+        style = wb.createCellStyle();
+        style.setAlignment(CellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
+        style.setFont(font);
+
+        row = sheet.createRow(0);
+        for (int i = 0; i < headers.size(); i++ ) {
+            cell = row.createCell(i);
+            cell.setCellStyle(style);
+            setCellValue(cell, headers.get(i));
+            setMaxChars(cell, maxChars);
+        }
+    }
+
+    /**
+     * Combines "date" and "time" into a single Datetime object; if "time" is
+     * null, the time component is set as 0 hours and 0 minutes
+     * 
+     * @param date
+     *        the object providing the date component of the combined object
+     * @param time
+     *        the object providing the time component of the combined object
+     * @return the combined Datetime object; null if "date" is null
      */
     private Datetime getDateTime(Datetime date, Datetime time) {
         Date cd;
@@ -2914,21 +3034,34 @@ public class DataViewReportBean {
     }
 
     /**
-     * Returns a string version of the passed Datetime object formatted using
-     * the passed pattern; returns null if the Datetime object is null
+     * Converts the date and time in "dateTime" to a string formatted using
+     * "pattern"
+     * 
+     * @param dateTime
+     *        the Datetime object whose date and time is converted to a
+     *        formatted string
+     * @param pattern
+     *        the pattern used to format the date and time in "dateTime"
+     * @return the formatted string; null if "dateTime" is null
      */
-    private String getDateTimeLabel(Datetime dt, String pattern) {
+    private String getDateTimeLabel(Datetime dateTime, String pattern) {
         String val;
 
         val = null;
-        if (dt != null)
-            val = ReportUtil.toString(dt, pattern);
+        if (dateTime != null)
+            val = ReportUtil.toString(dateTime, pattern);
 
         return val;
     }
 
     /**
-     * Returns the dictionary entry for the passed id or null if the id is null
+     * 
+     * Finds the dictionary entry for the record whose id is "dictId"
+     * 
+     * @param dictId
+     *        the id of a dictionary record
+     * @return the dictionary entry; null if "dictId" is null
+     * @throws Exception
      */
     private String getDictionaryLabel(Integer dictId) throws Exception {
         String val;
@@ -2941,10 +3074,15 @@ public class DataViewReportBean {
     }
 
     /**
-     * Returns "Yes" or "No" based on the value of the passed flag ("Y"/"N");
-     * returns null if the flag is null; the flag can be null if the column was
-     * selected by the user but is not valid for the row e.g. analysis
-     * is_reportable for a row showing aux data
+     * Converts "flag" to a "Yes" or "No" value to be shown in the report
+     * 
+     * @param flag
+     *        a single character string representing a "Y/N" field in the
+     *        database; it can be null if a column was selected to be shown in
+     *        the report by the user but the column is not valid for a row e.g.
+     *        analysis "is_reportable" for a row showing aux data
+     * @return "Yes" or "No" if "flag" is "Y" or "N" respectively; null if the
+     *         flag is null
      */
     private String getYesNoLabel(String flag) {
         if (flag == null)
@@ -2952,30 +3090,62 @@ public class DataViewReportBean {
 
         return "Y".equals(flag) ? Messages.get().gen_yes() : Messages.get().gen_no();
     }
-    
+
     /**
-     * The passed list contains the maximum number of characters in each column
-     * of the sheet; if the passed cell's value has more characters than the
-     * current number for the cell's column, the number in the list is updated
+     * Sets the string version of "value" as the value of "cell"; if the string
+     * is longer than 255 characters, shortens it to 255 characters before
+     * setting it; this is done to avoid exceeding the limit for the maximum
+     * number of characters allowed in a cell by Excel  
+     * 
+     * @param cell
+     *        the cell whose value is to be set
+     * @param value
+     *         the value to be set in "cell" 
+     */
+    private void setCellValue(Cell cell, Object value) {
+        String val;
+
+        val = DataBaseUtil.toString(value);
+        if (val.length() > 255)
+            val = val.substring(0, 255);
+        cell.setCellValue(val);
+    }
+
+    /**
+     * Keeps track of the maximum number of characters in each column of the
+     * spreadsheet; if "cell" has more characters than the number in "maxChars"
+     * for the cell's column, the number in "maxChars" is updated
+     * 
+     * @param cell
+     *        a cell in a row in the spreadsheet
+     * @param maxChars
+     *        the list containing the maximum number of characters in each
+     *        column of the spreadsheet
      */
     private void setMaxChars(Cell cell, ArrayList<Integer> maxChars) {
         int col, chars;
         String val;
 
         col = cell.getColumnIndex();
-        if (col > maxChars.size()-1)
+        if (col > maxChars.size() - 1)
             maxChars.add(0);
         val = cell.getStringCellValue();
-        chars = !DataBaseUtil.isEmpty(val) ? val.length() : 0; 
+        chars = !DataBaseUtil.isEmpty(val) ? val.length() : 0;
         maxChars.set(col, Math.max(chars, maxChars.get(col)));
     }
 
     /**
-     * Returns true if each cell in the first row has the same data as the
-     * corresponding cell in the second row; returns false otherwise
+     * Determines if each cell in "currRow" has the same data as the
+     * corresponding cell in "prevRow"
+     * 
+     * @param currRow
+     *        the current row in the spreadsheet
+     * @param prevRow
+     *        the previous row in the spreadsheet
+     * @return true if the corresponding cells in both rows have the same data;
+     *         false otherwise
      */
     private boolean isSameDataInRows(Row currRow, Row prevRow) {
-        int prevType, currType;
         Cell prevCell, currCell;
 
         if (currRow == null || prevRow == null)
@@ -2994,10 +3164,7 @@ public class DataViewReportBean {
                 return false;
             }
 
-            prevType = prevCell.getCellType();
-            currType = currCell.getCellType();
-
-            if (prevType != currType)
+            if (prevCell.getCellType() != currCell.getCellType())
                 return false;
 
             if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(), currCell.getStringCellValue()))
@@ -3014,10 +3181,10 @@ public class DataViewReportBean {
      * e.g. analysis received by or combining two fields e.g. collected
      * date-time; this class holds such data so that it can be reused until the
      * sample, sample item or analysis changes
-     */ 
+     */
     private class RowData {
         Integer                  sampleId, sampleItemId, analysisId;
-        String                   collDateTime, projName, completedBy, releasedBy, analysisQAs,
+        String                   collDateTime, projNames, completedBy, releasedBy, analysisQAs,
                         birthDateTime;
         SampleOrganizationViewDO repToOrg;
         SampleItemViewDO         sampleItem;
@@ -3028,7 +3195,7 @@ public class DataViewReportBean {
             sampleItemId = null;
             analysisId = null;
             collDateTime = null;
-            projName = null;
+            projNames = null;
             completedBy = null;
             releasedBy = null;
             analysisQAs = null;
