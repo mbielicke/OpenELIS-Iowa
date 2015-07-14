@@ -1072,7 +1072,7 @@ public class DataViewScreen extends Screen {
                      fields);
         
         addQueryData(ui.getReleasedFrom(),
-                     ui.getReleasedFrom(),
+                     ui.getReleasedTo(),
                      SampleWebMeta.getAnalysisReleasedDate(),
                      QueryData.Type.DATE,
                      fields);

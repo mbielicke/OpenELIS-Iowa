@@ -850,7 +850,8 @@ public class NeonatalTabUI extends Screen {
          * is loaded from a file that had those fields checked; this validation
          * is done only if neonatal domain is selected on Query tab, because
          * otherwise this tab's fields don't get added to the list of columns
-         * sent to the back-end
+         * sent to the back-end; provider fields don't require the
+         * permission to be checked
          */
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
             w = entry.getValue().widget;
@@ -858,7 +859,8 @@ public class NeonatalTabUI extends Screen {
                 cb = (CheckBox)w;
                 if ("Y".equals(cb.getValue()) &&
                     !canEditPatient &&
-                    (entry.getKey().startsWith("_neonatal") || entry.getKey()
+                    (entry.getKey().startsWith("_neonatalPatient") || entry.getKey()
+                                    .startsWith("_neonatalNextOfKin") || entry.getKey()
                                                                     .startsWith("_sampleNeonatal"))) {
                     validation.addException(new Exception(Messages.get()
                                                                   .dataView_noPermToViewPatientException()));

@@ -436,15 +436,16 @@ public class ClinicalTabUI extends Screen {
          * show an error if the checkbox for a patient field has been checked
          * but the user doesn't have the permission to view patient fields; this
          * can happen if the screen is loaded from a file that had those fields
-         * checked; this validation is done only if no domain or clinical domain
-         * is selected on Query tab, because otherwise this tab's fields don't
-         * get added to the list sent to the back-end
+         * checked; this validation is done only if clinical domain is selected
+         * on Query tab, because otherwise this tab's fields don't get added to
+         * the list sent to the back-end; provider fields don't require the
+         * permission to be checked
          */
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
             w = entry.getValue().widget;
             if (w instanceof CheckBox) {
                 cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()) && !canEditPatient && entry.getKey().startsWith("_clinical")) {
+                if ("Y".equals(cb.getValue()) && !canEditPatient && entry.getKey().startsWith("_clinicalPatient")) {
                     validation.addException(new Exception(Messages.get()
                                                           .dataView_noPermToViewPatientException()));
                     validation.setStatus(Validation.Status.ERRORS);
