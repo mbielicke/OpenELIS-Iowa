@@ -71,7 +71,7 @@ public class TestProviderManager1Bean {
         providers.add(provider);
         locations.add(loc);
         notes.add(note);
-        when(bean.provider.fetchByIds(anyCollection())).thenReturn(providers);
+        when(bean.provider.fetchByIds((ArrayList<Integer>)any())).thenReturn(providers);
         when(bean.providerLocation.fetchByProviderIds((ArrayList<Integer>)any())).thenReturn(locations);
         when(bean.note.fetchByIdsAndTables((ArrayList<Integer>)any(), (ArrayList<Integer>)any())).thenReturn(notes);
         when(pm.getProvider()).thenReturn(provider);
@@ -100,7 +100,7 @@ public class TestProviderManager1Bean {
         providers.add(provider);
         locations.add(loc);
         notes.add(note);
-        when(bean.provider.fetchByIds(anyCollection())).thenReturn(providers);
+        when(bean.provider.fetchByIds((ArrayList<Integer>)any())).thenReturn(providers);
         when(bean.providerLocation.fetchByProviderIds((ArrayList<Integer>)any())).thenReturn(locations);
         when(bean.note.fetchByIdsAndTables((ArrayList<Integer>)any(), (ArrayList<Integer>)any())).thenReturn(notes);
         when(pm.getProvider()).thenReturn(provider);
@@ -129,7 +129,7 @@ public class TestProviderManager1Bean {
         providers.add(provider);
         locations.add(loc);
         notes.add(note);
-        when(bean.provider.fetchByIds(anyCollection())).thenReturn(providers);
+        when(bean.provider.fetchByIds((ArrayList<Integer>)any())).thenReturn(providers);
         when(bean.providerLocation.fetchByProviderIds((ArrayList<Integer>)any())).thenReturn(locations);
         when(bean.note.fetchByIdsAndTables((ArrayList<Integer>)any(), (ArrayList<Integer>)any())).thenReturn(notes);
         when(pm.getProvider()).thenReturn(provider);
@@ -191,7 +191,7 @@ public class TestProviderManager1Bean {
         providers.add(provider);
         locations.add(loc);
         notes.add(note);
-        when(bean.provider.fetchByIds(anyCollection())).thenReturn(providers);
+        when(bean.provider.fetchByIds((ArrayList<Integer>)any())).thenReturn(providers);
         when(bean.providerLocation.fetchByProviderIds((ArrayList<Integer>)any())).thenReturn(locations);
         when(bean.note.fetchByIdsAndTables((ArrayList<Integer>)any(), (ArrayList<Integer>)any())).thenReturn(notes);
         when(pm.getProvider()).thenReturn(provider);
@@ -220,7 +220,7 @@ public class TestProviderManager1Bean {
         providers.add(provider);
         locations.add(loc);
         notes.add(note);
-        when(bean.provider.fetchByIds(anyCollection())).thenReturn(providers);
+        when(bean.provider.fetchByIds(((ArrayList<Integer>)any()))).thenReturn(providers);
         when(bean.providerLocation.fetchByProviderIds((ArrayList<Integer>)any())).thenReturn(locations);
         when(bean.note.fetchByIdsAndTables((ArrayList<Integer>)any(), (ArrayList<Integer>)any())).thenReturn(notes);
         when(pm.getProvider()).thenReturn(provider);
