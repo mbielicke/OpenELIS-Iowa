@@ -2083,7 +2083,7 @@ public class AirQualityExportBean {
         profileIds.add(Constants.dictionary().PROFILE_AIR_STRING);
 
         for (ExchangeExternalTermViewDO data : exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(Constants.table().ANALYTE,
-                                                                                                                  analyteIds,
+                                                                                                                  DataBaseUtil.toArrayList(analyteIds),
                                                                                                                   profileIds)) {
             analyteCodes.put(data.getExchangeLocalTermReferenceId(), data.getExternalTerm());
         }
@@ -2104,7 +2104,7 @@ public class AirQualityExportBean {
         profileIds.add(Constants.dictionary().PROFILE_AIR_STRING);
 
         for (ExchangeExternalTermViewDO data : exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(Constants.table().DICTIONARY,
-                                                                                                                  unitIds,
+                                                                                                                  DataBaseUtil.toArrayList(unitIds),
                                                                                                                   profileIds)) {
             unitCodes.put(data.getExchangeLocalTermReferenceId(), data.getExternalTerm());
         }
@@ -2124,7 +2124,7 @@ public class AirQualityExportBean {
         profileIds.add(Constants.dictionary().PROFILE_AIR_STRING);
 
         for (ExchangeExternalTermViewDO data : exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(Constants.table().ORGANIZATION,
-                                                                                                                  orgIds,
+                                                                                                                  DataBaseUtil.toArrayList(orgIds),
                                                                                                                   profileIds)) {
             agencyCodes.put(data.getExchangeLocalTermReferenceId(), data.getExternalTerm());
         }

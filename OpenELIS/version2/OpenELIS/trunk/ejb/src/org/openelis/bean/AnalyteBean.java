@@ -51,9 +51,9 @@ import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
@@ -89,13 +89,20 @@ public class AnalyteBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<AnalyteViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+    public ArrayList<AnalyteViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<AnalyteViewDO> a;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Analyte.FetchByIds");
-        query.setParameter("ids", ids);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
+        a = new ArrayList<AnalyteViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
+        
+        return DataBaseUtil.toArrayList(a);
     }
 
     @SuppressWarnings("unchecked")

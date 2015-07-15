@@ -504,32 +504,32 @@ public class DataExchangeXMLMapperBean {
          * lookup and output various referenced objects; order is important
          */
         if (projects != null) {
-            for (ProjectViewDO p : project.fetchByIds(projects))
+            for (ProjectViewDO p : project.fetchByIds(DataBaseUtil.toArrayList(projects)))
                 root.appendChild(toXML(doc, p));
         }
 
         if (qas != null) {
-            for (QaEventViewDO qa : qaevent.fetchByIds(qas))
+            for (QaEventViewDO qa : qaevent.fetchByIds(DataBaseUtil.toArrayList(qas)))
                 root.appendChild(toXML(doc, qa));
         }
 
         if (tests != null) {
-            for (TestViewDO t : test.fetchByIds(tests))
+            for (TestViewDO t : test.fetchByIds(DataBaseUtil.toArrayList(tests)))
                 root.appendChild(toXML(doc, t));
         }
 
         if (methods != null) {
-            for (MethodDO m : method.fetchByIds(methods))
+            for (MethodDO m : method.fetchByIds(DataBaseUtil.toArrayList(methods)))
                 root.appendChild(toXML(doc, m));
         }
 
         if (trailers != null) {
-            for (TestTrailerDO t : testTrailer.fetchByIds(trailers))
+            for (TestTrailerDO t : testTrailer.fetchByIds(DataBaseUtil.toArrayList(trailers)))
                 root.appendChild(toXML(doc, t));
         }
 
         if (testResults != null) {
-            for (TestResultViewDO tr : testResult.fetchByIds(testResults))
+            for (TestResultViewDO tr : testResult.fetchByIds(DataBaseUtil.toArrayList(testResults)))
                 root.appendChild(toXML(doc, tr));
         }
 
@@ -539,7 +539,7 @@ public class DataExchangeXMLMapperBean {
         }
 
         if (panels != null) {
-            for (PanelDO p : panel.fetchByIds(panels))
+            for (PanelDO p : panel.fetchByIds(DataBaseUtil.toArrayList(panels)))
                 root.appendChild(toXML(doc, p));
         }
 
@@ -549,14 +549,14 @@ public class DataExchangeXMLMapperBean {
         }
 
         if (organizations != null) {
-            for (OrganizationViewDO org : organization.fetchByIds(organizations)) {
+            for (OrganizationViewDO org : organization.fetchByIds(DataBaseUtil.toArrayList(organizations))) {
                 root.appendChild(toXML(doc, org));
                 root.appendChild(toXML(doc, org.getAddress()));
             }
         }
 
         if (analytes != null) {
-            for (AnalyteViewDO ana : analyte.fetchByIds(analytes))
+            for (AnalyteViewDO ana : analyte.fetchByIds(DataBaseUtil.toArrayList(analytes)))
                 root.appendChild(toXML(doc, ana));
         }
 
@@ -1402,7 +1402,7 @@ public class DataExchangeXMLMapperBean {
         elm = doc.createElement(nodeName);
         try {
             terms = exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(referenceTable,
-                                                                                       referenceIds,
+                                                                                       DataBaseUtil.toArrayList(referenceIds),
                                                                                        profiles);
             for (ExchangeExternalTermViewDO term : terms)
                 elm.appendChild(toXML(doc, term));

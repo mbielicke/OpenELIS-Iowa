@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -74,14 +75,21 @@ public class AnalysisReportFlagsBean {
 
     public ArrayList<AnalysisReportFlagsDO> fetchByAnalysisIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<AnalysisReportFlagsDO> f;
+        ArrayList<Integer> r;
 
         if (ids.size() == 0)
             return new ArrayList<AnalysisReportFlagsDO>();
 
         query = manager.createNamedQuery("AnalysisReportFlags.FetchByAnalysisIds");
-        query.setParameter("ids", ids);
+        f = new ArrayList<AnalysisReportFlagsDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            f.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(f);
     }
 
     public AnalysisReportFlagsDO add(AnalysisReportFlagsDO data) throws Exception {
@@ -128,14 +136,21 @@ public class AnalysisReportFlagsBean {
 
     public ArrayList<AnalysisReportFlagsDO> fetchBySampleAccessionNumbers(ArrayList<Integer> ids) throws Exception {
         Query query;
+        ArrayList<Integer> r;
+        List<AnalysisReportFlagsDO> f;
 
         if (ids.size() == 0)
             return new ArrayList<AnalysisReportFlagsDO>();
 
         query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleAccessionNumbers");
-        query.setParameter("ids", ids);
+        f = new ArrayList<AnalysisReportFlagsDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            f.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(f);
     }
 
     public AnalysisReportFlagsDO fetchForUpdateByAnalysisId(Integer analysisId) throws Exception {

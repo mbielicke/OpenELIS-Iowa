@@ -68,6 +68,13 @@ import org.openelis.utils.Auditable;
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
                       + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t"
                       +	"  where a.id = :id"),
+    @NamedQuery( name = "Analysis.FetchByIds", 
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.typeId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t"
+                      + "  where a.id in (:ids)"),
     @NamedQuery( name = "Analysis.UpdatePrintedDateByIds", 
                 query = " update Analysis set printedDate = :printedDate where id in (:ids)"),                  
     @NamedQuery( name = "Analysis.FetchBySampleId",
@@ -459,21 +466,31 @@ public class Analysis implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_item_id", sampleItemId, original.sampleItemId,
+                 .setField("sample_item_id",
+                           sampleItemId,
+                           original.sampleItemId,
                            Constants.table().SAMPLE_ITEM)
                  .setField("revision", revision, original.revision)
                  .setField("test_id", testId, original.testId, Constants.table().TEST)
                  .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
                  .setField("panel_id", panelId, original.panelId, Constants.table().PANEL)
-                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId,
+                 .setField("pre_analysis_id",
+                           preAnalysisId,
+                           original.preAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId,
+                 .setField("parent_analysis_id",
+                           parentAnalysisId,
+                           original.parentAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_result_id", parentResultId, original.parentResultId,
+                 .setField("parent_result_id",
+                           parentResultId,
+                           original.parentResultId,
                            Constants.table().RESULT)
                  .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId,
+                 .setField("unit_of_measure_id",
+                           unitOfMeasureId,
+                           original.unitOfMeasureId,
                            Constants.table().DICTIONARY)
                  .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("available_date", availableDate, original.availableDate)

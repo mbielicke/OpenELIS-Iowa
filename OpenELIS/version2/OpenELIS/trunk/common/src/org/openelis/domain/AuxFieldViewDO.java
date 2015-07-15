@@ -6,8 +6,7 @@ public class AuxFieldViewDO extends AuxFieldDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          auxFieldGroupName, analyteName, methodName, scriptletName,
-                    unitOfMeasureName;
+    protected String          auxFieldGroupName, analyteName, methodName, unitOfMeasureName;
 
     public AuxFieldViewDO() {
 
@@ -18,7 +17,6 @@ public class AuxFieldViewDO extends AuxFieldDO {
                           Integer unitOfMeasureId, String isRequired, String isActive,
                           String isReportable, Integer scriptletId, String auxFieldGroupName,
                           String analyteName, String methodName, String unitOfMeasureName) {
-
         super(id, auxFieldGroupId, sortOrder, analyteId, description, methodId, unitOfMeasureId,
               isRequired, isActive, isReportable, scriptletId);
         setAuxFieldGroupName(auxFieldGroupName);

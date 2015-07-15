@@ -200,7 +200,8 @@ public class DataExchangeExportBean {
                                            SampleManager1.Load.STORAGE,
                                            SampleManager1.Load.NOTE,
                                            SampleManager1.Load.ANALYSISUSER,
-                                           SampleManager1.Load.RESULT);
+                                           SampleManager1.Load.RESULT,
+                                           SampleManager1.Load.PROVIDER);
 
             /*
              * log all the accession numbers; the ones generated with the
@@ -287,7 +288,8 @@ public class DataExchangeExportBean {
                                        SampleManager1.Load.STORAGE,
                                        SampleManager1.Load.NOTE,
                                        SampleManager1.Load.ANALYSISUSER,
-                                       SampleManager1.Load.RESULT);
+                                       SampleManager1.Load.RESULT,
+                                       SampleManager1.Load.PROVIDER);
 
         messageStart();
         status.setMessage(Messages.get().gen_generatingReport());

@@ -128,11 +128,18 @@ public class TestAnalyteBean {
 
     public ArrayList<TestAnalyteViewDO> fetchByTestIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<TestAnalyteViewDO> t;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("TestAnalyte.FetchByTestIds");
-        query.setParameter("ids", ids);
+        t = new ArrayList<TestAnalyteViewDO>(); 
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            t.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(t);
     }
 
     public ArrayList<TestAnalyteViewDO> fetchRowAnalytesByTestId(Integer testId) throws Exception {

@@ -552,7 +552,7 @@ public class WorksheetManager1Bean {
                                                          SampleManager1.Load.SINGLERESULT);
             
             if (testIds.size() > 0) {
-                twVDOs = testWorksheet.fetchByTestIds(testIds);
+                twVDOs = testWorksheet.fetchByTestIds(DataBaseUtil.toArrayList(testIds));
                 if (twVDOs.size() > 0) {
                     scriptletIds = new HashSet<Integer>();
                     for (TestWorksheetViewDO twVDO : twVDOs)
@@ -939,7 +939,7 @@ public class WorksheetManager1Bean {
         sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
         resultHash = new HashMap<Integer, ArrayList<ResultViewDO>>();
         if (!analysisIds.isEmpty()) {
-            sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
+            sMans = sampleMan.fetchByAnalyses(DataBaseUtil.toArrayList(analysisIds), SampleManager1.Load.SINGLERESULT);
             for (SampleManager1 sMan : sMans) {
                 for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sMan))
                     sMansByAnalysisId.put(aVDO.getId(), sMan);

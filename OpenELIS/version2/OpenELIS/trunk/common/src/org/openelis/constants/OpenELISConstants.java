@@ -2,9 +2,9 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
-public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
+public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
   /**
    * Translated "QA Event".
@@ -898,11 +898,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantSetAsPrepException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
+   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}".
    * 
-   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
+   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}"
    */
-  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}")
   @Key("analysis.cantUnreleaseCarrierException")
   String analysis_cantUnreleaseCarrierException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
@@ -950,6 +950,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
   String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Analysis Id".
+   * 
+   * @return translated "Analysis Id"
+   */
+  @DefaultMessage("Analysis Id")
+  @Key("analysis.id")
+  String analysis_id();
 
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
@@ -1150,15 +1159,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_qaEvents();
 
   /**
-   * Translated "Released".
-   * 
-   * @return translated "Released"
-   */
-  @DefaultMessage("Released")
-  @Key("analysis.released")
-  String analysis_released();
-
-  /**
    * Translated "Analysis Released Date".
    * 
    * @return translated "Analysis Released Date"
@@ -1168,11 +1168,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_releasedDate();
 
   /**
-   * Translated "Revision".
+   * Translated "Analysis Revision".
    * 
-   * @return translated "Revision"
+   * @return translated "Analysis Revision"
    */
-  @DefaultMessage("Revision")
+  @DefaultMessage("Analysis Revision")
   @Key("analysis.revision")
   String analysis_revision();
 
@@ -1265,6 +1265,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing")
   @Key("analysis.testIdMissingException")
   String analysis_testIdMissingException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Analysis Type".
+   * 
+   * @return translated "Analysis Type"
+   */
+  @DefaultMessage("Analysis Type")
+  @Key("analysis.type")
+  String analysis_type();
 
   /**
    * Translated "Unit of measure invalid for this sample type".
@@ -2005,11 +2014,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String aptSuite();
 
   /**
-   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ".
+   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled".
    * 
-   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled "
+   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled"
    */
-  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ")
+  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled")
   @Key("atLeastOnePairFilledException")
   String atLeastOnePairFilledException();
 
@@ -4066,6 +4075,663 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String dataView();
 
   /**
+   * Translated "Analysis Fields To Search By".
+   * 
+   * @return translated "Analysis Fields To Search By"
+   */
+  @DefaultMessage("Analysis Fields To Search By")
+  @Key("dataView.analysisFieldSearchBy")
+  String dataView_analysisFieldSearchBy();
+
+  /**
+   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled".
+   * 
+   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled"
+   */
+  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled")
+  @Key("dataView.atLeastOnePairFilledException")
+  String dataView_atLeastOnePairFilledException();
+
+  /**
+   * Translated "By".
+   * 
+   * @return translated "By"
+   */
+  @DefaultMessage("By")
+  @Key("dataView.by")
+  String dataView_by();
+
+  /**
+   * Translated "Common".
+   * 
+   * @return translated "Common"
+   */
+  @DefaultMessage("Common")
+  @Key("dataView.common")
+  String dataView_common();
+
+  /**
+   * Translated "Completed By".
+   * 
+   * @return translated "Completed By"
+   */
+  @DefaultMessage("Completed By")
+  @Key("dataView.completedBy")
+  String dataView_completedBy();
+
+  /**
+   * Translated "Data View".
+   * 
+   * @return translated "Data View"
+   */
+  @DefaultMessage("Data View")
+  @Key("dataView.dataView")
+  String dataView_dataView();
+
+  /**
+   * Translated "Data View: Running for user ''{0}'' with {1,number,#0} samples".
+   * 
+   * @return translated "Data View: Running for user ''{0}'' with {1,number,#0} samples"
+   */
+  @DefaultMessage("Data View: Running for user ''{0}'' with {1,number,#0} samples")
+  @Key("dataView.eventLogMessage")
+  String dataView_eventLogMessage(String arg0,  Integer arg1);
+
+  /**
+   * Translated "Exclude All".
+   * 
+   * @return translated "Exclude All"
+   */
+  @DefaultMessage("Exclude All")
+  @Key("dataView.excludeAll")
+  String dataView_excludeAll();
+
+  /**
+   * Translated "Exclude Aux Data".
+   * 
+   * @return translated "Exclude Aux Data"
+   */
+  @DefaultMessage("Exclude Aux Data")
+  @Key("dataView.excludeAuxData")
+  String dataView_excludeAuxData();
+
+  /**
+   * Translated "Exclude Result Override".
+   * 
+   * @return translated "Exclude Result Override"
+   */
+  @DefaultMessage("Exclude Result Override")
+  @Key("dataView.excludeResultOverride")
+  String dataView_excludeResultOverride();
+
+  /**
+   * Translated "Exclude Results".
+   * 
+   * @return translated "Exclude Results"
+   */
+  @DefaultMessage("Exclude Results")
+  @Key("dataView.excludeResults")
+  String dataView_excludeResults();
+
+  /**
+   * Translated "Execute Query".
+   * 
+   * @return translated "Execute Query"
+   */
+  @DefaultMessage("Execute Query")
+  @Key("dataView.executeQuery")
+  String dataView_executeQuery();
+
+  /**
+   * Translated "Fetching Data...".
+   * 
+   * @return translated "Fetching Data..."
+   */
+  @DefaultMessage("Fetching Data...")
+  @Key("dataView.fetchingData")
+  String dataView_fetchingData();
+
+  /**
+   * Translated "There was an error with opening the file".
+   * 
+   * @return translated "There was an error with opening the file"
+   */
+  @DefaultMessage("There was an error with opening the file")
+  @Key("dataView.fileUploadException")
+  String dataView_fileUploadException();
+
+  /**
+   * Translated "Filters".
+   * 
+   * @return translated "Filters"
+   */
+  @DefaultMessage("Filters")
+  @Key("dataView.filters")
+  String dataView_filters();
+
+  /**
+   * Translated "Include Not Reportable".
+   * 
+   * @return translated "Include Not Reportable"
+   */
+  @DefaultMessage("Include Not Reportable")
+  @Key("dataView.includeNotReportable")
+  String dataView_includeNotReportable();
+
+  /**
+   * Translated "Location Address".
+   * 
+   * @return translated "Location Address"
+   */
+  @DefaultMessage("Location Address")
+  @Key("dataView.locationAddress")
+  String dataView_locationAddress();
+
+  /**
+   * Translated "Location Apt/Suite #".
+   * 
+   * @return translated "Location Apt/Suite #"
+   */
+  @DefaultMessage("Location Apt/Suite #")
+  @Key("dataView.locationAptSuite")
+  String dataView_locationAptSuite();
+
+  /**
+   * Translated "Location City".
+   * 
+   * @return translated "Location City"
+   */
+  @DefaultMessage("Location City")
+  @Key("dataView.locationCity")
+  String dataView_locationCity();
+
+  /**
+   * Translated "Location Country".
+   * 
+   * @return translated "Location Country"
+   */
+  @DefaultMessage("Location Country")
+  @Key("dataView.locationCountry")
+  String dataView_locationCountry();
+
+  /**
+   * Translated "Location State".
+   * 
+   * @return translated "Location State"
+   */
+  @DefaultMessage("Location State")
+  @Key("dataView.locationState")
+  String dataView_locationState();
+
+  /**
+   * Translated "Location Zip Code".
+   * 
+   * @return translated "Location Zip Code"
+   */
+  @DefaultMessage("Location Zip Code")
+  @Key("dataView.locationZipCode")
+  String dataView_locationZipCode();
+
+  /**
+   * Translated "State Hygienic Laboratory University of Iowa Test Results".
+   * 
+   * @return translated "State Hygienic Laboratory University of Iowa Test Results"
+   */
+  @DefaultMessage("State Hygienic Laboratory University of Iowa Test Results")
+  @Key("dataView.messageOnTopOfSpreadsheet")
+  String dataView_messageOnTopOfSpreadsheet();
+
+  /**
+   * Translated "Next Of Kin Address".
+   * 
+   * @return translated "Next Of Kin Address"
+   */
+  @DefaultMessage("Next Of Kin Address")
+  @Key("dataView.nextOfKinAddress")
+  String dataView_nextOfKinAddress();
+
+  /**
+   * Translated "Next Of Kin Apt/Suite #".
+   * 
+   * @return translated "Next Of Kin Apt/Suite #"
+   */
+  @DefaultMessage("Next Of Kin Apt/Suite #")
+  @Key("dataView.nextOfKinAptSuite")
+  String dataView_nextOfKinAptSuite();
+
+  /**
+   * Translated "Next Of Kin Birth Date".
+   * 
+   * @return translated "Next Of Kin Birth Date"
+   */
+  @DefaultMessage("Next Of Kin Birth Date")
+  @Key("dataView.nextOfKinBirthDate")
+  String dataView_nextOfKinBirthDate();
+
+  /**
+   * Translated "Next Of Kin City".
+   * 
+   * @return translated "Next Of Kin City"
+   */
+  @DefaultMessage("Next Of Kin City")
+  @Key("dataView.nextOfKinCity")
+  String dataView_nextOfKinCity();
+
+  /**
+   * Translated "Next Of Kin First Name".
+   * 
+   * @return translated "Next Of Kin First Name"
+   */
+  @DefaultMessage("Next Of Kin First Name")
+  @Key("dataView.nextOfKinFirstName")
+  String dataView_nextOfKinFirstName();
+
+  /**
+   * Translated "Next Of Kin Gender".
+   * 
+   * @return translated "Next Of Kin Gender"
+   */
+  @DefaultMessage("Next Of Kin Gender")
+  @Key("dataView.nextOfKinGender")
+  String dataView_nextOfKinGender();
+
+  /**
+   * Translated "Next Of Kin Id".
+   * 
+   * @return translated "Next Of Kin Id"
+   */
+  @DefaultMessage("Next Of Kin Id")
+  @Key("dataView.nextOfKinId")
+  String dataView_nextOfKinId();
+
+  /**
+   * Translated "Next Of Kin Last Name".
+   * 
+   * @return translated "Next Of Kin Last Name"
+   */
+  @DefaultMessage("Next Of Kin Last Name")
+  @Key("dataView.nextOfKinLastName")
+  String dataView_nextOfKinLastName();
+
+  /**
+   * Translated "Next Of Kin Maiden Name".
+   * 
+   * @return translated "Next Of Kin Maiden Name"
+   */
+  @DefaultMessage("Next Of Kin Maiden Name")
+  @Key("dataView.nextOfKinMaidenName")
+  String dataView_nextOfKinMaidenName();
+
+  /**
+   * Translated "Next Of Kin Phone Number".
+   * 
+   * @return translated "Next Of Kin Phone Number"
+   */
+  @DefaultMessage("Next Of Kin Phone Number")
+  @Key("dataView.nextOfKinPhone")
+  String dataView_nextOfKinPhone();
+
+  /**
+   * Translated "Next Of Kin State".
+   * 
+   * @return translated "Next Of Kin State"
+   */
+  @DefaultMessage("Next Of Kin State")
+  @Key("dataView.nextOfKinState")
+  String dataView_nextOfKinState();
+
+  /**
+   * Translated "Next Of Kin Zip Code".
+   * 
+   * @return translated "Next Of Kin Zip Code"
+   */
+  @DefaultMessage("Next Of Kin Zip Code")
+  @Key("dataView.nextOfKinZipcode")
+  String dataView_nextOfKinZipcode();
+
+  /**
+   * Translated "You do not have the permission to view patient fields".
+   * 
+   * @return translated "You do not have the permission to view patient fields"
+   */
+  @DefaultMessage("You do not have the permission to view patient fields")
+  @Key("dataView.noPermToViewPatientException")
+  String dataView_noPermToViewPatientException();
+
+  /**
+   * Translated "Open Query".
+   * 
+   * @return translated "Open Query"
+   */
+  @DefaultMessage("Open Query")
+  @Key("dataView.openQuery")
+  String dataView_openQuery();
+
+  /**
+   * Translated "Patient Address".
+   * 
+   * @return translated "Patient Address"
+   */
+  @DefaultMessage("Patient Address")
+  @Key("dataView.patientAddress")
+  String dataView_patientAddress();
+
+  /**
+   * Translated "Patient Apt/Suite #".
+   * 
+   * @return translated "Patient Apt/Suite #"
+   */
+  @DefaultMessage("Patient Apt/Suite #")
+  @Key("dataView.patientAptSuite")
+  String dataView_patientAptSuite();
+
+  /**
+   * Translated "Patient Birth Date".
+   * 
+   * @return translated "Patient Birth Date"
+   */
+  @DefaultMessage("Patient Birth Date")
+  @Key("dataView.patientBirthDate")
+  String dataView_patientBirthDate();
+
+  /**
+   * Translated "Patient Birth Time".
+   * 
+   * @return translated "Patient Birth Time"
+   */
+  @DefaultMessage("Patient Birth Time")
+  @Key("dataView.patientBirthTime")
+  String dataView_patientBirthTime();
+
+  /**
+   * Translated "Patient City".
+   * 
+   * @return translated "Patient City"
+   */
+  @DefaultMessage("Patient City")
+  @Key("dataView.patientCity")
+  String dataView_patientCity();
+
+  /**
+   * Translated "Patient-related fields cannot be selected. ".
+   * 
+   * @return translated "Patient-related fields cannot be selected. "
+   */
+  @DefaultMessage("Patient-related fields cannot be selected. ")
+  @Key("dataView.patientFieldsDisabled")
+  String dataView_patientFieldsDisabled();
+
+  /**
+   * Translated "Patient First Name".
+   * 
+   * @return translated "Patient First Name"
+   */
+  @DefaultMessage("Patient First Name")
+  @Key("dataView.patientFirstName")
+  String dataView_patientFirstName();
+
+  /**
+   * Translated "Patient Gender".
+   * 
+   * @return translated "Patient Gender"
+   */
+  @DefaultMessage("Patient Gender")
+  @Key("dataView.patientGender")
+  String dataView_patientGender();
+
+  /**
+   * Translated "Patient Id".
+   * 
+   * @return translated "Patient Id"
+   */
+  @DefaultMessage("Patient Id")
+  @Key("dataView.patientId")
+  String dataView_patientId();
+
+  /**
+   * Translated "Patient Last Name".
+   * 
+   * @return translated "Patient Last Name"
+   */
+  @DefaultMessage("Patient Last Name")
+  @Key("dataView.patientLastName")
+  String dataView_patientLastName();
+
+  /**
+   * Translated "Patient Phone Number".
+   * 
+   * @return translated "Patient Phone Number"
+   */
+  @DefaultMessage("Patient Phone Number")
+  @Key("dataView.patientPhone")
+  String dataView_patientPhone();
+
+  /**
+   * Translated "Patient State".
+   * 
+   * @return translated "Patient State"
+   */
+  @DefaultMessage("Patient State")
+  @Key("dataView.patientState")
+  String dataView_patientState();
+
+  /**
+   * Translated "Patient Zip Code".
+   * 
+   * @return translated "Patient Zip Code"
+   */
+  @DefaultMessage("Patient Zip Code")
+  @Key("dataView.patientZipcode")
+  String dataView_patientZipcode();
+
+  /**
+   * Translated "Stopping report. Please Wait...".
+   * 
+   * @return translated "Stopping report. Please Wait..."
+   */
+  @DefaultMessage("Stopping report. Please Wait...")
+  @Key("dataView.pleaseWait")
+  String dataView_pleaseWait();
+
+  /**
+   * Translated "Provider Phone Number".
+   * 
+   * @return translated "Provider Phone Number"
+   */
+  @DefaultMessage("Provider Phone Number")
+  @Key("dataView.providerPhone")
+  String dataView_providerPhone();
+
+  /**
+   * Translated "Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}.".
+   * 
+   * @return translated "Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}."
+   */
+  @DefaultMessage("Query too big. Your search returned {0,number,#0} samples, but the limit is {1,number,#0}.")
+  @Key("dataView.queryTooBigException")
+  String dataView_queryTooBigException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Released By".
+   * 
+   * @return translated "Released By"
+   */
+  @DefaultMessage("Released By")
+  @Key("dataView.releasedBy")
+  String dataView_releasedBy();
+
+  /**
+   * Translated "Report Stopped".
+   * 
+   * @return translated "Report Stopped"
+   */
+  @DefaultMessage("Report Stopped")
+  @Key("dataView.reportStopped")
+  String dataView_reportStopped();
+
+  /**
+   * Translated "Reportable Only".
+   * 
+   * @return translated "Reportable Only"
+   */
+  @DefaultMessage("Reportable Only")
+  @Key("dataView.reportableOnly")
+  String dataView_reportableOnly();
+
+  /**
+   * Translated "Sample Fields To Search By".
+   * 
+   * @return translated "Sample Fields To Search By"
+   */
+  @DefaultMessage("Sample Fields To Search By")
+  @Key("dataView.sampleFieldSearchBy")
+  String dataView_sampleFieldSearchBy();
+
+  /**
+   * Translated "Sample Revision".
+   * 
+   * @return translated "Sample Revision"
+   */
+  @DefaultMessage("Sample Revision")
+  @Key("dataView.sampleRevision")
+  String dataView_sampleRevision();
+
+  /**
+   * Translated "Save Query".
+   * 
+   * @return translated "Save Query"
+   */
+  @DefaultMessage("Save Query")
+  @Key("dataView.saveQuery")
+  String dataView_saveQuery();
+
+  /**
+   * Translated "Please select at least one common or domain field".
+   * 
+   * @return translated "Please select at least one common or domain field"
+   */
+  @DefaultMessage("Please select at least one common or domain field")
+  @Key("dataView.selAtleastOneField")
+  String dataView_selAtleastOneField();
+
+  /**
+   * Translated "Select Analysis Fields For Output".
+   * 
+   * @return translated "Select Analysis Fields For Output"
+   */
+  @DefaultMessage("Select Analysis Fields For Output")
+  @Key("dataView.selectAnalysisField")
+  String dataView_selectAnalysisField();
+
+  /**
+   * Translated "Select Environmental Fields For Output".
+   * 
+   * @return translated "Select Environmental Fields For Output"
+   */
+  @DefaultMessage("Select Environmental Fields For Output")
+  @Key("dataView.selectEnvironmentalField")
+  String dataView_selectEnvironmentalField();
+
+  /**
+   * Translated "Select Neonatal Fields For Output".
+   * 
+   * @return translated "Select Neonatal Fields For Output"
+   */
+  @DefaultMessage("Select Neonatal Fields For Output")
+  @Key("dataView.selectNeonatalField")
+  String dataView_selectNeonatalField();
+
+  /**
+   * Translated "Select Next Of Kin Fields For Output".
+   * 
+   * @return translated "Select Next Of Kin Fields For Output"
+   */
+  @DefaultMessage("Select Next Of Kin Fields For Output")
+  @Key("dataView.selectNextOfKinField")
+  String dataView_selectNextOfKinField();
+
+  /**
+   * Translated "Select Organization Fields For Output".
+   * 
+   * @return translated "Select Organization Fields For Output"
+   */
+  @DefaultMessage("Select Organization Fields For Output")
+  @Key("dataView.selectOrganizationField")
+  String dataView_selectOrganizationField();
+
+  /**
+   * Translated "Select PT Fields For Output".
+   * 
+   * @return translated "Select PT Fields For Output"
+   */
+  @DefaultMessage("Select PT Fields For Output")
+  @Key("dataView.selectPTField")
+  String dataView_selectPTField();
+
+  /**
+   * Translated "Select Patient Fields For Output".
+   * 
+   * @return translated "Select Patient Fields For Output"
+   */
+  @DefaultMessage("Select Patient Fields For Output")
+  @Key("dataView.selectPatientField")
+  String dataView_selectPatientField();
+
+  /**
+   * Translated "Select Private Well Fields For Output".
+   * 
+   * @return translated "Select Private Well Fields For Output"
+   */
+  @DefaultMessage("Select Private Well Fields For Output")
+  @Key("dataView.selectPrivateWellField")
+  String dataView_selectPrivateWellField();
+
+  /**
+   * Translated "Select Provider Fields For Output".
+   * 
+   * @return translated "Select Provider Fields For Output"
+   */
+  @DefaultMessage("Select Provider Fields For Output")
+  @Key("dataView.selectProviderField")
+  String dataView_selectProviderField();
+
+  /**
+   * Translated "Select Sample Fields For Output".
+   * 
+   * @return translated "Select Sample Fields For Output"
+   */
+  @DefaultMessage("Select Sample Fields For Output")
+  @Key("dataView.selectSampleField")
+  String dataView_selectSampleField();
+
+  /**
+   * Translated "Select Sample Item Fields For Output".
+   * 
+   * @return translated "Select Sample Item Fields For Output"
+   */
+  @DefaultMessage("Select Sample Item Fields For Output")
+  @Key("dataView.selectSampleItemField")
+  String dataView_selectSampleItemField();
+
+  /**
+   * Translated "Select SDWIS Fields For Output".
+   * 
+   * @return translated "Select SDWIS Fields For Output"
+   */
+  @DefaultMessage("Select SDWIS Fields For Output")
+  @Key("dataView.selectSdwisField")
+  String dataView_selectSdwisField();
+
+  /**
+   * Translated "These fields can be selected only after choosing this domain on Query tab.".
+   * 
+   * @return translated "These fields can be selected only after choosing this domain on Query tab."
+   */
+  @DefaultMessage("These fields can be selected only after choosing this domain on Query tab.")
+  @Key("dataView.tabFieldsDisabled")
+  String dataView_tabFieldsDisabled();
+
+  /**
    * Translated "Date Collected".
    * 
    * @return translated "Date Collected"
@@ -5848,6 +6514,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String filled();
 
   /**
+   * Translated "Please select at least one test analyte or aux data".
+   * 
+   * @return translated "Please select at least one test analyte or aux data"
+   */
+  @DefaultMessage("Please select at least one test analyte or aux data")
+  @Key("filter.selectOneAnaOrAux")
+  String filter_selectOneAnaOrAux();
+
+  /**
+   * Translated "Filter by Test Analyte and Aux Data".
+   * 
+   * @return translated "Filter by Test Analyte and Aux Data"
+   */
+  @DefaultMessage("Filter by Test Analyte and Aux Data")
+  @Key("filter.testAnalyteAuxDataFilter")
+  String filter_testAnalyteAuxDataFilter();
+
+  /**
    * Translated "Final Report".
    * 
    * @return translated "Final Report"
@@ -6235,6 +6919,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_billable();
 
   /**
+   * Translated "By".
+   * 
+   * @return translated "By"
+   */
+  @DefaultMessage("By")
+  @Key("gen.by")
+  String gen_by();
+
+  /**
    * Translated "Cancel".
    * 
    * @return translated "Cancel"
@@ -6316,6 +7009,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_collapse();
 
   /**
+   * Translated "Collection Date".
+   * 
+   * @return translated "Collection Date"
+   */
+  @DefaultMessage("Collection Date")
+  @Key("gen.collectionDate")
+  String gen_collectionDate();
+
+  /**
    * Translated "Standard Comment Library".
    * 
    * @return translated "Standard Comment Library"
@@ -6341,6 +7043,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Complete")
   @Key("gen.complete")
   String gen_complete();
+
+  /**
+   * Translated "Completed Date".
+   * 
+   * @return translated "Completed Date"
+   */
+  @DefaultMessage("Completed Date")
+  @Key("gen.completedDate")
+  String gen_completedDate();
 
   /**
    * Translated "Container".
@@ -6379,6 +7090,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_created();
 
   /**
+   * Translated "yyyy-MM-dd".
+   * 
+   * @return translated "yyyy-MM-dd"
+   */
+  @DefaultMessage("yyyy-MM-dd")
+  @Key("gen.datePattern")
+  String gen_datePattern();
+
+  /**
    * Translated "Date Rec".
    * 
    * @return translated "Date Rec"
@@ -6386,6 +7106,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Date Rec")
   @Key("gen.dateRec")
   String gen_dateRec();
+
+  /**
+   * Translated "yyyy-MM-dd HH:mm".
+   * 
+   * @return translated "yyyy-MM-dd HH:mm"
+   */
+  @DefaultMessage("yyyy-MM-dd HH:mm")
+  @Key("gen.dateTimePattern")
+  String gen_dateTimePattern();
 
   /**
    * Translated "Delete".
@@ -6505,6 +7234,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_enterInformationPressCommit();
 
   /**
+   * Translated "Entered".
+   * 
+   * @return translated "Entered"
+   */
+  @DefaultMessage("Entered")
+  @Key("gen.entered")
+  String gen_entered();
+
+  /**
    * Translated "Entered Date".
    * 
    * @return translated "Entered Date"
@@ -6521,6 +7259,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Entry")
   @Key("gen.entry")
   String gen_entry();
+
+  /**
+   * Translated "(Error 1 of {0,number}) {1} ".
+   * 
+   * @return translated "(Error 1 of {0,number}) {1} "
+   */
+  @DefaultMessage("(Error 1 of {0,number}) {1} ")
+  @Key("gen.errorOneOfMultiple")
+  String gen_errorOneOfMultiple(Integer arg0,  String arg1);
 
   /**
    * Translated "Exp Date".
@@ -6593,6 +7340,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Fetching ...")
   @Key("gen.fetching")
   String gen_fetching();
+
+  /**
+   * Translated "Field is required".
+   * 
+   * @return translated "Field is required"
+   */
+  @DefaultMessage("Field is required")
+  @Key("gen.fieldRequiredException")
+  String gen_fieldRequiredException();
 
   /**
    * Translated "First".
@@ -6755,6 +7511,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Lot #")
   @Key("gen.lotNum")
   String gen_lotNum();
+
+  /**
+   * Translated "Maiden Name".
+   * 
+   * @return translated "Maiden Name"
+   */
+  @DefaultMessage("Maiden Name")
+  @Key("gen.maidenName")
+  String gen_maidenName();
 
   /**
    * Translated "Method".
@@ -7036,6 +7801,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_print();
 
   /**
+   * Translated "Printed Date".
+   * 
+   * @return translated "Printed Date"
+   */
+  @DefaultMessage("Printed Date")
+  @Key("gen.printedDate")
+  String gen_printedDate();
+
+  /**
    * Translated "Printer".
    * 
    * @return translated "Printer"
@@ -7162,6 +7936,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_release();
 
   /**
+   * Translated "Released".
+   * 
+   * @return translated "Released"
+   */
+  @DefaultMessage("Released")
+  @Key("gen.released")
+  String gen_released();
+
+  /**
    * Translated "Remove".
    * 
    * @return translated "Remove"
@@ -7223,6 +8006,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Required")
   @Key("gen.required")
   String gen_required();
+
+  /**
+   * Translated "Revision".
+   * 
+   * @return translated "Revision"
+   */
+  @DefaultMessage("Revision")
+  @Key("gen.revision")
+  String gen_revision();
 
   /**
    * Translated "Sample Type".
@@ -7360,6 +8152,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_source();
 
   /**
+   * Translated "Started Date".
+   * 
+   * @return translated "Started Date"
+   */
+  @DefaultMessage("Started Date")
+  @Key("gen.startedDate")
+  String gen_startedDate();
+
+  /**
    * Translated "Status".
    * 
    * @return translated "Status"
@@ -7403,6 +8204,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Time")
   @Key("gen.time")
   String gen_time();
+
+  /**
+   * Translated "To".
+   * 
+   * @return translated "To"
+   */
+  @DefaultMessage("To")
+  @Key("gen.to")
+  String gen_to();
 
   /**
    * Translated "Type".
@@ -12094,6 +12904,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String organization_homeNumber();
 
   /**
+   * Translated "Organization Name".
+   * 
+   * @return translated "Organization Name"
+   */
+  @DefaultMessage("Organization Name")
+  @Key("organization.name")
+  String organization_name();
+
+  /**
+   * Translated "Organization #".
+   * 
+   * @return translated "Organization #"
+   */
+  @DefaultMessage("Organization #")
+  @Key("organization.num")
+  String organization_num();
+
+  /**
    * Translated "History - Parameter".
    * 
    * @return translated "History - Parameter"
@@ -13633,6 +14461,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String pwsViolationSampleId();
 
   /**
+   * Translated "QA Event".
+   * 
+   * @return translated "QA Event"
+   */
+  @DefaultMessage("QA Event")
+  @Key("qaEvent.qaEvent")
+  String qaEvent_qaEvent();
+
+  /**
    * Translated "QA Events".
    * 
    * @return translated "QA Events"
@@ -14605,6 +15442,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String report_export();
 
   /**
+   * Translated "Fetching Data...".
+   * 
+   * @return translated "Fetching Data..."
+   */
+  @DefaultMessage("Fetching Data...")
+  @Key("report.fetchingData")
+  String report_fetchingData();
+
+  /**
+   * Translated "Specified file name is not valid; please report this error to your sysadmin".
+   * 
+   * @return translated "Specified file name is not valid; please report this error to your sysadmin"
+   */
+  @DefaultMessage("Specified file name is not valid; please report this error to your sysadmin")
+  @Key("report.fileNameNotValidException")
+  String report_fileNameNotValidException();
+
+  /**
    * Translated "Generating Data View...".
    * 
    * @return translated "Generating Data View..."
@@ -14612,6 +15467,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Generating Data View...")
   @Key("report.genDataView")
   String report_genDataView();
+
+  /**
+   * Translated "No Status".
+   * 
+   * @return translated "No Status"
+   */
+  @DefaultMessage("No Status")
+  @Key("report.noStatus")
+  String report_noStatus();
 
   /**
    * Translated "Outputing report".
@@ -14648,6 +15512,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Run Report")
   @Key("report.runReport")
   String report_runReport();
+
+  /**
+   * Translated "Report Stopped".
+   * 
+   * @return translated "Report Stopped"
+   */
+  @DefaultMessage("Report Stopped")
+  @Key("report.stopped")
+  String report_stopped();
 
   /**
    * Translated "Tube Labels ".
@@ -14855,6 +15728,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.")
   @Key("result.partSamNotFoundException")
   String result_partSamNotFoundException(Integer arg0,  String arg1,  String arg2,  Integer arg3);
+
+  /**
+   * Translated "Result".
+   * 
+   * @return translated "Result"
+   */
+  @DefaultMessage("Result")
+  @Key("result.result")
+  String result_result();
 
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid".
@@ -15368,6 +16250,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Description")
   @Key("sample.description")
   String sample_description();
+
+  /**
+   * Translated "Domain".
+   * 
+   * @return translated "Domain"
+   */
+  @DefaultMessage("Domain")
+  @Key("sample.domain")
+  String sample_domain();
 
   /**
    * Translated "The domain of this sample has changed".
@@ -18527,6 +19418,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Analyte")
   @Key("testAnalyte")
   String testAnalyte();
+
+  /**
+   * Translated "Test Analyte".
+   * 
+   * @return translated "Test Analyte"
+   */
+  @DefaultMessage("Test Analyte")
+  @Key("testAnalyte.testAnalyte")
+  String testAnalyte_testAnalyte();
 
   /**
    * Translated "Filter by Test Analyte and Aux Data".

@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -79,11 +80,18 @@ public class SampleSDWISBean {
     
     public ArrayList<SampleSDWISViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
+        List<SampleSDWISViewDO> s;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleSDWIS.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
+        s = new ArrayList<SampleSDWISViewDO>();         
+        r = DataBaseUtil.createSubsetRange(sampleIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
+            s.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(s);
     }
     
     public SampleSDWISDO add(SampleSDWISDO data) throws Exception {

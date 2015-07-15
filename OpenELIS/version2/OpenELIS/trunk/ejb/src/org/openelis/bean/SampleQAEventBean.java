@@ -46,8 +46,7 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
-public class SampleQAEventBean  {
+public class SampleQAEventBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -65,14 +64,21 @@ public class SampleQAEventBean  {
 
         return DataBaseUtil.toArrayList(returnList);
     }
-    
+
     public ArrayList<SampleQaEventViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
+        List<SampleQaEventViewDO> q;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleQaevent.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
+        q = new ArrayList<SampleQaEventViewDO>();
+        r = DataBaseUtil.createSubsetRange(sampleIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
+            q.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(q);
     }
 
     public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception {
@@ -102,40 +108,22 @@ public class SampleQAEventBean  {
 
         return DataBaseUtil.toArrayList(returnList);
     }
-    
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception {
-        Query query;
-        List returnList;        
 
-        if (ids.size() == 0)
-            throw new NotFoundException();
-        
-        query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleIds");
-        query.setParameter("ids", ids);
-        
-        returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
-            throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(returnList);
-    }
-    
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer id) throws Exception {
         Query query;
         List returnList;
-        
+
         query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleId");
         query.setParameter("id", id);
-        
+
         returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
+
+        if (returnList.size() == 0)
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(returnList);
     }
-    
+
     public SampleQaEventDO add(SampleQaEventDO data) throws Exception {
         SampleQaevent entity;
 
@@ -149,7 +137,7 @@ public class SampleQAEventBean  {
 
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
@@ -187,9 +175,9 @@ public class SampleQAEventBean  {
         e = new ValidationErrorsList();
         if (data.getTypeId() == null)
             e.add(new FormErrorException(Messages.get()
-                                         .sampleQAEvent_typeRequiredException(accession, data.getQaEventName())));
-        
-        
+                                                 .sampleQAEvent_typeRequiredException(accession,
+                                                                                      data.getQaEventName())));
+
         if (e.size() > 0)
             throw e;
     }

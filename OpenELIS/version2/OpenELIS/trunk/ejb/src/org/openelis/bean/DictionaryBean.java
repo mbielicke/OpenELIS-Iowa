@@ -125,13 +125,20 @@ public class DictionaryBean {
         return data;
     }
 
-    public ArrayList<DictionaryViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+    public ArrayList<DictionaryViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<DictionaryViewDO> d;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Dictionary.FetchByIds");
-        query.setParameter("ids", ids);
+        d = new ArrayList<DictionaryViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            d.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(d);
     }
 
     public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception {
