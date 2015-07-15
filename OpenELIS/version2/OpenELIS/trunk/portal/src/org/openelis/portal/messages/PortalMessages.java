@@ -2,7 +2,7 @@ package org.openelis.portal.messages;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Portal/war/WEB-INF/classes/org/openelis/portal/messages/PortalMessages.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Portal/war/WEB-INF/classes/org/openelis/portal/messages/PortalMessages.properties'.
  */
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   
@@ -115,11 +115,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_environmentalFields();
 
   /**
-   * Translated "no results were found".
+   * Translated "No results were found".
    * 
-   * @return translated "no results were found"
+   * @return translated "No results were found"
    */
-  @DefaultMessage("no results were found")
+  @DefaultMessage("No results were found")
   @Key("dataView.error.noResults")
   String dataView_error_noResults();
 

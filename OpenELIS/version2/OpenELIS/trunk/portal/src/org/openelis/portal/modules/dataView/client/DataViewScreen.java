@@ -25,20 +25,18 @@
  */
 package org.openelis.portal.modules.dataView.client;
 
-import static org.openelis.portal.client.Logger.remote;
-import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.portal.client.Logger.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
-import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DataViewVO;
+import org.openelis.domain.DataView1VO;
+import org.openelis.domain.DataViewAnalyteVO;
+import org.openelis.domain.DataViewValueVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ResultDataViewVO;
-import org.openelis.domain.TestAnalyteDataViewVO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
@@ -53,8 +51,11 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Queryable;
 import org.openelis.ui.widget.table.Row;
+import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellEditedEvent;
@@ -68,6 +69,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -77,16 +79,16 @@ public class DataViewScreen extends Screen {
 
     private ModulePermission       userPermission;
 
-    private DataViewVO             data;
+    private DataView1VO             data;
 
     private StatusBarPopupScreenUI statusScreen;
-
+    
     public DataViewScreen() {
         initWidget(ui.asWidget());
 
         userPermission = UserCache.getPermission().getModule("w_dataview");
         if (userPermission == null) {
-            Window.alert(Messages.get().error_screenPerm("Data View Screen"));
+            Window.alert(Messages.get().error_screenPerm("Spreadsheet View Screen"));
             return;
         }
 
@@ -111,7 +113,7 @@ public class DataViewScreen extends Screen {
         Item<Integer> row;
 
         ui.initialize();
-        data = new DataViewVO();
+        data = new DataView1VO();
         ui.getDeck().showWidget(0);
 
         ui.getContinueButton().addClickHandler(new ClickHandler() {
@@ -127,7 +129,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                data = new DataViewVO();
+                data = new DataView1VO();
                 ui.clearErrors();
                 fireDataChange();
             }
@@ -138,7 +140,7 @@ public class DataViewScreen extends Screen {
             @Override
             public void onClick(ClickEvent event) {
                 ui.getDeck().showWidget(0);
-                data = new DataViewVO();
+                data = new DataView1VO();
                 uncheckAllFields();
             }
         });
@@ -252,14 +254,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                for (Row row : ui.getAnalyteTable().getModel()) {
-                    row.setCell(0, "Y");
-                    updateTestAnalyte((TestAnalyteDataViewVO)row.getData(), "Y");
-                }
-                /*
-                 * needs to set the model to refresh the table
-                 */
-                ui.getAnalyteTable().setModel(ui.getAnalyteTable().getModel());
+                updateAllTestAnalyte("Y");
             }
         });
 
@@ -267,11 +262,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                for (Row row : ui.getAnalyteTable().getModel()) {
-                    row.setCell(0, "N");
-                    updateTestAnalyte((TestAnalyteDataViewVO)row.getData(), "N");
-                }
-                ui.getAnalyteTable().setModel(ui.getAnalyteTable().getModel());
+                updateAllTestAnalyte("N");
             }
         });
 
@@ -279,11 +270,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                for (Row row : ui.getAuxTable().getModel()) {
-                    row.setCell(0, "Y");
-                    updateAuxData((AuxFieldDataViewVO)row.getData(), "Y");
-                }
-                ui.getAuxTable().setModel(ui.getAuxTable().getModel());
+                updateAllAuxField("Y");
             }
         });
 
@@ -291,11 +278,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                for (Row row : ui.getAuxTable().getModel()) {
-                    row.setCell(0, "N");
-                    updateAuxData((AuxFieldDataViewVO)row.getData(), "N");
-                }
-                ui.getAuxTable().setModel(ui.getAuxTable().getModel());
+                updateAllAuxField("N");
             }
         });
 
@@ -311,20 +294,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getCollectionDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getCollectionDateFrom() != null)
-                                     ui.getCollectedFrom()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getCollectionDateFrom()));
-                                 else
-                                     ui.getCollectedFrom().setValue(null);
+                                 ui.getCollectedFrom().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setCollectedError(null);
                                  ui.getCollectedFrom().clearExceptions();
                                  ui.getCollectedTo().clearExceptions();
-                                 data.setCollectionDateFrom(event.getValue().getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -341,20 +317,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getCollectionDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getCollectionDateTo() != null)
-                                     ui.getCollectedTo()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getCollectionDateTo()));
-                                 else
-                                     ui.getCollectedTo().setValue(null);
+                                 ui.getCollectedTo().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setCollectedError(null);
                                  ui.getCollectedTo().clearExceptions();
                                  ui.getCollectedFrom().clearExceptions();
-                                 data.setCollectionDateTo(event.getValue().getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -371,20 +340,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getAnalysisReleasedDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getReleasedDateFrom() != null)
-                                     ui.getReleasedFrom()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getReleasedDateFrom()));
-                                 else
-                                     ui.getReleasedFrom().setValue(null);
+                                 ui.getReleasedFrom().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setReleasedError(null);
                                  ui.getReleasedFrom().clearExceptions();
                                  ui.getReleasedTo().clearExceptions();
-                                 data.setReleasedDateFrom(event.getValue().getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -401,20 +363,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getAnalysisReleasedDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getReleasedDateTo() != null)
-                                     ui.getReleasedTo()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getReleasedDateTo()));
-                                 else
-                                     ui.getReleasedTo().setValue(null);
+                                 ui.getReleasedTo().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setReleasedError(null);
                                  ui.getReleasedTo().clearExceptions();
                                  ui.getReleasedFrom().clearExceptions();
-                                 data.setReleasedDateTo(event.getValue().getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -430,15 +385,10 @@ public class DataViewScreen extends Screen {
         addScreenHandler(ui.getAccessionFrom(),
                          SampleWebMeta.getAccessionNumberFrom(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAccessionFrom().setValue(data.getAccessionNumberFrom());
-                             }
-
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  ui.setAccessionError(null);
                                  ui.getAccessionFrom().clearExceptions();
                                  ui.getAccessionTo().clearExceptions();
-                                 data.setAccessionNumberFrom(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -455,14 +405,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getAccessionNumberTo(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getAccessionTo().setValue(data.getAccessionNumberTo());
+                                 ui.getAccessionTo().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  ui.setAccessionError(null);
                                  ui.getAccessionTo().clearExceptions();
                                  ui.getAccessionFrom().clearExceptions();
-                                 data.setAccessionNumberTo(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -479,13 +428,12 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getClientReference(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getClientReference().setValue(data.getClientReference());
+                                 ui.getClientReference().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  ui.setClientReferenceError(null);
                                  ui.getClientReference().clearExceptions();
-                                 data.setClientReference(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -502,14 +450,7 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getProjectId(),
                          new ScreenHandler<ArrayList<Integer>>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ArrayList<Integer> ids;
-
-                                 ids = null;
-                                 if (data.getProjectId() != null) {
-                                     ids = new ArrayList<Integer>();
-                                     ids.add(data.getProjectId());
-                                 }
-                                 ui.getProjectCode().setValue(ids);
+                                 ui.getProjectCode().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<ArrayList<Integer>> event) {
@@ -531,14 +472,12 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getEnvCollector(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getEnvCollector()
-                                   .setValue(data.getSampleEnvironmentalCollector());
+                                 ui.getEnvCollector().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  ui.setEnvCollectorError(null);
                                  ui.getEnvCollector().clearExceptions();
-                                 data.setSampleEnvironmentalCollector(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -551,15 +490,14 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getSdwisCollector(), "sdwisCollector", new ScreenHandler<String>() {
+        addScreenHandler(ui.getSdwisCollector(), SampleWebMeta.getSDWISCollector(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                ui.getSdwisCollector().setValue(data.getSampleSDWISCollector());
+                ui.getSdwisCollector().setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 ui.setSdwisCollectorError(null);
                 ui.getSdwisCollector().clearExceptions();
-                data.setSampleSDWISCollector(event.getValue());
             }
 
             public Widget onTab(boolean forward) {
@@ -580,13 +518,12 @@ public class DataViewScreen extends Screen {
 
         addScreenHandler(ui.getPwsId(), SampleWebMeta.getPwsNumber0(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                ui.getPwsId().setValue(data.getSampleSDWISPwsId());
+                ui.getPwsId().setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 ui.setPwsError(null);
                 ui.getPwsId().clearExceptions();
-                data.setSampleSDWISPwsId(event.getValue());
             }
 
             public Widget onTab(boolean forward) {
@@ -600,17 +537,15 @@ public class DataViewScreen extends Screen {
         });
 
         addScreenHandler(ui.getPatientLast(),
-                         SampleWebMeta.getClinPatientLastName(),
+                         SampleWebMeta.getClinicalPatientLastName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientLast()
-                                   .setValue(data.getSampleClinicalPatientLastName());
+                                 ui.getPatientLast().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  ui.setPatientLastError(null);
                                  ui.getPatientLast().clearExceptions();
-                                 data.setSampleClinicalPatientLastName(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -624,17 +559,15 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getPatientFirst(),
-                         SampleWebMeta.getClinPatientFirstName(),
+                         SampleWebMeta.getClinicalPatientFirstName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientFirst()
-                                   .setValue(data.getSampleClinicalPatientFirstName());
+                                 ui.getPatientFirst().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  ui.setPatientFirstError(null);
                                  ui.getPatientFirst().clearExceptions();
-                                 data.setSampleClinicalPatientFirstName(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -648,24 +581,16 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getPatientBirthFrom(),
-                         SampleWebMeta.getClinPatientBirthDateFrom(),
+                         SampleWebMeta.getClinicalPatientBirthDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getSampleClinicalPatientBirthDateFrom() != null)
-                                     ui.getPatientBirthFrom()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getSampleClinicalPatientBirthDateFrom()));
-                                 else
-                                     ui.getPatientBirthFrom().setValue(null);
+                                 ui.getPatientBirthFrom().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setPatientBirthError(null);
                                  ui.getPatientBirthFrom().clearExceptions();
                                  ui.getPatientBirthTo().clearExceptions();
-                                 data.setSampleClinicalPatientBirthDateFrom(event.getValue()
-                                                                                 .getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -679,24 +604,16 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getPatientBirthTo(),
-                         SampleWebMeta.getClinPatientBirthDateTo(),
+                         SampleWebMeta.getClinicalPatientBirthDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (data.getSampleClinicalPatientBirthDateTo() != null)
-                                     ui.getPatientBirthTo()
-                                       .setValue(new Datetime(Datetime.YEAR,
-                                                              Datetime.SECOND,
-                                                              data.getSampleClinicalPatientBirthDateTo()));
-                                 else
-                                     ui.getPatientBirthTo().setValue(null);
+                                 ui.getPatientBirthTo().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  ui.setPatientBirthError(null);
                                  ui.getPatientBirthTo().clearExceptions();
                                  ui.getPatientBirthFrom().clearExceptions();
-                                 data.setSampleClinicalPatientBirthDateTo(event.getValue()
-                                                                               .getDate());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -709,705 +626,324 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getAccession(), "accessionHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAccession().setValue(data.getAccessionNumber());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAccessionNumber(event.getValue());
-            }
-
+        addScreenHandler(ui.getAccession(), SampleWebMeta.getAccessionNumber(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getSampleCollected(),
-                         "sampleCollectedHeader",
+                         SampleWebMeta.getCollectionDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSampleCollected().setValue(data.getCollectionDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setCollectionDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getSampleReceived(),
-                         "sampleReceivedHeader",
+                         SampleWebMeta.getReceivedDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSampleReceived().setValue(data.getReceivedDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setReceivedDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getSampleReleased(),
-                         "sampleReleasedHeader",
+                         SampleWebMeta.getReleasedDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSampleReleased().setValue(data.getReleasedDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setReleasedDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getSampleStatus(), "sampleStatusHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleStatus().setValue(data.getStatusId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setStatusId(event.getValue());
-            }
-
+        addScreenHandler(ui.getSampleStatus(), SampleWebMeta.getStatusId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getProjectId(), "projectHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getProjectId().setValue(data.getProjectName());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setProjectName(event.getValue());
-            }
-
+        addScreenHandler(ui.getProjectId(), SampleWebMeta.getProjectName(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getClientReferenceHeader(),
-                         "clientReferenceHeader",
+                         SampleWebMeta.getClientReferenceHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getClientReferenceHeader()
-                                   .setValue(data.getClientReferenceHeader());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setClientReferenceHeader(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getSampleType(), "sampleTypeHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleType().setValue(data.getSampleItemTypeofSampleId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleItemTypeofSampleId(event.getValue());
-            }
-
+        addScreenHandler(ui.getSampleType(), SampleWebMeta.getItemTypeofSampleId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getSource(), "sourceHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSource().setValue(data.getSampleItemSourceOfSampleId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleItemSourceOfSampleId(event.getValue());
-            }
-
+        addScreenHandler(ui.getSource(), SampleWebMeta.getItemSourceOfSampleId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getOrganizationName(),
-                         "organizationNameHeader",
+                         SampleWebMeta.getSampleOrgOrganizationName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationName().setValue(data.getOrganizationName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationName(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getOrganizationApt(),
-                         "organizationAptHeader",
+                         SampleWebMeta.getAddressMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationApt()
-                                   .setValue(data.getOrganizationAddressMultipleUnit());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationAddressMultipleUnit(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getOrganizationAddress(),
-                         "organizationAddressHeader",
+                         SampleWebMeta.getAddressStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationAddress()
-                                   .setValue(data.getOrganizationAddressAddress());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationAddressAddress(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getOrganizationCity(),
-                         "organizationCityHeader",
+                         SampleWebMeta.getAddressCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationCity()
-                                   .setValue(data.getOrganizationAddressCity());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationAddressCity(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getOrganizationState(),
-                         "organizationStateHeader",
+                         SampleWebMeta.getAddressState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationState()
-                                   .setValue(data.getOrganizationAddressState());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationAddressState(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getOrganizationZip(),
-                         "organizationZipHeader",
+                         SampleWebMeta.getAddressZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getOrganizationZip()
-                                   .setValue(data.getOrganizationAddressZipCode());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setOrganizationAddressZipCode(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getAnalysisTest(), "analysisTestHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisTest().setValue(data.getAnalysisTestNameHeader());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisTestNameHeader(event.getValue());
-            }
-
+        addScreenHandler(ui.getAnalysisTest(), SampleWebMeta.getAnalysisTestNameHeader(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getAnalysisMethod(),
-                         "analysisMethodHeader",
+                         SampleWebMeta.getAnalysisMethodNameHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAnalysisMethod()
-                                   .setValue(data.getAnalysisTestMethodNameHeader());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setAnalysisTestMethodNameHeader(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getAnalysisRevision(),
-                         "analysisRevisionHeader",
+                         SampleWebMeta.getAnalysisRevision(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAnalysisRevision().setValue(data.getAnalysisRevision());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setAnalysisRevision(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getAnalysisUnit(), "analysisUnitHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisUnit().setValue(data.getAnalysisUnitOfMeasureId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisUnitOfMeasureId(event.getValue());
-            }
-
+        addScreenHandler(ui.getAnalysisUnit(), SampleWebMeta.getAnalysisUnitOfMeasureId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getAnalysisStarted(),
-                         "analysisStartedHeader",
+                         SampleWebMeta.getAnalysisStartedDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAnalysisStarted().setValue(data.getAnalysisStartedDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setAnalysisStartedDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getAnalysisCompleted(),
-                         "analysisCompletedHeader",
+                         SampleWebMeta.getAnalysisCompletedDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAnalysisCompleted()
-                                   .setValue(data.getAnalysisCompletedDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setAnalysisCompletedDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getAnalysisReleased(),
-                         "analysisReleasedHeader",
+                         SampleWebMeta.getAnalysisReleasedDate(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getAnalysisReleased().setValue(data.getAnalysisReleasedDate());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setAnalysisReleasedDate(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getAnalysisQa(), "analysisQaHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisQa().setValue(data.getAnalysisQaName());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisQaName(event.getValue());
-            }
-
+        addScreenHandler(ui.getAnalysisQa(), SampleWebMeta.getAnalysisSubQaName(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getPatientLastName(),
-                         "patientLastNameHeader",
+                         SampleWebMeta.getClinicalPatientLastNameHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientLastName()
-                                   .setValue(data.getSampleClinicalPatientLastName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleClinicalPatientLastName(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getPatientFirstName(),
-                         "patientFirstNameHeader",
+                         SampleWebMeta.getClinicalPatientFirstNameHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientFirstName()
-                                   .setValue(data.getSampleClinicalPatientFirstName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleClinicalPatientFirstName(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getPatientBirth(), "patientBirthHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientBirth().setValue(data.getSampleClinicalPatientBirth());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientBirth(event.getValue());
-            }
-
+        addScreenHandler(ui.getPatientBirth(), SampleWebMeta.getClinicalPatientBirthDate(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getPatientGender(), "patientGenderHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientGender().setValue(data.getSampleClinicalPatientGender());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientGender(event.getValue());
-            }
-
+        addScreenHandler(ui.getPatientGender(), SampleWebMeta.getClinicalPatientGenderId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getPatientRace(), "patientRaceHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientRace().setValue(data.getSampleClinicalPatientRace());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientRace(event.getValue());
-            }
-
+        addScreenHandler(ui.getPatientRace(), SampleWebMeta.getClinicalPatientRaceId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getPatientEthnicity(),
-                         "patientEthnicityHeader",
+                         SampleWebMeta.getClinicalPatientEthnicityId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientEthnicity()
-                                   .setValue(data.getSampleClinicalPatientEthnicity());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleClinicalPatientEthnicity(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getPatientPhone(), "patientPhoneHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientPhone().setValue(data.getSampleClinicalPatientPhoneNumber());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientPhoneNumber(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
+        addScreenHandler(ui.getPatientPhone(), SampleWebMeta.getClinicalPatientAddrHomePhone(), new ScreenHandler<String>() {            public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getProviderLastName(),
-                         "providerLastNameHeader",
+                         SampleWebMeta.getClinicalProviderLastName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getProviderLastName()
-                                   .setValue(data.getSampleClinicalProviderLastName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleClinicalProviderLastName(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getProviderFirstName(),
-                         "providerFirstNameHeader",
+                         SampleWebMeta.getClinicalProviderFirstName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getProviderFirstName()
-                                   .setValue(data.getSampleClinicalProviderFirstName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleClinicalProviderFirstName(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getPwsIdHeader(), "pwsIdHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPwsIdHeader().setValue(data.getSampleSDWISPwsId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleSDWISPwsId(event.getValue());
-            }
-
+        addScreenHandler(ui.getPwsIdHeader(), SampleWebMeta.getSDWISPwsId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getPwsName(), "pwsNameHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPwsName().setValue(data.getSampleSDWISPwsName());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleSDWISPwsName(event.getValue());
-            }
-
+        addScreenHandler(ui.getPwsName(), SampleWebMeta.getPwsName(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getSdwisCollectorHeader(),
-                         "sdwisCollectorHeader",
+                         SampleWebMeta.getSDWISCollectorHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSdwisCollectorHeader()
-                                   .setValue(data.getSampleSDWISCollector());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleSDWISCollector(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getSdwisLocation(), "sdwisLocationHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSdwisLocation().setValue(data.getSampleSDWISLocation());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleSDWISLocation(event.getValue());
-            }
-
+        addScreenHandler(ui.getSdwisLocation(), SampleWebMeta.getSDWISLocation(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
-        addScreenHandler(ui.getFacilityId(), "facilityIdHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getFacilityId().setValue(data.getSampleSDWISFacilityId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleSDWISFacilityId(event.getValue());
-            }
-
+        addScreenHandler(ui.getFacilityId(), SampleWebMeta.getSDWISFacilityId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getSdwisSampleType(),
-                         "sdwisSampleTypeHeader",
+                         SampleWebMeta.getSDWISSampleTypeId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSdwisSampleType()
-                                   .setValue(data.getSampleSDWISSampleTypeId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleSDWISSampleTypeId(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getSampleCategory(),
-                         "sampleCategoryHeader",
+                         SampleWebMeta.getSDWISSampleCategoryId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSampleCategory()
-                                   .setValue(data.getSampleSDWISSampleCategoryId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleSDWISSampleCategoryId(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getSamplePointId(), "samplePointIdHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSamplePointId().setValue(data.getSampleSDWISSamplePointId());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleSDWISSamplePointId(event.getValue());
-            }
-
+        addScreenHandler(ui.getSamplePointId(), SampleWebMeta.getSDWISSamplePointId(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getEnvCollectorHeader(),
-                         "envCollectorHeader",
+                         SampleWebMeta.getEnvCollectorHeader(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getEnvCollectorHeader()
-                                   .setValue(data.getSampleEnvironmentalCollectorHeader());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleEnvironmentalCollectorHeader(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
-        addScreenHandler(ui.getEnvLocation(), "envLocationHeader", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getEnvLocation().setValue(data.getSampleEnvironmentalLocationHeader());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocationHeader(event.getValue());
-            }
-
+        addScreenHandler(ui.getEnvLocation(), SampleWebMeta.getEnvLocation(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
 
         addScreenHandler(ui.getEnvLocationCity(),
-                         "envLocationCityHeader",
+                         SampleWebMeta.getLocationAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getEnvLocationCity()
-                                   .setValue(data.getSampleEnvironmentalLocationAddressCityHeader());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleEnvironmentalLocationAddressCityHeader(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getCollectorPhone(),
-                         "collectorPhoneHeader",
+                         SampleWebMeta.getEnvCollectorPhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getCollectorPhone()
-                                   .setValue(data.getSampleEnvironmentalCollectorPhone());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleEnvironmentalCollectorPhone(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
                          });
 
         addScreenHandler(ui.getSampleDescription(),
-                         "sampleDescriptionHeader",
+                         SampleWebMeta.getEnvDescription(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSampleDescription()
-                                   .setValue(data.getSampleEnvironmentalDescription());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setSampleEnvironmentalDescription(event.getValue());
-                             }
-
                              public Widget onTab(boolean forward) {
                                  return ui.getBackButton();
                              }
@@ -1424,7 +960,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onCellUpdated(CellEditedEvent event) {
-                updateTestAnalyte((TestAnalyteDataViewVO)ui.getAnalyteTable()
+                updateTestAnalyte((DataViewAnalyteVO)ui.getAnalyteTable()
                                                            .getRowAt(event.getRow())
                                                            .getData(),
                                   (String)ui.getAnalyteTable().getValueAt(event.getRow(),
@@ -1443,7 +979,7 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onCellUpdated(CellEditedEvent event) {
-                updateAuxData((AuxFieldDataViewVO)ui.getAuxTable()
+                updateAuxData((DataViewAnalyteVO)ui.getAuxTable()
                                                     .getRowAt(event.getRow())
                                                     .getData(),
                               (String)ui.getAuxTable().getValueAt(event.getRow(), event.getCol()));
@@ -1481,7 +1017,96 @@ public class DataViewScreen extends Screen {
             remote.log(Level.SEVERE, e.getMessage(), e);
         }
         ui.getProjectCode().setModel(model);
+    }
+    
+    public Validation validate() {
+        boolean error;
+        Validation validation;
+        
+        validation = super.validate();
+        
+        /*
+         * both widgets in a pair should either be empty or they both should
+         * have values
+         */
+        error = false;
+        if (!isFromToValid(ui.getCollectedFrom(), ui.getCollectedTo())) {
+            ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
+            error = true;
+        }
+        
+        if (!isFromToValid(ui.getReleasedFrom(), ui.getReleasedTo())) {
+            ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
+            error = true;
+        }
+        
+        if (!isFromToValid(ui.getAccessionFrom(), ui.getAccessionTo())) {
+            ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
+            error = true;
+        }
+        
+        if (!isFromToValid(ui.getPatientBirthFrom(), ui.getPatientBirthTo())) {
+            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
+            error = true;
+        }
+        
+        if (error)
+            validation.setStatus(Validation.Status.ERRORS);
+        
+        return validation;
+    }
+    
+    /**
+     * Returns a list of QueryData for the widgets in the tab; only one
+     * QueryData is created for a pair of "from" and "to" widgets
+     */
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> fields;
 
+        fields = new ArrayList<QueryData>();
+
+        addQueryData(ui.getCollectedFrom(),
+                     ui.getCollectedTo(),
+                     SampleWebMeta.getCollectionDate(),
+                     QueryData.Type.DATE,
+                     fields);
+        
+        addQueryData(ui.getReleasedFrom(),
+                     ui.getReleasedTo(),
+                     SampleWebMeta.getAnalysisReleasedDate(),
+                     QueryData.Type.DATE,
+                     fields);
+        
+        addQueryData(ui.getAccessionFrom(),
+                     ui.getAccessionTo(),
+                     SampleWebMeta.getAccessionNumber(),
+                     QueryData.Type.INTEGER,
+                     fields);
+
+        addQueryData(ui.getClientReference(), SampleWebMeta.getClientReference(), fields);
+        addQueryData(ui.getProjectCode(), SampleWebMeta.getProjectId(), fields);
+        addQueryData(ui.getEnvCollector(), SampleWebMeta.getEnvCollector(), fields);
+        addQueryData(ui.getSdwisCollector(), SampleWebMeta.getSDWISCollector(), fields);
+        addQueryData(ui.getPwsId(), SampleWebMeta.getPwsNumber0(), fields);
+        addQueryData(ui.getPatientLast(), SampleWebMeta.getClinicalPatientLastName(), fields);
+        addQueryData(ui.getPatientFirst(), SampleWebMeta.getClinicalPatientFirstName(), fields);
+
+        addQueryData(ui.getPatientBirthFrom(),
+                     ui.getPatientBirthTo(),
+                     SampleWebMeta.getClinicalPatientBirthDate(),
+                     QueryData.Type.DATE,
+                     fields);
+        
+        return fields;
+    }
+    
+    /**
+     * Returns true if both of the passed widgets are empty or if both have a
+     * value; returns false otherwise
+     */
+    private boolean isFromToValid(HasValue fromWidget, HasValue toWidget) {
+        return (fromWidget.getValue() == null && toWidget.getValue() == null) ||
+               (fromWidget.getValue() != null && toWidget.getValue() != null);
     }
 
     /**
@@ -1490,13 +1115,13 @@ public class DataViewScreen extends Screen {
     private void getSamples() {
         int numDomains;
         String domain;
+        Validation validation;
         ArrayList<QueryData> fields;
 
         ui.clearErrors();
         finishEditing();
         numDomains = 0;
         domain = null;
-        fields = new ArrayList<QueryData>();
 
         /*
          * determine the domain that is being queried.
@@ -1523,11 +1148,11 @@ public class DataViewScreen extends Screen {
             return;
         }
 
-        try {
-            fields.addAll(createWhereFromParamFields(getQueryFields()));
-        } catch (Exception e) {
-            return;
-        }
+        validation = validate();
+        if (validation.getStatus() == Validation.Status.ERRORS)
+            return;        
+        
+        fields = getQueryFields();
 
         if (domain != null)
             fields.add(new QueryData(SampleWebMeta.getDomain(), QueryData.Type.STRING, domain));
@@ -1538,17 +1163,31 @@ public class DataViewScreen extends Screen {
         }
 
         data.setQueryFields(fields);
+
         window.setBusy(Messages.get().gen_fetchingSamples());
 
-        DataViewService.get().fetchAnalyteAndAuxField(data, new AsyncCallback<DataViewVO>() {
+        DataViewService.get().fetchAnalyteAndAuxField(data, new AsyncCallback<DataView1VO>() {
 
             @Override
-            public void onSuccess(DataViewVO result) {
-                data.setAnalytes(result.getTestAnalytes());
+            public void onSuccess(DataView1VO result) {
+                ArrayList<Row> model;
+                
+                data.setTestAnalytes(result.getTestAnalytes());
                 data.setAuxFields(result.getAuxFields());
                 try {
-                    ui.getAnalyteTable().setModel(getAnalyteTableModel());
-                    ui.getAuxTable().setModel(getAuxTableModel());
+                    model = getAnalyteTableModel();
+                    /*
+                     * load the result and aux data analytes in the tables and
+                     * sort the tables by analyte name, because they're not
+                     * sorted in the back-end
+                     */
+                    ui.getAnalyteTable().setModel(model);
+                    if (model != null && model.size() > 0)
+                        ui.getAnalyteTable().applySort(1, Table.SORT_ASCENDING, null);
+                    model = getAuxTableModel();
+                    ui.getAuxTable().setModel(model);
+                    if (model != null && model.size() > 0)
+                        ui.getAuxTable().applySort(1, Table.SORT_ASCENDING, null);
                     ui.getDeck().showWidget(1);
                     ui.getAnalyteTable().onResize();
                     ui.getAuxTable().onResize();
@@ -1571,100 +1210,63 @@ public class DataViewScreen extends Screen {
             }
         });
     }
-
+    
     /**
-     * create the range queries for variables with from and to fields
+     * Creates a query data where the query string contains the values of the
+     * passed widgets separated by a delimiter; the key and type are set to the
+     * passed values; doesn't create the query data if the value of either
+     * widget is null or empty
      */
-    private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
-        boolean error;
-        HashMap<String, QueryData> fieldMap;
+    private void addQueryData(Queryable fromWidget, Queryable toWidget, String key,
+                              QueryData.Type type, ArrayList<QueryData> fields) {
 
-        fieldMap = new HashMap<String, QueryData>();
-        for (QueryData data : fields) {
-            fieldMap.put(data.getKey(), data);
+        QueryData fromField, toField, field;
+        Object fromQuery, toQuery;
+
+        fromField = (QueryData)fromWidget.getQuery();
+        toField = (QueryData)toWidget.getQuery();
+        fromQuery = fromField != null ? fromField.getQuery() : null;
+        toQuery = toField != null ? toField.getQuery() : null;
+
+        if ( !DataBaseUtil.isEmpty(fromQuery) && !DataBaseUtil.isEmpty(toQuery)) {
+            field = new QueryData();
+            field.setKey(key);
+            field.setQuery(DataBaseUtil.concatWithSeparator(fromQuery, "..", toQuery));
+            field.setType(type);
+            fields.add(field);
         }
-
-        error = false;
-        try {
-            getRangeQuery(SampleWebMeta.getCollectionDateFrom(),
-                          SampleWebMeta.getCollectionDateTo(),
-                          SampleWebMeta.getCollectionDate(),
-                          fieldMap);
-        } catch (Exception e) {
-            ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
-            error = true;
-        }
-
-        try {
-            getRangeQuery(SampleWebMeta.getAnalysisReleasedDateFrom(),
-                          SampleWebMeta.getAnalysisReleasedDateTo(),
-                          SampleWebMeta.getAnalysisReleasedDate(),
-                          fieldMap);
-        } catch (Exception e) {
-            ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
-            error = true;
-        }
-
-        try {
-            getRangeQuery(SampleWebMeta.getAccessionNumberFrom(),
-                          SampleWebMeta.getAccessionNumberTo(),
-                          SampleWebMeta.getAccessionNumber(),
-                          fieldMap);
-        } catch (Exception e) {
-            ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
-            error = true;
-        }
-
-        try {
-            getRangeQuery(SampleWebMeta.getClinPatientBirthDateFrom(),
-                          SampleWebMeta.getClinPatientBirthDateTo(),
-                          SampleWebMeta.getClinPatientBirthDate(),
-                          fieldMap);
-        } catch (Exception e) {
-            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
-            error = true;
-        }
-
-        /*
-         * if there was an error validating the fields, do not query for samples
-         */
-        if (error)
-            throw new Exception();
-
-        return new ArrayList<QueryData>(fieldMap.values());
     }
 
     /**
-     * create a range query string
+     * Adds the query data for the passed widget to the passed list; sets the
+     * passed key in the query data
      */
-    private HashMap<String, QueryData> getRangeQuery(String fromKey, String toKey, String key,
-                                                     HashMap<String, QueryData> fieldMap) throws Exception {
-        QueryData from, to, range;
+    private void addQueryData(Queryable widget, String key, ArrayList<QueryData> fields) {
+        QueryData field;
 
-        from = fieldMap.get(fromKey);
-        to = fieldMap.get(toKey);
+        field = getQueryData(widget, key);
+        if (field != null)
+            fields.add(field);
+    }
 
-        if (to == null && from == null) {
-            return fieldMap;
-        } else if (to != null && from == null) {
-            throw new Exception();
-        } else if (to == null && from != null) {
-            range = fieldMap.get(fromKey);
-            range.setKey(key);
-            range.setQuery(from.getQuery() + ".." + from.getQuery());
-            fieldMap.put(key, range);
-            fieldMap.remove(fromKey);
-            fieldMap.remove(toKey);
-        } else {
-            range = fieldMap.get(fromKey);
-            range.setKey(key);
-            range.setQuery(from.getQuery() + ".." + to.getQuery());
-            fieldMap.put(key, range);
-            fieldMap.remove(fromKey);
-            fieldMap.remove(toKey);
-        }
+    /**
+     * Returns a query data created from the passed widget; a query data is
+     * created only if there's a query string specified in the widget; sets the
+     * passed key in the query data
+     */
+    private QueryData getQueryData(Queryable widget, String key) {
+        QueryData field;
 
-        return fieldMap;
+        field = (QueryData)widget.getQuery();
+        /*
+         * the key is set here because it's not set when the query data is
+         * created; this is because, the widget doesn't know what its key is;
+         * the key is in the hashmap for screen handlers
+         */
+        if (field != null)
+            field.setKey(key);
+
+        return field;
     }
 
     /**
@@ -1678,7 +1280,7 @@ public class DataViewScreen extends Screen {
         if (data.getTestAnalytes() == null || data.getTestAnalytes().size() < 1)
             return model;
 
-        for (TestAnalyteDataViewVO ana : data.getTestAnalytes()) {
+        for (DataViewAnalyteVO ana : data.getTestAnalytes()) {
             row = new Row(2);
             row.setCell(0, "N");
             row.setCell(1, ana.getAnalyteName());
@@ -1699,7 +1301,7 @@ public class DataViewScreen extends Screen {
         if (data.getAuxFields() == null || data.getAuxFields().size() < 1)
             return model;
 
-        for (AuxFieldDataViewVO aux : data.getAuxFields()) {
+        for (DataViewAnalyteVO aux : data.getAuxFields()) {
             row = new Row(2);
             row.setCell(0, "N");
             row.setCell(1, aux.getAnalyteName());
@@ -1708,22 +1310,50 @@ public class DataViewScreen extends Screen {
         }
         return model;
     }
-
-    private void updateTestAnalyte(TestAnalyteDataViewVO data, String val) {
-        ArrayList<ResultDataViewVO> list;
-
-        data.setIsIncluded(val);
-        list = data.getResults();
-        for (ResultDataViewVO res : list)
-            res.setIsIncluded(val);
+    
+    /**
+     * Sets the passed value as the "include" flag for all test analytes and
+     * their results
+     */
+    private void updateAllTestAnalyte(String newVal) {
+        Row row;
+        
+        for (int i = 0; i < ui.getAnalyteTable().getRowCount(); i++) {
+            ui.getAnalyteTable().setValueAt(i, 0, newVal);
+            row = ui.getAnalyteTable().getRowAt(i);
+            updateTestAnalyte((DataViewAnalyteVO)row.getData(), newVal);
+        }
+    }
+    
+    /**
+     * Sets the passed value as the "include" flag for all aux fields and their
+     * aux data
+     */
+    private void updateAllAuxField(String newVal) {
+        Row row;
+        
+        for (int i = 0; i < ui.getAuxTable().getRowCount(); i++) {
+            ui.getAuxTable().setValueAt(i, 0, newVal);
+            row = ui.getAuxTable().getRowAt(i);
+            updateAuxData((DataViewAnalyteVO)row.getData(), newVal);
+        }
     }
 
-    private void updateAuxData(AuxFieldDataViewVO data, String val) {
-        ArrayList<AuxDataDataViewVO> list;
+    private void updateTestAnalyte(DataViewAnalyteVO data, String val) {
+        ArrayList<DataViewValueVO> list;
 
         data.setIsIncluded(val);
         list = data.getValues();
-        for (AuxDataDataViewVO value : list)
+        for (DataViewValueVO res : list)
+            res.setIsIncluded(val);
+    }
+
+    private void updateAuxData(DataViewAnalyteVO data, String val) {
+        ArrayList<DataViewValueVO> list;
+
+        data.setIsIncluded(val);
+        list = data.getValues();
+        for (DataViewValueVO value : list)
             value.setIsIncluded(val);
     }
 
@@ -1732,14 +1362,16 @@ public class DataViewScreen extends Screen {
      */
     protected void runReport() {
         int numTA, numAux;
-        ArrayList<TestAnalyteDataViewVO> taList;
-        ArrayList<AuxFieldDataViewVO> afList;
+        Widget widget;
+        CheckBox cb;
+        ArrayList<String> columns;
+        ArrayList<DataViewAnalyteVO> taList, afList;
 
         numTA = 0;
         numAux = 0;
         taList = data.getTestAnalytes();
         if (taList != null) {
-            for (TestAnalyteDataViewVO ta : taList) {
+            for (DataViewAnalyteVO ta : taList) {
                 if ("Y".equals(ta.getIsIncluded()))
                     numTA++ ;
             }
@@ -1748,7 +1380,7 @@ public class DataViewScreen extends Screen {
         if (numTA == 0) {
             afList = data.getAuxFields();
             if (afList != null) {
-                for (AuxFieldDataViewVO af : afList) {
+                for (DataViewAnalyteVO af : afList) {
                     if ("Y".equals(af.getIsIncluded()))
                         numAux++ ;
                 }
@@ -1758,6 +1390,24 @@ public class DataViewScreen extends Screen {
                 return;
             }
         }
+        
+        /*
+         * Add the keys for all checked checkboxes to the list of columns shown
+         * in the generated excel file. Note: This will need additional checks
+         * to work correctly if any checkboxes get added to the query fields, so 
+         * that their keys don't get added to the list of columns.
+         */
+        columns = new ArrayList<String>();
+        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+            widget = entry.getValue().widget;
+            if (widget instanceof CheckBox) {
+                cb = (CheckBox)widget;
+                if ("Y".equals(cb.getValue()))
+                    columns.add(entry.getKey());
+            }
+        }
+        
+        data.setColumns(columns);
 
         popup(data);
     }
@@ -1765,7 +1415,7 @@ public class DataViewScreen extends Screen {
     /**
      * creates a popup that shows the progress of creating data view report
      */
-    private void popup(DataViewVO data) {
+    private void popup(DataView1VO data) {
         final PopupPanel statusPanel;
 
         if (statusScreen == null)
