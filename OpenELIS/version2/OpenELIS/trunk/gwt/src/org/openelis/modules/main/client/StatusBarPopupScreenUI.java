@@ -23,20 +23,28 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.pws.client;
+package org.openelis.modules.main.client;
 
+import static org.openelis.ui.screen.State.*;
+
+import org.openelis.constants.Messages;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.PercentBar;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
-public class StatusBarPopupScreenUI extends Screen {
+public abstract class StatusBarPopupScreenUI extends Screen {
 
     @UiTemplate("StatusBarPopupScreen.ui.xml")
     interface StatusBarPopupScreenUIBinder extends UiBinder<Widget, StatusBarPopupScreenUI> {
@@ -50,17 +58,49 @@ public class StatusBarPopupScreenUI extends Screen {
     @UiField
     protected PercentBar                        percentBar;
 
+    @UiField
+    protected Button                            stopButton;
+
     public StatusBarPopupScreenUI() {
         initWidget(uiBinder.createAndBindUi(this));
+        initialize();
+        setState(DEFAULT);
     }
 
+    private void initialize() {
+        addScreenHandler(stopButton, "stopButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                stopButton.setEnabled(true);
+                stopButton.setVisible(isStopVisible());
+            }
+        });
+    }
+
+    /**
+     * Shows the message and percent completion set in the passed status
+     */
     public void setStatus(ReportStatus status) {
         if (status == null) {
-            message.setText("no status");
+            message.setText(Messages.get().report_noStatus());
             percentBar.setPercent(new Double(0));
         } else {
             message.setText(status.getMessage());
             percentBar.setPercent(new Double(status.getPercentComplete()));
         }
+    }
+    
+    /**
+     * overridden to specify whether or not the "Stop" button should be shown
+     */
+    public abstract boolean isStopVisible();
+    
+    /**
+     * overridden to handle the user clicking the "Stop" button
+     */
+    public abstract void stop();
+
+    @UiHandler("stopButton")
+    protected void stop(ClickEvent event) {
+        stop();
     }
 }

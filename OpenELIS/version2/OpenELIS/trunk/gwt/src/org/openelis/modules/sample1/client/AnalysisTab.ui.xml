@@ -91,7 +91,7 @@
               <w:Dropdown ui:field="unitOfMeasure" width="145px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.analysis_released}:" />
+              <ui:text from="{msg.gen_released}:" />
             </td>
             <td>
               <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" />
@@ -131,7 +131,7 @@
             </w:Dropdown>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.analysis_revision}:" />
+              <ui:text from="{msg.gen_revision}:" />
             </td>
             <td>
               <w:TextBox ui:field="revision" width="60px" field="Integer" />

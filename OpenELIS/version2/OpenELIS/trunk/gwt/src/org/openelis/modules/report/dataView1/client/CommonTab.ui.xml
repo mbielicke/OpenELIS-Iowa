@@ -1,0 +1,338 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="0px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Heading}" colspan="5">
+              <ui:text from="{msg.dataView_selectSampleField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="50px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="accessionNumber" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sample_accessionNum}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="revision" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_revision}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="collectionDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sample_collected}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="receivedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sample_received}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="enteredDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_entered}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="50px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="releasedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_released}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="statusId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_status}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="projectName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.project_project}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="clientReferenceHeader" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}" colspan="3">
+              <ui:text from="{msg.sample_clntRef}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectOrganizationField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="sampleOrgId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_id}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="sampleOrgOrganizationName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_name}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="sampleOrgAttention" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.order_attention}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="addressMultipleUnit" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_aptSuite}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="addressStreetAddress" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_address}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="addressCity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_city}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="addressState" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_state}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="addressZipCode" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_zipcode}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="6">
+              <ui:text from="{msg.dataView_selectSampleItemField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemTypeofSampleId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_sampleType}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemSourceOfSampleId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleItem_source}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemSourceOther" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleItem_sourceOther}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemContainerId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_container}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemContainerReference" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}" colspan="3">
+              <ui:text from="{msg.sampleItem_containerReference}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="itemItemSequence" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_sequence}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="5">
+              <ui:text from="{msg.dataView_selectAnalysisField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="50px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_id}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisTestNameHeader" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_test}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisMethodNameHeader" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_method}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisStatusIdHeader" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_status}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisRevision" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_revision}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisIsReportableHeader" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_reportable}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="50px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisUnitOfMeasureId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_unit}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisSubQaName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.qaEvent_qaEvent}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisCompletedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.analysis_completed}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisCompletedBy" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_by}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisReleasedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_released}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisReleasedBy" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_by}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="50px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisStartedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.analysis_started}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisPrintedDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.analysis_printed}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisSectionName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_section}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="analysisTypeId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_type}" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

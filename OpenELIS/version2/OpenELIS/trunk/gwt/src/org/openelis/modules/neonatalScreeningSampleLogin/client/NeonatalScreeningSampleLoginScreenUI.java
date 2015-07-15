@@ -338,7 +338,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT,
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
