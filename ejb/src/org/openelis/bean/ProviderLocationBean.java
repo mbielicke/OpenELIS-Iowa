@@ -49,11 +49,18 @@ public class ProviderLocationBean {
     @SuppressWarnings("unchecked")
     public ArrayList<ProviderLocationDO> fetchByProviderIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<ProviderLocationDO> o;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("ProviderLocation.FetchByProviderIds");
-        query.setParameter("ids", ids);
+        o = new ArrayList<ProviderLocationDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(o);
     }
 
     public ProviderLocationDO add(ProviderLocationDO data) throws Exception {

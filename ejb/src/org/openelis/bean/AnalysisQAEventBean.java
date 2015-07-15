@@ -25,11 +25,10 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -70,11 +69,18 @@ public class AnalysisQAEventBean {
 
     public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
         Query query;
+        List<AnalysisQaEventViewDO> q;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("AnalysisQaevent.FetchByAnalysisIds");
-        query.setParameter("ids", analysisIds);
+        q = new ArrayList<AnalysisQaEventViewDO>();
+        r = DataBaseUtil.createSubsetRange(analysisIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", analysisIds.subList(r.get(i), r.get(i + 1)));
+            q.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(q);
     }
 
     public ArrayList<AnalysisQaEventViewDO> fetchInternalByAnalysisId(Integer analysisId) throws Exception {
@@ -216,7 +222,7 @@ public class AnalysisQAEventBean {
     }
 
     public void validate(AnalysisQaEventViewDO data, Integer accession, Integer itemSequence,
-                         AnalysisViewDO analysis)  throws Exception {
+                         AnalysisViewDO analysis) throws Exception {
         ValidationErrorsList e;
 
         e = new ValidationErrorsList();

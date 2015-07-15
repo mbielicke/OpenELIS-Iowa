@@ -111,13 +111,20 @@ public class MethodBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<MethodDO> fetchByIds(Collection<Integer> ids) throws Exception {
+    public ArrayList<MethodDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<MethodDO> m;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Method.FetchByIds");
-        query.setParameter("ids", ids);
+        m = new ArrayList<MethodDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            m.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(m);
     }
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {

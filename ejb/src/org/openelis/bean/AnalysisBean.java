@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import static org.openelis.manager.SampleManager1Accessor.*;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -119,6 +120,22 @@ public class AnalysisBean {
 
         return (ArrayList<IdAccessionVO>)list;
     }
+    
+    public ArrayList<AnalysisViewDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+        List<AnalysisViewDO> a;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("Analysis.FetchByIds");
+        a = new ArrayList<AnalysisViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(a);
+    }
 
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {
         List returnList;
@@ -164,11 +181,18 @@ public class AnalysisBean {
 
     public ArrayList<AnalysisViewDO> fetchBySampleItemIds(ArrayList<Integer> sampleItemIds) {
         Query query;
+        List<AnalysisViewDO> a;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Analysis.FetchBySampleItemIds");
-        query.setParameter("ids", sampleItemIds);
+        a = new ArrayList<AnalysisViewDO>();
+        r = DataBaseUtil.createSubsetRange(sampleItemIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleItemIds.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(a);
     }
 
     public AnalysisViewDO fetchById(Integer id) throws Exception {

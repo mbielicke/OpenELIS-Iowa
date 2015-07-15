@@ -95,12 +95,18 @@ public class InventoryXPutBean  {
     
     public ArrayList<InventoryXPutViewDO> fetchByIorderIds(ArrayList<Integer> ids) {
         Query query;
+        List<InventoryXPutViewDO> x;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("InventoryXPut.FetchByIorderIds");
-        query.setParameter("ids", ids);
+        x = new ArrayList<InventoryXPutViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            x.addAll(query.getResultList());
+        }
 
-
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(x);
     }
 
     public InventoryXPutDO add(InventoryXPutDO data) throws Exception {

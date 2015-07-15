@@ -384,11 +384,18 @@ public class ResultBean {
 
     public ArrayList<ResultViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
         Query query;
+        List<ResultViewDO> rs;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Result.FetchByAnalysisIds");
-        query.setParameter("ids", analysisIds);
+        rs = new ArrayList<ResultViewDO>();        
+        r = DataBaseUtil.createSubsetRange(analysisIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", analysisIds.subList(r.get(i), r.get(i + 1)));
+            rs.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(rs);
     }
 
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,

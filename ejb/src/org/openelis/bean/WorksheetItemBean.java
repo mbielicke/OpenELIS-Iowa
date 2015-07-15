@@ -87,11 +87,18 @@ public class WorksheetItemBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetItemDO> fetchByWorksheetIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<WorksheetItemDO> w;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("WorksheetItem.FetchByWorksheetIds");
-        query.setParameter("ids", ids);
+        w = new ArrayList<WorksheetItemDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            w.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(w);
     }
 
     public WorksheetItemDO add(WorksheetItemDO data) throws Exception {
