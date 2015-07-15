@@ -65,6 +65,7 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
+import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -760,7 +761,17 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
         final PopupPanel statusPanel;
 
         if (statusScreen == null)
-            statusScreen = new StatusBarPopupScreenUI();
+            statusScreen = new StatusBarPopupScreenUI() {
+            @Override
+            public boolean isStopVisible() {
+                return false;
+            }
+            
+            @Override
+            public void stop() {                
+                 // ignore           
+            }
+        };
 
         /*
          * initialize and show the popup screen

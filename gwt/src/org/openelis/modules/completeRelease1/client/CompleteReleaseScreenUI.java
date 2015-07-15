@@ -279,14 +279,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.SINGLERESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT},
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT,
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER    },
 
                     resultElements[] = {SampleManager1.Load.ANALYSISUSER,
                     SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
                     SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
                     SampleManager1.Load.QA, SampleManager1.Load.RESULT,
                     SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET,
-                    SampleManager1.Load.ATTACHMENT};
+                    SampleManager1.Load.ATTACHMENT, SampleManager1.Load.EORDER,
+                    SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,

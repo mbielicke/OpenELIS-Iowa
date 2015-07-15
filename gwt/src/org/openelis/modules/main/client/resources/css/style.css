@@ -7,6 +7,13 @@
 	background: white;
 }
 
+.PopupPanelWithBorder {
+    background: #F0F0F0;
+    border-style: groove;
+    border-width: 5px;
+    border-color: green
+}
+
 .Form {
 	margin: 4px 8px;
 }
@@ -26,6 +33,14 @@
 	text-align: right;
 	test-justify: trim;
 	white-space: nowrap;
+}
+
+.LeftAlignPrompt {
+    -moz-user-select: none;
+    color:gray;
+    padding:2px 0px 2px 2px;
+    vertical-align:top;
+    white-space: nowrap;
 }
 
 .WarningLabel {
@@ -62,4 +77,16 @@
     color:gray;
     padding:2px;
     padding-left:4px;
+}
+
+.Heading {
+	-moz-user-select: none;
+	color:#333;
+    margin:3px 0px 0px 8px;
+    padding:4px;
+    text-align:left;
+    vertical-align:top;
+    font-size:12px;
+    font-weight:bold;
+    white-space: nowrap;
 }
