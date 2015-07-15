@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.DataViewBean;
+import org.openelis.bean.DataViewReportBean;
 import org.openelis.bean.SessionCacheBean;
-import org.openelis.domain.DataViewVO;
+import org.openelis.domain.DataView1VO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.portal.modules.dataView.client.DataViewServiceInt;
 import org.openelis.ui.common.ReportStatus;
@@ -47,44 +47,43 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
     private SessionCacheBean  session;
 
     @EJB
-    private DataViewBean      dataView;
+    private DataViewReportBean     dataViewReport;
 
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         try {
-            return dataView.fetchProjectListForPortal();
+            return dataViewReport.fetchProjectListForPortal();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
+    public DataView1VO fetchAnalyteAndAuxField(DataView1VO data) throws Exception {
+        /*
+         * these flags are set here to make sure that not reportable results or
+         * aux data won't be shown though the portal even if someone manages to
+         * set them in the client
+         */
+        data.setIncludeNotReportableResults("N");
+        data.setIncludeNotReportableAuxData("N");
         try {
-            return dataView.fetchAnalyteAndAuxFieldForPortal(data);
+            return dataViewReport.fetchAnalyteAndAuxFieldForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public ReportStatus runReport(DataViewVO data) throws Exception {
+    public ReportStatus runReportForPortal(DataView1VO data) throws Exception {
         ReportStatus st;
 
+        /*
+         * these flags are set here to make sure that not reportable results or
+         * aux data won't be shown through the portal even if someone manages to
+         * set them in the client
+         */
+        data.setIncludeNotReportableResults("N");
+        data.setIncludeNotReportableAuxData("N");
         try {
-            st = dataView.runReport(data);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
-
-    public ReportStatus runReportForPortal(DataViewVO data) throws Exception {
-        ReportStatus st;
-
-        try {
-            st = dataView.runReportForPortal(data);
+            st = dataViewReport.runReportForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

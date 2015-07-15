@@ -2,7 +2,7 @@ package org.openelis.portal.modules.dataView.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DataViewVO;
+import org.openelis.domain.DataView1VO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.services.TokenService;
@@ -31,7 +31,7 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
-    public void fetchAnalyteAndAuxField(DataViewVO data, AsyncCallback<DataViewVO> callback) {
+    public void fetchAnalyteAndAuxField(DataView1VO data, AsyncCallback<DataView1VO> callback) {
         service.fetchAnalyteAndAuxField(data, callback);
     }
 
@@ -41,12 +41,7 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
-    public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
-        service.runReport(data, callback);
-    }
-
-    @Override
-    public void runReportForPortal(DataViewVO data, AsyncCallback<ReportStatus> callback) {
+    public void runReportForPortal(DataView1VO data, AsyncCallback<ReportStatus> callback) {
         service.runReportForPortal(data, callback);
     }
 
@@ -65,25 +60,16 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
-    public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
-        Callback<DataViewVO> callback;
+    public DataView1VO fetchAnalyteAndAuxField(DataView1VO data) throws Exception {
+        Callback<DataView1VO> callback;
 
-        callback = new Callback<DataViewVO>();
+        callback = new Callback<DataView1VO>();
         service.fetchAnalyteAndAuxField(data, callback);
         return callback.getResult();
     }
 
     @Override
-    public ReportStatus runReport(DataViewVO data) throws Exception {
-        Callback<ReportStatus> callback;
-
-        callback = new Callback<ReportStatus>();
-        service.runReport(data, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ReportStatus runReportForPortal(DataViewVO data) throws Exception {
+    public ReportStatus runReportForPortal(DataView1VO data) throws Exception {
         Callback<ReportStatus> callback;
 
         callback = new Callback<ReportStatus>();
