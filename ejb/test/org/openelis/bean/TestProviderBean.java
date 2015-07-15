@@ -1,17 +1,10 @@
 package org.openelis.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.openelis.ui.util.TestingUtil.mockNamedQueryThatThrowsException;
-import static org.openelis.ui.util.TestingUtil.mockNamedQueryWithResultList;
-import static org.openelis.ui.util.TestingUtil.mockNamedQueryWithSingleResult;
-import static org.openelis.ui.util.TestingUtil.mockQueryWithResultList;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.openelis.ui.util.TestingUtil.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -91,7 +84,7 @@ public class TestProviderBean {
     @Test
     public void testFetchByIds() throws Exception {
         List<ProviderDO> results = new ArrayList<ProviderDO>();
-        Collection ids = mock(Collection.class);
+        ArrayList<Integer> ids = mock(ArrayList.class);
         when(ids.size()).thenReturn(1);
         results.add(mock(ProviderDO.class));
 
@@ -104,7 +97,7 @@ public class TestProviderBean {
     public void testFetchByIdsNoResult() throws Exception {
         mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, new ArrayList<ProviderDO>());
 
-        assertTrue(bean.fetchByIds(mock(Collection.class)).isEmpty());
+        assertTrue(bean.fetchByIds(mock(ArrayList.class)).isEmpty());
     }
 
     @Test
