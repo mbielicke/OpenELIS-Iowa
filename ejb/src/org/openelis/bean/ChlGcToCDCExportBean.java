@@ -48,6 +48,7 @@ import javax.sql.DataSource;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -57,7 +58,9 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.Prompt;
@@ -74,20 +77,22 @@ import org.openelis.utils.ReportUtil;
 public class ChlGcToCDCExportBean {
 
     @Resource
-    private SessionContext      ctx;
+    private SessionContext            ctx;
 
     @EJB
-    private SessionCacheBean    session;
+    private SessionCacheBean          session;
     @EJB
-    private DictionaryCacheBean dictionaryCache;
+    private CategoryCacheBean         categoryCache;
     @EJB
-    private OrganizationParameterBean  organizationParameter;
+    private DictionaryCacheBean       dictionaryCache;
     @EJB
-    private SampleManager1Bean  sampleManager;
+    private OrganizationParameterBean organizationParameter;
     @EJB
-    private SystemVariableBean  systemVariable;
+    private SampleManager1Bean        sampleManager;
+    @EJB
+    private SystemVariableBean        systemVariable;
 
-    private static final Logger log = Logger.getLogger("openelis");
+    private static final Logger       log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
@@ -174,7 +179,7 @@ public class ChlGcToCDCExportBean {
             status.setMessage("Initializing report");
 
             fields = new ArrayList<QueryData>();
-            
+
             field = new QueryData();
             field.setKey(SampleMeta.getDomain());
             field.setQuery("C");
@@ -183,13 +188,13 @@ public class ChlGcToCDCExportBean {
 
             field = new QueryData();
             field.setKey(SampleMeta.getCollectionDate());
-            field.setQuery(fromDate+".."+toDate);
+            field.setQuery(fromDate + ".." + toDate);
             field.setType(QueryData.Type.DATE);
             fields.add(field);
 
             field = new QueryData();
             field.setKey(SampleMeta.getStatusId());
-            field.setQuery("!"+Constants.dictionary().SAMPLE_NOT_VERIFIED);
+            field.setQuery("!" + Constants.dictionary().SAMPLE_NOT_VERIFIED);
             field.setType(QueryData.Type.INTEGER);
             fields.add(field);
 
@@ -225,16 +230,20 @@ public class ChlGcToCDCExportBean {
 
             field = new QueryData();
             field.setKey(SampleMeta.getAnalysisStatusId());
-            field.setQuery("!"+Constants.dictionary().ANALYSIS_CANCELLED);
+            field.setQuery("!" + Constants.dictionary().ANALYSIS_CANCELLED);
             field.setType(QueryData.Type.INTEGER);
             fields.add(field);
 
             status.setMessage("Fetching records").setPercentComplete(20);
 
             sms = new ArrayList<SampleManager1>();
-            sms = sampleManager.fetchByQuery(fields, 0, 10000, SampleManager1.Load.ORGANIZATION,
-                                             SampleManager1.Load.QA, SampleManager1.Load.RESULT);
-            
+            sms = sampleManager.fetchByQuery(fields,
+                                             0,
+                                             10000,
+                                             SampleManager1.Load.ORGANIZATION,
+                                             SampleManager1.Load.QA,
+                                             SampleManager1.Load.RESULT);
+
             status.setMessage("Building dataset").setPercentComplete(50);
 
             con = ReportUtil.getConnection(ctx);
@@ -257,58 +266,88 @@ public class ChlGcToCDCExportBean {
 
         return status;
     }
-    
-    private String buildDataSet(ArrayList<SampleManager1> sms, ArrayList<HashMap<String, Object>> rows,
-                                Connection con) throws Exception {
+
+    private String buildDataSet(ArrayList<SampleManager1> sms,
+                                ArrayList<HashMap<String, Object>> rows, Connection con) throws Exception {
         boolean sOverride, aOverride;
-        int i, j, k, numPrint, numTotal, numUnreleased;
+        int numPrint, numTotal, numUnreleased;
         AddressDO adrDO;
-        AnalysisViewDO aVDO;
-        ArrayList<SampleOrganizationViewDO> soVDOs;
         ArrayList<OrganizationParameterDO> opDOs;
         DictionaryDO dictDO;
+        HashMap<Integer, DictionaryDO> dictionaryDOs;
         HashMap<Integer, String> orgTypes;
-        HashMap<String, HashMap<String, Integer>> cityCountyMap;
-        HashMap<String, Integer> stateMap;
+        HashMap<String, Integer> cityCountyMap;
         HashMap<String, Object> row;
         Integer countyNumber;
         PatientDO patDO;
         PreparedStatement ccS;
         ResultSet rs;
-        ResultViewDO rVDO;
         SampleDO sDO;
-        SampleItemViewDO siVDO;
         SampleOrganizationViewDO reportToVDO;
         String countyFips, orgType;
-        
+
+        log.log(Level.FINE, "Preloading dictionary entries");
+        dictionaryDOs = new HashMap<Integer, DictionaryDO>();
+        for (DictionaryDO ddo : categoryCache.getBySystemName("analysis_status")
+                                             .getDictionaryList())
+            dictionaryDOs.put(ddo.getId(), ddo);
+        for (DictionaryDO ddo : categoryCache.getBySystemName("ethnicity").getDictionaryList())
+            dictionaryDOs.put(ddo.getId(), ddo);
+        for (DictionaryDO ddo : categoryCache.getBySystemName("gender").getDictionaryList())
+            dictionaryDOs.put(ddo.getId(), ddo);
+        for (DictionaryDO ddo : categoryCache.getBySystemName("race").getDictionaryList())
+            dictionaryDOs.put(ddo.getId(), ddo);
+        for (DictionaryDO ddo : categoryCache.getBySystemName("type_of_sample").getDictionaryList())
+            dictionaryDOs.put(ddo.getId(), ddo);
+
         try {
-            ccS = con.prepareStatement("select county_number from phims@rambaldi_trust:city where name = ? and state = ?");
+            ccS = con.prepareStatement("select name, county_number from phims@rambaldi_trust:city");
+            rs = ccS.executeQuery();
+            cityCountyMap = new HashMap<String, Integer>();
+            while (rs.next())
+                cityCountyMap.put(rs.getString(1), rs.getInt(2));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error preparing statetment for county lookup.", e);
             throw new Exception("Error preparing statetment for county lookup.");
         }
-        
+
         numTotal = 0;
         numPrint = 0;
         numUnreleased = 0;
         if (sms != null && sms.size() > 0) {
             orgTypes = new HashMap<Integer, String>();
-            cityCountyMap = new HashMap<String, HashMap<String, Integer>>();
+            log.log(Level.FINE, "Processing samples");
             for (SampleManager1 sm : sms) {
-                sDO = sm.getSample();
-                sOverride = sm.qaEvent.hasType(Constants.dictionary().QAEVENT_OVERRIDE);
-                
+                sDO = SampleManager1Accessor.getSample(sm);
+
+                sOverride = false;
+                if (SampleManager1Accessor.getSampleQAs(sm) != null) {
+                    for (SampleQaEventViewDO sqeVDO : SampleManager1Accessor.getSampleQAs(sm)) {
+                        if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqeVDO.getTypeId())) {
+                            sOverride = true;
+                            break;
+                        }
+                    }
+                }
+
                 reportToVDO = null;
-                soVDOs = sm.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-                if (soVDOs != null && soVDOs.size() == 1)
-                    reportToVDO = soVDOs.get(0);
-                
+                if (SampleManager1Accessor.getOrganizations(sm) != null) {
+                    for (SampleOrganizationViewDO soVDO : SampleManager1Accessor.getOrganizations(sm)) {
+                        if (Constants.dictionary().ORG_REPORT_TO.equals(soVDO.getTypeId())) {
+                            reportToVDO = soVDO;
+                            break;
+                        }
+                    }
+                }
+
                 if (reportToVDO == null)
-                    throw new Exception("Accession #" + sDO.getAccessionNumber() + "does not have a 'Report To' organization.");
-                
+                    throw new Exception("Accession #" + sDO.getAccessionNumber() +
+                                        "does not have a 'Report To' organization.");
+
                 orgType = orgTypes.get(reportToVDO.getOrganizationId());
                 if (orgType == null) {
-                    opDOs = organizationParameter.fetchByOrgIdAndDictSystemName(reportToVDO.getOrganizationId(), "org_type");
+                    opDOs = organizationParameter.fetchByOrgIdAndDictSystemName(reportToVDO.getOrganizationId(),
+                                                                                "org_type");
                     if (opDOs != null && opDOs.size() > 0) {
                         for (OrganizationParameterDO opDO : opDOs) {
                             if ("Family Planning Clinic".equals(opDO.getValue()) ||
@@ -328,55 +367,40 @@ public class ChlGcToCDCExportBean {
                     if (orgType == null)
                         continue;
                 }
-                
-                for (i = 0; i < sm.item.count(); i++) {
-                    siVDO = sm.item.get(i);
-                    for (j = 0; j < sm.analysis.count(siVDO); j++) {
-                        aVDO = sm.analysis.get(siVDO, j);
-                        aOverride = sm.qaEvent.hasType(aVDO, Constants.dictionary().QAEVENT_OVERRIDE);
-                        if ("chl-gc cbss".equals(aVDO.getTestName()) && "Y".equals(aVDO.getIsReportable()) &&
+
+                if (SampleManager1Accessor.getAnalyses(sm) != null) {
+                    for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sm)) {
+                        if ("chl-gc cbss".equals(aVDO.getTestName()) &&
+                            "Y".equals(aVDO.getIsReportable()) &&
                             !Constants.dictionary().ANALYSIS_CANCELLED.equals(aVDO.getStatusId())) {
                             row = new HashMap<String, Object>();
-                            row.put("accession_number", sm.getSample().getAccessionNumber());
-                            row.put("collection_date", ReportUtil.toString(sDO.getCollectionDate(), "MM/dd/yyyy"));
-                            row.put("received_date", ReportUtil.toString(sDO.getReceivedDate(), "MM/dd/yyyy"));
+                            row.put("accession_number", sDO.getAccessionNumber());
+                            row.put("collection_date", ReportUtil.toString(sDO.getCollectionDate(),
+                                                                           "MM/dd/yyyy"));
+                            row.put("received_date", ReportUtil.toString(sDO.getReceivedDate(),
+                                                                         "MM/dd/yyyy"));
 
-                            if (sm.getSampleClinical().getPatient() != null) {
-                                patDO = sm.getSampleClinical().getPatient();
+                            if (SampleManager1Accessor.getSampleClinical(sm).getPatient() != null) {
+                                patDO = SampleManager1Accessor.getSampleClinical(sm).getPatient();
                                 if (patDO != null) {
-                                    row.put("birth_date", ReportUtil.toString(patDO.getBirthDate(), "MM/dd/yyyy"));
-                                    if (patDO.getGenderId() != null) {
-                                        dictDO = dictionaryCache.getById(patDO.getGenderId());
-                                        row.put("gender", dictDO.getCode());
-                                    }
-                                    if (patDO.getRaceId() != null) {
-                                        dictDO = dictionaryCache.getById(patDO.getRaceId());
-                                        row.put("race", dictDO.getCode());
-                                    }
-                                    if (patDO.getEthnicityId() != null) {
-                                        dictDO = dictionaryCache.getById(patDO.getEthnicityId());
-                                        row.put("ethnicity", dictDO.getCode());
-                                    }
+                                    row.put("birth_date", ReportUtil.toString(patDO.getBirthDate(),
+                                                                              "MM/dd/yyyy"));
+                                    if (patDO.getGenderId() != null)
+                                        row.put("gender", dictionaryDOs.get(patDO.getGenderId())
+                                                                       .getCode());
+                                    if (patDO.getRaceId() != null)
+                                        row.put("race", dictionaryDOs.get(patDO.getRaceId())
+                                                                     .getCode());
+                                    if (patDO.getEthnicityId() != null)
+                                        row.put("ethnicity",
+                                                dictionaryDOs.get(patDO.getEthnicityId()).getCode());
                                     adrDO = patDO.getAddress();
                                     if (adrDO != null) {
                                         if (adrDO.getState() != null)
                                             row.put("state_fips", getStateFIPS(adrDO.getState()));
-                                        if (adrDO.getCity() != null && adrDO.getState() != null) {
-                                            stateMap = cityCountyMap.get(adrDO.getState().toLowerCase());
-                                            if (stateMap == null) {
-                                                stateMap = new HashMap<String, Integer>();
-                                                cityCountyMap.put(adrDO.getState().toLowerCase(), stateMap);
-                                            }
-                                            countyNumber = stateMap.get(adrDO.getCity().toLowerCase());
-                                            if (countyNumber == null) {
-                                                ccS.setObject(1, adrDO.getCity().toLowerCase());
-                                                ccS.setObject(2, adrDO.getState().toLowerCase());
-                                                rs = ccS.executeQuery();
-                                                if (rs.next()) {
-                                                    countyNumber = (Integer)rs.getObject(1);
-                                                    stateMap.put(adrDO.getCity().toLowerCase(), countyNumber);
-                                                }
-                                            }
+                                        if ("IA".equals(adrDO.getState())) {
+                                            countyNumber = cityCountyMap.get(adrDO.getCity()
+                                                                                  .toLowerCase());
                                             if (countyNumber != null) {
                                                 countyNumber = countyNumber * 2 - 1;
                                                 countyFips = countyNumber.toString();
@@ -390,25 +414,40 @@ public class ChlGcToCDCExportBean {
                                     }
                                 }
                             }
-                            
+
                             row.put("o_id", reportToVDO.getOrganizationId());
                             row.put("zip_code", reportToVDO.getOrganizationZipCode());
                             row.put("org_type", orgType);
 
-                            if (siVDO.getTypeOfSampleId() != null) {
-                                dictDO = dictionaryCache.getById(siVDO.getTypeOfSampleId());
-                                if (dictDO.getCode() != null)
-                                    row.put("source", getSourceFromCode(dictDO.getCode()));
+                            for (SampleItemViewDO siVDO : SampleManager1Accessor.getItems(sm)) {
+                                if (siVDO.getId().equals(aVDO.getSampleItemId())) {
+                                    if (siVDO.getTypeOfSampleId() != null)
+                                        row.put("source",
+                                                getSourceFromCode(dictionaryDOs.get(siVDO.getTypeOfSampleId())
+                                                                               .getCode()));
+                                    break;
+                                }
                             }
-                            
+
                             if (aVDO.getStatusId() != null) {
-                                dictDO = dictionaryCache.getById(aVDO.getStatusId());
-                                row.put("status", dictDO.getEntry());
-                                if (!Constants.dictionary().ANALYSIS_RELEASED.equals(dictDO.getId()))
+                                row.put("status", dictionaryDOs.get(aVDO.getStatusId()).getEntry());
+                                if (!Constants.dictionary().ANALYSIS_RELEASED.equals(aVDO.getStatusId()))
                                     numUnreleased++;
                             }
-                            row.put("printed_date", ReportUtil.toString(aVDO.getPrintedDate(), "MM/dd/yyyy"));
+                            row.put("printed_date", ReportUtil.toString(aVDO.getPrintedDate(),
+                                                                        "MM/dd/yyyy"));
                             row.put("method", aVDO.getMethodName().substring(0, 1).toUpperCase());
+
+                            aOverride = false;
+                            if (SampleManager1Accessor.getAnalysisQAs(sm) != null) {
+                                for (AnalysisQaEventViewDO aqeVDO : SampleManager1Accessor.getAnalysisQAs(sm)) {
+                                    if (aqeVDO.getAnalysisId().equals(aVDO.getId()) &&
+                                        Constants.dictionary().QAEVENT_OVERRIDE.equals(aqeVDO.getTypeId())) {
+                                        aOverride = true;
+                                        break;
+                                    }
+                                }
+                            }
 
                             row.put("risk_new", "N");
                             row.put("risk_multiple", "N");
@@ -421,81 +460,93 @@ public class ChlGcToCDCExportBean {
                             row.put("sign_urethritis", "N");
                             row.put("sign_no_exam", "N");
                             row.put("sign_none", "N");
-                            for (k = 0; k < sm.result.count(aVDO); k++) {
-                                rVDO = sm.result.get(aVDO, k, 0);
-                                dictDO = null;
-                                if (rVDO.getValue() != null && rVDO.getValue().length() > 0) {
-                                    if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
-                                        dictDO = dictionaryCache.getById(Integer.valueOf(rVDO.getValue()));
-                                        if (dictDO == null)
-                                            throw new Exception("Dictionary entry not found for ID "+rVDO.getValue());
-                                    }
-                                        
-                                    if ("visit_reason".equals(rVDO.getAnalyteExternalId())) {
-                                        row.put("visit_reason", dictDO.getCode());
-                                    } else if ("risk_history".equals(rVDO.getAnalyteExternalId())) {
-                                        if (dictDO != null) {
-                                            if ("risk_new".equals(dictDO.getSystemName()))
-                                                row.put("risk_new", "Y");
-                                            else if ("risk_multiple".equals(dictDO.getSystemName()))
-                                                row.put("risk_multiple", "Y");
-                                            else if ("risk_contact".equals(dictDO.getSystemName()))
-                                                row.put("risk_contact", "Y");
-                                            else if ("risk_msm".equals(dictDO.getSystemName()))
-                                                row.put("risk_msm", "Y");
-                                            else if ("none_of_the_above".equals(dictDO.getSystemName()))
-                                                row.put("risk_none", "Y");
-                                        }
-                                    } else if ("symptom".equals(rVDO.getAnalyteExternalId())) {
-                                        row.put("symptom", dictDO.getCode());
-                                    } else if ("sign".equals(rVDO.getAnalyteExternalId())) {
-                                        if (dictDO != null) {
-                                            if ("sign_cervical".equals(dictDO.getSystemName()))
-                                                row.put("sign_cervical", "Y");
-                                            else if ("sign_cervicitis".equals(dictDO.getSystemName()))
-                                                row.put("sign_cervicitis", "Y");
-                                            else if ("sign_pid".equals(dictDO.getSystemName()))
-                                                row.put("sign_pid", "Y");
-                                            else if ("sign_urethritis".equals(dictDO.getSystemName()))
-                                                row.put("sign_urethritis", "Y");
-                                            else if ("sign_no_exam".equals(dictDO.getSystemName()))
-                                                row.put("sign_no_exam", "Y");
-                                            else if ("none_of_the_above".equals(dictDO.getSystemName()))
-                                                row.put("sign_none", "Y");
-                                        }
-                                    } else if ("insurance_type".equals(rVDO.getAnalyteExternalId())) {
-                                        row.put("insurance_type", dictDO.getCode());
-                                    } else if ("chl_result".equals(rVDO.getAnalyteExternalId())) {
-                                        if (sOverride || aOverride) {
-                                            row.put("chl_result", "U");
-                                        } else {
-                                            if (dictDO.getEntry().startsWith("D"))
-                                                row.put("chl_result", "P");
-                                            else
-                                                row.put("chl_result", dictDO.getEntry().substring(0, 1));
-                                        }
-                                    } else if ("gc_result".equals(rVDO.getAnalyteExternalId())) {
-                                        if (sOverride || aOverride) {
-                                            row.put("gc_result", "U");
-                                        } else {
-                                            if (dictDO.getEntry().startsWith("D"))
-                                                row.put("gc_result", "P");
-                                            else
-                                                row.put("gc_result", dictDO.getEntry().substring(0, 1));
+                            if (SampleManager1Accessor.getResults(sm) != null) {
+                                for (ResultViewDO rVDO : SampleManager1Accessor.getResults(sm)) {
+                                    if (rVDO.getAnalysisId().equals(aVDO.getId())) {
+                                        dictDO = null;
+                                        if (rVDO.getValue() != null && rVDO.getValue().length() > 0) {
+                                            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
+                                                dictDO = dictionaryDOs.get(Integer.valueOf(rVDO.getValue()));
+                                                if (dictDO == null) {
+                                                    dictDO = dictionaryCache.getById(Integer.valueOf(rVDO.getValue()));
+                                                    dictionaryDOs.put(Integer.valueOf(rVDO.getValue()),
+                                                                      dictDO);
+                                                }
+                                                if (dictDO == null)
+                                                    throw new Exception("Dictionary entry not found for ID " +
+                                                                        rVDO.getValue());
+                                            }
+
+                                            if ("visit_reason".equals(rVDO.getAnalyteExternalId())) {
+                                                row.put("visit_reason", dictDO.getCode());
+                                            } else if ("risk_history".equals(rVDO.getAnalyteExternalId())) {
+                                                if (dictDO != null) {
+                                                    if ("risk_new".equals(dictDO.getSystemName()))
+                                                        row.put("risk_new", "Y");
+                                                    else if ("risk_multiple".equals(dictDO.getSystemName()))
+                                                        row.put("risk_multiple", "Y");
+                                                    else if ("risk_contact".equals(dictDO.getSystemName()))
+                                                        row.put("risk_contact", "Y");
+                                                    else if ("risk_msm".equals(dictDO.getSystemName()))
+                                                        row.put("risk_msm", "Y");
+                                                    else if ("none_of_the_above".equals(dictDO.getSystemName()))
+                                                        row.put("risk_none", "Y");
+                                                }
+                                            } else if ("symptom".equals(rVDO.getAnalyteExternalId())) {
+                                                row.put("symptom", dictDO.getCode());
+                                            } else if ("sign".equals(rVDO.getAnalyteExternalId())) {
+                                                if (dictDO != null) {
+                                                    if ("sign_cervical".equals(dictDO.getSystemName()))
+                                                        row.put("sign_cervical", "Y");
+                                                    else if ("sign_cervicitis".equals(dictDO.getSystemName()))
+                                                        row.put("sign_cervicitis", "Y");
+                                                    else if ("sign_pid".equals(dictDO.getSystemName()))
+                                                        row.put("sign_pid", "Y");
+                                                    else if ("sign_urethritis".equals(dictDO.getSystemName()))
+                                                        row.put("sign_urethritis", "Y");
+                                                    else if ("sign_no_exam".equals(dictDO.getSystemName()))
+                                                        row.put("sign_no_exam", "Y");
+                                                    else if ("none_of_the_above".equals(dictDO.getSystemName()))
+                                                        row.put("sign_none", "Y");
+                                                }
+                                            } else if ("insurance_type".equals(rVDO.getAnalyteExternalId())) {
+                                                row.put("insurance_type", dictDO.getCode());
+                                            } else if ("chl_result".equals(rVDO.getAnalyteExternalId())) {
+                                                if (sOverride || aOverride) {
+                                                    row.put("chl_result", "U");
+                                                } else {
+                                                    if (dictDO.getEntry().startsWith("D"))
+                                                        row.put("chl_result", "P");
+                                                    else
+                                                        row.put("chl_result",
+                                                                dictDO.getEntry().substring(0, 1));
+                                                }
+                                            } else if ("gc_result".equals(rVDO.getAnalyteExternalId())) {
+                                                if (sOverride || aOverride) {
+                                                    row.put("gc_result", "U");
+                                                } else {
+                                                    if (dictDO.getEntry().startsWith("D"))
+                                                        row.put("gc_result", "P");
+                                                    else
+                                                        row.put("gc_result", dictDO.getEntry()
+                                                                                   .substring(0, 1));
+                                                }
+                                            }
                                         }
                                     }
                                 }
+                                rows.add(row);
+                                numTotal++;
+                                numPrint += 2;
                             }
-                            rows.add(row);
-                            numTotal++;
-                            numPrint += 2;
                         }
                     }
                 }
             }
         }
-        
-        return "Processed = " +  numTotal + " Reported = " + numPrint + " Unreleased = " + numUnreleased;
+
+        return "Processed = " + numTotal + " Reported = " + numPrint + " Unreleased = " +
+               numUnreleased;
     }
 
     /*
@@ -520,54 +571,90 @@ public class ChlGcToCDCExportBean {
         try {
             out = new ZipOutputStream(Files.newOutputStream(path));
             out.putNextEntry(new ZipEntry("cdc.dat"));
-            
+
             writer = new PrintWriter(out);
-            
+
             line = new StringBuilder();
-            
+
             /*
              * Write the header line
              */
-            line.append("Accession #").append("|")
-                .append("County FIPS").append("|")
-                .append("State FIPS").append("|")
-                .append("RaceW").append("|")
-                .append("RaceB").append("|")
-                .append("RaceA").append("|")
-                .append("RaceI").append("|")
-                .append("RaceP").append("|")
-                .append("RaceU").append("|")
-                .append("Ethnicity (H,N,U)").append("|")
-                .append("Birth").append("|")
-                .append("Gender").append("|")
-                .append("Source").append("|")
-                .append("Collected").append("|")
-                .append("Received").append("|")
-                .append("Reported").append("|")
-                .append("Result (P,N,E,U)").append("|")
-                .append("Method").append("|")
-                .append("Test (CHL,GC)").append("|")
-                .append("Visit-Reason (F,S,P,R,I)").append("|")
-                .append("Risk-new-partner").append("|")
-                .append("Risk-multiple-partner").append("|")
-                .append("Risk-contact-std").append("|")
-                .append("Risk-msm").append("|")
-                .append("Risk-none").append("|")
-                .append("Symptoms (Y,N)").append("|")
-                .append("Sign-Cervical").append("|")
-                .append("Sign-Cervicitis").append("|")
-                .append("Sign-PID").append("|")
-                .append("Sign-Urethritis").append("|")
-                .append("Sign-No-Signs").append("|")
-                .append("Sign-No-Exam").append("|")
-                .append("Insurance (N,D,P,C,M)").append("|")
-                .append("Requester-ID").append("|")
-                .append("Req-Zip").append("|")
-                .append("Req-Type").append("|")
+            line.append("Accession #")
+                .append("|")
+                .append("County FIPS")
+                .append("|")
+                .append("State FIPS")
+                .append("|")
+                .append("RaceW")
+                .append("|")
+                .append("RaceB")
+                .append("|")
+                .append("RaceA")
+                .append("|")
+                .append("RaceI")
+                .append("|")
+                .append("RaceP")
+                .append("|")
+                .append("RaceU")
+                .append("|")
+                .append("Ethnicity (H,N,U)")
+                .append("|")
+                .append("Birth")
+                .append("|")
+                .append("Gender")
+                .append("|")
+                .append("Source")
+                .append("|")
+                .append("Collected")
+                .append("|")
+                .append("Received")
+                .append("|")
+                .append("Reported")
+                .append("|")
+                .append("Result (P,N,E,U)")
+                .append("|")
+                .append("Method")
+                .append("|")
+                .append("Test (CHL,GC)")
+                .append("|")
+                .append("Visit-Reason (F,S,P,R,I)")
+                .append("|")
+                .append("Risk-new-partner")
+                .append("|")
+                .append("Risk-multiple-partner")
+                .append("|")
+                .append("Risk-contact-std")
+                .append("|")
+                .append("Risk-msm")
+                .append("|")
+                .append("Risk-none")
+                .append("|")
+                .append("Symptoms (Y,N)")
+                .append("|")
+                .append("Sign-Cervical")
+                .append("|")
+                .append("Sign-Cervicitis")
+                .append("|")
+                .append("Sign-PID")
+                .append("|")
+                .append("Sign-Urethritis")
+                .append("|")
+                .append("Sign-No-Signs")
+                .append("|")
+                .append("Sign-No-Exam")
+                .append("|")
+                .append("Insurance (N,D,P,C,M)")
+                .append("|")
+                .append("Requester-ID")
+                .append("|")
+                .append("Req-Zip")
+                .append("|")
+                .append("Req-Type")
+                .append("|")
                 .append("CLIA #");
             writer.println(line.toString());
             line.setLength(0);
-            
+
             /*
              * Write data lines
              */
@@ -579,8 +666,8 @@ public class ChlGcToCDCExportBean {
                 if (row.get("state_fips") != null)
                     line.append(row.get("state_fips"));
                 line.append("|");
-                
-                race = (String) row.get("race");
+
+                race = (String)row.get("race");
                 if (race != null) {
                     if (race.indexOf("W") != -1)
                         line.append("1");
@@ -601,55 +688,64 @@ public class ChlGcToCDCExportBean {
                         line.append("1");
                     line.append("|");
                 } else {
-                    line.append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|");
+                    line.append("|").append("|").append("|").append("|").append("|").append("|");
                 }
 
                 if (row.get("ethnicity") != null)
                     line.append(row.get("ethnicity"));
-                line.append("|")
-                    .append(row.get("birth_date")).append("|");
+                line.append("|").append(row.get("birth_date")).append("|");
                 if (row.get("gender") != null)
                     line.append(row.get("gender"));
                 line.append("|");
                 if (row.get("source") != null)
                     line.append(row.get("source"));
                 line.append("|")
-                    .append(row.get("collection_date")).append("|")
-                    .append(row.get("received_date")).append("|")
-                    .append(row.get("printed_date")).append("|");
+                    .append(row.get("collection_date"))
+                    .append("|")
+                    .append(row.get("received_date"))
+                    .append("|")
+                    .append(row.get("printed_date"))
+                    .append("|");
                 if (row.get("chl_result") != null)
                     line.append(row.get("chl_result"));
-                line.append("|")
-                    .append(row.get("method")).append("|")
-                    .append("CHL").append("|");
+                line.append("|").append(row.get("method")).append("|").append("CHL").append("|");
                 if (row.get("visit_reason") != null)
                     line.append(row.get("visit_reason"));
                 line.append("|")
-                    .append(row.get("risk_new")).append("|")
-                    .append(row.get("risk_multiple")).append("|")
-                    .append(row.get("risk_contact")).append("|")
-                    .append(row.get("risk_msm")).append("|")
-                    .append(row.get("risk_none")).append("|");
+                    .append(row.get("risk_new"))
+                    .append("|")
+                    .append(row.get("risk_multiple"))
+                    .append("|")
+                    .append(row.get("risk_contact"))
+                    .append("|")
+                    .append(row.get("risk_msm"))
+                    .append("|")
+                    .append(row.get("risk_none"))
+                    .append("|");
                 if (row.get("symptom") != null)
                     line.append(row.get("symptom"));
                 line.append("|")
-                    .append(row.get("sign_cervical")).append("|")
-                    .append(row.get("sign_cervicitis")).append("|")
-                    .append(row.get("sign_pid")).append("|")
-                    .append(row.get("sign_urethritis")).append("|")
-                    .append(row.get("sign_none")).append("|")
-                    .append(row.get("sign_no_exam")).append("|");
+                    .append(row.get("sign_cervical"))
+                    .append("|")
+                    .append(row.get("sign_cervicitis"))
+                    .append("|")
+                    .append(row.get("sign_pid"))
+                    .append("|")
+                    .append(row.get("sign_urethritis"))
+                    .append("|")
+                    .append(row.get("sign_none"))
+                    .append("|")
+                    .append(row.get("sign_no_exam"))
+                    .append("|");
                 if (row.get("insurance_type") != null)
                     line.append(row.get("insurance_type"));
                 line.append("|")
-                    .append(row.get("o_id")).append("|")
-                    .append(row.get("zip_code")).append("|")
-                    .append(row.get("org_type")).append("|")
+                    .append(row.get("o_id"))
+                    .append("|")
+                    .append(row.get("zip_code"))
+                    .append("|")
+                    .append(row.get("org_type"))
+                    .append("|")
                     .append("16D0648109");
                 writer.println(line.toString());
                 line.setLength(0);
@@ -661,8 +757,8 @@ public class ChlGcToCDCExportBean {
                 if (row.get("state_fips") != null)
                     line.append(row.get("state_fips"));
                 line.append("|");
-                
-                race = (String) row.get("race");
+
+                race = (String)row.get("race");
                 if (race != null) {
                     if (race.indexOf("W") != -1)
                         line.append("1");
@@ -683,55 +779,64 @@ public class ChlGcToCDCExportBean {
                         line.append("1");
                     line.append("|");
                 } else {
-                    line.append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|")
-                        .append("|");
+                    line.append("|").append("|").append("|").append("|").append("|").append("|");
                 }
 
                 if (row.get("ethnicity") != null)
                     line.append(row.get("ethnicity"));
-                line.append("|")
-                    .append(row.get("birth_date")).append("|");
+                line.append("|").append(row.get("birth_date")).append("|");
                 if (row.get("gender") != null)
                     line.append(row.get("gender"));
                 line.append("|");
                 if (row.get("source") != null)
                     line.append(row.get("source"));
                 line.append("|")
-                    .append(row.get("collection_date")).append("|")
-                    .append(row.get("received_date")).append("|")
-                    .append(row.get("printed_date")).append("|");
+                    .append(row.get("collection_date"))
+                    .append("|")
+                    .append(row.get("received_date"))
+                    .append("|")
+                    .append(row.get("printed_date"))
+                    .append("|");
                 if (row.get("gc_result") != null)
                     line.append(row.get("gc_result"));
-                line.append("|")
-                    .append(row.get("method")).append("|")
-                    .append("GC").append("|");
+                line.append("|").append(row.get("method")).append("|").append("GC").append("|");
                 if (row.get("visit_reason") != null)
                     line.append(row.get("visit_reason"));
                 line.append("|")
-                    .append(row.get("risk_new")).append("|")
-                    .append(row.get("risk_multiple")).append("|")
-                    .append(row.get("risk_contact")).append("|")
-                    .append(row.get("risk_msm")).append("|")
-                    .append(row.get("risk_none")).append("|");
+                    .append(row.get("risk_new"))
+                    .append("|")
+                    .append(row.get("risk_multiple"))
+                    .append("|")
+                    .append(row.get("risk_contact"))
+                    .append("|")
+                    .append(row.get("risk_msm"))
+                    .append("|")
+                    .append(row.get("risk_none"))
+                    .append("|");
                 if (row.get("symptom") != null)
                     line.append(row.get("symptom"));
                 line.append("|")
-                    .append(row.get("sign_cervical")).append("|")
-                    .append(row.get("sign_cervicitis")).append("|")
-                    .append(row.get("sign_pid")).append("|")
-                    .append(row.get("sign_urethritis")).append("|")
-                    .append(row.get("sign_none")).append("|")
-                    .append(row.get("sign_no_exam")).append("|");
+                    .append(row.get("sign_cervical"))
+                    .append("|")
+                    .append(row.get("sign_cervicitis"))
+                    .append("|")
+                    .append(row.get("sign_pid"))
+                    .append("|")
+                    .append(row.get("sign_urethritis"))
+                    .append("|")
+                    .append(row.get("sign_none"))
+                    .append("|")
+                    .append(row.get("sign_no_exam"))
+                    .append("|");
                 if (row.get("insurance_type") != null)
                     line.append(row.get("insurance_type"));
                 line.append("|")
-                    .append(row.get("o_id")).append("|")
-                    .append(row.get("zip_code")).append("|")
-                    .append(row.get("org_type")).append("|")
+                    .append(row.get("o_id"))
+                    .append("|")
+                    .append(row.get("zip_code"))
+                    .append("|")
+                    .append(row.get("org_type"))
+                    .append("|")
                     .append("16D0648109");
                 writer.println(line.toString());
                 line.setLength(0);
@@ -748,7 +853,7 @@ public class ChlGcToCDCExportBean {
             } catch (Exception e) {
                 log.severe("Could not close print writer for chlGCToCDC export");
             }
-            
+
             try {
                 if (out != null)
                     out.close();
@@ -759,10 +864,10 @@ public class ChlGcToCDCExportBean {
 
         return;
     }
-    
+
     private String getStateFIPS(String state) {
         String stateFIPS;
-        
+
         switch (state) {
             case "IA":
                 stateFIPS = "19";
@@ -771,37 +876,37 @@ public class ChlGcToCDCExportBean {
             case "IL":
                 stateFIPS = "17";
                 break;
-            
+
             case "MN":
                 stateFIPS = "27";
                 break;
-                
+
             case "MO":
                 stateFIPS = "29";
                 break;
-            
+
             case "NE":
                 stateFIPS = "31";
                 break;
-            
+
             case "SD":
                 stateFIPS = "46";
                 break;
-            
+
             case "WI":
                 stateFIPS = "55";
                 break;
-            
+
             default:
                 stateFIPS = "";
         }
-        
+
         return stateFIPS;
     }
-    
+
     private String getSourceFromCode(String code) {
         String source;
-        
+
         switch (code) {
             case "CX":
                 source = "Cervix";
@@ -810,31 +915,31 @@ public class ChlGcToCDCExportBean {
             case "RS":
                 source = "Rectal";
                 break;
-            
+
             case "TS":
                 source = "Throat";
                 break;
-                
+
             case "UR":
                 source = "Urethra";
                 break;
-            
+
             case "UN":
                 source = "Urine";
                 break;
-            
+
             case "VG":
                 source = "Vaginal";
                 break;
-            
+
             case "OT":
                 source = "Other";
                 break;
-            
+
             default:
                 source = "";
         }
-        
+
         return source;
     }
 }
