@@ -173,9 +173,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected MenuItem                         unreleaseAnalysis, queryByWorksheet, historySample,
-                    historySampleSpecific, historySampleProject, historySampleOrganization,
-                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+                    historySampleSpecific, historyPatient, historyPatientRelation,
+                    historySampleProject, historySampleOrganization, historySampleItem,
+                    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+                    historyAnalysisQA, historyAuxData;
 
     @UiField
     protected CheckMenuItem                    previewFinalReport;
@@ -607,6 +608,38 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
+                enablePatientHistory();
+            }
+        });
+
+        historyPatient.addCommand(new Command() {
+            @Override
+            public void execute() {
+                String domain;
+
+                domain = manager != null ? manager.getSample().getDomain() : null;
+                if (Constants.domain().CLINICAL.equals(domain))
+                    SampleHistoryUtility1.clinicalPatient(manager);
+                else if (Constants.domain().NEONATAL.equals(domain))
+                    SampleHistoryUtility1.neonatalPatient(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                enablePatientRelationHistory();
+            }
+        });
+
+        historyPatientRelation.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatalNextOfKin(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
                 historySampleProject.setEnabled(isState(DISPLAY));
             }
         });
@@ -786,6 +819,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                 setData();
                 refreshTabs(data, false);
+                enablePatientHistory();
+                enablePatientRelationHistory();
             }
         });
 
@@ -2782,6 +2817,31 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
     }
+    
+
+    /**
+     * Enables or disables the menu item for patient history, based on the
+     * domain of the sample and the state
+     */
+    private void enablePatientHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatient.setEnabled(isState(DISPLAY) &&
+                                  (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
+    }
+    
+    /**
+     * Enables or disables the menu item for patient relation history, based on
+     * the domain of the sample and the state
+     */
+    private void enablePatientRelationHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatientRelation.setEnabled(isState(DISPLAY) &&
+                                          (Constants.domain().NEONATAL.equals(domain)));
+    }
 
     /**
      * Refreshes all rows showing the analyses of the sample with this id
@@ -3446,7 +3506,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3460,8 +3520,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

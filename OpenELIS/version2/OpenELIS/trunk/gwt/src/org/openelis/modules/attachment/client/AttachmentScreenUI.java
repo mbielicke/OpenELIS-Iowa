@@ -240,15 +240,6 @@ public class AttachmentScreenUI extends Screen {
                 Integer id;
                 Node node;
 
-                if (isState(RESERVED)) {
-                    /*
-                     * if an attachment is reserved then no other nodes can be
-                     * selected
-                     */
-                    event.cancel();
-                    return;
-                }
-
                 if ( !isState(UPDATE))
                     return;
 
@@ -438,7 +429,7 @@ public class AttachmentScreenUI extends Screen {
                      * don't let a file be dropped for upload if a record is
                      * locked
                      */
-                    if (isState(UPDATE, RESERVED))
+                    if (isState(UPDATE))
                         return;
                     setBusy(Messages.get().gen_saving());
                     /*
@@ -485,7 +476,7 @@ public class AttachmentScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 fileDrop.setEnabled(isState(QUERY, DISPLAY));
 
-                if (isState(UPDATE, RESERVED) && !closeHandlerAdded && window != null) {
+                if (isState(UPDATE) && !closeHandlerAdded && window != null) {
                     /*
                      * this handler is not added in initialize() because this
                      * screen can be shown in a modal window and in that case,
@@ -493,7 +484,7 @@ public class AttachmentScreenUI extends Screen {
                      */
                     window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
                         public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                            if (isState(UPDATE, RESERVED)) {
+                            if (isState(UPDATE)) {
                                 event.cancel();
                                 setError(Messages.get().gen_mustCommitOrAbort());
                             } else if (dropIndicator != null) {
@@ -1050,7 +1041,7 @@ public class AttachmentScreenUI extends Screen {
          * and display the attachment
          */
         managers.put(id, manager);
-        setState(RESERVED);
+        //setState(RESERVED);
         tree.selectNodeAt(node);
         node.setStatus(AttachmentNode.Status.LOCKED_BY_SELF);
         reloadAttachment(node);

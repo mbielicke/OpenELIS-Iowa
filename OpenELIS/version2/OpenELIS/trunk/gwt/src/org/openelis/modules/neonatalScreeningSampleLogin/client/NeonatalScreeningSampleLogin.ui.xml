@@ -393,7 +393,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_relation}:" />
+                      <ui:text from="{msg.gen_relation}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="nextOfKinRelation" width="80px" dropHeight="100px"

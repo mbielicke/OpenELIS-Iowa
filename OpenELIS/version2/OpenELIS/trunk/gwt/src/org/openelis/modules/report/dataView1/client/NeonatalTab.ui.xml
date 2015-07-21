@@ -242,7 +242,7 @@
               <w:CheckBox ui:field="neonatalNextOfKinRelationId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
-              <ui:text from="{msg.patient_relation}" />
+              <ui:text from="{msg.gen_relation}" />
             </td>
           </tr>
           <tr>

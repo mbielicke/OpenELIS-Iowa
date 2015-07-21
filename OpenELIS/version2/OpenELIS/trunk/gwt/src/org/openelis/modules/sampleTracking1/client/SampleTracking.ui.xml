@@ -58,6 +58,8 @@
             >
               <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
               <w:MenuItem ui:field="historySampleSpecific" display="{msg.sample_specific}" />
+              <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
+              <w:MenuItem ui:field="historyPatientRelation" display="{msg.patient_relation}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
               <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
@@ -76,10 +78,15 @@
       <g:SplitLayoutPanel>
         <g:west size="305">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="27px">
+            <g:layer top="0px" bottom="37px">
               <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
                 <r:Column width="280" label="{msg.sample_sample}" />
                 <r:Leaf key="sample">
+                  <r:LeafColumn>
+                    <t:LabelCell />
+                  </r:LeafColumn>
+                </r:Leaf>
+                <r:Leaf key="patient">
                   <r:LeafColumn>
                     <t:LabelCell />
                   </r:LeafColumn>
@@ -131,8 +138,6 @@
                 <g:layer bottom="0px" top="0px" left="0px" right="0px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="prevPageButton" image="{res.previousPage}" disabledImage="{res.previousPageDisabled}"
-                        enabled="false" css="{res.atozButton}" />
                       <w:Button ui:field="nextPageButton" image="{res.nextPage}" disabledImage="{res.nextPageDisabled}"
                         enabled="false" css="{res.atozButton}" />
                     </g:HorizontalPanel>
