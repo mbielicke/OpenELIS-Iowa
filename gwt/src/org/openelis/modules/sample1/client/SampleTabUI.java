@@ -86,7 +86,7 @@ public class SampleTabUI extends Screen {
     protected TextBox<Integer>       accessionNumber;
 
     @UiField
-    protected Calendar               collectionDate, collectionTime, receivedDate;
+    protected Calendar               collectionDate, collectionTime, receivedDate, releasedDate;
 
     @UiField
     protected TextBox<String>        clientReference, orderId;
@@ -319,9 +319,24 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? organizationTable : status;
+                                 return forward ? releasedDate : status;
                              }
                          });
+        
+        addScreenHandler(releasedDate, SampleMeta.getReleasedDate(), new ScreenHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                releasedDate.setValue(getReleasedDate());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                releasedDate.setEnabled(isState(QUERY));
+                releasedDate.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? organizationTable : clientReference;
+            }
+        });
 
         addScreenHandler(organizationTable,
                          "organizationTable",
@@ -1069,6 +1084,15 @@ public class SampleTabUI extends Screen {
      */
     private void setClientReference(String clientReference) {
         manager.getSample().setClientReference(clientReference);
+    }
+    
+    /**
+     * returns the released date or null if the manager is null
+     */
+    private Datetime getReleasedDate() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getReleasedDate();
     }
 
     private ArrayList<Row> getOrganizationTableModel() {

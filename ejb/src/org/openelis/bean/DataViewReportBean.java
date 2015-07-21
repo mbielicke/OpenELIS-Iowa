@@ -2161,7 +2161,7 @@ public class DataViewReportBean {
                     headers.add(Messages.get().dataView_nextOfKinFirstName());
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_RELATION_ID:
-                    headers.add(Messages.get().patient_relation());
+                    headers.add(Messages.get().gen_relation());
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE:
                     headers.add(Messages.get().dataView_nextOfKinBirthDate());

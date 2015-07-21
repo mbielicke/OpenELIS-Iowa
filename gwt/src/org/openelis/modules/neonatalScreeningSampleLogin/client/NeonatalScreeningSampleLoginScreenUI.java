@@ -4280,7 +4280,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void addScriptlets() throws Exception {
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
-        
+
         /*
          * add the scriptlet for the domain, which is the value of this system
          * variable; don't try to look up the system variable again if it's not
@@ -4300,8 +4300,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             /*
              * if the system variable was found, its value must point to an
              * existing dictionary entry; so if an exception is thrown on trying
-             * to look up the dictionary, the user must be informed of it
-             * even if it's a NotFoundException
+             * to look up the dictionary, the user must be informed of it even
+             * if it's a NotFoundException
              */
             if (domainScriptletVariable != null) {
                 try {
@@ -5841,7 +5841,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          * set the patient selected on the pop up as the next of
                          * kin
                          */
-                        setNextOfKin(selectedPatient, null);
+                        setNextOfKin(selectedPatient);
                         nokChanged = true;
                     } else {
                         /*
@@ -5852,7 +5852,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         setPatient(selectedPatient);
                         patChanged = true;
                         if ( !isNextOfKinLocked && selectedNextOfKin != null) {
-                            setNextOfKin(selectedNextOfKin, selectedNextOfKin.getRelationId());
+                            setNeonatalNextOfKinRelationId(selectedNextOfKin.getRelationId());
+                            setNextOfKin(selectedNextOfKin);
                             nokChanged = true;
                         }
                     }
@@ -5870,15 +5871,20 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
 
                 public void cancel() {
+                    boolean nokChanged;
                     /*
                      * if the query on the popup was executed only for NID and
                      * that NID has been used for another patient, blank the
                      * sample's next of kin's NID and refresh the screen
                      */
+                    nokChanged = false;
                     if (queryByNId && nidUsedForOther) {
                         setNextOfKinNationalId(null);
-                        setPatient(manager.getSampleNeonatal().getNextOfKin());
+                        setNextOfKin(manager.getSampleNeonatal().getNextOfKin());
+                        nokChanged = true;
                     }
+                    if (nokChanged)
+                        screen.bus.fireEvent(new NextOfKinChangeEvent());
                     setFocusToNext();
                     isBusy = false;
                     nidUsedForOther = false;
@@ -5886,8 +5892,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 @Override
                 public void patientsFound() {
-                    Integer id;
-                    PatientDO data;
+                    PatientDO samPat, otherPat;
 
                     /*
                      * if the query on the popup was executed only for NID, at
@@ -5895,9 +5900,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                      * patient is the same as the sample's next of kin
                      */
                     if (queryByNId) {
-                        data = patientTable.getRowAt(0).getData();
-                        id = manager.getSampleNeonatal().getNextOfKinId();
-                        nidUsedForOther = id != null && !id.equals(data.getId());
+                        samPat = manager.getSampleNeonatal().getNextOfKin();
+                        otherPat = patientTable.getRowAt(0).getData();
+                        nidUsedForOther = !otherPat.getId().equals(samPat.getId());
                     }
                 }
             };
@@ -6024,14 +6029,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Sets the passed patient as the sample's next of kin and refreshes the
      * screen to show its data
      */
-    private void setNextOfKin(PatientDO data, Integer relationId) {
+    private void setNextOfKin(PatientDO data) {
         if (data == null)
             return;
 
         manager.getSampleNeonatal().setNextOfKinId(data.getId());
         manager.getSampleNeonatal().setNextOfKin(data);
-        if (relationId != null)
-            setNeonatalNextOfKinRelationId(relationId);
 
         if (getNextOfKinLastName() != null)
             nextOfKinLastName.clearExceptions();
@@ -6377,8 +6380,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -6424,7 +6427,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -6438,8 +6441,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

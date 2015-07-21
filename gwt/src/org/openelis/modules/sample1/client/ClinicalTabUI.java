@@ -1139,8 +1139,7 @@ public class ClinicalTabUI extends Screen {
 
                 @Override
                 public void patientsFound() {
-                    Integer id;
-                    PatientDO data;
+                    PatientDO samPat, otherPat;
 
                     /*
                      * if the query on the popup was executed only for NID, at
@@ -1148,9 +1147,9 @@ public class ClinicalTabUI extends Screen {
                      * patient is the same as the sample's patient
                      */
                     if (queryByNId) {
-                        data = patientTable.getRowAt(0).getData();
-                        id = manager.getSampleClinical().getPatientId();
-                        nidUsedForOther = id != null && !id.equals(data.getId());
+                        samPat = manager.getSampleClinical().getPatient();
+                        otherPat = patientTable.getRowAt(0).getData();
+                        nidUsedForOther = !otherPat.getId().equals(samPat.getId());
                     }
                 }
             };

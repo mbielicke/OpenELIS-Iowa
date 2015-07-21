@@ -7927,6 +7927,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_refresh();
 
   /**
+   * Translated "Relation".
+   * 
+   * @return translated "Relation"
+   */
+  @DefaultMessage("Relation")
+  @Key("gen.relation")
+  String gen_relation();
+
+  /**
    * Translated "Release".
    * 
    * @return translated "Release"
@@ -13480,11 +13489,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String patient_race();
 
   /**
-   * Translated "Relation".
+   * Translated "Patient Relation".
    * 
-   * @return translated "Relation"
+   * @return translated "Patient Relation"
    */
-  @DefaultMessage("Relation")
+  @DefaultMessage("Patient Relation")
   @Key("patient.relation")
   String patient_relation();
 
