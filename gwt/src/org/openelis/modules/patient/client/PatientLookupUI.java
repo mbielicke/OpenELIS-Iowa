@@ -25,19 +25,34 @@
  */
 package org.openelis.modules.patient.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
+import org.openelis.domain.SampleAnalysisVO;
 import org.openelis.meta.PatientMeta;
 import org.openelis.modules.analysis.client.AnalysisService;
 import org.openelis.ui.common.Datetime;
@@ -63,21 +78,6 @@ import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
-
 public abstract class PatientLookupUI extends Screen {
 
     @UiTemplate("PatientLookup.ui.xml")
@@ -100,7 +100,7 @@ public abstract class PatientLookupUI extends Screen {
 
     @UiField
     protected Table                                         patientTable, sampleTable,
-                    nextOfKinTable;
+                                                            nextOfKinTable;
 
     @UiField
     protected TextBox<String>                               lastName, firstName, nationalId;
@@ -109,14 +109,14 @@ public abstract class PatientLookupUI extends Screen {
 
     protected PatientRelationVO                             selectedNextOfKin;
 
-    protected boolean                                       selectFirstPatient,
-                    dontShowIfNoPatient, queryByNId;
+    protected boolean                                       selectFirstPatient, dontShowIfNoPatient,
+                                                            queryByNId;
 
     protected AsyncCallbackUI<ArrayList<PatientDO>>         queryCall;
 
     protected AsyncCallbackUI<ArrayList<PatientRelationVO>> fetchByRelatedPatientCall;
 
-    protected AsyncCallbackUI<ArrayList<AnalysisViewVO>>    fetchByPatientCall;
+    protected AsyncCallbackUI<ArrayList<SampleAnalysisVO>>  fetchByPatientCall;
 
     public PatientLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -140,8 +140,8 @@ public abstract class PatientLookupUI extends Screen {
         //
         addScreenHandler(lastName, PatientMeta.getLastName(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                lastName.setEnabled( !queryByNId && isState(QUERY));
-                lastName.setQueryMode( !queryByNId && isState(QUERY));
+                lastName.setEnabled(!queryByNId && isState(QUERY));
+                lastName.setQueryMode(!queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -151,8 +151,8 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(firstName, PatientMeta.getFirstName(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                firstName.setEnabled( !queryByNId && isState(QUERY));
-                firstName.setQueryMode( !queryByNId && isState(QUERY));
+                firstName.setEnabled(!queryByNId && isState(QUERY));
+                firstName.setQueryMode(!queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -162,8 +162,8 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(birthDate, PatientMeta.getBirthDate(), new ScreenHandler<Datetime>() {
             public void onStateChange(StateChangeEvent event) {
-                birthDate.setEnabled( !queryByNId && isState(QUERY));
-                birthDate.setQueryMode( !queryByNId && isState(QUERY));
+                birthDate.setEnabled(!queryByNId && isState(QUERY));
+                birthDate.setQueryMode(!queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -183,7 +183,7 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(search, "search", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                search.setEnabled( !queryByNId);
+                search.setEnabled(!queryByNId);
             }
 
             public Widget onTab(boolean forward) {
@@ -234,7 +234,7 @@ public abstract class PatientLookupUI extends Screen {
         //
         addScreenHandler(nextOfKinTable, "nextOfKinTable", new ScreenHandler<ArrayList<Row>>() {
             public void onStateChange(StateChangeEvent event) {
-                nextOfKinTable.setEnabled( !queryByNId);
+                nextOfKinTable.setEnabled(!queryByNId);
             }
         });
 
@@ -270,7 +270,7 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(select, "select", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                select.setEnabled( !queryByNId);
+                select.setEnabled(!queryByNId);
             }
 
             public Widget onTab(boolean forward) {
@@ -596,13 +596,13 @@ public abstract class PatientLookupUI extends Screen {
         }
 
         if (fetchByPatientCall == null) {
-            fetchByPatientCall = new AsyncCallbackUI<ArrayList<AnalysisViewVO>>() {
-                public void success(ArrayList<AnalysisViewVO> result) {
+            fetchByPatientCall = new AsyncCallbackUI<ArrayList<SampleAnalysisVO>>() {
+                public void success(ArrayList<SampleAnalysisVO> result) {
                     Row row;
                     ArrayList<Row> model;
 
                     model = new ArrayList<Row>();
-                    for (AnalysisViewVO data : result) {
+                    for (SampleAnalysisVO data : result) {
                         row = new Row(4);
                         row.setCell(0, data.getAccessionNumber());
                         row.setCell(1, data.getReceivedDate());
