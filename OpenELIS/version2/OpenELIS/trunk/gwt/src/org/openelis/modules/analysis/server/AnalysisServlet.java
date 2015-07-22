@@ -34,11 +34,11 @@ import org.openelis.bean.AnalysisBean;
 import org.openelis.bean.AnalysisManagerBean;
 import org.openelis.bean.AnalysisQAEventManagerBean;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalysisViewVO;
-import org.openelis.ui.server.RemoteServlet;
+import org.openelis.domain.SampleAnalysisVO;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.modules.analysis.client.AnalysisServiceInt;
+import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelis/analysis")
 public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt {
@@ -71,7 +71,7 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
         }
     }
     
-    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
+    public ArrayList<SampleAnalysisVO> fetchByPatientId(Integer patientId) throws Exception {
         try {
             return analysis.fetchByPatientId(patientId);
         } catch (Exception anyE) {
@@ -87,6 +87,4 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
             throw serializeForGWT(anyE);
         }
     }
-
-
 }

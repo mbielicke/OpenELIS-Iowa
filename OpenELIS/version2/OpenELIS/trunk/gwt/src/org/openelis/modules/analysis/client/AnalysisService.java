@@ -2,16 +2,16 @@ package org.openelis.modules.analysis.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
+
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.SampleAnalysisVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.ui.services.TokenService;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAsync {
     
@@ -42,7 +42,7 @@ public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAs
     }
 
     @Override
-    public void fetchByPatientId(Integer patientId, AsyncCallback<ArrayList<AnalysisViewVO>> callback) {
+    public void fetchByPatientId(Integer patientId, AsyncCallback<ArrayList<SampleAnalysisVO>> callback) {
         service.fetchByPatientId(patientId, callback);
     }
 
@@ -71,10 +71,10 @@ public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAs
     }
 
     @Override
-    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
-        Callback<ArrayList<AnalysisViewVO>> callback;
+    public ArrayList<SampleAnalysisVO> fetchByPatientId(Integer patientId) throws Exception {
+        Callback<ArrayList<SampleAnalysisVO>> callback;
         
-        callback = new Callback<ArrayList<AnalysisViewVO>>();
+        callback = new Callback<ArrayList<SampleAnalysisVO>>();
         service.fetchByPatientId(patientId, callback);
         return callback.getResult();
     }
