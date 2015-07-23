@@ -1425,6 +1425,14 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         query = new Query();
         query.setFields(fields);
         query.setRowsPerPage(ROWS_PER_PAGE);
+        /*
+         * this is done so that after the query has been executed, the tree only
+         * shows the samples that were returned by the query; otherwise the
+         * samples returned by the query will show up after the samples that are
+         * currently loaded in the tree
+         */
+        managers = null;
+
         executeQuery(query);
     }
 

@@ -115,6 +115,8 @@
 										enabled="false" display="{msg.gen_test}" />
 									<w:MenuItem ui:field="orderContainerHistory"
 										description="" enabled="false" display="{msg.gen_container}" />
+									<w:MenuItem ui:field="auxDataHistory" description=""
+										enabled="false" display="{msg.aux_data}" />
 								</w:Menu>
 							</w:Menu>
 						</g:HorizontalPanel>

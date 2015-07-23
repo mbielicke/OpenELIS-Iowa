@@ -63,6 +63,7 @@ import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.report.client.RequestFormReportService;
+import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingService;
@@ -123,6 +124,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
 
+
+
+
+
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
     protected IOrderManager1                  manager;
@@ -147,7 +152,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiField
     protected MenuItem                       duplicate, shippingInfo, orderRequestForm,
                     orderHistory, orderOrganizationHistory, orderItemHistory, orderTestHistory,
-                    orderContainerHistory;
+                    orderContainerHistory, auxDataHistory;
 
     @UiField
     protected TextBox<Integer>               id, neededDays, numberOfForms;
@@ -497,6 +502,19 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                auxDataHistory.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        auxDataHistory.addCommand(new Command() {
+            @Override
+            public void execute() {
+                auxDataHistory();
+            }
+        });
+
         //
         // screen fields
         //
@@ -534,24 +552,26 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(numberOfForms, IOrderMeta.getNumberOfForms(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                numberOfForms.setValue(getNumberOfForms());
-            }
+        addScreenHandler(numberOfForms,
+                         IOrderMeta.getNumberOfForms(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 numberOfForms.setValue(getNumberOfForms());
+                             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setNumberOfForms(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setNumberOfForms(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                numberOfForms.setEnabled(isState(QUERY, ADD, UPDATE));
-                numberOfForms.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 numberOfForms.setEnabled(isState(QUERY, ADD, UPDATE));
+                                 numberOfForms.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? shipFrom : neededDays;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? shipFrom : neededDays;
+                             }
+                         });
 
         addScreenHandler(shipFrom, IOrderMeta.getShipFromId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -776,20 +796,22 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(city, IOrderMeta.getOrganizationAddressCity(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                city.setValue(getCity());
-            }
+        addScreenHandler(city,
+                         IOrderMeta.getOrganizationAddressCity(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 city.setValue(getCity());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                city.setEnabled(isState(QUERY));
-                city.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 city.setEnabled(isState(QUERY));
+                                 city.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? description : costCenter;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? description : costCenter;
+                             }
+                         });
 
         addScreenHandler(description, IOrderMeta.getDescription(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1231,7 +1253,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         shipFrom.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             srow = new Item<String>(d.getEntry(), d.getEntry());
@@ -1347,8 +1368,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        OrderService1.get()
-                     .fetchForUpdate(manager.getIorder().getId(), elements, fetchForUpdateCall);
+        OrderService1.get().fetchForUpdate(manager.getIorder().getId(),
+                                           elements,
+                                           fetchForUpdateCall);
     }
 
     @UiHandler("commit")
@@ -1696,6 +1718,22 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    protected void auxDataHistory() {
+        int i;
+        AuxDataViewDO data;
+        ArrayList<IdNameVO> list;
+
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            data = manager.auxData.get(i);
+            list.add(new IdNameVO(data.getId(), data.getAnalyteName()));
+        }
+
+        HistoryScreen.showHistory(Messages.get().history_auxData(),
+                                  Constants.table().AUX_DATA,
+                                  list);
     }
 
     /**

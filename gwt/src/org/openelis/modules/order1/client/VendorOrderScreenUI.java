@@ -105,7 +105,7 @@ public class VendorOrderScreenUI extends Screen {
 
     public static final VendorOrderUiBinder        uiBinder   = GWT.create(VendorOrderUiBinder.class);
 
-    protected IOrderManager1                        manager;
+    protected IOrderManager1                       manager;
 
     protected ModulePermission                     userPermission;
 
@@ -160,12 +160,12 @@ public class VendorOrderScreenUI extends Screen {
 
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
-    protected AsyncCallbackUI<IOrderManager1>       addCall, fetchForUpdateCall, updateCall,
+    protected AsyncCallbackUI<IOrderManager1>      addCall, fetchForUpdateCall, updateCall,
                     fetchByIdCall, unlockCall;
 
-    protected AsyncCallbackUI<IOrderReturnVO>       duplicateCall;
+    protected AsyncCallbackUI<IOrderReturnVO>      duplicateCall;
 
-    protected IOrderManager1.Load                   elements[] = {IOrderManager1.Load.ITEMS};
+    protected IOrderManager1.Load                  elements[] = {IOrderManager1.Load.ITEMS};
 
     public VendorOrderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -545,20 +545,22 @@ public class VendorOrderScreenUI extends Screen {
                              }
                          });
 
-        addScreenHandler(city, IOrderMeta.getOrganizationAddressCity(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                city.setValue(getCity());
-            }
+        addScreenHandler(city,
+                         IOrderMeta.getOrganizationAddressCity(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 city.setValue(getCity());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                city.setEnabled(isState(QUERY));
-                city.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 city.setEnabled(isState(QUERY));
+                                 city.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? orgState : externalId;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? orgState : externalId;
+                             }
+                         });
 
         addScreenHandler(orgState,
                          IOrderMeta.getOrganizationAddressState(),
@@ -773,7 +775,6 @@ public class VendorOrderScreenUI extends Screen {
         costCenter.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             srow = new Item<String>(d.getEntry(), d.getEntry());
@@ -872,8 +873,9 @@ public class VendorOrderScreenUI extends Screen {
             };
         }
 
-        OrderService1.get()
-                     .fetchForUpdate(manager.getIorder().getId(), elements, fetchForUpdateCall);
+        OrderService1.get().fetchForUpdate(manager.getIorder().getId(),
+                                           elements,
+                                           fetchForUpdateCall);
     }
 
     @UiHandler("commit")
