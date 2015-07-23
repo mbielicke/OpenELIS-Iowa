@@ -14,9 +14,8 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.entity.ProviderLocation;
-import org.openelis.meta.ProviderMeta;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -111,12 +110,17 @@ public class ProviderLocationBean {
     }
 
     public void validate(ProviderLocationDO data) throws Exception {
+        Integer pid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+
+        pid = data.getProviderId();
+        if (pid == null)
+            pid = 0;
+
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             ProviderMeta.getProviderLocationLocation()));
+            list.add(new FormErrorException(Messages.get().provider_locationRequiredException(pid)));
 
         if (list.size() > 0)
             throw list;

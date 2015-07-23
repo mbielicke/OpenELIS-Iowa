@@ -47,7 +47,7 @@ import org.openelis.entity.Dictionary;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
@@ -262,15 +262,20 @@ public class DictionaryBean {
     }
 
     public void validate(DictionaryDO data) throws Exception {
+        Integer cid;
         ValidationErrorsList list;
         String entry;
 
         list = new ValidationErrorsList();
+
+        cid = data.getCategoryId();
+        if (cid == null)
+            cid = 0;
+
         entry = data.getEntry();
 
         if (entry == null)
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             CategoryMeta.getDictionaryEntry()));
+            list.add(new FormErrorException(Messages.get().dictionary_entryRequiredException(cid)));
         if (list.size() > 0)
             throw list;
     }
@@ -287,7 +292,7 @@ public class DictionaryBean {
         result = query.getResultList();
 
         if (result.size() > 0) {
-            list.add(new FieldErrorException(Messages.get().dictionaryDeleteException(), null));
+            list.add(new FormErrorException(Messages.get().dictionaryDeleteException()));
             throw list;
         }
 
@@ -296,7 +301,7 @@ public class DictionaryBean {
         result = query.getResultList();
 
         if (result.size() > 0) {
-            list.add(new FieldErrorException(Messages.get().dictionaryDeleteException(), null));
+            list.add(new FormErrorException(Messages.get().dictionaryDeleteException()));
             throw list;
         }
 
@@ -305,7 +310,7 @@ public class DictionaryBean {
         result = query.getResultList();
 
         if (result.size() > 0) {
-            list.add(new FieldErrorException(Messages.get().dictionaryDeleteException(), null));
+            list.add(new FormErrorException(Messages.get().dictionaryDeleteException()));
             throw list;
         }
     }

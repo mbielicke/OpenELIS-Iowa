@@ -279,23 +279,26 @@ public class AnalyteBean {
     }
 
     private void validate(AnalyteDO data) throws Exception {
+        Integer aid;
         Analyte analyte;
         Query query;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
 
+        aid = data.getId();
+        if (aid == null)
+            aid = 0;
+
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             AnalyteMeta.getName()));
+            list.add(new FormErrorException(Messages.get().analyte_nameRequiredException(aid)));
 
         try {
             query = manager.createQuery("from Analyte where name = :name");
             query.setParameter("name", data.getName());
             analyte = (Analyte)query.getSingleResult();
             if (data.getId() == null || !data.getId().equals(analyte.getId()))
-                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
-                                                 AnalyteMeta.getName()));
+                list.add(new FormErrorException(Messages.get().analyte_uniqueException(aid)));
         } catch (EntityNotFoundException e) {
             // Do nothing here, this is what we expect and do not want this
             // exception thrown.

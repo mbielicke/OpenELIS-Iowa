@@ -727,7 +727,6 @@ public class OrganizationScreenUI extends Screen {
 
         // country dropdown
         model = new ArrayList<Item<String>>();
-        model.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             row = new Item<String>(d.getEntry(), d.getEntry());
@@ -739,7 +738,6 @@ public class OrganizationScreenUI extends Screen {
 
         // state dropdown
         model = new ArrayList<Item<String>>();
-        model.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             row = new Item<String>(d.getEntry(), d.getEntry());
