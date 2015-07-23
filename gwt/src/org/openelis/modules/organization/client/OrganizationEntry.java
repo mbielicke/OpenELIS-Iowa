@@ -19,7 +19,7 @@ public class OrganizationEntry implements EntryPoint, ShowScreenHandler {
 
     @Override
     public void onModuleLoad() {   
-        ScreenBus.get().addHandler(ScreenBus.ORGANIZATION, this);        
+//        ScreenBus.get().addHandler(ScreenBus.ORGANIZATION, this);        
     }
     
     @Override

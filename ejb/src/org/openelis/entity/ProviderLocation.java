@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 /**
-  * ProviderLocation Entity POJO for database 
-  */
+ * ProviderLocation Entity POJO for database
+ */
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +37,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -48,13 +49,17 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery( name = "ProviderLocation.FetchByProviderId", 
-		    query = "select new org.openelis.domain.ProviderLocationDO(pl.id,pl.location,pl.externalId,pl.providerId," +
-		    		"a.id,a.multipleUnit,a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone," +
-		    		"a.cellPhone,a.faxPhone,a.email,a.country)"
-		    	  + " from ProviderLocation pl left join pl.address a where pl.providerId = :id order by pl.location") 
-
-
+@NamedQueries({
+               @NamedQuery(name = "ProviderLocation.FetchByProviderId",
+                           query = "select new org.openelis.domain.ProviderLocationDO(pl.id,pl.location,pl.externalId,pl.providerId,"
+                                   + "a.id,a.multipleUnit,a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone,"
+                                   + "a.cellPhone,a.faxPhone,a.email,a.country)"
+                                   + " from ProviderLocation pl left join pl.address a where pl.providerId = :id order by pl.location"),
+               @NamedQuery(name = "ProviderLocation.FetchByProviderIds",
+                           query = "select new org.openelis.domain.ProviderLocationDO(pl.id,pl.location,pl.externalId,pl.providerId,"
+                                   + "a.id,a.multipleUnit,a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone,"
+                                   + "a.cellPhone,a.faxPhone,a.email,a.country)"
+                                   + " from ProviderLocation pl left join pl.address a where pl.providerId in (:ids) order by pl.location")})
 @Entity
 @Table(name = "provider_location")
 @EntityListeners({AuditUtil.class})

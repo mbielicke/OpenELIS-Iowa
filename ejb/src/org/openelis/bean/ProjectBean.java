@@ -102,23 +102,29 @@ public class ProjectBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<ProjectViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+    public ArrayList<ProjectViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List<ProjectViewDO> list;
-        SystemUserVO user;
+        SystemUserVO u;
+        List<ProjectViewDO> ps;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Project.FetchByIds");
-        query.setParameter("ids", ids);
-        list = query.getResultList();
+        ps = new ArrayList<ProjectViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            ps.addAll(query.getResultList());
+        }
 
-        for (ProjectViewDO data : list) {
+        for (ProjectViewDO data : ps) {
             if (data.getOwnerId() != null) {
-                user = userCache.getSystemUser(data.getOwnerId());
-                if (user != null)
-                    data.setOwnerName(user.getLoginName());
+                u = userCache.getSystemUser(data.getOwnerId());
+                if (u != null)
+                    data.setOwnerName(u.getLoginName());
             }
         }
-        return DataBaseUtil.toArrayList(list);
+        
+        return DataBaseUtil.toArrayList(ps);
     }
 
     @SuppressWarnings("unchecked")

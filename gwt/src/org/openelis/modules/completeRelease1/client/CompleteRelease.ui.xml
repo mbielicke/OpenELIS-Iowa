@@ -50,6 +50,8 @@
             >
               <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
               <w:MenuItem ui:field="historySampleSpecific" display="{msg.sample_specific}" />
+              <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
+              <w:MenuItem ui:field="historyPatientRelation" display="{msg.patient_relation}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
               <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />

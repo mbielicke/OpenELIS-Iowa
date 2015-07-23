@@ -33,7 +33,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.TableFieldErrorException;
@@ -116,9 +116,9 @@ public class InventoryReceiptManagerProxy {
         InventoryLocationBean il;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
-        OrderManager orderMan;
-        OrderItemManager orderItemMan;
-        OrderItemViewDO orderItem;
+        IOrderManager orderMan;
+        IOrderItemManager orderItemMan;
+        IOrderItemViewDO orderItem;
 
         rl = EJBFactory.getInventoryReceipt();
         il = EJBFactory.getInventoryLocation();
@@ -177,7 +177,7 @@ public class InventoryReceiptManagerProxy {
             il.abortUpdate(invLocId);
         }
 
-        orderMan = man.getOrder();
+        orderMan = man.getIorder();
 
         if (orderMan == null)
             return man;
@@ -196,7 +196,7 @@ public class InventoryReceiptManagerProxy {
         }
 
         if (sumQRec == sumQReq)
-            orderMan.getOrder().setStatusId(statusProcessed);
+            orderMan.getIorder().setStatusId(statusProcessed);
 
         //
         // we need to update the OrderManager every time because a new note
@@ -212,11 +212,11 @@ public class InventoryReceiptManagerProxy {
         ValidationErrorsList list;
         InventoryReceiptBean cl;
         InventoryReceiptViewDO data;
-        OrderManager orderMan;
+        IOrderManager orderMan;
 
         cl = EJBFactory.getInventoryReceipt();
         list = new ValidationErrorsList();
-        orderMan = man.getOrder();
+        orderMan = man.getIorder();
         data = null;
         prevItemId = null;
         qtyReceived = 0;
@@ -235,7 +235,7 @@ public class InventoryReceiptManagerProxy {
 
             itemId = data.getInventoryItemId();
             if ( !itemId.equals(prevItemId)) {
-                qtyOrdered = data.getOrderItemQuantity();
+                qtyOrdered = data.getIorderItemQuantity();
                 if (data.getQuantityReceived() != null)
                     qtyReceived = data.getQuantityReceived();
                 else

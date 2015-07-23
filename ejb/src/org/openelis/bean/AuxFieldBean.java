@@ -49,8 +49,8 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldBean { 
-    
+public class AuxFieldBean {
+
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
@@ -86,23 +86,38 @@ public class AuxFieldBean {
         return data;
     }
 
+    public ArrayList<AuxFieldViewDO> fetchByGroupIds(ArrayList<Integer> groupIds) throws Exception {
+        Query query;
+        ArrayList<AuxFieldViewDO> data;
+
+        query = manager.createNamedQuery("AuxField.FetchAllActiveByGroupIds");
+        query.setParameter("auxFieldGroupIds", groupIds);
+        try {
+            data = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
     public ArrayList<AuxFieldViewDO> fetchAll() throws Exception {
         Query query;
 
         query = manager.createNamedQuery("AuxField.FetchAll");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
-    public ArrayList<AuxFieldViewDO> fetchByAnalyteName(String name, int max)  throws Exception {
+
+    public ArrayList<AuxFieldViewDO> fetchByAnalyteName(String name, int max) throws Exception {
         Query query;
 
         query = manager.createNamedQuery("AuxField.FetchByAnalyteName");
         query.setParameter("name", name);
         query.setMaxResults(max);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-
 
     public AuxFieldDO add(AuxFieldDO data) throws Exception {
         AuxField entity;

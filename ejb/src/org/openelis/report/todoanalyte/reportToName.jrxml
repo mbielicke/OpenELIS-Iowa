@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT o.name report_to_name
+		<![CDATA[SELECT o.name as report_to_name
   FROM sample s, sample_organization so, organization o
  WHERE so.sample_id = s.id and
        so.organization_id = o.id and

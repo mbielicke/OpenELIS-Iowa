@@ -59,7 +59,7 @@ public class CategoryBean {
     private EntityManager       manager;
 
     @EJB
-    private CategoryCacheBean  catCache;
+    private CategoryCacheBean   catCache;
 
     private static CategoryMeta meta = new CategoryMeta();
 
@@ -80,6 +80,15 @@ public class CategoryBean {
             throw new DatabaseException(e);
         }
         return data;
+    }
+
+    public ArrayList<CategoryDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("Category.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public CategoryDO fetchBySystemName(String systemName) throws Exception {
@@ -196,7 +205,8 @@ public class CategoryBean {
         catId = null;
 
         if (DataBaseUtil.isEmpty(sysName)) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), CategoryMeta.getSystemName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             CategoryMeta.getSystemName()));
         } else {
             try {
                 category = fetchBySystemName(sysName);
@@ -212,7 +222,8 @@ public class CategoryBean {
         }
 
         if (DataBaseUtil.isEmpty(name))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), CategoryMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             CategoryMeta.getName()));
 
         if (list.size() > 0)
             throw list;

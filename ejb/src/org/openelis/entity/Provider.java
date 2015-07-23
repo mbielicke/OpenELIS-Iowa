@@ -53,16 +53,16 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
                @NamedQuery(name = "Provider.FetchById",
-                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi,p.referenceId,p.referenceSourceId)"
                                    + " from Provider p where p.id = :id"),
                @NamedQuery(name = "Provider.FetchByIds",
-                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi,p.referenceId,p.referenceSourceId)"
                                    + " from Provider p where p.id in (:ids)"),
                @NamedQuery(name = "Provider.FetchByNpi",
-                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi,p.referenceId,p.referenceSourceId)"
                                    + " from Provider p left join p.providerLocation pl where p.npi like :npi"),
                @NamedQuery(name = "Provider.FetchByLastNameNpiExternalId",
-                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi,p.referenceId,p.referenceSourceId)"
                                    + " from Provider p left join p.providerLocation pl where p.lastName like :search or p.npi like :search"
                                    + " or pl.externalId like :search order by p.lastName, p.firstName, p.middleName, p.npi")})
 @Entity
@@ -89,6 +89,12 @@ public class Provider implements Auditable, Cloneable {
 
     @Column(name = "npi")
     private String                       npi;
+
+    @Column(name = "reference_id")
+    private String                       referenceId;
+
+    @Column(name = "reference_source_id")
+    private Integer                      referenceSourceId;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id", insertable = false, updatable = false)
@@ -151,6 +157,23 @@ public class Provider implements Auditable, Cloneable {
             this.npi = npi;
     }
 
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public Integer getReferenceSourceId() {
+        return referenceSourceId;
+    }
+
+    public void setReferenceSourceId(Integer referenceSourceId) {
+        if (DataBaseUtil.isDifferent(referenceSourceId, this.referenceSourceId))
+            this.referenceSourceId = referenceSourceId;
+    }
+
     public Collection<ProviderLocation> getProviderLocation() {
         return providerLocation;
     }
@@ -179,7 +202,12 @@ public class Provider implements Auditable, Cloneable {
                  .setField("first_name", firstName, original.firstName)
                  .setField("middle_name", middleName, original.middleName)
                  .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
-                 .setField("npi", npi, original.npi);
+                 .setField("npi", npi, original.npi)
+                 .setField("reference_id", referenceId, original.referenceId)
+                 .setField("reference_source_id",
+                           referenceSourceId,
+                           original.referenceSourceId,
+                           Constants.table().DICTIONARY);
 
         return audit;
     }

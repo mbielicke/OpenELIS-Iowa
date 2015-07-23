@@ -41,6 +41,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -87,13 +88,6 @@ public class MCLViolationReportBean {
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private String                  dnrEmail;
-
-    @PostConstruct
-    public void init() {
-
-        initMethodCodes();
-        initContaminantIds();
-    }
 
     /*
      * Returns the prompt for a single re-print
@@ -146,7 +140,7 @@ public class MCLViolationReportBean {
         StringBuilder bactPosBody, dnrMCLBody, shlMCLBody;
         SystemVariableDO lastRun;
 
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        format = new SimpleDateFormat(Messages.get().dateTimePattern());
 
         status = new ReportStatus();
         session.setAttribute("MCLViolationReport", status);
@@ -162,6 +156,9 @@ public class MCLViolationReportBean {
         lastRun = null;
         toEmail = "";
         try {
+            initMethodCodes();
+            initContaminantIds();
+
             dnrEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
             lastRunDate = format.parse(lastRun.getValue());
@@ -253,7 +250,7 @@ public class MCLViolationReportBean {
                 for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
-                    if (!DataBaseUtil.isEmpty(rowResult.getValue())) {
+                    if ("Y".equals(rowResult.getIsReportable()) && !DataBaseUtil.isEmpty(rowResult.getValue())) {
                         for (k = 1; k < resultRow.size(); k++) {
                             colResult = resultRow.get(k);
                             analyte = analyteBean.fetchById(colResult.getAnalyteId());
@@ -320,6 +317,9 @@ public class MCLViolationReportBean {
                 sysVarBean.abortUpdate(lastRun.getId());
             log.log(Level.SEVERE, "Failed to run MCL Violation Report ", e);
             throw e;
+        } finally {
+            contaminantIds = null;
+            methodCodes = null;
         }
 
         return status;
@@ -453,6 +453,9 @@ public class MCLViolationReportBean {
         resultLines = new StringBuilder();
         for (ArrayList<ResultViewDO> resultRow : results) {
             rowResult = resultRow.get(0);
+            if ("N".equals(rowResult.getIsReportable()))
+                continue;
+            
             resultLines.append(rowResult.getAnalyte()).append(" Result ");
             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rowResult.getTypeId()))
                 resultLines.append(dictionaryCache.getById(Integer.valueOf(rowResult.getValue()))
@@ -461,13 +464,15 @@ public class MCLViolationReportBean {
                 resultLines.append(rowResult.getValue());
             resultLines.append("<br>\r\n");
             
-            try {
-                trVDO = testResultBean.fetchById(rowResult.getTestResultId());
-                if (Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR.equals(trVDO.getFlagsId()))
-                    positive = true;
-            } catch (Exception anyE) {
-                log.severe(anyE.getMessage());
-                throw anyE;
+            if (rowResult.getTestResultId() != null) {
+                try {
+                    trVDO = testResultBean.fetchById(rowResult.getTestResultId());
+                    if (Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR.equals(trVDO.getFlagsId()))
+                        positive = true;
+                } catch (Exception anyE) {
+                    log.severe(anyE.getMessage());
+                    throw anyE;
+                }
             }
         }
         

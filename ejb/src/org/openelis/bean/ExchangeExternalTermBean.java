@@ -71,13 +71,14 @@ public class ExchangeExternalTermBean {
     }
     
     public ArrayList<ExchangeExternalTermViewDO> fetchByReferenceTableIdReferenceIdsProfileIds(Integer referenceTableId,
-                                                                                           Collection<Integer> referenceIds,
-                                                                                           Collection<Integer> profileIds) throws Exception {
+                                                                                               ArrayList<Integer> referenceIds,
+                                                                                               ArrayList<Integer> profileIds) throws Exception {
         int i;
         Integer referenceId;
         Query query;
         ExchangeExternalTermViewDO existing;
         List<ExchangeExternalTermViewDO> results;
+        ArrayList<Integer> r;
         HashMap<Integer, ExchangeExternalTermViewDO> refIdExtTermMap;
         HashMap<Integer, Integer> profIndexMap;
         ArrayList<ExchangeExternalTermViewDO> returnList;
@@ -85,10 +86,14 @@ public class ExchangeExternalTermBean {
 
         query = manager.createNamedQuery("ExchangeExternalTerm.FetchByReferenceTableIdReferenceIdsProfileIds");
         query.setParameter("referenceTableId", referenceTableId);
-        query.setParameter("referenceIds", referenceIds);
         query.setParameter("profileIds", profileIds);
+        results = new ArrayList<ExchangeExternalTermViewDO>();
+        r = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("referenceIds", referenceIds.subList(r.get(i), r.get(i + 1)));
+            results.addAll(query.getResultList());
+        }
 
-        results = query.getResultList();
         if (results.isEmpty())
             throw new NotFoundException();       
         

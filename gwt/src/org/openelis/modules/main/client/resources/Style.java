@@ -8,11 +8,15 @@ public interface Style extends CssResource {
 	
 	public String WhiteContentPanel();
 	
+	public String PopupPanelWithBorder();
+	
 	public String Form();
 	
 	public String FormTitle();
 	
 	public String Prompt();
+	
+	public String LeftAlignPrompt();
 	
 	public String WarningLabel();
 	
@@ -27,4 +31,6 @@ public interface Style extends CssResource {
 	public String ScreenLabelLink();
 	
     public String Title();
+    
+    public String Heading();
 }

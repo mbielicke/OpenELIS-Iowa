@@ -934,9 +934,9 @@ public class DataViewBean {
 
         builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetchVO(" +
                           SampleWebMeta.getAccessionNumber() + ", " +
-                          SampleWebMeta.getAuxDataAuxFieldAnalyteName() + ", " +
+                          SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
                           SampleWebMeta.getId() + ", " + SampleWebMeta.getDomain() + ", " +
-                          SampleWebMeta.getAuxDataAuxFieldAnalyteId() + ", " +
+                          SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
                           SampleWebMeta.getAuxDataTypeId() + ", " +
                           SampleWebMeta.getAuxDataValue() + ")");
         builder.constructWhere(fields);
@@ -962,7 +962,7 @@ public class DataViewBean {
          * the user wants to see aux data for all analytes. Otherwise, in that
          * case the clause won't get added.
          */
-        builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteName() + "!=" + "null");
+        builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteName() + "!=" + "null");
 
         /*
          * Add the clause for limiting the aux data by analytes only if the user
@@ -971,12 +971,12 @@ public class DataViewBean {
          * records returned by the query
          */
         if (unselAnalytes != null && unselAnalytes.size() > 0) {
-            builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteId() +
+            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() +
                              getAnalyteClause(auxFieldValueMap.keySet(), unselAnalytes) + ")");
         }
 
         builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
-                           SampleWebMeta.getAuxDataAuxFieldAnalyteName());
+                           SampleWebMeta.getAuxDataFieldAnalyteName());
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
         return query.getResultList();
@@ -2150,6 +2150,12 @@ public class DataViewBean {
             headers.add(Messages.get().race());
         if ("Y".equals(data.getSampleClinicalPatientEthnicity()))
             headers.add(Messages.get().ethnicity());
+        if ("Y".equals(data.getSampleClinicalPatientPhoneNumber()))
+            headers.add(Messages.get().dataView_patientPhone());
+        if ("Y".equals(data.getSampleClinicalProviderLastName()))
+            headers.add(Messages.get().provider_lastName());
+        if ("Y".equals(data.getSampleClinicalProviderFirstName()))
+            headers.add(Messages.get().provider_firstName());
 
         return headers;
     }
@@ -2746,6 +2752,22 @@ public class DataViewBean {
             cell = row.createCell(startCol++ );
             if (clinical != null && clinical.getPatient() != null)
                 cell.setCellValue(dictEntryMap.get(clinical.getPatient().getEthnicityId()));
+        }
+        if ("Y".equals(data.getSampleClinicalPatientPhoneNumber())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getPatient() != null &&
+                clinical.getPatient().getAddress() != null)
+                cell.setCellValue(clinical.getPatient().getAddress().getHomePhone());
+        }
+        if ("Y".equals(data.getSampleClinicalProviderLastName())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getProvider() != null)
+                cell.setCellValue(clinical.getProvider().getLastName());
+        }
+        if ("Y".equals(data.getSampleClinicalProviderFirstName())) {
+            cell = row.createCell(startCol++ );
+            if (clinical != null && clinical.getProvider() != null)
+                cell.setCellValue(clinical.getProvider().getFirstName());
         }
     }
 

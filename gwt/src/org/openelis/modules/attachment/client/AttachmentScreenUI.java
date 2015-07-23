@@ -44,7 +44,6 @@ import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -56,7 +55,6 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -121,9 +119,6 @@ public class AttachmentScreenUI extends Screen {
     @UiField
     protected Button                                        searchButton, attachButton,
                     updateButton, commitButton, abortButton;
-
-    @UiField
-    protected CheckBox                                      autoSelectNext;
 
     protected AttachmentScreenUI                            screen;
 
@@ -240,15 +235,6 @@ public class AttachmentScreenUI extends Screen {
                 Integer id;
                 Node node;
 
-                if (isState(RESERVED)) {
-                    /*
-                     * if an attachment is reserved then no other nodes can be
-                     * selected
-                     */
-                    event.cancel();
-                    return;
-                }
-
                 if ( !isState(UPDATE))
                     return;
 
@@ -274,9 +260,6 @@ public class AttachmentScreenUI extends Screen {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
                 nodeSelected(event.getSelectedItem());
-                if (isDataEntry())
-                    displayAttachment(tree.getNodeAt(event.getSelectedItem()),
-                                      Messages.get().attachment_attachment());
             }
         });
 
@@ -360,22 +343,9 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? autoSelectNext : tree;
-            }
-        });
-
-        addScreenHandler(autoSelectNext, "autoSelectNext", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                autoSelectNext.setEnabled(isState(DISPLAY) && isDataEntry());
-            }
-
-            public Widget onTab(boolean forward) {
                 return forward ? updateButton : tree;
             }
         });
-
-        if (isDataEntry())
-            autoSelectNext.setValue("Y");
 
         addScreenHandler(updateButton, "updateButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
@@ -438,7 +408,7 @@ public class AttachmentScreenUI extends Screen {
                      * don't let a file be dropped for upload if a record is
                      * locked
                      */
-                    if (isState(UPDATE, RESERVED))
+                    if (isState(UPDATE))
                         return;
                     setBusy(Messages.get().gen_saving());
                     /*
@@ -470,8 +440,6 @@ public class AttachmentScreenUI extends Screen {
                     }
                     tree.selectNodeAt(0);
                     nodeSelected(0);
-                    if (isDataEntry())
-                        displayAttachment(tree.getNodeAt(0), Messages.get().attachment_attachment());
                     setDone(Messages.get().gen_savingComplete());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -485,7 +453,7 @@ public class AttachmentScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 fileDrop.setEnabled(isState(QUERY, DISPLAY));
 
-                if (isState(UPDATE, RESERVED) && !closeHandlerAdded && window != null) {
+                if (isState(UPDATE) && !closeHandlerAdded && window != null) {
                     /*
                      * this handler is not added in initialize() because this
                      * screen can be shown in a modal window and in that case,
@@ -493,7 +461,7 @@ public class AttachmentScreenUI extends Screen {
                      */
                     window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
                         public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                            if (isState(UPDATE, RESERVED)) {
+                            if (isState(UPDATE)) {
                                 event.cancel();
                                 setError(Messages.get().gen_mustCommitOrAbort());
                             } else if (dropIndicator != null) {
@@ -804,8 +772,6 @@ public class AttachmentScreenUI extends Screen {
                     tree.selectNodeAt(0);
                     nodeSelected(0);
                     searchSuccessful();
-                    if (isDataEntry())
-                        displayAttachment(tree.getNodeAt(0), Messages.get().attachment_attachment());
                 }
 
                 public void notFound() {
@@ -836,179 +802,10 @@ public class AttachmentScreenUI extends Screen {
             };
         }
 
-        if (isDataEntry())
-            AttachmentService.get()
-                             .fetchUnattachedByDescription(query.getFields().get(0).getQuery(),
-                                                           query.getPage() * query.getRowsPerPage(),
-                                                           query.getRowsPerPage(),
-                                                           queryCall);
-        else
-            AttachmentService.get().fetchByQuery(query.getFields(),
-                                                 query.getPage() * query.getRowsPerPage(),
-                                                 query.getRowsPerPage(),
-                                                 queryCall);
-    }
-
-    /**
-     * If "auto select next" is checked then reserves the next attachment that
-     * can be reserved and returns its manager. Otherwise, reserves the
-     * currently selected attachment and returns its manager.
-     */
-    public AttachmentManager getReserved() {
-        AttachmentManager am;
-        Node node, next, prevSelNode;
-        AttachmentNode anode;
-
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if (node == null)
-            return null;
-
-        if (isState(UPDATE)) {
-            /*
-             * don't allow reserving an attachment if an attachment is being
-             * updated
-             */
-            setError(Messages.get().gen_mustCommitOrAbort());
-            return null;
-        }
-
-        if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
-            node = node.getParent();
-        } else if (CLICK_FOR_MORE_LEAF.equals(node.getType())) {
-            /*
-             * no attachment or attachment item was selected
-             */
-            return null;
-        }
-
-        setBusy(Messages.get().gen_lockForUpdate());
-        /*
-         * if "auto select next" is checked then try to find the next manager
-         * that can be reserved and return it; otherwise return the currently
-         * selected manager
-         */
-        am = null;
-        anode = (AttachmentNode)node;
-        if ("Y".equals(autoSelectNext.getValue())) {
-            /*
-             * if previousManager is not null then an attachment was reserved
-             * before, so try to reserve the next node's attachment; otherwise
-             * try to reserve the current node's attachment
-             */
-            if (previousManager != null) {
-                next = anode.nextSibling();
-                /*
-                 * go to the next node only if there are any attachments left in
-                 * the tree, otherwise try to reserve the current node
-                 */
-                if (next != null && ATTACHMENT_LEAF.equals(next.getType())) {
-                    anode.setStatus(AttachmentNode.Status.ATTACHED);
-                    tree.refreshNode(anode);
-                    node = next;
-                }
-            }
-            while (node != null && ATTACHMENT_LEAF.equals(node.getType())) {
-                anode = (AttachmentNode)node;
-                try {
-                    prevSelNode = tree.getNodeAt(tree.getSelectedNode());
-                    am = reserve(anode);
-                    /*
-                     * show the attachment linked to the currently selected node
-                     * but only if the node wasn't already selected
-                     */
-                    if (anode != prevSelNode)
-                        displayAttachment(anode, Messages.get().attachment_attachment());
-                    break;
-                } catch (EntityLockedException e) {
-                    /*
-                     * mark the current node as locked by someone else and go to
-                     * the next node and try to reserve its attachment
-                     */
-                    anode.setStatus(AttachmentNode.Status.LOCKED_BY_OTHER);
-                    tree.refreshNode(anode);
-                    node = anode.nextSibling();
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-            }
-        } else {
-            /*
-             * reserve the currently selected attachment
-             */
-            anode = (AttachmentNode)node;
-            try {
-                am = reserve(anode);
-            } catch (EntityLockedException e) {
-                /*
-                 * mark the current node as locked by someone else
-                 */
-                anode.setStatus(AttachmentNode.Status.LOCKED_BY_OTHER);
-                tree.refreshNode(anode);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
-        clearStatus();
-
-        return am;
-    }
-
-    /**
-     * Removes the reservation from the last attachment that was reserved. If
-     * the flag is true then the reserved attachment was successfully attached
-     * to the other record e.g. sample and if "auto select next" is checked then
-     * an attachment after the current one will be reserved, otherwise the
-     * current attachment will be reserved because it was not attached.
-     */
-    public void removeReservation(boolean isAttached) {
-        Integer id;
-        Node node;
-        AttachmentNode anode;
-
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if (node == null)
-            return;
-
-        if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
-            node = node.getParent();
-        } else if (CLICK_FOR_MORE_LEAF.equals(node.getType())) {
-            /*
-             * no attachment or attachment item was selected
-             */
-            return;
-        }
-
-        setBusy(Messages.get().gen_cancelChanges());
-        anode = (AttachmentNode)node;
-        try {
-            id = anode.getData();
-            manager = AttachmentService.get().unlock(id);
-            managers.put(id, manager);
-            if (isAttached) {
-                previousManager = manager;
-                anode.setStatus(AttachmentNode.Status.ATTACHED);
-            } else {
-                anode.setStatus(AttachmentNode.Status.UNATTACHED);
-                previousManager = null;
-            }
-            setState(DISPLAY);
-            reloadAttachment(anode);
-            setDone(Messages.get().gen_updateAborted());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            clearStatus();
-        }
-    }
-
-    /**
-     * Returns true if the screen was opened from another screen for data entry
-     * , otherwise returns false
-     */
-    public boolean isDataEntry() {
-        return false;
+        AttachmentService.get().fetchByQuery(query.getFields(),
+                                             query.getPage() * query.getRowsPerPage(),
+                                             query.getRowsPerPage(),
+                                             queryCall);
     }
 
     /**
@@ -1032,29 +829,6 @@ public class AttachmentScreenUI extends Screen {
      * screen has completed and attachments were found
      */
     public void searchSuccessful() {
-    }
-
-    /**
-     * Reserves and returns the manager for the attachment showing on the passed
-     * node and refreshes the tree. Throws exception if there was an issue with
-     * reserving the attachment.
-     */
-    private AttachmentManager reserve(AttachmentNode node) throws Exception {
-        Integer id;
-
-        id = node.getData();
-        manager = AttachmentService.get().getReserved(id);
-        previousManager = manager;
-        /*
-         * the attachment is now reserved for this user, so refresh the screen
-         * and display the attachment
-         */
-        managers.put(id, manager);
-        setState(RESERVED);
-        tree.selectNodeAt(node);
-        node.setStatus(AttachmentNode.Status.LOCKED_BY_SELF);
-        reloadAttachment(node);
-        return manager;
     }
 
     /**
@@ -1277,10 +1051,6 @@ public class AttachmentScreenUI extends Screen {
                 default:
                     return OpenELISResources.INSTANCE.icon().blankIcon();
             }
-        }
-
-        void setStatus(Status status) {
-            this.status = status;
         }
     }
 }

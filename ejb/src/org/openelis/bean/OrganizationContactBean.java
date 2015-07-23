@@ -47,14 +47,13 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class OrganizationContactBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager manager;
 
     @EJB
-    private AddressBean                     addressBean;
+    private AddressBean   addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception {
@@ -71,13 +70,30 @@ public class OrganizationContactBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrganizationContactDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
+        Query query;        
+        List<OrganizationContactDO> o;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("OrganizationContact.FetchByOrganizationIds");
+        o = new ArrayList<OrganizationContactDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(o);
+    }
+
     public OrganizationContactDO add(OrganizationContactDO data) throws Exception {
         OrganizationContact entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
-        entity = new OrganizationContact();        
+        entity = new OrganizationContact();
         entity.setOrganizationId(data.getOrganizationId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
@@ -111,10 +127,11 @@ public class OrganizationContactBean {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
-        if (entity != null)
+        if (entity != null) {
             manager.remove(entity);
+            addressBean.delete(data.getAddress());
+        }
     }
 
     public void validate(OrganizationContactDO data) throws Exception {
@@ -127,7 +144,7 @@ public class OrganizationContactBean {
         if (DataBaseUtil.isEmpty(data.getName()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getContactName()));
-        
+
         if (list.size() > 0)
             throw list;
     }

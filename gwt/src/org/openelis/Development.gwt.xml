@@ -33,7 +33,7 @@ UIRF Software License are applicable instead of those above.
 
     <inherits name="org.openelis.OpenELIS"/>
     <inherits name="org.openelis.modules.Modules"/>
-    
+
     <inherits name="com.google.gwt.user.Debug"/>
     
     <set-property name="user.agent" value="gecko1_8,safari" />

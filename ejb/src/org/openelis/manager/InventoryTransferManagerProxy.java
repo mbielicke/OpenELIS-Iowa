@@ -32,8 +32,8 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.TableFieldErrorException;
@@ -63,10 +63,10 @@ public class InventoryTransferManagerProxy {
         Integer fromItemId, toItemId, fromLocId, toLocId, quantity, parentRatio;
         InventoryReceiptManager recMan;
         InventoryReceiptViewDO receipt;
-        OrderManager orderMan;
-        OrderViewDO order;
-        OrderItemViewDO orderItem;
-        ArrayList<OrderItemViewDO> orderItems;
+        IOrderManager iorderMan;
+        IOrderViewDO iorder;
+        IOrderItemViewDO iorderItem;
+        ArrayList<IOrderItemViewDO> iorderItems;
         ArrayList<Integer> locationIdList;
         InventoryLocationBean ll;
         Datetime date;
@@ -76,26 +76,26 @@ public class InventoryTransferManagerProxy {
         //
         // we create an internal order in order to use up kit components
         //
-        orderMan = OrderManager.getInstance();
-        order = orderMan.getOrder();
-        order.setNeededInDays(0);
-        order.setOrderedDate(date);
-        order.setRequestedBy(null);
-        order.setType(OrderManager.TYPE_INTERNAL);
-        order.setStatusId(statusProcessed);
-        orderMan.add();
+        iorderMan = IOrderManager.getInstance();
+        iorder = iorderMan.getIorder();
+        iorder.setNeededInDays(0);
+        iorder.setOrderedDate(date);
+        iorder.setRequestedBy(null);
+        iorder.setType(IOrderManager.TYPE_INTERNAL);
+        iorder.setStatusId(statusProcessed);
+        iorderMan.add();
 
-        orderItems = new ArrayList<OrderItemViewDO>();
+        iorderItems = new ArrayList<IOrderItemViewDO>();
         locationIdList = new ArrayList<Integer>();
         recMan = InventoryReceiptManager.getInstance();
         ll = EJBFactory.getInventoryLocation();
         for (i = 0; i < man.count(); i++ ) {
-            orderItem = new OrderItemViewDO();
-            orderItem.setOrderId(order.getId());
+            iorderItem = new IOrderItemViewDO();
+            iorderItem.setIorderId(iorder.getId());
             fromItemId = man.getFromInventoryItemAt(i).getId();
-            orderItem.setInventoryItemId(fromItemId);
+            iorderItem.setInventoryItemId(fromItemId);
             quantity = man.getQuantityAt(i);
-            orderItem.setQuantity(quantity);
+            iorderItem.setQuantity(quantity);
             fromLocId = man.getFromInventoryLocationAt(i).getId();
             ll.fetchForUpdate(fromLocId);
             locationIdList.add(fromLocId);
@@ -122,14 +122,14 @@ public class InventoryTransferManagerProxy {
             receipt.setReceivedDate(date);
             receipt.setAddToExistingLocation(man.getAddtoExistingAt(i));
             recMan.addReceipt(receipt);
-            orderItems.add(orderItem);
+            iorderItems.add(iorderItem);
         }
 
-        EJBFactory.getOrderItem().add(order, orderItems);
+        EJBFactory.getIOrderItem().add(iorder, iorderItems);
         //
         // fill the order
         //
-        EJBFactory.getInventoryXUse().add(orderItems, locationIdList);
+        EJBFactory.getInventoryXUse().add(iorderItems, locationIdList);
 
         //
         // add all the inventory receipts

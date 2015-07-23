@@ -32,16 +32,16 @@ public class InventoryXUseDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, inventoryLocationId, orderItemId, quantity;
+    protected Integer         id, inventoryLocationId, iorderItemId, quantity;
 
     public InventoryXUseDO() {
     }
 
-    public InventoryXUseDO(Integer id, Integer inventoryLocationId, Integer orderItemId,
+    public InventoryXUseDO(Integer id, Integer inventoryLocationId, Integer iorderItemId,
                            Integer quantity) {
         setId(id);
         setInventoryLocationId(inventoryLocationId);
-        setOrderItemId(orderItemId);
+        setIorderItemId(iorderItemId);
         setQuantity(quantity);
         _changed = false;
     }
@@ -64,12 +64,12 @@ public class InventoryXUseDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getOrderItemId() {
-        return orderItemId;
+    public Integer getIorderItemId() {
+        return iorderItemId;
     }
 
-    public void setOrderItemId(Integer orderItemId) {
-        this.orderItemId = orderItemId;
+    public void setIorderItemId(Integer iorderItemId) {
+        this.iorderItemId = iorderItemId;
         _changed = true;
     }
 

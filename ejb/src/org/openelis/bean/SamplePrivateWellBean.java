@@ -51,13 +51,13 @@ import org.openelis.ui.common.NotFoundException;
 public class SamplePrivateWellBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager    manager;
+    private EntityManager       manager;
 
     @EJB
-    private AddressBean      address;
+    private AddressBean         address;
 
     @EJB
-    private OrganizationBean organization;
+    private OrganizationBean    organization;
 
     public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
@@ -80,14 +80,19 @@ public class SamplePrivateWellBean {
 
     public ArrayList<SamplePrivateWellViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
-        List<SamplePrivateWellViewDO> results;
+        List<SamplePrivateWellViewDO> w;
         ArrayList<SamplePrivateWellViewDO> list;
         ArrayList<OrganizationViewDO> orgs;
+        ArrayList<Integer> r;
         HashMap<Integer, ArrayList<SamplePrivateWellViewDO>> map;
 
         query = manager.createNamedQuery("SamplePrivateWell.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
-        results = query.getResultList();
+        w = new ArrayList<SamplePrivateWellViewDO>();
+        r = DataBaseUtil.createSubsetRange(sampleIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
+            w.addAll(query.getResultList());
+        }
 
         /*
          * creating the following mapping allows us to fetch in one query all of
@@ -95,7 +100,7 @@ public class SamplePrivateWellBean {
          * records and put them in the appropriate SamplePrivateWellViewDOs
          */
         map = new HashMap<Integer, ArrayList<SamplePrivateWellViewDO>>();
-        for (SamplePrivateWellViewDO data : results) {
+        for (SamplePrivateWellViewDO data : w) {
             if (data.getOrganizationId() != null) {
                 list = map.get(data.getOrganizationId());
                 if (list == null) {
@@ -107,7 +112,7 @@ public class SamplePrivateWellBean {
         }
 
         if (map.size() > 0) {
-            orgs = organization.fetchByIds(map.keySet());
+            orgs = organization.fetchByIds(DataBaseUtil.toArrayList(map.keySet()));
 
             for (OrganizationViewDO org : orgs) {
                 list = map.get(org.getId());
@@ -122,7 +127,7 @@ public class SamplePrivateWellBean {
             }
         }
 
-        return DataBaseUtil.toArrayList(results);
+        return DataBaseUtil.toArrayList(w);
     }
 
     public SamplePrivateWellDO add(SamplePrivateWellDO data) throws Exception {
@@ -167,7 +172,7 @@ public class SamplePrivateWellBean {
     public SamplePrivateWellDO update(SamplePrivateWellDO data) throws Exception {
         SamplePrivateWell entity;
 
-        if (!data.isChanged() && !data.getLocationAddress().isChanged() &&
+        if ( !data.isChanged() && !data.getLocationAddress().isChanged() &&
             !data.getReportToAddress().isChanged())
             return data;
 

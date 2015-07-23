@@ -84,7 +84,7 @@ import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
-import org.openelis.modules.pws.client.StatusBarPopupScreenUI;
+import org.openelis.modules.report.client.WorksheetLabelReportScreen;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
@@ -93,9 +93,11 @@ import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -103,6 +105,7 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.ActionEvent;
@@ -134,6 +137,7 @@ import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
+import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
@@ -150,6 +154,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     private PopupPanel                                    statusPanel;
     private StatusBarPopupScreenUI                        statusScreen;
     private Timer                                         exportTimer, importTimer;
+    private WorksheetLabelReportScreen                    worksheetLabelReportScreen;
     private WorksheetManager1                             manager;
     private WorksheetPrintReportScreen                    worksheetPrintReportScreen;
 
@@ -169,7 +174,8 @@ public class WorksheetCompletionScreenUI extends Screen {
     @UiField
     protected Menu                                        optionsMenu;
     @UiField
-    protected MenuItem                                    print, worksheetHistory;
+    protected MenuItem                                    printLabels, printWorksheet,
+                                                          worksheetHistory;
     @UiField
     protected TabLayoutPanel                              tabPanel;
     @UiField
@@ -362,15 +368,23 @@ public class WorksheetCompletionScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
-                print.setEnabled(isState(DISPLAY));
+                printWorksheet.setEnabled(isState(DISPLAY));
+                printLabels.setEnabled(isState(DISPLAY));
                 worksheetHistory.setEnabled(isState(DISPLAY));
             }
         });
         
-        print.addCommand(new Command() {
+        printWorksheet.addCommand(new Command() {
             @Override
             public void execute() {
-                print();
+                printWorksheet();
+            }
+        });
+
+        printLabels.addCommand(new Command() {
+            @Override
+            public void execute() {
+                printLabels();
             }
         });
 
@@ -768,6 +782,14 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
 
+        bus.addHandler(WorksheetManagerModifiedEvent.getType(), new WorksheetManagerModifiedEvent.Handler() {
+            public void onManagerModified(WorksheetManagerModifiedEvent event) {
+                manager = event.getManager();
+                setData();
+                fireDataChange();
+            }
+        });
+        
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(UPDATE)) {
@@ -912,7 +934,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                         commitUpdate(null);
                     }
                 } else {
-                    commitTransfer();
+                    commitTransfer(false);
                 }
                 break;
         }
@@ -955,7 +977,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         WorksheetService1.get().update(manager, flag, updateCall);
     }
     
-    private void commitTransfer() {
+    private void commitTransfer(final boolean ignoreWarnings) {
         ArrayList<WorksheetAnalysisViewDO> waVDOs;
         
         finishEditing();
@@ -1035,6 +1057,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
+                    if (!e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarnings)
+                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
+                            commitTransfer(true);
                 }
                 
                 public void failure(Throwable e) {
@@ -1045,7 +1070,7 @@ public class WorksheetCompletionScreenUI extends Screen {
             };
         }
 
-        WorksheetService1.get().transferResults(manager, waVDOs, sampleMans, transferCall);
+        WorksheetService1.get().transferResults(manager, waVDOs, sampleMans, ignoreWarnings, transferCall);
     }
     
     @SuppressWarnings("unused")
@@ -1137,7 +1162,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         SampleService1.get().unlock(sampleIds, sampleElements, unlockSamplesCall);
     }
 
-    protected void print() {
+    protected void printWorksheet() {
         ScreenWindow modal;
 
         try {
@@ -1145,7 +1170,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                 worksheetPrintReportScreen = new WorksheetPrintReportScreen();
 
                 /*
-                 * we need to make sure that the value of SHIPPING_ID gets set
+                 * we need to make sure that the value of WORKSHEET_ID gets set
                  * the first time the screen is brought up
                  */
                 DeferredCommand.addCommand(new Command() {
@@ -1162,6 +1187,37 @@ public class WorksheetCompletionScreenUI extends Screen {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(Messages.get().print());
             modal.setContent(worksheetPrintReportScreen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    protected void printLabels() {
+        ScreenWindow modal;
+
+        try {
+            if (worksheetLabelReportScreen == null) {
+                worksheetLabelReportScreen = new WorksheetLabelReportScreen();
+
+                /*
+                 * we need to make sure that the value of WORKSHEET_ID gets set 
+                 * the first time the screen is brought up
+                 */
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID",
+                                                                 manager.getWorksheet().getId());
+                    }
+                });
+            } else {
+                worksheetLabelReportScreen.reset();
+                worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID", manager.getWorksheet()
+                                                                                .getId());
+            }
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().print());
+            modal.setContent(worksheetLabelReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -1478,6 +1534,12 @@ public class WorksheetCompletionScreenUI extends Screen {
                     fireDataChange();
                 }
                 
+                public void validationErrors(ValidationErrorsList e) {
+                    statusPanel.hide();
+                    statusScreen.setStatus(null);
+                    showErrors(e);
+                }
+                
                 public void failure(Throwable e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
@@ -1582,7 +1644,17 @@ public class WorksheetCompletionScreenUI extends Screen {
 
     private void createStatusBarPopup() {
         if (statusScreen == null) {
-            statusScreen = new StatusBarPopupScreenUI();
+            statusScreen = new StatusBarPopupScreenUI() {
+                @Override
+                public boolean isStopVisible() {
+                    return false;
+                }
+                
+                @Override
+                public void stop() {
+                    // ignore
+                }
+            };
 
             /*
              * initialize and show the popup screen
@@ -1827,6 +1899,29 @@ public class WorksheetCompletionScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates a string containing the message that there are warnings on the
+     * screen, followed by all warning messages, followed by the question
+     * whether the data should be committed
+     */
+    private String getWarnings(ArrayList<Exception> warnings, boolean isConfirm) {
+        StringBuilder b;
+
+        b = new StringBuilder();
+        b.append(Messages.get().gen_warningDialogLine1()).append("\n");
+        if (warnings != null) {
+            for (Exception ex : warnings) {
+                if (ex instanceof Warning || ex instanceof Caution)
+                    b.append(" * ").append(ex.getMessage()).append("\n");
+            }
+        }
+
+        if (isConfirm)
+            b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        return b.toString();
     }
 
     private Integer getWorksheetId() {

@@ -35,20 +35,22 @@ public class ProviderDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, typeId;
-    protected String          lastName, firstName, middleName, npi;
+    protected Integer         id, typeId, referenceSourceId;
+    protected String          lastName, firstName, middleName, npi, referenceId;
 
     public ProviderDO() {
     }
 
     public ProviderDO(Integer id, String lastName, String firstName, String middleName,
-                      Integer typeId, String npi) {
+                      Integer typeId, String npi, String referenceId, Integer referenceSourceId) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);
         setMiddleName(middleName);
         setTypeId(typeId);
         setNpi(npi);
+        setReferenceId(referenceId);
+        setReferenceSourceId(referenceSourceId);
         _changed = false;
     }
 
@@ -103,6 +105,23 @@ public class ProviderDO extends DataObject {
 
     public void setNpi(String npi) {
         this.npi = DataBaseUtil.trim(npi);
+        _changed = true;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public Integer getReferenceSourceId() {
+        return referenceSourceId;
+    }
+
+    public void setReferenceSourceId(Integer referenceSourceId) {
+        this.referenceSourceId = referenceSourceId;
         _changed = true;
     }
 }

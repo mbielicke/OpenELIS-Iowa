@@ -26,6 +26,10 @@
 package org.openelis.bean;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -70,6 +74,22 @@ public class TestWorksheetBean {
         }
         
         return data;
+    }
+    
+    public ArrayList<TestWorksheetViewDO> fetchByTestIds(ArrayList<Integer> testIds) throws Exception {
+        Query query;
+        List<TestWorksheetViewDO> t;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("TestWorksheet.FetchByTestIds");
+        t = new ArrayList<TestWorksheetViewDO>();
+        r = DataBaseUtil.createSubsetRange(testIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("testIds", testIds.subList(r.get(i), r.get(i + 1)));
+            t.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(t);
     }
     
     public TestWorksheetDO add(TestWorksheetDO data) throws Exception {

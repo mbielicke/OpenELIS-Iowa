@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.PTSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -72,13 +76,14 @@ import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
@@ -170,6 +175,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -268,7 +274,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected AttachmentScreenUI                        attachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -281,7 +287,9 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
-    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
+
+    protected AsyncCallback<SampleTestReturnVO>         setOrderIdCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
@@ -1193,8 +1201,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -1271,8 +1278,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -1881,7 +1887,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                          */
                         event.cancel();
                         closeLoginScreen = true;
-                        attachmentScreen.getWindow().close();
+                        trfAttachmentScreen.getWindow().close();
                         closeLoginScreen = false;
                     } else {
                         /*
@@ -2155,8 +2161,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                      */
                     cache = null;
                     clearScriptlets();
-                    if (attachmentScreen != null)
-                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2208,8 +2212,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             setDone(Messages.get().gen_addAborted());
             cache = null;
             clearScriptlets();
-            if (attachmentScreen != null)
-                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2343,8 +2345,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
              * record locked on it, the checkbox doesn't stay unchecked
              */
             fromTRF.setCheck(true);
-            if (attachmentScreen != null)
-                attachmentScreen.getWindow().close();
+            if (trfAttachmentScreen != null)
+                trfAttachmentScreen.getWindow().close();
             return;
         }
 
@@ -2361,13 +2363,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
              */
-            if (attachmentScreen == null) {
-                attachmentScreen = new AttachmentScreenUI() {
-                    @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-
+            if (trfAttachmentScreen == null) {
+                trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
                     public void search() {
                         QueryData field;
@@ -2379,30 +2376,22 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         field = new QueryData();
                         field.setQuery(attachmentPatternVariable.getValue());
                         query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
                         managers = null;
 
                         executeQuery(query);
-                    }
-
-                    @Override
-                    public void searchSuccessful() {
-                        attachmentSearchSuccessful();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().attachment_attachment());
-            window.setSize("782px", "521px");
-            attachmentScreen.setWindow(window);
-            window.setContent(attachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "attachment");
+            window.setName(Messages.get().trfAttachment_trfAttachment());
+            window.setSize("610px", "520px");
+            trfAttachmentScreen.setWindow(window);
+            window.setContent(trfAttachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "trfAttachment");
             isAttachmentScreenOpen = true;
 
-            attachmentScreen.search();
+            trfAttachmentScreen.search();
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -2963,7 +2952,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = attachmentScreen.getReserved();
+        am = trfAttachmentScreen.getReserved();
         /*
          * add an attachment item for the record selected on the attachment
          * screen
@@ -3305,8 +3294,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_fetching());
 
         if (setOrderIdCall == null) {
-            setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
-                public void success(SampleTestReturnVO result) {
+            setOrderIdCall = new AsyncCallback<SampleTestReturnVO>() {
+                public void onSuccess(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
 
                     manager = result.getManager();
@@ -3321,9 +3310,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         addAuxScriptlets();
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = result.getErrors();
                         if (errors != null && errors.size() > 0) {
@@ -3331,14 +3318,17 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
                                 showErrors(errors);
-                            isBusy = false;
-                        } else if (result.getTests() == null || result.getTests().size() == 0) {
+                        }
+
+                        if (result.getTests() == null || result.getTests().size() == 0) {
                             isBusy = false;
                         } else {
                             /*
-                             * this will make sure that the focus gets set to
-                             * the field next in the tabbing order after this
-                             * field after the tests have been added
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import;
+                             * setting focusedWidget makes sure that after the
+                             * tests have been added, the focus gets set to the
+                             * field next to this field in the tabbing order
                              */
                             focusedWidget = orderId;
                             showTests(result);
@@ -3349,7 +3339,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                     }
                 }
 
-                public void failure(Throwable error) {
+                public void onFailure(Throwable error) {
                     manager.getSample().setOrderId(null);
                     orderId.setValue(null);
                     Window.alert(error.getMessage());
@@ -3854,9 +3844,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3864,16 +3852,9 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -3886,6 +3867,10 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -3930,9 +3915,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3940,12 +3923,16 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

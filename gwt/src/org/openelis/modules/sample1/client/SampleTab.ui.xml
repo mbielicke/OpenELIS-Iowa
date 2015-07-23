@@ -71,12 +71,20 @@
                 maxLength="20" />
             </td>
           </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_released}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="releasedDate" width="125px" begin="0" end="4" />
+            </td>          
+          </tr>
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="55px" bottom="0px">
+    <g:layer top="79px" bottom="0px">
       <g:LayoutPanel>
-        <g:layer left="0px" right="0px" top="0px" height="49%">
+        <g:layer left="0px" right="0px" top="0px" height="53%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="85%">
               <t:Table ui:field="organizationTable" header="true"
@@ -166,7 +174,7 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer left="0px" right="0px" bottom="0px" height="49%">
+        <g:layer left="0px" right="0px" bottom="0px" height="45%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="85%">
               <t:Table ui:field="projectTable" header="true" styleName="{res.table.ScreenTableWithSides}">

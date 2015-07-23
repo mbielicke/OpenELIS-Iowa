@@ -25,8 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -39,7 +41,7 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.patient.client.PatientLookupUI;
-import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider1.client.ProviderService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
@@ -546,7 +548,7 @@ public class ClinicalTabUI extends Screen {
 
                 parentScreen.setBusy();
                 try {
-                    list = ProviderService.get()
+                    list = ProviderService1.get()
                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
@@ -1137,8 +1139,7 @@ public class ClinicalTabUI extends Screen {
 
                 @Override
                 public void patientsFound() {
-                    Integer id;
-                    PatientDO data;
+                    PatientDO samPat, otherPat;
 
                     /*
                      * if the query on the popup was executed only for NID, at
@@ -1146,9 +1147,9 @@ public class ClinicalTabUI extends Screen {
                      * patient is the same as the sample's patient
                      */
                     if (queryByNId) {
-                        data = patientTable.getRowAt(0).getData();
-                        id = manager.getSampleClinical().getPatientId();
-                        nidUsedForOther = id != null && !id.equals(data.getId());
+                        samPat = manager.getSampleClinical().getPatient();
+                        otherPat = patientTable.getRowAt(0).getData();
+                        nidUsedForOther = !otherPat.getId().equals(samPat.getId());
                     }
                 }
             };

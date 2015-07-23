@@ -50,7 +50,7 @@ import org.openelis.ui.common.Datetime;
                                    + "location, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
                                    + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
-                                   + "analysisStatusId, testReportingDescription, methodReportingDescription)"
+                                   + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
                                    + " from SampleView where sampleId = :id"
                                    + " order by accessionNumber, testReportingDescription, methodReportingDescription"),
                @NamedQuery(name = "SampleView.FetchBySampleIds",
@@ -61,7 +61,7 @@ import org.openelis.ui.common.Datetime;
                                    + "location, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
                                    + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
-                                   + "analysisStatusId, testReportingDescription, methodReportingDescription)"
+                                   + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
                                    + " from SampleView where sampleId in (:ids)"
                                    + " order by accessionNumber, testReportingDescription, methodReportingDescription")})
 @Entity
@@ -152,6 +152,9 @@ public class SampleView {
 
     @Column(name = "analysis_status_id")
     private Integer analysisStatusId;
+
+    @Column(name = "analysis_released_date")
+    private Date    analysisReleasedDate;
 
     @Column(name = "test_reporting_description")
     private String  testReportingDescription;
@@ -269,6 +272,10 @@ public class SampleView {
 
     public Integer getAnalysisStatusId() {
         return analysisStatusId;
+    }
+
+    public Date getAnalysisReleasedDate() {
+        return analysisReleasedDate;
     }
 
     public String getTestReportingDescription() {

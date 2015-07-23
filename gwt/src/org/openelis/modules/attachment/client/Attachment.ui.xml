@@ -56,9 +56,9 @@
             <r:Column width="200" label="{msg.attachment_fileName}" />
             <r:Column width="50" label="{msg.gen_id}" />
             <r:Leaf key="attachment">
-              <r:LeafColumn required = "true">
+              <r:LeafColumn required="true">
                 <t:TextBoxCell>
-                  <w:TextBox field="String"/>
+                  <w:TextBox field="String" />
                 </t:TextBoxCell>
               </r:LeafColumn>
               <r:LeafColumn>
@@ -96,26 +96,12 @@
           </r:Tree>
         </g:layer>
         <g:layer bottom="0px" height="25px">
-          <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left="0px" width="10%">
+          <g:HorizontalPanel width="100%">
+            <g:HorizontalPanel>
+              <w:Button ui:field="attachButton" leftIcon="{res.icon.addRowIcon}" text="{msg.attachment_attach}" />
+            </g:HorizontalPanel>
+            <g:HorizontalPanel width="100%" horizontalAlignment="ALIGN_RIGHT">
               <g:HorizontalPanel>
-                <w:Button ui:field="attachButton" leftIcon="{res.icon.addRowIcon}" text="{msg.attachment_attach}" />
-              </g:HorizontalPanel>
-            </g:layer>
-            <g:layer top="0px" bottom="0px" right="0px" width="45%">
-              <g:HorizontalPanel>
-                <g:HTMLPanel>
-                  <table class="{res.style.Form}">
-                    <tr>
-                      <td>
-                        <w:CheckBox ui:field="autoSelectNext" />
-                      </td>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.attachment_autoSelectNext}" />
-                      </td>
-                    </tr>
-                  </table>
-                </g:HTMLPanel>                
                 <w:Button ui:field="updateButton" leftIcon="{res.icon.UpdateButtonImage}"
                   text="{msg.gen_update}" />
                 <w:Button ui:field="commitButton" leftIcon="{res.icon.CommitButtonImage}"
@@ -123,8 +109,8 @@
                 <w:Button ui:field="abortButton" leftIcon="{res.icon.AbortButtonImage}"
                   text="{msg.gen_abort}" />
               </g:HorizontalPanel>
-            </g:layer>
-          </g:LayoutPanel>
+            </g:HorizontalPanel>
+          </g:HorizontalPanel>
         </g:layer>
       </g:LayoutPanel>
     </g:layer>

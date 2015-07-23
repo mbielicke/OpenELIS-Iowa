@@ -28,8 +28,8 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderReturnVO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.domain.IOrderReturnVO;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
@@ -44,44 +44,44 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @RemoteServiceRelativePath("order1")
 public interface OrderServiceInt1 extends XsrfProtectedService {
 
-    public OrderManager1 getInstance(String type) throws Exception;
+    public IOrderManager1 getInstance(String type) throws Exception;
 
-    public OrderManager1 fetchById(Integer orderId, OrderManager1.Load... elements) throws Exception;
+    public IOrderManager1 fetchById(Integer orderId, IOrderManager1.Load... elements) throws Exception;
 
-    public ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds,
-                                               OrderManager1.Load... elements) throws Exception;
+    public ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> orderIds,
+                                               IOrderManager1.Load... elements) throws Exception;
 
-    public ArrayList<OrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                                                 OrderManager1.Load... elements) throws Exception;
+    public ArrayList<IOrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                 IOrderManager1.Load... elements) throws Exception;
 
-    public OrderManager1 fetchWith(OrderManager1 om, OrderManager1.Load... elements) throws Exception;
+    public IOrderManager1 fetchWith(IOrderManager1 om, IOrderManager1.Load... elements) throws Exception;
 
     public ArrayList<IdNameVO> query(Query query) throws Exception;
 
-    public OrderManager1 fetchForUpdate(Integer orderId) throws Exception;
+    public IOrderManager1 fetchForUpdate(Integer orderId) throws Exception;
 
-    public OrderManager1 fetchForUpdate(Integer orderId, OrderManager1.Load... elements) throws Exception;
+    public IOrderManager1 fetchForUpdate(Integer orderId, IOrderManager1.Load... elements) throws Exception;
 
-    public ArrayList<OrderManager1> fetchForUpdate(ArrayList<Integer> orderIds,
-                                                   OrderManager1.Load... elements) throws Exception;
+    public ArrayList<IOrderManager1> fetchForUpdate(ArrayList<Integer> orderIds,
+                                                   IOrderManager1.Load... elements) throws Exception;
 
-    public OrderManager1 unlock(Integer orderId, OrderManager1.Load... elements) throws Exception;
+    public IOrderManager1 unlock(Integer orderId, IOrderManager1.Load... elements) throws Exception;
 
-    public ArrayList<OrderManager1> unlock(ArrayList<Integer> orderIds,
-                                           OrderManager1.Load... elements) throws Exception;
+    public ArrayList<IOrderManager1> unlock(ArrayList<Integer> orderIds,
+                                           IOrderManager1.Load... elements) throws Exception;
 
-    public OrderReturnVO duplicate(Integer id) throws Exception;
+    public IOrderReturnVO duplicate(Integer id) throws Exception;
 
-    public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception;
+    public IOrderManager1 update(IOrderManager1 om, boolean ignoreWarnings) throws Exception;
 
     public ArrayList<IdNameVO> fetchByDescription(String search, int max) throws Exception;
 
-    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
+    public IOrderReturnVO addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 
-    public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
+    public IOrderManager1 removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 
-    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception;
+    public IOrderReturnVO addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception;
 
-    public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception;
+    public IOrderManager1 removeTests(IOrderManager1 om, ArrayList<Integer> ids) throws Exception;
 
 }

@@ -88,10 +88,10 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <widget valign="top">
             <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-              <col key="{meta:getOrderItemOrderId()}" width="50" header="{resource:getString($constants,'ordNum')}">
+              <col key="{meta:getIorderItemIorderId()}" width="50" header="{resource:getString($constants,'ordNum')}">
                 <textbox field="Integer" />
               </col>
-              <col key="{meta:getOrderItemOrderExternalOrderNumber()}" width="107" header="{resource:getString($constants,'extOrderNum')}">
+              <col key="{meta:getIorderItemIorderExternalOrderNumber()}" width="107" header="{resource:getString($constants,'extOrderNum')}">
                 <textbox field="String" />
               </col>
               <col key="{meta:getReceivedDate()}" width="75" header="{resource:getString($constants,'dateRec')}">
@@ -118,7 +118,7 @@ UIRF Software License are applicable instead of those above.
                   <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
               </col>
-              <col key="{meta:getOrderItemQuantity()}" width="50" header="{resource:getString($constants,'numReq')}" align = "right">
+              <col key="{meta:getIorderItemQuantity()}" width="50" header="{resource:getString($constants,'numReq')}" align = "right">
                 <label field="Integer" />
               </col>
               <col key="{meta:getQuantityReceived()}" width="50" header="{resource:getString($constants,'numRec')}" align = "right">

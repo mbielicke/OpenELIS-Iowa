@@ -9,11 +9,11 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select count(id) n_container
-from order_container
-where order_id = $P{ORDER_ID}]]>
+		<![CDATA[SELECT count(id) as n_container
+FROM   iorder_container
+WHERE  iorder_id = $P{ORDER_ID}]]>
 	</queryString>
-	<field name="n_container" class="java.math.BigDecimal"/>
+	<field name="n_container" class="java.lang.Long"/>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">

@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="150" case="LOWER" max="60" tab="{meta:getDescription()},{meta:getText()}" field="String" required="true" />
+                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getText()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">

@@ -68,6 +68,13 @@ import org.openelis.utils.Auditable;
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
                       + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t"
                       +	"  where a.id = :id"),
+    @NamedQuery( name = "Analysis.FetchByIds", 
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.typeId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t"
+                      + "  where a.id in (:ids)"),
     @NamedQuery( name = "Analysis.UpdatePrintedDateByIds", 
                 query = " update Analysis set printedDate = :printedDate where id in (:ids)"),                  
     @NamedQuery( name = "Analysis.FetchBySampleId",
@@ -99,7 +106,7 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.MCLViolationReportVO(s.id, s.accessionNumber, s.collectionDate, s.collectionTime, ss.stateLabId, ss.facilityId, ss.sampleTypeId, d1.entry, ss.sampleCategoryId, ss.samplePointId, ss.location, ss.collector, p.number0, p.name, p.alternateStNum, o.name, a.id, a.sectionId, se.name, a.unitOfMeasureId, a.startedDate, a.releasedDate, d2.entry, t.name, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.sectionId = se.id and a.unitOfMeasureId = d2.id and"
-                      + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate")})
+                      + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate and a.isReportable = 'Y' order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate")})
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Analysis.FetchForTurnaroundWarningReport",
                      query = "select distinct a.id a_id, a.available_date, t.time_ta_warning, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
@@ -459,21 +466,31 @@ public class Analysis implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_item_id", sampleItemId, original.sampleItemId,
+                 .setField("sample_item_id",
+                           sampleItemId,
+                           original.sampleItemId,
                            Constants.table().SAMPLE_ITEM)
                  .setField("revision", revision, original.revision)
                  .setField("test_id", testId, original.testId, Constants.table().TEST)
                  .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
                  .setField("panel_id", panelId, original.panelId, Constants.table().PANEL)
-                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId,
+                 .setField("pre_analysis_id",
+                           preAnalysisId,
+                           original.preAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId,
+                 .setField("parent_analysis_id",
+                           parentAnalysisId,
+                           original.parentAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_result_id", parentResultId, original.parentResultId,
+                 .setField("parent_result_id",
+                           parentResultId,
+                           original.parentResultId,
                            Constants.table().RESULT)
                  .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId,
+                 .setField("unit_of_measure_id",
+                           unitOfMeasureId,
+                           original.unitOfMeasureId,
                            Constants.table().DICTIONARY)
                  .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("available_date", availableDate, original.availableDate)

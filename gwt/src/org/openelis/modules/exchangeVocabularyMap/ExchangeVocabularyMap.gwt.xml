@@ -29,9 +29,11 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   <inherits name="org.openelis.modules.dictionary.DictionaryService"/>
   <inherits name="org.openelis.modules.method.MethodService"/>
-  <inherits name="org.openelis.modules.organization.OrganizationService"/>
+  <inherits name="org.openelis.modules.organization1.OrganizationService1"/>
   <inherits name="org.openelis.modules.test.TestService"/>
   <inherits name="org.openelis.modules.note.NoteService"/>
+  <inherits name="org.openelis.modules.panel.PanelService"/>
+  <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   
   <entry-point class="org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapEntry"/>  
 </module>

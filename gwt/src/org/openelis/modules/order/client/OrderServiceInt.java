@@ -3,16 +3,16 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderViewDO;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderReceiptManager;
-import org.openelis.manager.OrderTestAnalyteManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderViewDO;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
+import org.openelis.manager.IOrderReceiptManager;
+import org.openelis.manager.IOrderTestAnalyteManager;
+import org.openelis.manager.IOrderTestManager;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.data.Query;
 
@@ -22,59 +22,59 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @RemoteServiceRelativePath("order")
 public interface OrderServiceInt extends XsrfProtectedService {
 
-    OrderManager fetchById(Integer id) throws Exception;
+    IOrderManager fetchById(Integer id) throws Exception;
 
     ArrayList<IdNameVO> fetchByDescription(String search) throws Exception;
 
-    OrderManager fetchByOrderItemId(Integer id) throws Exception;
+    IOrderManager fetchByIorderItemId(Integer id) throws Exception;
 
-    OrderManager fetchWithOrganizations(Integer id) throws Exception;
+    IOrderManager fetchWithOrganizations(Integer id) throws Exception;
 
-    OrderManager fetchWithItems(Integer id) throws Exception;
+    IOrderManager fetchWithItems(Integer id) throws Exception;
 
-    OrderManager fetchWithFills(Integer id) throws Exception;
+    IOrderManager fetchWithFills(Integer id) throws Exception;
 
-    OrderManager fetchWithNotes(Integer id) throws Exception;
+    IOrderManager fetchWithNotes(Integer id) throws Exception;
 
-    OrderManager fetchWithTests(Integer id) throws Exception;
+    IOrderManager fetchWithTests(Integer id) throws Exception;
 
-    OrderManager fetchWithContainers(Integer id) throws Exception;
+    IOrderManager fetchWithContainers(Integer id) throws Exception;
 
-    OrderManager fetchWithRecurring(Integer id) throws Exception;
+    IOrderManager fetchWithRecurring(Integer id) throws Exception;
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
-    ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception;
+    ArrayList<IOrderViewDO> queryOrderFill(Query query) throws Exception;
 
-    OrderManager add(OrderManager man) throws Exception;
+    IOrderManager add(IOrderManager man) throws Exception;
 
-    OrderManager update(OrderManager man) throws Exception;
+    IOrderManager update(IOrderManager man) throws Exception;
 
-    OrderManager fetchForUpdate(Integer id) throws Exception;
+    IOrderManager fetchForUpdate(Integer id) throws Exception;
 
-    OrderManager abortUpdate(Integer id) throws Exception;
+    IOrderManager abortUpdate(Integer id) throws Exception;
 
-    OrderManager duplicate(Integer id) throws Exception;
+    IOrderManager duplicate(Integer id) throws Exception;
 
-    OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception;
+    IOrderOrganizationManager fetchOrganizationByIorderId(Integer id) throws Exception;
 
-    OrderItemManager fetchItemByOrderId(Integer id) throws Exception;
+    IOrderItemManager fetchItemByIorderId(Integer id) throws Exception;
 
-    OrderFillManager fetchFillByOrderId(Integer id) throws Exception;
+    IOrderFillManager fetchFillByIorderId(Integer id) throws Exception;
 
-    OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception;
+    IOrderReceiptManager fetchReceiptByIorderId(Integer id) throws Exception;
 
-    OrderTestManager fetchTestByOrderId(Integer id) throws Exception;
+    IOrderTestManager fetchTestByIorderId(Integer id) throws Exception;
 
-    OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception;
+    IOrderTestAnalyteManager fetchTestAnalyteByIorderTestId(Integer id) throws Exception;
 
-    OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception;
+    IOrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception;
     
-    OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception;
+    IOrderTestAnalyteManager fetchMergedTestAnalyteByIorderTestId(Integer id) throws Exception;
 
-    OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception;
+    IOrderContainerManager fetchContainerByOrderId(Integer id) throws Exception;
 
-    OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception;
+    IOrderRecurrenceDO fetchRecurrenceByIorderId(Integer id) throws Exception;
 
     ArrayList<Prompt> getPrompts() throws Exception;
 

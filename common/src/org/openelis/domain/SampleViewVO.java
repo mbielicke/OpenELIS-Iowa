@@ -46,7 +46,7 @@ public class SampleViewVO implements Serializable {
                     patientLastName, patientFirstName, providerName, analysisIsReportable,
                     testReportingDescription, methodReportingDescription;
     protected Datetime        receivedDate, collectionDate, collectionTime, sampleReleasedDate,
-                    patientBirthDate;
+                    patientBirthDate, analysisReleasedDate;
 
     public SampleViewVO() {
     }
@@ -60,8 +60,8 @@ public class SampleViewVO implements Serializable {
                         String sdwisFacilityId, String patientLastName, String patientFirstName,
                         Date patientBirthDate, String providerName, Integer analysisId,
                         Integer analysisRevision, String analysisIsReportable,
-                        Integer analysisStatusId, String testReportingDescription,
-                        String methodReportingDescription) {
+                        Integer analysisStatusId, Date analysisReleasedDate,
+                        String testReportingDescription, String methodReportingDescription) {
         setSampleId(sampleId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
@@ -90,6 +90,7 @@ public class SampleViewVO implements Serializable {
         setAnalysisRevision(analysisRevision);
         setAnalysisIsReportable(analysisIsReportable);
         setAnalysisStatusId(analysisStatusId);
+        setAnalysisReleasedDate(analysisReleasedDate);
         setTestReportingDescription(testReportingDescription);
         setMethodReportingDescription(methodReportingDescription);
     }
@@ -316,6 +317,14 @@ public class SampleViewVO implements Serializable {
 
     public void setAnalysisStatusId(Integer analysisStatusId) {
         this.analysisStatusId = analysisStatusId;
+    }
+
+    public Datetime getAnalysisReleasedDate() {
+        return analysisReleasedDate;
+    }
+
+    public void setAnalysisReleasedDate(Date analysisReleasedDate) {
+        this.analysisReleasedDate = DataBaseUtil.toYM(analysisReleasedDate);
     }
 
     public String getTestReportingDescription() {

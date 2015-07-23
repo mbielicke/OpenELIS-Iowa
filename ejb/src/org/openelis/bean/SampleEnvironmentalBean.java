@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -71,11 +72,18 @@ public class SampleEnvironmentalBean  {
     
     public ArrayList<SampleEnvironmentalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
+        List<SampleEnvironmentalDO> e;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleEnvironmental.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
+        e = new ArrayList<SampleEnvironmentalDO>();        
+        r = DataBaseUtil.createSubsetRange(sampleIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
+            e.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(e);
     }
 
     public SampleEnvironmentalDO add(SampleEnvironmentalDO data) throws Exception {
@@ -106,16 +114,19 @@ public class SampleEnvironmentalBean  {
     }
 
     public SampleEnvironmentalDO update(SampleEnvironmentalDO data) throws Exception {
+        Integer deleteId;
         SampleEnvironmental entity;
+        
 
         if (! data.isChanged() && !data.getLocationAddress().isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
+        deleteId = null;
         entity = manager.find(SampleEnvironmental.class, data.getId());
         if (addressBean.isEmpty(data.getLocationAddress())) {
             if (data.getLocationAddress().getId() != null) {
-                addressBean.delete(data.getLocationAddress());                
+                deleteId = data.getLocationAddress().getId();
                 data.getLocationAddress().setId(null);
             }
         } else {
@@ -135,16 +146,26 @@ public class SampleEnvironmentalBean  {
         entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
         entity.setLocationAddressId(data.getLocationAddress().getId());
+
+        if (deleteId != null)
+            addressBean.delete(deleteId);                
+
         return data;
     }
 
     public void delete(SampleEnvironmentalDO data) throws Exception {
+        Integer deleteId;
         SampleEnvironmental entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleEnvironmental.class, data.getId());
-        if (entity != null)
+        if (entity != null) {
+            deleteId = entity.getLocationAddressId();
             manager.remove(entity);
+            if (deleteId != null)
+                addressBean.delete(deleteId);
+                
+        }
     }
 }

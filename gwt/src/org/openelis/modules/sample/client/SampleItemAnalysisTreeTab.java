@@ -35,7 +35,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -334,7 +334,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                 TreeDataItem selected;
                 ArrayList<SampleDataBundle> bundles;
                 SampleDataBundle data;
-                ArrayList<OrderTestViewDO> orderTests;
+                ArrayList<IOrderTestViewDO> orderTests;
                 
                 if (event.getAction() == SampleItemTab.Action.CHANGED) {
                     selected = itemsTree.getSelection();

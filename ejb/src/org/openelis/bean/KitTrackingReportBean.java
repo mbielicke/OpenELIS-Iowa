@@ -30,7 +30,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -52,7 +54,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
@@ -109,7 +111,7 @@ public class KitTrackingReportBean {
                                                              .setRequired(true)
                                                              .setDefaultValue(null));
 
-            p.add(new Prompt(OrderMeta.getShipFromId(), Prompt.Type.ARRAY).setPrompt("Ship From:")
+            p.add(new Prompt(IOrderMeta.getShipFromId(), Prompt.Type.ARRAY).setPrompt("Ship From:")
                                                                           .setWidth(150)
                                                                           .setOptionList(getDictionaryList("laboratory_location"))
                                                                           .setMultiSelect(true));
@@ -127,11 +129,11 @@ public class KitTrackingReportBean {
                                                              .setWidth(150)
                                                              .setCase(Case.UPPER));
 
-            p.add(new Prompt(OrderMeta.getDescription(), Prompt.Type.STRING).setPrompt("Description:")
+            p.add(new Prompt(IOrderMeta.getDescription(), Prompt.Type.STRING).setPrompt("Description:")
                                                                             .setWidth(150)
                                                                             .setCase(Case.LOWER));
 
-            p.add(new Prompt(OrderMeta.getStatusId(), Prompt.Type.ARRAY).setPrompt("Status:")
+            p.add(new Prompt(IOrderMeta.getStatusId(), Prompt.Type.ARRAY).setPrompt("Status:")
                                                                         .setWidth(150)
                                                                         .setOptionList(getDictionaryList("order_status"))
                                                                         .setMultiSelect(false));
@@ -171,8 +173,9 @@ public class KitTrackingReportBean {
         JasperPrint jprint;
         JRExporter jexport;
         OutputStream out;
-
-        String dir, frDate, tDate, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
+        Date fromDate, toDate;
+        String dir, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
+        
         /*
          * push status into session so we can query it while the report is
          * running
@@ -187,23 +190,23 @@ public class KitTrackingReportBean {
 
         userName = User.getName(ctx);
 
-        frDate = ReportUtil.getSingleParameter(param, "FROM_DATE");
-        tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
+        fromDate = ReportUtil.getDateParameter(param, "FROM_DATE");
+        toDate = ReportUtil.getDateParameter(param, "TO_DATE");
         section = ReportUtil.getListParameter(param, "SECTION_ID");
-        shipFrom = ReportUtil.getListParameter(param, OrderMeta.getShipFromId());
-        shipTo = ReportUtil.getSingleParameter(param, "SHIP_TO");
-        reportTo = ReportUtil.getSingleParameter(param, "REPORT_TO");
-        description = ReportUtil.getSingleParameter(param, OrderMeta.getDescription());
-        orderStatus = ReportUtil.getSingleParameter(param, OrderMeta.getStatusId());
-        sortBy = ReportUtil.getSingleParameter(param, "SORT_BY");
+        shipFrom = ReportUtil.getListParameter(param, IOrderMeta.getShipFromId());
+        shipTo = ReportUtil.getStringParameter(param, "SHIP_TO");
+        reportTo = ReportUtil.getStringParameter(param, "REPORT_TO");
+        description = ReportUtil.getStringParameter(param, IOrderMeta.getDescription());
+        orderStatus = ReportUtil.getStringParameter(param, IOrderMeta.getStatusId());
+        sortBy = ReportUtil.getStringParameter(param, "SORT_BY");
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
+        if (fromDate == null || toDate == null)
             throw new InconsistencyException("You must specify From Date and To Date for this report");
 
         if ( !DataBaseUtil.isEmpty(section))
-            section = " and o.id in (select ot.order_id from order_test ot, test t," +
+            section = " and o.id in (select ot.iorder_id from iorder_test ot, test t," +
                       " test_section ts where ot.test_id = t.id and ts.test_id = t.id" +
-                      " and ot.order_id = o.id and ts.section_id " + section + ")";
+                      " and ot.iorder_id = o.id and ts.section_id " + section + ")";
         else
             section = "";
 
@@ -221,8 +224,8 @@ public class KitTrackingReportBean {
 
         if ( !DataBaseUtil.isEmpty(reportTo)) {
             reportTo = reportTo.replaceAll("\\*", "%");
-            reportTo = " and o.id in (select oo2.order_id from order_organization oo2," +
-                       " organization o2 where oo2.order_id = o.id and oo2.organization_id = o2.id" +
+            reportTo = " and o.id in (select oo2.iorder_id from iorder_organization oo2," +
+                       " organization o2 where oo2.iorder_id = o.id and oo2.organization_id = o2.id" +
                        " and o2.name like '" + reportTo + "' and oo2.type_id = " +
                        Constants.dictionary().ORG_REPORT_TO + ")";
         } else {
@@ -258,8 +261,8 @@ public class KitTrackingReportBean {
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-            jparam.put("FROM_DATE", frDate);
-            jparam.put("TO_DATE", tDate);
+            jparam.put("FROM_DATE", fromDate);
+            jparam.put("TO_DATE", toDate);
             jparam.put("USER_NAME", userName);
             jparam.put("SECTION", section);
             jparam.put("SHIP_FROM", shipFrom);

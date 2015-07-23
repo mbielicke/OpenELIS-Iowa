@@ -57,11 +57,11 @@ import org.openelis.ui.common.ValidationErrorsList;
 public class AuxFieldValueBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager        manager;
+    private EntityManager       manager;
 
     @EJB
     private DictionaryCacheBean dictionaryCache;
-    
+
     private static final Logger log = Logger.getLogger("openelis");
 
     public AuxFieldValueViewDO fetchById(Integer id) throws Exception {
@@ -74,7 +74,7 @@ public class AuxFieldValueBean {
         try {
             data = (AuxFieldValueViewDO)query.getSingleResult();
             if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
-                setDictionaryValue(data);            
+                setDictionaryValue(data);
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -129,10 +129,33 @@ public class AuxFieldValueBean {
 
         return (ArrayList)list;
     }
-    
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<AuxFieldValueViewDO> fetchByFieldIds(ArrayList<Integer> fieldIds) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("AuxFieldValue.FetchByFieldIds");
+        query.setParameter("fieldIds", fieldIds);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+
+        try {
+            setDictionaryValues(list);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return (ArrayList)list;
+    }
+
     private void setDictionaryValue(AuxFieldValueViewDO data) throws Exception {
         DictionaryDO dict;
-        
+
         try {
             /*
              * for entries that are dictionary, we want to fetch the dictionary
@@ -142,19 +165,19 @@ public class AuxFieldValueBean {
             if (dict != null)
                 data.setDictionary(dict.getEntry());
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not fetch dictionary record with id "+ data.getValue(), e);
+            log.log(Level.SEVERE, "Could not fetch dictionary record with id " + data.getValue(), e);
             throw e;
         }
     }
 
     private void setDictionaryValues(List list) throws Exception {
         AuxFieldValueViewDO data;
-        
+
         for (int i = 0; i < list.size(); i++ ) {
             data = (AuxFieldValueViewDO)list.get(i);
             if (DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY, data.getTypeId()))
-                setDictionaryValue(data);                
-        }        
+                setDictionaryValue(data);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -235,8 +258,8 @@ public class AuxFieldValueBean {
                                              AuxFieldGroupMeta.getFieldValueTypeId()));
 
         if (value == null &&
-            (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId) ||
-             DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY, typeId))) {
+            (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY,
+                                                                                                    typeId))) {
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getFieldValueValue()));
         } else if (value != null &&
@@ -244,8 +267,8 @@ public class AuxFieldValueBean {
                     DataBaseUtil.isSame(Constants.dictionary().AUX_TIME, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_DATE, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_LOWER, typeId) ||
-                    DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_UPPER, typeId) ||
-                    DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_MIXED, typeId))) {
+                    DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_UPPER, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_MIXED,
+                                                                                                               typeId))) {
             list.add(new FieldErrorException(Messages.get().valuePresentForTypeException(),
                                              AuxFieldGroupMeta.getFieldValueValue()));
         }

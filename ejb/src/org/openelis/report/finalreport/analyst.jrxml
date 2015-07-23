@@ -7,13 +7,13 @@
 	<import value="org.openelis.utils.ReportUtil"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT first 5
+		<![CDATA[SELECT
       au.system_user_id
 FROM
       analysis_user au
 WHERE
       au.analysis_id  = $P{ANALYSIS_ID} and
-      au.action_id IN (select id from dictionary d where d.system_name = 'an_user_ac_completed')]]>
+      au.action_id in (select id from dictionary d where d.system_name = 'an_user_ac_completed')]]>
 	</queryString>
 	<field name="system_user_id" class="java.lang.Integer"/>
 	<variable name="INITIALS" class="java.util.List">
@@ -23,7 +23,9 @@ WHERE
 	<detail>
 		<band splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="120" height="0"/>
+				<reportElement x="0" y="0" width="120" height="0">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} <= 5]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>

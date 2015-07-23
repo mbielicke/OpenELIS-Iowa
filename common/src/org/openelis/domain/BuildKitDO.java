@@ -43,7 +43,7 @@ public class BuildKitDO implements Serializable {
     protected String          location;
     protected String          lotNumber;
     protected Datetime        expDate;
-    protected Integer         orderId;
+    protected Integer         iorderId;
     protected boolean         bulk             = false;
     protected boolean         addToExisting    = false;
     protected boolean         serialized       = false;
@@ -110,12 +110,12 @@ public class BuildKitDO implements Serializable {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
     }
 
     public Integer getId() {

@@ -11,11 +11,11 @@
 		<![CDATA[SELECT
      o.name, o.address_id
 FROM
-     organization o, sample_organization so
+     organization o
+     join sample_organization so on so.organization_id = o.id and
+          so.type_id in (select id from dictionary where system_name = 'org_second_report_to')
 WHERE
-     so.sample_id = $P{SAMPLE_ID}
-     AND so.type_id in (select id from dictionary where system_name = 'org_second_report_to')
-     AND o.id = so.organization_id]]>
+     so.sample_id = $P{SAMPLE_ID}]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
 	<field name="address_id" class="java.lang.Integer"/>

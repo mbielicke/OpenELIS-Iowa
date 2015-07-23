@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,7 +55,6 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
@@ -180,7 +180,8 @@ public class ToDoAnalyteReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String fromDate, toDate, section, test, prepTest, analysisStatus, userName, orderBy, printer, printstat, dir;
+        String section, test, prepTest, prepTestLimitter, analysisStatus, userName, orderBy, printer, printstat, dir;
+        Timestamp fromDate, toDate;
 
         /*
          * push status into session so we can query it while the report is
@@ -193,24 +194,18 @@ public class ToDoAnalyteReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        fromDate = ReportUtil.getSingleParameter(param, "FROM_ENTERED");
-        toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
+        fromDate = ReportUtil.getTimestampParameter(param, "FROM_ENTERED");
+        toDate = ReportUtil.getTimestampParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
         prepTest = ReportUtil.getListParameter(param, "PREP_TEST");
         analysisStatus = ReportUtil.getListParameter(param, "STATUS");
-        orderBy = ReportUtil.getSingleParameter(param, "ORDER_BY");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        orderBy = ReportUtil.getStringParameter(param, "ORDER_BY");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(fromDate) || DataBaseUtil.isEmpty(toDate) ||
+        if (fromDate == null || toDate == null ||
             DataBaseUtil.isEmpty(orderBy) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify From Date, To Date, Order By, and Printer for this report");
-        /*
-         * the following values are appended to the dates to make them jasper
-         * report compatible
-         */
-        fromDate += ":00";
-        toDate += ":59";
 
         if ( !DataBaseUtil.isEmpty(section))
             section = " and sec.id " + section;
@@ -227,10 +222,13 @@ public class ToDoAnalyteReportBean {
         else
             test = "";
 
-        if ( !DataBaseUtil.isEmpty(prepTest))
+        if ( !DataBaseUtil.isEmpty(prepTest)) {
             prepTest = " and t1.id " + prepTest;
-        else
+            prepTestLimitter = " and a1.test_id = t1.id";
+        } else {
             prepTest = "";
+            prepTestLimitter = "";
+        }
 
         userName = User.getName(ctx);
 
@@ -251,6 +249,7 @@ public class ToDoAnalyteReportBean {
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
             jparam.put("PREP_TEST", prepTest);
+            jparam.put("PREP_TEST_LIMITTER", prepTestLimitter);
             jparam.put("STATUS", analysisStatus);
             jparam.put("ORDER_BY", orderBy);
             jparam.put("USER_NAME", userName);

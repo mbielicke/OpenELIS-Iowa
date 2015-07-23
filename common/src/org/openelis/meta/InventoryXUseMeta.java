@@ -41,11 +41,11 @@ public class InventoryXUseMeta implements Meta {
 	private static final String
               ID					                ="id",
               INVENTORY_LOCATION_ID					="inventoryLocationId",
-              ORDER_ITEM_ID					        ="orderItemId",
+              IORDER_ITEM_ID					    ="iorderItemId",
               QUANTITY					            ="quantity";
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_LOCATION_ID,ORDER_ITEM_ID,QUANTITY};
+  	  ID,INVENTORY_LOCATION_ID,IORDER_ITEM_ID,QUANTITY};
   	  
 	private HashSet<String> columnHashList;
     
@@ -86,13 +86,11 @@ public class InventoryXUseMeta implements Meta {
         return path + INVENTORY_LOCATION_ID;
     } 
 
-    public String getOrderItemId() {
-        return path + ORDER_ITEM_ID;
+    public String getIorderItemId() {
+        return path + IORDER_ITEM_ID;
     } 
 
     public String getQuantity() {
         return path + QUANTITY;
     } 
-
-  
 }   

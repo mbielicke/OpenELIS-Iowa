@@ -53,8 +53,6 @@ public interface AttachmentServiceInt extends XsrfProtectedService {
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception;
     
     public ArrayList<AttachmentDO> query(Query query) throws Exception;
-    
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception;
 
     public AttachmentManager update(AttachmentManager data) throws Exception;
 

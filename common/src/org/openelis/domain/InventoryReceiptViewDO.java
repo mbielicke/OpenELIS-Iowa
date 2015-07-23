@@ -34,11 +34,11 @@ public class InventoryReceiptViewDO extends InventoryReceiptDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer                            orderItemOrderId, orderItemQuantity;
+    protected Integer                            iorderItemOrderId, iorderItemQuantity;
 
-    protected String                             orderItemOrderExternalOrderNumber, addToExistingLocation;
+    protected String                             iorderItemIorderExternalOrderNumber, addToExistingLocation;
 
-    protected Double                             orderItemUnitCost;
+    protected Double                             iorderItemUnitCost;
 
     protected OrganizationDO                     organization;
 
@@ -47,18 +47,18 @@ public class InventoryReceiptViewDO extends InventoryReceiptDO {
     public InventoryReceiptViewDO() {
     }
 
-    public InventoryReceiptViewDO(Integer id, Integer inventoryItemId, Integer orderItemId,
+    public InventoryReceiptViewDO(Integer id, Integer inventoryItemId, Integer iorderItemId,
                               Integer organizationId, Date receivedDate,
                               Integer quantityReceived, Double unitCost,
                               String qcReference, String externalReference, String upc,
-                              Integer orderItemQuantity, Integer orderItemOrderId,
-                              String orderExternalOrderNumber, Double orderItemUnitCost) {
-        super(id, inventoryItemId, orderItemId, organizationId, receivedDate,
+                              Integer iorderItemQuantity, Integer iorderItemIorderId,
+                              String iorderExternalOrderNumber, Double iorderItemUnitCost) {
+        super(id, inventoryItemId, iorderItemId, organizationId, receivedDate,
               quantityReceived, unitCost, qcReference, externalReference, upc);
-        setOrderItemQuantity(orderItemQuantity);
-        setOrderItemOrderId(orderItemOrderId);
-        setOrderItemOrderExternalOrderNumber(orderExternalOrderNumber);
-        setOrderItemUnitCost(orderItemUnitCost);
+        setIorderItemQuantity(iorderItemQuantity);
+        setIorderItemIorderId(iorderItemIorderId);
+        setIorderItemIorderExternalOrderNumber(iorderExternalOrderNumber);
+        setIorderItemUnitCost(iorderItemUnitCost);
     }
     
     public OrganizationDO getOrganization() {
@@ -69,36 +69,36 @@ public class InventoryReceiptViewDO extends InventoryReceiptDO {
         this.organization = organization;
     }
 
-    public Integer getOrderItemOrderId() {
-        return orderItemOrderId;
+    public Integer getIorderItemIorderId() {
+        return iorderItemOrderId;
     }
 
-    public void setOrderItemOrderId(Integer orderItemOrderId) {
-        this.orderItemOrderId = orderItemOrderId;
+    public void setIorderItemIorderId(Integer iorderItemOrderId) {
+        this.iorderItemOrderId = iorderItemOrderId;
     }
 
-    public String getOrderItemOrderExternalOrderNumber() {
-        return orderItemOrderExternalOrderNumber;
+    public String getIorderItemIorderExternalOrderNumber() {
+        return iorderItemIorderExternalOrderNumber;
     }
 
-    public void setOrderItemOrderExternalOrderNumber(String orderItemOrderExternalOrderNumber) {
-        this.orderItemOrderExternalOrderNumber = orderItemOrderExternalOrderNumber;
+    public void setIorderItemIorderExternalOrderNumber(String iorderItemIorderExternalOrderNumber) {
+        this.iorderItemIorderExternalOrderNumber = iorderItemIorderExternalOrderNumber;
     }
 
-    public Integer getOrderItemQuantity() {
-        return orderItemQuantity;
+    public Integer getIorderItemQuantity() {
+        return iorderItemQuantity;
     }
 
-    public void setOrderItemQuantity(Integer orderItemQuantity) {
-        this.orderItemQuantity = orderItemQuantity;
+    public void setIorderItemQuantity(Integer iorderItemQuantity) {
+        this.iorderItemQuantity = iorderItemQuantity;
     }
     
-    public Double getOrderItemUnitCost() {
-        return orderItemUnitCost;
+    public Double getIorderItemUnitCost() {
+        return iorderItemUnitCost;
     }
 
-    public void setOrderItemUnitCost(Double orderItemUnitCost) {
-        this.orderItemUnitCost = orderItemUnitCost;
+    public void setIorderItemUnitCost(Double iorderItemUnitCost) {
+        this.iorderItemUnitCost = iorderItemUnitCost;
     }    
     
     public ArrayList<InventoryLocationViewDO> getInventoryLocations() {

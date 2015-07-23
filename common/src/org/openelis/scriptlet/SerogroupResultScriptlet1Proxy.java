@@ -25,9 +25,12 @@
  */
 package org.openelis.scriptlet;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 
 /**
  * This interface is implemented by the proxies for the serogroup result scriptlet
@@ -35,5 +38,9 @@ import org.openelis.domain.DictionaryDO;
 public interface SerogroupResultScriptlet1Proxy {
     public DictionaryDO getDictionaryById(Integer id) throws Exception;
 
+    public ArrayList<DictionaryViewDO> getDictionaryByEntry(String entry) throws Exception;
+
     public void log(Level level, String message, Exception e);
+
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception;
 }

@@ -4,7 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.worksheetPrint.WorksheetResultDataSource"/>
-	<parameter name="WORKSHEET_ID" class="java.lang.String">
+	<parameter name="WORKSHEET_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="USER_NAME" class="java.lang.String">
@@ -15,16 +15,18 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     w.description as worksheet_description, w.format_id, wi.position, wav.*, d1.entry status
+     wav.worksheet_description, wav.format_id, wav.position, wav.id, wav.worksheet_item_id,
+     wav.worksheet_id, wav.accession_number, wav.analysis_id, wav.qc_lot_id, wav.qc_id, wav.worksheet_analysis_id,
+     wav.system_users, wav.started_date, wav.completed_date, wav.from_other_id, wav.change_flags_id, wav.description,
+     wav.test_id, wav.test_name, wav.method_name, wav.time_ta_average, wav.time_holding, wav.section_name,
+     wav.unit_of_measure_id, wav.unit_of_measure, wav.analysis_status_id, wav.collection_date, wav.collection_time,
+     wav.received_date, wav.priority, wav.analysis_status
 FROM
      worksheet_analysis_view wav
-     join worksheet w on wav.worksheet_id = w.id
-     join worksheet_item wi on wav.worksheet_item_id = wi.id
-     left join dictionary d1 on wav.status_id = d1.id
 WHERE
      wav.worksheet_id = $P{WORKSHEET_ID}
 ORDER BY
-     wi.position, wav.id]]>
+     wav.position, wav.id]]>
 	</queryString>
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="format_id" class="java.lang.Integer"/>
@@ -51,12 +53,12 @@ ORDER BY
 	<field name="section_name" class="java.lang.String"/>
 	<field name="unit_of_measure_id" class="java.lang.Integer"/>
 	<field name="unit_of_measure" class="java.lang.String"/>
-	<field name="status_id" class="java.lang.Integer"/>
-	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="analysis_status_id" class="java.lang.Integer"/>
+	<field name="collection_date" class="java.sql.Date"/>
 	<field name="collection_time" class="java.sql.Time"/>
 	<field name="received_date" class="java.sql.Timestamp"/>
 	<field name="priority" class="java.lang.Integer"/>
-	<field name="status" class="java.lang.String"/>
+	<field name="analysis_status" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -64,7 +66,7 @@ ORDER BY
 		<groupExpression><![CDATA[$F{id}]]></groupExpression>
 	</group>
 	<pageHeader>
-		<band height="36" splitType="Stretch">
+		<band height="36">
 			<textField pattern="MMM dd, yyyy">
 				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="75" height="12"/>
 				<textElement verticalAlignment="Bottom">
@@ -212,7 +214,7 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="qcLink" stretchType="RelativeToTallestObject" mode="Transparent" x="210" y="0" width="80" height="12">
+				<reportElement key="qcLink" mode="Transparent" x="210" y="0" width="80" height="12">
 					<printWhenExpression><![CDATA[$F{worksheet_analysis_id} != null && $V{WORKSHEET_ANALYSIS_COUNT} == 1]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="WORKSHEET_ANALYSIS_ID">
@@ -247,10 +249,10 @@ ORDER BY
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analysis_status}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="worksheetResults" stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="12" width="752" height="24" isPrintWhenDetailOverflows="true"/>
+				<reportElement key="worksheetResults" positionType="Float" mode="Transparent" x="0" y="12" width="752" height="24" isPrintWhenDetailOverflows="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

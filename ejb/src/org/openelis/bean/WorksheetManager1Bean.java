@@ -66,6 +66,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
@@ -134,6 +135,8 @@ public class WorksheetManager1Bean {
     private TestAnalyteBean              testAnalyte;
     @EJB
     private TestManagerBean              testManager;
+    @EJB
+    private TestWorksheetBean            testWorksheet;
     @EJB
     private TestWorksheetAnalyteBean     twAnalyte;
     @EJB
@@ -515,9 +518,13 @@ public class WorksheetManager1Bean {
     public WorksheetResultsTransferVO fetchForTransfer(Integer worksheetId) throws Exception {
         ArrayList<Integer> ids;
         ArrayList<SampleManager1> sms;
+        ArrayList<TestWorksheetViewDO> twVDOs;
         ArrayList<WorksheetManager1> wms;
-        HashSet<Integer> analysisIds;
+        HashSet<Integer> analysisIds, testIds, scriptletIds;
+        ScriptletRunner<WorksheetSO> sRunner;
+        ValidationErrorsList errors;
         WorksheetManager1 wMan;
+        WorksheetSO wSO;
         
         wMan = null;
         sms = null;
@@ -530,9 +537,12 @@ public class WorksheetManager1Bean {
         if (wms.size() > 0) {
             wMan = wms.get(0);
             analysisIds = new HashSet<Integer>();
+            testIds = new HashSet<Integer>();
             for (WorksheetAnalysisViewDO waVDO : getAnalyses(wMan)) {
-                if (waVDO.getAnalysisId() != null)
+                if (waVDO.getAnalysisId() != null) {
                     analysisIds.add(waVDO.getAnalysisId());
+                    testIds.add(waVDO.getTestId());
+                }
             }
             if (analysisIds.size() > 0)
                 sms = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(analysisIds),
@@ -540,8 +550,46 @@ public class WorksheetManager1Bean {
                                                          SampleManager1.Load.QA,
                                                          SampleManager1.Load.ANALYSISUSER,
                                                          SampleManager1.Load.SINGLERESULT);
+            
+            if (testIds.size() > 0) {
+                twVDOs = testWorksheet.fetchByTestIds(DataBaseUtil.toArrayList(testIds));
+                if (twVDOs.size() > 0) {
+                    scriptletIds = new HashSet<Integer>();
+                    for (TestWorksheetViewDO twVDO : twVDOs)
+                        if (twVDO.getScriptletId() != null)
+                            scriptletIds.add(twVDO.getScriptletId());
+                    
+                    if (scriptletIds.size() > 0) {
+                        errors = new ValidationErrorsList();
+                        //
+                        // Run Worksheet Scriptlets
+                        //
+                        sRunner = new ScriptletRunner<WorksheetSO>();
+                        try {
+                            for (Integer scriptletId : scriptletIds)
+                                sRunner.add((ScriptletInt<WorksheetSO>)ScriptletFactory.get(scriptletId, null));
+                            wSO = new WorksheetSO();
+                            wSO.addActionBefore(Action_Before.PRE_TRANSFER);
+                            wSO.setManager(wMan);
+                            
+                            wSO = sRunner.run(wSO);
+                            if (wSO.getExceptions() != null && wSO.getExceptions().size() > 0) {
+                                for (Exception e : wSO.getExceptions())
+                                    errors.add(e);
+                            }
+                            
+                            wMan = wSO.getManager();
+                        } catch (Exception anyE) {
+                            errors.add(anyE);
+                        }
+                        
+                        if (errors.size() > 0)
+                            throw errors;
+                    }
+                }
+            }
         }
-        
+
         return new WorksheetResultsTransferVO(wMan, sms);
     }
 
@@ -572,7 +620,7 @@ public class WorksheetManager1Bean {
         int dep, ldep, index;
         boolean locked, nodep;
         AnalyteParameterViewDO apVDO;
-        ArrayList<AnalyteParameterViewDO> anaParams;
+        ArrayList<AnalyteParameterViewDO> anaParams, apList;
         ArrayList<Integer> analyteIndexes, excludedIds, testAnalyteIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
@@ -581,7 +629,7 @@ public class WorksheetManager1Bean {
         Datetime createdDate, startedDate;
         DecimalFormat df;
         HashMap<Integer, AnalyteDO> analyteMap;
-        HashMap<Integer, AnalyteParameterViewDO> pMap;
+        HashMap<Integer, ArrayList<AnalyteParameterViewDO>> pMap;
         HashMap<Integer, ArrayList<Integer>> excludedMap, testAnalyteIdMap;
         HashMap<Integer, ArrayList<ResultViewDO>> newResults, resultHash;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wResultHash;
@@ -592,7 +640,7 @@ public class WorksheetManager1Bean {
         HashMap<Integer, String> testMethodNames;
         HashMap<Integer, WorksheetItemDO> wItems;
         HashMap<Integer, WorksheetAnalysisViewDO> updatedWorksheetAnalyses;
-        HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap;
+        HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap;
         HashMap<String, Integer> formatColumnMap;
         HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         Integer tmpid, id, col;
@@ -891,7 +939,7 @@ public class WorksheetManager1Bean {
         sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
         resultHash = new HashMap<Integer, ArrayList<ResultViewDO>>();
         if (!analysisIds.isEmpty()) {
-            sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
+            sMans = sampleMan.fetchByAnalyses(DataBaseUtil.toArrayList(analysisIds), SampleManager1.Load.SINGLERESULT);
             for (SampleManager1 sMan : sMans) {
                 for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sMan))
                     sMansByAnalysisId.put(aVDO.getId(), sMan);
@@ -915,7 +963,7 @@ public class WorksheetManager1Bean {
          */
         dep = ldep = 0;
         analyteMap = new HashMap<Integer, AnalyteDO>();
-        apMap = new HashMap<String, HashMap<Integer, AnalyteParameterViewDO>>();
+        apMap = new HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>>();
         excludedMap = new HashMap<Integer, ArrayList<Integer>>();
         formatColumnMap = new HashMap<String, Integer>();
         testAnalyteIdMap = new HashMap<Integer, ArrayList<Integer>>();
@@ -1067,18 +1115,25 @@ public class WorksheetManager1Bean {
                         if (col != null && (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                             data.setValueAt(col, qcaVDO.getValue());
                     }
-                    if (formatColumnMap.containsKey("p_1") || formatColumnMap.containsKey("p_2") ||
-                        formatColumnMap.containsKey("p_3")) { 
+                    if (formatColumnMap.containsKey("p1") || formatColumnMap.containsKey("p2") ||
+                        formatColumnMap.containsKey("p3") || formatColumnMap.containsKey("p_1") ||
+                        formatColumnMap.containsKey("p_2") || formatColumnMap.containsKey("p_3")) { 
                         pMap = apMap.get("Q"+qcaVDO.getQcId());
                         if (pMap == null) {
-                            pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                            pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
                             apMap.put("Q"+qcaVDO.getQcId(), pMap);
                             try {
                                 anaParams = analyteParameter.fetchByActiveDate(qcaVDO.getQcId(),
                                                                                Constants.table().QC,
                                                                                wm.getWorksheet().getCreatedDate().getDate());
-                                for (AnalyteParameterViewDO anaParam : anaParams)
-                                    pMap.put(anaParam.getAnalyteId(), anaParam);
+                                for (AnalyteParameterViewDO anaParam : anaParams) {
+                                    apList = pMap.get(anaParam.getAnalyteId());
+                                    if (apList == null) {
+                                        apList = new ArrayList<AnalyteParameterViewDO>();
+                                        pMap.put(anaParam.getAnalyteId(), apList);
+                                    }
+                                    apList.add(anaParam);
+                                }
                             } catch (NotFoundException nfE) {
                             } catch (Exception anyE) {
                                 log.log(Level.SEVERE,
@@ -1087,16 +1142,31 @@ public class WorksheetManager1Bean {
                             }
                         }
 
-                        apVDO = pMap.get(data.getAnalyteId());
+                        apList = pMap.get(data.getAnalyteId());
+                        apVDO = null;
+                        if (apList != null && apList.size() > 0)
+                            apVDO = apList.get(0);
                         if (apVDO != null) {
+                            col = formatColumnMap.get("p1");
+                            if (apVDO.getP1() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP1()));
                             col = formatColumnMap.get("p_1");
                             if (apVDO.getP1() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                                 data.setValueAt(col, df.format(apVDO.getP1()));
+                            col = formatColumnMap.get("p2");
+                            if (apVDO.getP2() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP2()));
                             col = formatColumnMap.get("p_2");
                             if (apVDO.getP2() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
                                 data.setValueAt(col, df.format(apVDO.getP2()));
+                            col = formatColumnMap.get("p3");
+                            if (apVDO.getP3() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP3()));
                             col = formatColumnMap.get("p_3");
                             if (apVDO.getP3() != null && col != null && data.getId() <= 0 &&
                                 (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
@@ -1564,6 +1634,7 @@ public class WorksheetManager1Bean {
                     waVDO.setUnitOfMeasureId(waVDO1.getUnitOfMeasureId());
                     waVDO.setUnitOfMeasure(waVDO1.getUnitOfMeasure());
                     waVDO.setStatusId(waVDO1.getStatusId());
+                    waVDO.setTypeId(waVDO1.getTypeId());
                     waVDO.setCollectionDate(waVDO1.getCollectionDate());
                     waVDO.setReceivedDate(waVDO1.getReceivedDate());
                     waVDO.setDueDays(waVDO1.getDueDays());
@@ -2026,7 +2097,8 @@ public class WorksheetManager1Bean {
 
     public WorksheetResultsTransferVO transferResults(WorksheetManager1 manager,
                                                       ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
+                                                      ArrayList<SampleManager1> sampleMans,
+                                                      boolean ignoreWarnings) throws Exception {
         boolean update;
         int i, c;
         AnalysisUserViewDO auVDO;
@@ -2164,6 +2236,11 @@ public class WorksheetManager1Bean {
             if (waVDO.getCompletedDate() != null &&
                 DataBaseUtil.isDifferent(waVDO.getCompletedDate(), aVDO.getCompletedDate())) {
                 aVDO.setCompletedDate(waVDO.getCompletedDate());
+                update = true;
+            }
+
+            if (DataBaseUtil.isDifferent(waVDO.getTypeId(), aVDO.getTypeId())) {
+                aVDO.setTypeId(waVDO.getTypeId());
                 update = true;
             }
 
@@ -2334,7 +2411,7 @@ public class WorksheetManager1Bean {
             }
         }
 
-        sampleMan.update(sampleMans, true);
+        sampleMan.update(sampleMans, ignoreWarnings);
         
         if (unlockIds.size() > 0)
             lock.unlock(Constants.table().SAMPLE, unlockIds);
@@ -2409,15 +2486,15 @@ public class WorksheetManager1Bean {
                                     ArrayList<ResultViewDO> results, ArrayList<WorksheetResultViewDO> wResults,
                                     ArrayList<Integer> testAnalyteIds, ArrayList<Integer> excludedIds,
                                     HashMap<String, Integer> formatColumnMap, HashMap<Integer, AnalyteDO> analyteMap,
-                                    HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) throws Exception {
+                                    HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap) throws Exception {
         int i, resultRow;
         AnalyteDO anaDO;
         AnalyteParameterViewDO apVDO;
-        ArrayList<AnalyteParameterViewDO> anaParams;
+        ArrayList<AnalyteParameterViewDO> anaParams, apList;
         ArrayList<WorksheetResultViewDO> wrList;
         DecimalFormat df;
         DictionaryDO dDO;
-        HashMap<Integer, AnalyteParameterViewDO> pMap;
+        HashMap<Integer, ArrayList<AnalyteParameterViewDO>> pMap;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrMap;
         Integer col, taId;
         Iterator<Integer> iter;
@@ -2482,18 +2559,25 @@ public class WorksheetManager1Bean {
                 }
             }
             
-            if (formatColumnMap.containsKey("p_1") || formatColumnMap.containsKey("p_2") ||
-                formatColumnMap.containsKey("p_3")) { 
+            if (formatColumnMap.containsKey("p1") || formatColumnMap.containsKey("p2") ||
+                formatColumnMap.containsKey("p3") || formatColumnMap.containsKey("p_1") ||
+                formatColumnMap.containsKey("p_2") || formatColumnMap.containsKey("p_3")) { 
                 pMap = apMap.get("T"+waVDO.getTestId());
                 if (pMap == null) {
-                    pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                    pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
                     apMap.put("T"+waVDO.getTestId(), pMap);
                     try {
                         anaParams = analyteParameter.fetchByActiveDate(waVDO.getTestId(),
                                                                        Constants.table().TEST,
                                                                        wm.getWorksheet().getCreatedDate().getDate());
-                        for (AnalyteParameterViewDO anaParam : anaParams)
-                            pMap.put(anaParam.getAnalyteId(), anaParam);
+                        for (AnalyteParameterViewDO anaParam : anaParams) {
+                            apList = pMap.get(anaParam.getAnalyteId());
+                            if (apList == null) {
+                                apList = new ArrayList<AnalyteParameterViewDO>();
+                                pMap.put(anaParam.getAnalyteId(), apList);
+                            }
+                            apList.add(anaParam);
+                        }
                     } catch (NotFoundException nfE) {
                     } catch (Exception anyE) {
                         log.log(Level.SEVERE,
@@ -2502,16 +2586,41 @@ public class WorksheetManager1Bean {
                     }
                 }
 
-                apVDO = pMap.get(wrVDO.getAnalyteId());
+                apList = pMap.get(wrVDO.getAnalyteId());
+                apVDO = null;
+                if (apList != null && apList.size() > 0) {
+                    for (AnalyteParameterViewDO ap : apList) {
+                        if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                            if (ap.getUnitOfMeasureId() != null) {
+                                apVDO = ap;
+                                break;
+                            } else if (apVDO == null) {
+                                apVDO = ap;
+                            }
+                        }
+                    }
+                }
                 if (apVDO != null) {
+                    col = formatColumnMap.get("p1");
+                    if (apVDO.getP1() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP1()));
                     col = formatColumnMap.get("p_1");
                     if (apVDO.getP1() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
                         wrVDO.setValueAt(col, df.format(apVDO.getP1()));
+                    col = formatColumnMap.get("p2");
+                    if (apVDO.getP2() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP2()));
                     col = formatColumnMap.get("p_2");
                     if (apVDO.getP2() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
                         wrVDO.setValueAt(col, df.format(apVDO.getP2()));
+                    col = formatColumnMap.get("p3");
+                    if (apVDO.getP3() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP3()));
                     col = formatColumnMap.get("p_3");
                     if (apVDO.getP3() != null && col != null && wrVDO.getId() <= 0 &&
                         (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))

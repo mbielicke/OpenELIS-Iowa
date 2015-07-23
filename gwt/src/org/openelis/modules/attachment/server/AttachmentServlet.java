@@ -88,16 +88,7 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
-    }
-    
-    @Override
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
-        try {
-            return attachmentManager.getReserved(attachmentId);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
+    }   
 
     @Override
     public AttachmentManager update(AttachmentManager data) throws Exception {
