@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -142,8 +143,9 @@ public class TurnaroundReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String frDate, tDate, fromDate, toDate, section, userName, printer, printstat;
-        fromDate = toDate = null;
+        String section, userName, printer, printstat;
+        Timestamp fromDate, toDate;
+
         /*
          * push status into session so we can query it while the report is
          * running
@@ -158,21 +160,14 @@ public class TurnaroundReportBean {
 
         userName = User.getName(ctx);
 
-        frDate = ReportUtil.getSingleParameter(param, "FROM_RELEASED");
-        tDate = ReportUtil.getSingleParameter(param, "TO_RELEASED");
+        fromDate = ReportUtil.getTimestampParameter(param, "FROM_RELEASED");
+        toDate = ReportUtil.getTimestampParameter(param, "TO_RELEASED");
         section = ReportUtil.getListParameter(param, "SECTION");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
+        if (fromDate == null || toDate == null)
             throw new InconsistencyException("You must specify From Date and To Date for this report");
 
-        if (frDate != null && frDate.length() > 0) {
-            fromDate = frDate + ":00";
-        }
-        if (tDate != null && tDate.length() > 0) {
-            toDate = tDate + ":59";
-
-        }
         if ( !DataBaseUtil.isEmpty(section))
             section = " and se.id " + section;
         else

@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -94,19 +95,24 @@ public class StorageBean {
 
     public ArrayList<StorageViewDO> fetchByIds(ArrayList<Integer> referenceIds,
                                                Integer refTableId) {
+        int i;
         Query query;
         SystemUserVO user;
         StorageViewDO data;
-        ArrayList<StorageViewDO> list;
-
+        List<StorageViewDO> s;
+        ArrayList<Integer> range;
+        
         query = manager.createNamedQuery("Storage.FetchByIds");
-        query.setParameter("ids", referenceIds);
         query.setParameter("tableId", refTableId);
+        s = new ArrayList<StorageViewDO>();
+        range = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (i = 0; i < range.size() - 1; i++ ) {
+            query.setParameter("ids", referenceIds.subList(range.get(i), range.get(i + 1)));
+            s.addAll(query.getResultList());
+        }
 
-        list = DataBaseUtil.toArrayList(query.getResultList());
-
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
+        for (i = 0; i < s.size(); i++ ) {
+            data = s.get(i);
 
             if (data.getSystemUserId() != null) {
                 user = userCache.getSystemUser(data.getSystemUserId());
@@ -115,7 +121,7 @@ public class StorageBean {
             }
         }
 
-        return list;
+        return DataBaseUtil.toArrayList(s);
     }
 
     public ArrayList<StorageViewDO> fetchCurrentByLocationId(Integer id) throws Exception {

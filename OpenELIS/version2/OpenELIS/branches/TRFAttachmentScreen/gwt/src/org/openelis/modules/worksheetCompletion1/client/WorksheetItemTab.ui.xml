@@ -75,6 +75,11 @@
             <w:Dropdown ui:field="analysisStatusId" width="75px" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
+        <t:Column width="75" label="{msg.gen_type}">
+          <t:DropdownCell>
+            <w:Dropdown ui:field="analysisTypeId" width="75px" field="Integer"/>
+          </t:DropdownCell>
+        </t:Column>
         <t:Column width="100" label="{msg.gen_analyte}">
           <t:LabelCell/>
         </t:Column>

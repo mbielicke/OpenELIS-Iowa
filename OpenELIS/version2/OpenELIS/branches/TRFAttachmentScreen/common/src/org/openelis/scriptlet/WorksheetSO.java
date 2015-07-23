@@ -41,7 +41,7 @@ public class WorksheetSO extends ScriptletObject {
     private static final long serialVersionUID = 1L;
 
     public enum Action_Before {
-        TEMPLATE_LOAD
+        TEMPLATE_LOAD, PRE_TRANSFER, RESULT
     }
 
     public enum Action_After {

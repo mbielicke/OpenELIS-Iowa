@@ -28,11 +28,10 @@ package org.openelis.modules.report.dataView.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.DataViewVO;
+import org.openelis.modules.report.client.ReportScreen;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
-import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.modules.report.client.ReportScreen;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

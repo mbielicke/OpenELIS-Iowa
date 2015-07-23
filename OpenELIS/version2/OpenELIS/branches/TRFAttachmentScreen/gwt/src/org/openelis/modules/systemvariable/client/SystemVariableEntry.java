@@ -17,7 +17,7 @@ import com.google.gwt.user.client.Window;
 public class SystemVariableEntry implements EntryPoint, ShowScreenHandler {
     
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.SYSTEM_VARIABLE, this);
+//        ScreenBus.get().addHandler(ScreenBus.SYSTEM_VARIABLE, this);
     };
     
     @Override

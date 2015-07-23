@@ -10,17 +10,14 @@
 	</parameter>
 	<parameter name="TEST_RESULT_VALUE" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT
-     tr.test_id tr_test_id, tr.result_group tr_result_group, tr.sort_order tr_sort_order,
-     tr.type_id tr_type_id, tr.value tr_value, tr.significant_digits tr_significant_digits,
-     d1.entry d1_entry, d1.system_name d1_system_name, d2.entry d2_entry
-FROM
-     test_result tr, dictionary d1,  outer dictionary d2
-WHERE
-   tr.test_id = $P{TEST_ID}  AND  tr.type_id = d1.id AND
-   tr.unit_of_measure_id = d2.id
-
-Order BY tr.result_group, tr.sort_order]]>
+		<![CDATA[SELECT tr.test_id as tr_test_id, tr.result_group as tr_result_group, tr.sort_order as tr_sort_order,
+       tr.type_id as tr_type_id, tr.value as tr_value, tr.significant_digits as tr_significant_digits,
+       d1.entry as d1_entry, d1.system_name as d1_system_name, d2.entry as d2_entry
+FROM   test_result tr
+       join dictionary d1 on d1.id = tr.type_id
+       left join dictionary d2 on d2.id = tr.unit_of_measure_id
+WHERE  tr.test_id = $P{TEST_ID}
+ORDER BY tr.result_group, tr.sort_order]]>
 	</queryString>
 	<field name="tr_test_id" class="java.lang.Integer"/>
 	<field name="tr_result_group" class="java.lang.Integer"/>

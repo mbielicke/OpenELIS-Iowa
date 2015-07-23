@@ -7,11 +7,11 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="ORDER_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[select ot.sort_order, t.reporting_description
-from   order_test ot, test t
-where  ot.order_id = $P{ORDER_ID} and
-       ot.test_id = t.id
-order by 1]]>
+		<![CDATA[SELECT ot.sort_order, t.reporting_description
+FROM   iorder_test ot
+       join test t on t.id = ot.test_id
+WHERE  ot.iorder_id = $P{ORDER_ID}
+ORDER BY 1]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
 	<field name="reporting_description" class="java.lang.String"/>

@@ -8,31 +8,29 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORDER_ID" class="java.lang.String"/>
+	<parameter name="ORDER_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<parameter name="ORDER_CUSTOMER_REFERENCE_TABLE_ID" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[65]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select o.*, oo1.organization_id report_to_id, oo1.organization_attention report_to_attention, oo2.organization_id bill_to_id, oo2.organization_attention bill_to_attention
-from order o, outer order_organization oo1, outer order_organization oo2
-where o.id = $P{ORDER_ID} and type = 'S' and oo1.order_id = o.id and
-      oo1.type_id = (select id from dictionary where system_name = 'org_report_to') and
-      oo2.order_id = o.id and oo2.type_id = (select id from dictionary where system_name = 'org_bill_to')]]>
+		<![CDATA[SELECT
+       o.id, o.organization_id, o.organization_attention, oo1.organization_id as report_to_id,
+       oo1.organization_attention as report_to_attention, oo2.organization_id as bill_to_id,
+       oo2.organization_attention as bill_to_attention
+FROM
+       iorder o
+       left join iorder_organization oo1 on oo1.iorder_id = o.id and
+                 oo1.type_id = (select id from dictionary where system_name = 'org_report_to')
+       left join iorder_organization oo2 on oo2.iorder_id = o.id and
+                 oo2.type_id = (select id from dictionary where system_name = 'org_bill_to')
+WHERE
+       o.id = $P{ORDER_ID} and o.type = 'S']]>
 	</queryString>
 	<field name="id" class="java.lang.Integer"/>
-	<field name="parent_order_id" class="java.lang.Integer"/>
-	<field name="description" class="java.lang.String"/>
-	<field name="status_id" class="java.lang.Integer"/>
-	<field name="ordered_date" class="java.sql.Date"/>
-	<field name="needed_in_days" class="java.lang.Integer"/>
-	<field name="requested_by" class="java.lang.String"/>
-	<field name="cost_center_id" class="java.lang.Integer"/>
 	<field name="organization_id" class="java.lang.Integer"/>
 	<field name="organization_attention" class="java.lang.String"/>
-	<field name="type" class="java.lang.String"/>
-	<field name="external_order_number" class="java.lang.String"/>
-	<field name="ship_from_id" class="java.lang.Integer"/>
-	<field name="number_of_forms" class="java.lang.Integer"/>
 	<field name="report_to_id" class="java.lang.Integer"/>
 	<field name="report_to_attention" class="java.lang.String"/>
 	<field name="bill_to_id" class="java.lang.Integer"/>
@@ -132,7 +130,7 @@ Phone # 319-335-4500 or
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isItalic="true" isUnderline="false" pdfFontName="Helvetica-Oblique" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{PWS_COUNT} != null && $V{PWS_COUNT} > 0 ? "SD" : "EN") + " 102014"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{PWS_COUNT} != null && $V{PWS_COUNT} > 0 ? "SD" : "EN") + " 062015"]]></textFieldExpression>
 			</textField>
 		</band>
 	</background>
@@ -514,14 +512,14 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" x="372" y="176" width="100" height="10"/>
+				<reportElement positionType="Float" x="372" y="161" width="100" height="10"/>
 				<textElement>
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[Temperature ( Celsius ):]]></text>
 			</staticText>
 			<line>
-				<reportElement key="" positionType="Float" mode="Transparent" x="461" y="186" width="113" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<reportElement key="" positionType="Float" mode="Transparent" x="461" y="171" width="113" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
@@ -626,6 +624,19 @@ PLACE THE ACCESSION LABEL WITHIN THIS BOX]]></text>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="372" y="176" width="69" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[Thermometer ID:]]></text>
+			</staticText>
+			<line>
+				<reportElement key="" positionType="Float" mode="Transparent" x="435" y="186" width="139" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
 		</band>
 	</lastPageFooter>
 </jasperReport>

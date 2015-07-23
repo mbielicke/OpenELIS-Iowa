@@ -549,11 +549,22 @@ public class AnalyteParameterScreenUI extends Screen {
                         if (sampleTypeId == null) {
                             event.cancel();
                             setError(Messages.get().analyteParameter_selectSampleTypeBeforeUnit());
+                            return;
                         } else {
                             disableAndEnableUnits(sampleTypeId);
                         }
                     }
                 }
+                
+                /*
+                 * this makes sure that if an error is not supposed to be shown
+                 * on clicking a cell, any previously shown error gets removed,
+                 * no matter which cell is clicked
+                 */
+                if (isState(ADD))
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                else 
+                    clearStatus();
             }
         });
 
@@ -623,7 +634,7 @@ public class AnalyteParameterScreenUI extends Screen {
                         prevNode = parent.getChildAt(index + 1);
                     else
                         prevNode = null;
-                    tree.clearExceptions(r, c);
+                    tree.clearEndUserExceptions(r, c);
                     switch (c) {
                         case 0:
                             /*
@@ -1612,7 +1623,7 @@ public class AnalyteParameterScreenUI extends Screen {
             row = model.get(i);
             unitId = row.getKey();
             types = unitTypesMap.get(unitId);
-            row.setEnabled(types.contains(typeId));
+            unitOfMeasure.setItemEnabled(unitId, types.contains(typeId));
         }
     }
 

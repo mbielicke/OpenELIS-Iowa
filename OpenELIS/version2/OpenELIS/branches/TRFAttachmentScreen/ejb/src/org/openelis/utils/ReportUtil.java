@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,18 +81,66 @@ public class ReportUtil {
      * Returns the query part of QueryData for the specified key. This method is
      * used to get the value for a given Prompt key when it has a single value.
      */
-    public static String getSingleParameter(HashMap<String, QueryData> parameter, String key) {
+    public static String getStringParameter(HashMap<String, QueryData> parameter, String key) {
         QueryData q;
 
         q = parameter.get(key);
-        if (q != null) {
+        if (q != null)
             /*
              * single quotes are replaced with two single quotes to escape the
              * character in SQL
              */
-            q.setQuery(q.getQuery().replaceAll("'", "''"));
-            return q.getQuery();
-        }
+            return q.getQuery().replaceAll("'", "''");
+
+        return null;
+    }
+    
+    public static Integer getIntegerParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+
+        q = parameter.get(key);
+        if (q != null)
+            return Integer.parseInt(q.getQuery());
+
+        return null;
+    }
+
+    public static Double getDoubleParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+
+        q = parameter.get(key);
+        if (q != null)
+            return Double.parseDouble(q.getQuery());
+
+        return null;
+    }
+
+    public static boolean getBooleanParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+
+        q = parameter.get(key);
+        if (q != null && "Y".equals(q.getQuery()))
+            return true;
+
+        return false;
+    }
+
+    public static Date getDateParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+
+        q = parameter.get(key);
+        if (q != null)
+            return getDate(q.getQuery()).getDate();
+
+        return null;
+    }
+
+    public static Timestamp getTimestampParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+
+        q = parameter.get(key);
+        if (q != null)
+            return new Timestamp(getDatetime(q.getQuery()).getDate().getTime());
 
         return null;
     }

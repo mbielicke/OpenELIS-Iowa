@@ -8,9 +8,9 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT d.entry d_entry
+		<![CDATA[SELECT d.entry as d_entry
 FROM dictionary d
-WHERE d.id = $P{DICT_ID}]]>
+WHERE d.id = $P{DICT_ID}::integer]]>
 	</queryString>
 	<field name="d_entry" class="java.lang.String"/>
 	<detail>

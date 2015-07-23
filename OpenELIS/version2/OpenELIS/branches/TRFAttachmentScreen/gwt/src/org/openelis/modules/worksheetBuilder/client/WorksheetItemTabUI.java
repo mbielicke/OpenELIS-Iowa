@@ -68,7 +68,9 @@ import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.SelectionEvent;
+import org.openelis.modules.worksheet1.client.ReagentsWithChoicesEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
@@ -1530,6 +1532,7 @@ public class WorksheetItemTabUI extends Screen {
         toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
         toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
         toDO.setStatusId(fromDO.getStatusId());
+        toDO.setTypeId(fromDO.getTypeId());
         toDO.setCollectionDate(fromDO.getCollectionDate());
         toDO.setReceivedDate(fromDO.getReceivedDate());
         toDO.setDueDays(fromDO.getDueDays());

@@ -1,10 +1,9 @@
 <module>
-  <inherits name="org.openelis.modules.sample.Sample"/>
   <inherits name="org.openelis.modules.sample1.Sample1"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
   <inherits name="org.openelis.modules.patient.Patient"/>
   <inherits name="org.openelis.modules.order1.Order1Service"/>
-  <inherits name="org.openelis.modules.provider.ProviderService"/>
+  <inherits name="org.openelis.modules.provider1.ProviderService1"/>
   <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
   <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1Service"/>
   <inherits name="org.openelis.modules.shipping.ShippingService"/>
@@ -12,6 +11,10 @@
   <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
   <inherits name="org.openelis.modules.report.orderRequestForm.OrderRequestForm"/>
+  <inherits name="org.openelis.modules.storageLocation.StorageLocationService"/>
+  <inherits name="org.openelis.modules.scriptlet.ScriptletService"/>
+  <inherits name="org.openelis.modules.eorder.EOrder"/>
+  <inherits name="org.openelis.modules.dictionary1.DictionaryService1"/>
   
   <entry-point class="org.openelis.modules.sampleTracking1.client.SampleTrackingEntry"/>
 </module>

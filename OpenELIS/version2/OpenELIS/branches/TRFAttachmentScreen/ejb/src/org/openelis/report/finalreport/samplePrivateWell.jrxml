@@ -13,27 +13,19 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     s.received_date s_received_date,
-     s.collection_date s_collection_date,
-     s.collection_time s_collection_time,
-     s.client_reference s_client_reference,
-     s.released_date s_released_date,
-     pw.organization_id pw_organization_id,
-     pw.report_to_name pw_report_to_name,
-     pw.report_to_attention pw_report_to_attention,
-     pw.report_to_address_id pw_report_to_address_id,
-     pw.location pw_location,
-     pw.owner pw_owner,
-     pw.collector pw_collector,
-     pw.well_number pw_well_number,
-     a.city a_city,
-     a.street_address a_street_address
+     s.received_date as s_received_date, s.collection_date as s_collection_date,
+     s.collection_time as s_collection_time, s.client_reference as s_client_reference,
+     s.released_date as s_released_date, pw.organization_id as pw_organization_id,
+     pw.report_to_name as pw_report_to_name, pw.report_to_attention as pw_report_to_attention,
+     pw.report_to_address_id as pw_report_to_address_id, pw.location as pw_location,
+     pw.owner as pw_owner, pw.collector as pw_collector, pw.well_number as pw_well_number,
+     a.city as a_city, a.street_address as a_street_address
 FROM
-     sample s, sample_private_well pw, outer address a
+     sample s
+     join sample_private_well pw on pw.sample_id = s.id
+     left join address a on a.id = pw.location_address_id
 WHERE
-     s.id = $P{SAMPLE_ID} AND
-     pw.sample_id = s.id AND
-     pw.location_address_id = a.id]]>
+     s.id = $P{SAMPLE_ID}]]>
 	</queryString>
 	<field name="s_received_date" class="java.sql.Timestamp"/>
 	<field name="s_collection_date" class="java.sql.Timestamp"/>

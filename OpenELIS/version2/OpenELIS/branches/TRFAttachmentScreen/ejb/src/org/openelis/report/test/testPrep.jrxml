@@ -5,12 +5,12 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT
-     t.id t_id,  pt.name pt_name, m.name m_name, pt.description pt_description
-FROM
-     test t, test pt,  test_prep tp, method m
-WHERE
-     t.id = $P{TEST_ID} AND tp.test_id = t.id AND tp.prep_test_id = pt.id AND pt.method_id = m.id]]>
+		<![CDATA[SELECT t.id as t_id, pt.name as pt_name, m.name as m_name, pt.description as pt_description
+FROM   test t
+       join test_prep tp on tp.test_id = t.id
+       join test pt on pt.id = tp.prep_test_id
+       join method m on m.id = pt.method_id
+WHERE t.id = $P{TEST_ID}]]>
 	</queryString>
 	<field name="t_id" class="java.lang.Integer"/>
 	<field name="pt_name" class="java.lang.String"/>

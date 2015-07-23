@@ -1,14 +1,11 @@
 package org.openelis.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static org.openelis.ui.util.TestingUtil.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -131,19 +128,23 @@ public class TestMethodBean {
     
     @Test
     public void testFetchByIds() throws Exception {
+    	ArrayList<Integer> ids = new ArrayList<Integer>();
+    	ids.add(1);
         List<MethodDO> results = new ArrayList<MethodDO>();
         results.add(mock(MethodDO.class));
         
         mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, results);
         
-        assertEquals(results,bean.fetchByIds(mock(Collection.class)));
+        assertEquals(results,bean.fetchByIds(ids));
     }
     
     @Test
-    public void testFetchByIdsNoResult() throws Exception {        
+    public void testFetchByIdsNoResult() throws Exception {
+    	ArrayList<Integer> ids = new ArrayList<Integer>();
+    	ids.add(1);
         mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, new ArrayList<MethodDO>());
         
-        assertTrue(bean.fetchByIds(mock(Collection.class)).isEmpty());
+        assertTrue(bean.fetchByIds(ids).isEmpty());
     }
     
     @Test

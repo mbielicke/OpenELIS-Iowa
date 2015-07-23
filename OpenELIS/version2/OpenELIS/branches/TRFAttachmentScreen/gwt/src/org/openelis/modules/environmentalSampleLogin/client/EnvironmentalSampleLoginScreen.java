@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
@@ -1326,16 +1326,16 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     protected void onOrderLookupClick() {
         Integer id;
-        OrderManager man;
+        IOrderManager man;
 
         man = null;
         id = manager.getSample().getOrderId();
         if (id == null) {
-            man = OrderManager.getInstance();
+            man = IOrderManager.getInstance();
         } else {
             try {
-                man = OrderManager.fetchById(id);
-                if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                man = IOrderManager.fetchById(id);
+                if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType())) {
                     orderNumber.addException(new Exception(Messages.get().orderIdInvalidException()));
                     return;
                 }
@@ -1495,7 +1495,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         Window.alert(warningText);
     }
 
-    private void showOrder(OrderManager orderManager) {
+    private void showOrder(IOrderManager orderManager) {
         ScreenWindow modal;
         try {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
@@ -1535,7 +1535,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         int i;
         Integer orgId;
         ArrayList<Integer> orgIds;
-        OrderManager man;
+        IOrderManager man;
         SampleManager quickEntryMan;
         SampleItemManager itemMan;
         SampleOrganizationManager sorgMan;
@@ -1557,8 +1557,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             window.setBusy(Messages.get().fetching());
 
-            man = OrderManager.fetchById(orderId);
-            if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+            man = IOrderManager.fetchById(orderId);
+            if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType())) {
                 orderNumber.addException(new Exception(Messages.get().orderIdInvalidException()));
                 window.clearStatus();
                 return;

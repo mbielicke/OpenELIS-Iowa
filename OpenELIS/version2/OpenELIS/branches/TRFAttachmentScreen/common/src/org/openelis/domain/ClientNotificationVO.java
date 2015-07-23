@@ -33,25 +33,27 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 /**
- * The class is used to carry fields for the client notification received report.
- * The fields are considered read/display and do not get committed to
+ * The class is used to carry fields for the client notification received
+ * report. The fields are considered read/display and do not get committed to
  * the database.
  */
 
 public class ClientNotificationVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    protected Integer         accessionNumber, sampleQaeventId, analysisQaeventId;
+    protected Integer         accessionNumber, analysisId, analysisQaeventId, sampleQaeventId;
     protected Datetime        collectionDate, collectionTime, receivedDate;
-    protected String          email, referenceField1, referenceField2, referenceField3, projectName;
-
+    protected String          email, projectName, providerLastName, referenceField1,
+                              referenceField2, referenceField3;
 
     public ClientNotificationVO() {
     }
-    
-    public ClientNotificationVO(Integer accessionNumber, Date collectionDate,
-                                   Date collectionTime, Date receivedDate, String email, Integer sampleQaeventId, Integer analysisQaeventId, String referenceField1, String referenceField2,
-                                   String referenceField3, String projectName) {
+
+    public ClientNotificationVO(Integer accessionNumber, Date collectionDate, Date collectionTime,
+                                Date receivedDate, String email, Integer sampleQaeventId,
+                                Integer analysisQaeventId, String referenceField1,
+                                String referenceField2, String referenceField3, String projectName,
+                                String providerLastName, Integer analysisId) {
         if (collectionTime instanceof Time)
             collectionTime = new Date(collectionTime.getTime());
         setAccessionNumber(accessionNumber);
@@ -65,6 +67,8 @@ public class ClientNotificationVO implements Serializable {
         setReferenceField2(referenceField2);
         setReferenceField3(referenceField3);
         setProjectName(projectName);
+        setProviderLastName(providerLastName);
+        setAnalysisId(analysisId);
     }
 
     public Integer getAccessionNumber() {
@@ -114,7 +118,7 @@ public class ClientNotificationVO implements Serializable {
     public void setSampleQaeventId(Integer sampleQaeventId) {
         this.sampleQaeventId = sampleQaeventId;
     }
-    
+
     public Integer getAnalysisQaeventId() {
         return analysisQaeventId;
     }
@@ -130,7 +134,7 @@ public class ClientNotificationVO implements Serializable {
     public void setReferenceField1(String referenceField1) {
         this.referenceField1 = DataBaseUtil.trim(referenceField1);
     }
-    
+
     public String getReferenceField2() {
         return referenceField2;
     }
@@ -146,12 +150,28 @@ public class ClientNotificationVO implements Serializable {
     public void setReferenceField3(String referenceField3) {
         this.referenceField3 = DataBaseUtil.trim(referenceField3);
     }
-    
+
     public String getProjectName() {
         return projectName;
     }
 
     public void setProjectName(String projectName) {
         this.projectName = DataBaseUtil.trim(projectName);
+    }
+
+    public String getProviderLastName() {
+        return providerLastName;
+    }
+
+    public void setProviderLastName(String providerLastName) {
+        this.providerLastName = DataBaseUtil.trim(providerLastName);
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
     }
 }

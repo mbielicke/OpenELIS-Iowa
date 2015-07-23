@@ -27,10 +27,15 @@ package org.openelis.modules.scriptlet.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.modules.dictionary1.client.DictionaryService1Impl;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.scriptlet.SerogroupResultScriptlet1Proxy;
 
 /**
@@ -39,13 +44,25 @@ import org.openelis.scriptlet.SerogroupResultScriptlet1Proxy;
  */
 public class SerogroupResultScriptletProxy1 implements SerogroupResultScriptlet1Proxy {
     
+    private DictionaryService1Impl dictService = DictionaryService1Impl.INSTANCE;
+
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return DictionaryCache.getById(id);
     }
 
     @Override
+    public ArrayList<DictionaryViewDO> getDictionaryByEntry(String entry) throws Exception {
+        return dictService.fetchByEntry(entry);
+    }
+
+    @Override
     public void log(Level level, String message, Exception e) {
         logger.log(level, message, e);
+    }
+    
+    @Override
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        return WorksheetService1.get().getColumnNames(formatId);
     }
 }

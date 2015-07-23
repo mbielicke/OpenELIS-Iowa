@@ -5,10 +5,10 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT a.name
-FROM  analysis an, result r, test_analyte ta, analyte a
-WHERE an.id = $P{ANALYSIS_ID} and r.analysis_id = an.id and r.is_reportable ='Y' and r.test_analyte_id = ta.id and
-      ta.is_column = 'N' and ta.analyte_id = a.id]]>
+		<![CDATA[SELECT an.name
+FROM   result r
+       join analyte an on an.id = r.analyte_id
+WHERE  r.analysis_id = $P{ANALYSIS_ID} and r.is_reportable ='Y' and r.is_column = 'N']]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
 	<detail>

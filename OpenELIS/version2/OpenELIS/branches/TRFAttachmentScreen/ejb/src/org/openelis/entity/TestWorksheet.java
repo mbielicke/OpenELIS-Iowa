@@ -40,6 +40,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -51,10 +52,16 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestWorksheet.FetchByTestId",
-           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.subsetCapacity," +
-                   "tw.totalCapacity,tw.formatId,tw.scriptletId)"
-                 + " from TestWorksheet tw where tw.testId = :testId")
+@NamedQueries({
+    @NamedQuery( name = "TestWorksheet.FetchByTestId",
+                query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.subsetCapacity," +
+                        "tw.totalCapacity,tw.formatId,tw.scriptletId)"
+                      + " from TestWorksheet tw where tw.testId = :testId"),
+    @NamedQuery( name = "TestWorksheet.FetchByTestIds",
+                query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.subsetCapacity," +
+                        "tw.totalCapacity,tw.formatId,tw.scriptletId)"
+                      + " from TestWorksheet tw where tw.testId in (:testIds)")})
+
 @Entity
 @Table(name = "test_worksheet")
 @EntityListeners({AuditUtil.class})

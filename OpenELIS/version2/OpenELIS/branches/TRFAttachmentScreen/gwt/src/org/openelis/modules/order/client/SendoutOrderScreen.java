@@ -35,12 +35,12 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -67,16 +67,16 @@ import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
+import org.openelis.manager.IOrderTestManager;
 import org.openelis.manager.ShippingManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
@@ -107,7 +107,7 @@ import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class SendoutOrderScreen extends Screen {
 
-    private OrderManager                 manager;
+    private IOrderManager                 manager;
     private ModulePermission             userModulePermission;
     private SystemUserPermission         userPermission;
 
@@ -178,7 +178,7 @@ public class SendoutOrderScreen extends Screen {
 
 
         tab = Tabs.ORGANIZATION;
-        manager = OrderManager.getInstance();
+        manager = IOrderManager.getInstance();
 
         try {
             CategoryCache.getBySystemNames("order_status",
@@ -320,7 +320,7 @@ public class SendoutOrderScreen extends Screen {
                  * disable itself appropriately
                  */
                 shippingInfo.enable( (state == State.DISPLAY) &&
-                                    Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                    Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                                 .getStatusId()));
             }
 
@@ -401,14 +401,14 @@ public class SendoutOrderScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox<Integer>)def.getWidget(OrderMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(IOrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setFieldValue(manager.getOrder().getId());
+                id.setFieldValue(manager.getIorder().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setId(event.getValue());
+                manager.getIorder().setId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -417,14 +417,14 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        neededInDays = (TextBox<Integer>)def.getWidget(OrderMeta.getNeededInDays());
+        neededInDays = (TextBox<Integer>)def.getWidget(IOrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                neededInDays.setFieldValue(manager.getOrder().getNeededInDays());
+                neededInDays.setFieldValue(manager.getIorder().getNeededInDays());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setNeededInDays(event.getValue());
+                manager.getIorder().setNeededInDays(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -434,14 +434,14 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        numberOfForms = (TextBox<Integer>)def.getWidget(OrderMeta.getNumberOfForms());
+        numberOfForms = (TextBox<Integer>)def.getWidget(IOrderMeta.getNumberOfForms());
         addScreenHandler(numberOfForms, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                numberOfForms.setFieldValue(manager.getOrder().getNumberOfForms());
+                numberOfForms.setFieldValue(manager.getIorder().getNumberOfForms());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setNumberOfForms(event.getValue());
+                manager.getIorder().setNumberOfForms(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -451,14 +451,14 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        shipFrom = (Dropdown)def.getWidget(OrderMeta.getShipFromId());
+        shipFrom = (Dropdown)def.getWidget(IOrderMeta.getShipFromId());
         addScreenHandler(shipFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                shipFrom.setSelection(manager.getOrder().getShipFromId());
+                shipFrom.setSelection(manager.getIorder().getShipFromId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setShipFromId(event.getValue());
+                manager.getIorder().setShipFromId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -468,15 +468,15 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
+        organizationAttention = (TextBox)def.getWidget(IOrderMeta.getOrganizationAttention());
         addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAttention.setValue(manager.getOrder()
+                organizationAttention.setValue(manager.getIorder()
                                                       .getOrganizationAttention());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getOrder().setOrganizationAttention(event.getValue());
+                manager.getIorder().setOrganizationAttention(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -488,12 +488,12 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationName = (AutoComplete)def.getWidget(OrderMeta.getOrganizationName());
+        organizationName = (AutoComplete)def.getWidget(IOrderMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;
+                IOrderViewDO data;
 
-                data = manager.getOrder();
+                data = manager.getIorder();
                 if (data.getOrganization() != null)
                     organizationName.setSelection(data.getOrganizationId(),
                                                   data.getOrganization().getName());
@@ -509,8 +509,8 @@ public class SendoutOrderScreen extends Screen {
                 if (row != null && row.data != null) {
                     data = (OrganizationDO)row.data;
 
-                    manager.getOrder().setOrganizationId(data.getId());
-                    manager.getOrder().setOrganization(data);
+                    manager.getIorder().setOrganizationId(data.getId());
+                    manager.getIorder().setOrganization(data);
 
                     organizationAddressMultipleUnit.setValue(data.getAddress()
                                                                  .getMultipleUnit());
@@ -527,8 +527,8 @@ public class SendoutOrderScreen extends Screen {
                         e.printStackTrace();
                     }
                 } else {
-                    manager.getOrder().setOrganizationId(null);
-                    manager.getOrder().setOrganization(null);
+                    manager.getIorder().setOrganizationId(null);
+                    manager.getIorder().setOrganization(null);
 
                     organizationAddressMultipleUnit.setValue(null);
                     organizationAddressStreetAddress.setValue(null);
@@ -554,7 +554,7 @@ public class SendoutOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -579,10 +579,10 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        status = (Dropdown)def.getWidget(OrderMeta.getStatusId());
+        status = (Dropdown)def.getWidget(IOrderMeta.getStatusId());
         addScreenHandler(status, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                status.setSelection(manager.getOrder().getStatusId());
+                status.setSelection(manager.getIorder().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -592,9 +592,9 @@ public class SendoutOrderScreen extends Screen {
                      */
                     if ( !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(event.getValue()) ||
                         manager.getItems().count() == 0) {
-                        manager.getOrder().setStatusId(event.getValue());
+                        manager.getIorder().setStatusId(event.getValue());
                     } else {
-                        status.setValue(manager.getOrder().getStatusId());
+                        status.setValue(manager.getIorder().getStatusId());
                         Window.alert(Messages.get().onlyProcessOrdersWithNoItems());
                     }
                 } catch (Exception e) {
@@ -609,7 +609,7 @@ public class SendoutOrderScreen extends Screen {
 
                 ArrayList<TableDataRow> model;
 
-                statusId = manager.getOrder().getStatusId();
+                statusId = manager.getIorder().getStatusId();
 
                 if ( (event.getState() != State.ADD && event.getState() != State.UPDATE)) {
                     queryMode = event.getState() == State.QUERY;
@@ -637,14 +637,14 @@ public class SendoutOrderScreen extends Screen {
                          * the option for "Processed" is only enabled for an
                          * existing order and only if it is pending
                          */
-                        r.enabled = manager.getOrder().getId() != null &&
+                        r.enabled = manager.getIorder().getId() != null &&
                                     Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId);
                     else if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(r.key))
                         /*
                          * the option for "Cancelled" is only enabled for an
                          * existing order and only if it is pending or on hold
                          */
-                        r.enabled = manager.getOrder().getId() != null &&
+                        r.enabled = manager.getIorder().getId() != null &&
                                     (Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId) || Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(statusId));
                     else
                         r.enabled = false;
@@ -666,13 +666,13 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressMultipleUnit = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressMultipleUnit());
+        organizationAddressMultipleUnit = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressMultipleUnit());
         addScreenHandler(organizationAddressMultipleUnit,
                          new ScreenEventHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 OrderViewDO data;
+                                 IOrderViewDO data;
 
-                                 data = manager.getOrder();
+                                 data = manager.getIorder();
                                  if (data.getOrganization() != null)
                                      organizationAddressMultipleUnit.setValue(data.getOrganization()
                                                                                   .getAddress()
@@ -692,14 +692,14 @@ public class SendoutOrderScreen extends Screen {
                              }
                          });
 
-        orderedDate = (CalendarLookUp)def.getWidget(OrderMeta.getOrderedDate());
+        orderedDate = (CalendarLookUp)def.getWidget(IOrderMeta.getOrderedDate());
         addScreenHandler(orderedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                orderedDate.setValue(manager.getOrder().getOrderedDate());
+                orderedDate.setValue(manager.getIorder().getOrderedDate());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getOrder().setOrderedDate(event.getValue());
+                manager.getIorder().setOrderedDate(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -709,13 +709,13 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressStreetAddress = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressStreetAddress());
+        organizationAddressStreetAddress = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressStreetAddress());
         addScreenHandler(organizationAddressStreetAddress,
                          new ScreenEventHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 OrderViewDO data;
+                                 IOrderViewDO data;
 
-                                 data = manager.getOrder();
+                                 data = manager.getIorder();
                                  if (data.getOrganization() != null)
                                      organizationAddressStreetAddress.setValue(data.getOrganization()
                                                                                    .getAddress()
@@ -735,14 +735,14 @@ public class SendoutOrderScreen extends Screen {
                              }
                          });
 
-        requestedBy = (TextBox)def.getWidget(OrderMeta.getRequestedBy());
+        requestedBy = (TextBox)def.getWidget(IOrderMeta.getRequestedBy());
         addScreenHandler(requestedBy, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                requestedBy.setValue(manager.getOrder().getRequestedBy());
+                requestedBy.setValue(manager.getIorder().getRequestedBy());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getOrder().setRequestedBy(event.getValue());
+                manager.getIorder().setRequestedBy(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -752,12 +752,12 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressCity = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressCity());
+        organizationAddressCity = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressCity());
         addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;
+                IOrderViewDO data;
 
-                data = manager.getOrder();
+                data = manager.getIorder();
                 if (data.getOrganization() != null)
                     organizationAddressCity.setValue(data.getOrganization()
                                                          .getAddress()
@@ -776,14 +776,14 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        costCenter = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
+        costCenter = (Dropdown)def.getWidget(IOrderMeta.getCostCenterId());
         addScreenHandler(costCenter, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                costCenter.setSelection(manager.getOrder().getCostCenterId());
+                costCenter.setSelection(manager.getIorder().getCostCenterId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setCostCenterId(event.getValue());
+                manager.getIorder().setCostCenterId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -793,12 +793,12 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressState = (Dropdown<String>)def.getWidget(OrderMeta.getOrganizationAddressState());
+        organizationAddressState = (Dropdown<String>)def.getWidget(IOrderMeta.getOrganizationAddressState());
         addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;
+                IOrderViewDO data;
 
-                data = manager.getOrder();
+                data = manager.getIorder();
                 if (data.getOrganization() != null)
                     organizationAddressState.setValue(data.getOrganization()
                                                           .getAddress()
@@ -817,12 +817,12 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressZipCode = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressZipCode());
+        organizationAddressZipCode = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressZipCode());
         addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;
+                IOrderViewDO data;
 
-                data = manager.getOrder();
+                data = manager.getIorder();
                 if (data.getOrganization() != null)
                     organizationAddressZipCode.setValue(data.getOrganization()
                                                             .getAddress()
@@ -841,17 +841,17 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        description = (AutoComplete)def.getWidget(OrderMeta.getDescription());
+        description = (AutoComplete)def.getWidget(IOrderMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 String desc;
 
-                desc = manager.getOrder().getDescription();
+                desc = manager.getIorder().getDescription();
                 description.setSelection(desc, desc);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getOrder().setDescription(event.getValue());
+                manager.getIorder().setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1115,8 +1115,8 @@ public class SendoutOrderScreen extends Screen {
                 window.setBusy(Messages.get().querying());
                 // this screen should only query for send-out orders
                 field = new QueryData();
-                field.setKey(OrderMeta.getType());
-                field.setQuery(OrderManager.TYPE_SEND_OUT);
+                field.setKey(IOrderMeta.getType());
+                field.setQuery(IOrderManager.TYPE_SEND_OUT);
                 field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
@@ -1179,7 +1179,7 @@ public class SendoutOrderScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.setKey(OrderMeta.getId());
+                field.setKey(IOrderMeta.getId());
                 field.setQuery(((AppButton)event.getSource()).getAction());
                 field.setType(QueryData.Type.INTEGER);
 
@@ -1250,7 +1250,7 @@ public class SendoutOrderScreen extends Screen {
         organizationAddressState.setModel(model);
     }
 
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         organizationTab.setManager(manager);
         auxDataTab.setManager(manager);
@@ -1266,7 +1266,7 @@ public class SendoutOrderScreen extends Screen {
 
         drawAllTabs();
 
-        if (manager.getOrder().getId() != null)
+        if (manager.getIorder().getId() != null)
             setState(State.DISPLAY);
         else
             setState(State.DEFAULT);
@@ -1285,17 +1285,17 @@ public class SendoutOrderScreen extends Screen {
 
         // add the type
         field = new QueryData();
-        field.setKey(OrderMeta.getType());
-        field.setQuery(OrderManager.TYPE_SEND_OUT);
+        field.setKey(IOrderMeta.getType());
+        field.setQuery(IOrderManager.TYPE_SEND_OUT);
         field.setType(QueryData.Type.STRING);
         // fields.add(field);
 
         if (auxFields.size() > 0) {
             // add ref table
             field = new QueryData();
-            field.setKey(OrderMeta.getAuxDataReferenceTableId());
+            field.setKey(IOrderMeta.getAuxDataReferenceTableId());
             field.setType(QueryData.Type.INTEGER);
-            field.setQuery(String.valueOf(Constants.table().ORDER));
+            field.setQuery(String.valueOf(Constants.table().IORDER));
             fields.add(field);
 
             // add aux fields
@@ -1311,7 +1311,7 @@ public class SendoutOrderScreen extends Screen {
      * basic button methods
      */
     protected void query() {
-        manager = OrderManager.getInstance();
+        manager = IOrderManager.getInstance();
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -1332,7 +1332,7 @@ public class SendoutOrderScreen extends Screen {
 
     protected void add() {
         Datetime now;
-        OrderViewDO data;
+        IOrderViewDO data;
 
         try {
             now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
@@ -1341,12 +1341,12 @@ public class SendoutOrderScreen extends Screen {
             return;
         }
 
-        manager = OrderManager.getInstance();
-        data = manager.getOrder();
+        manager = IOrderManager.getInstance();
+        data = manager.getIorder();
         data.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         data.setOrderedDate(now);
         data.setRequestedBy(UserCache.getPermission().getLoginName());
-        data.setType(OrderManager.TYPE_SEND_OUT);
+        data.setType(IOrderManager.TYPE_SEND_OUT);
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -1356,7 +1356,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void update() {
-        if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
+        if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getIorder().getStatusId())) {
             Window.alert(Messages.get().cancelledOrderCantBeUpdated());
             return;
         }
@@ -1366,7 +1366,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             manager = manager.fetchForUpdate();
 
-            if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
+            if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getIorder().getStatusId())) {
                 Window.alert(Messages.get().cancelledOrderCantBeUpdated());
                 manager = manager.abortUpdate();
                 setState(State.DISPLAY);
@@ -1397,8 +1397,8 @@ public class SendoutOrderScreen extends Screen {
     protected void commit() {
         Integer prevStatusId;
         Query query;
-        OrderViewDO data;
-        OrderRecurrenceDO orec;
+        IOrderViewDO data;
+        IOrderRecurrenceDO orec;
         ArrayList<QueryData> queryFields;
 
         setFocus(null);
@@ -1416,7 +1416,7 @@ public class SendoutOrderScreen extends Screen {
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
-            data = manager.getOrder();
+            data = manager.getIorder();
             prevStatusId = data.getStatusId();
             try {
                 removeNotReportableAnalytes();
@@ -1463,7 +1463,7 @@ public class SendoutOrderScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(Messages.get().updating());
 
-            data = manager.getOrder();
+            data = manager.getIorder();
             prevStatusId = data.getStatusId();
             try {
                 removeNotReportableAnalytes();
@@ -1510,12 +1510,12 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void commitWithWarnings() {
-        OrderViewDO data;
+        IOrderViewDO data;
         Integer prevStatusId;
 
         clearErrors();
 
-        data = manager.getOrder();
+        data = manager.getIorder();
         prevStatusId = data.getStatusId();
         if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
@@ -1609,7 +1609,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             window.setBusy(Messages.get().fetching());
 
-            manager = OrderService.get().duplicate(manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getIorder().getId());
 
             organizationTab.setManager(manager);
             auxDataTab.setManager(manager);
@@ -1643,7 +1643,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             window.setBusy(Messages.get().fetching());
 
-            ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
+            ShippingService.get().fetchByOrderId(manager.getIorder().getId(),
                                  new SyncCallback<ShippingViewDO>() {
                                      public void onSuccess(ShippingViewDO result) {
                                          try {
@@ -1686,8 +1686,8 @@ public class SendoutOrderScreen extends Screen {
 
         query = new Query();
         field = new QueryData();
-        field.setKey("ORDERID");
-        field.setQuery(manager.getOrder().getId().toString());
+        field.setKey("ORDER_ID");
+        field.setQuery(manager.getIorder().getId().toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
@@ -1713,19 +1713,19 @@ public class SendoutOrderScreen extends Screen {
     protected void orderHistory() {
         IdNameVO hist;
 
-        hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder()
+        hist = new IdNameVO(manager.getIorder().getId(), manager.getIorder()
                                                                .getId()
                                                                .toString());
         HistoryScreen.showHistory(Messages.get().orderHistory(),
-                                  Constants.table().ORDER,
+                                  Constants.table().IORDER,
                                   hist);
     }
 
     protected void organizationHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderOrganizationManager man;
-        OrderOrganizationViewDO data;
+        IOrderOrganizationManager man;
+        IOrderOrganizationViewDO data;
 
         window.setBusy();
         try {
@@ -1738,7 +1738,7 @@ public class SendoutOrderScreen extends Screen {
             }
 
             HistoryScreen.showHistory(Messages.get().orderOrganizationHistory(),
-                                      Constants.table().ORDER_ORGANIZATION,
+                                      Constants.table().IORDER_ORGANIZATION,
                                       refVoList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1750,8 +1750,8 @@ public class SendoutOrderScreen extends Screen {
     protected void itemHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderItemManager man;
-        OrderItemViewDO data;
+        IOrderItemManager man;
+        IOrderItemViewDO data;
 
         try {
             man = manager.getItems();
@@ -1762,7 +1762,7 @@ public class SendoutOrderScreen extends Screen {
                 refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
             }
             HistoryScreen.showHistory(Messages.get().orderItemHistory(),
-                                      Constants.table().ORDER_ITEM,
+                                      Constants.table().IORDER_ITEM,
                                       refVoList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1773,8 +1773,8 @@ public class SendoutOrderScreen extends Screen {
     protected void testHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderTestManager man;
-        OrderTestViewDO data;
+        IOrderTestManager man;
+        IOrderTestViewDO data;
 
         try {
             man = manager.getTests();
@@ -1785,7 +1785,7 @@ public class SendoutOrderScreen extends Screen {
                 refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
             }
             HistoryScreen.showHistory(Messages.get().orderTestHistory(),
-                                      Constants.table().ORDER_TEST,
+                                      Constants.table().IORDER_TEST,
                                       refVoList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1796,8 +1796,8 @@ public class SendoutOrderScreen extends Screen {
     protected void containerHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderContainerManager man;
-        OrderContainerDO data;
+        IOrderContainerManager man;
+        IOrderContainerDO data;
         DictionaryDO dict;
 
         try {
@@ -1810,7 +1810,7 @@ public class SendoutOrderScreen extends Screen {
                 refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
             }
             HistoryScreen.showHistory(Messages.get().orderContainerHistory(),
-                                      Constants.table().ORDER_CONTAINER,
+                                      Constants.table().IORDER_CONTAINER,
                                       refVoList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1820,38 +1820,38 @@ public class SendoutOrderScreen extends Screen {
 
     protected boolean fetchById(Integer id) {
         if (id == null) {
-            manager = OrderManager.getInstance();
+            manager = IOrderManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case ORGANIZATION:
-                        manager = OrderManager.fetchWithOrganizations(id);
+                        manager = IOrderManager.fetchWithOrganizations(id);
                         break;
                     case AUX_DATA:
-                        manager = OrderManager.fetchById(id);
+                        manager = IOrderManager.fetchById(id);
                         break;
                     case TEST:
-                        manager = OrderManager.fetchWithTests(id);
+                        manager = IOrderManager.fetchWithTests(id);
                         break;
                     case CONTAINER:
-                        manager = OrderManager.fetchWithContainers(id);
+                        manager = IOrderManager.fetchWithContainers(id);
                         break;
                     case ITEM:
-                        manager = OrderManager.fetchWithItems(id);
+                        manager = IOrderManager.fetchWithItems(id);
                         break;
                     case SHIP_NOTE:
                     case CUSTOMER_NOTE:
                     case INTERNAL_NOTE:
                     case SAMPLE_NOTE:
-                        manager = OrderManager.fetchWithNotes(id);
+                        manager = IOrderManager.fetchWithNotes(id);
                         break;
                     case RECURRENCE:
-                        manager = OrderManager.fetchWithRecurrence(id);
+                        manager = IOrderManager.fetchWithRecurrence(id);
                         break;
                     case FILL:
-                        manager = OrderManager.fetchWithFills(id);
+                        manager = IOrderManager.fetchWithFills(id);
                         break;
                 }
                 setState(State.DISPLAY);
@@ -1923,12 +1923,12 @@ public class SendoutOrderScreen extends Screen {
         window.clearStatus();
     }
 
-    private boolean isRecurrenceEmpty(OrderRecurrenceDO data) {
+    private boolean isRecurrenceEmpty(IOrderRecurrenceDO data) {
         if (data == null)
             return true;
 
         if (DataBaseUtil.isEmpty(data.getId()) &&
-            DataBaseUtil.isEmpty(data.getOrderId()) &&
+            DataBaseUtil.isEmpty(data.getIorderId()) &&
             DataBaseUtil.isEmpty(data.getIsActive()) &&
             DataBaseUtil.isEmpty(data.getActiveBegin()) &&
             DataBaseUtil.isEmpty(data.getActiveEnd()) &&
@@ -1954,7 +1954,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void removeNotReportableAnalytes() throws Exception {
-        OrderTestManager man;
+        IOrderTestManager man;
         /*
          * The analytes that are not marked as reportable are deleted. Since on
          * the screen an analytes can be checked or unchecked several times, it

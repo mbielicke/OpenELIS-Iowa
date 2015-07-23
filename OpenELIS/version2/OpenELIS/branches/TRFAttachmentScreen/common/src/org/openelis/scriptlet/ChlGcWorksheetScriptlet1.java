@@ -31,10 +31,12 @@ import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.scriptlet.WorksheetSO.Action_Before;
@@ -73,12 +75,14 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
 
         proxy.log(Level.FINE, "In ChlGcWorksheetScriptlet1.run", null);
         wDO = data.getManager().getWorksheet();
-        if (!data.getActionBefore().contains(Action_Before.TEMPLATE_LOAD) ||
-            wDO == null || !Constants.dictionary().WORKSHEET_WORKING.equals(wDO.getStatusId()))
+        if (wDO == null || !Constants.dictionary().WORKSHEET_WORKING.equals(wDO.getStatusId()))
             return data;
     
-        poolAnalyses(data);
-
+        if (data.getActionBefore().contains(Action_Before.TEMPLATE_LOAD))
+            poolAnalyses(data);
+        else if (data.getActionBefore().contains(Action_Before.PRE_TRANSFER))
+            requeuePools(data);
+        
         return data;
     }
 
@@ -92,18 +96,15 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         ArrayList<SampleManager1> sms;
         ArrayList<WorksheetAnalysisViewDO> nonPooledAnalyses, pooledAnalyses;
         HashMap<Integer, SampleItemViewDO> siVDOsByAnalysisId;
-        HashMap<Integer, WorksheetItemDO> itemsByPosition;
         SampleItemViewDO siVDO;
         WorksheetAnalysisViewDO waVDO;
         WorksheetItemDO wiDO;
         WorksheetManager1 wm;
 
         wm = data.getManager();
-        itemsByPosition = new HashMap<Integer, WorksheetItemDO>();
         analysisIds = new ArrayList<Integer>();
         for (i = 0; i < wm.item.count(); i++) {
             wiDO = wm.item.get(i);
-            itemsByPosition.put(wiDO.getPosition(), wiDO);
             for (j = 0; j < wm.analysis.count(wiDO); j++) {
                 waVDO = wm.analysis.get(wiDO, j);
                 if (waVDO.getAnalysisId() != null)
@@ -153,17 +154,15 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
             }
         }
 
-        j = 1;
-        wiDO = itemsByPosition.get(j);
+        j = 0;
+        wiDO = wm.item.get(j);
         lastIndex = pooledAnalyses.size() / 4 * 4;
         try {
             for (i = 0; i < lastIndex; i++) {
                 if (i != 0 && i % 4 == 0) {
-                    wiDO = itemsByPosition.get(++j);
-                    if (wiDO == null) {
+                    wiDO = wm.item.get(++j);
+                    if (wiDO == null)
                         wiDO = wm.item.add(j);
-                        itemsByPosition.put(j, wiDO);
-                    }
                 }
                 waVDO = pooledAnalyses.get(i);
                 wm.analysis.move(waVDO, wiDO);
@@ -173,11 +172,9 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
                 j++;
             if (i < pooledAnalyses.size()) {
                 for (; i < pooledAnalyses.size(); i++) {
-                    wiDO = itemsByPosition.get(j);
-                    if (wiDO == null) {
+                    wiDO = wm.item.get(j);
+                    if (wiDO == null)
                         wiDO = wm.item.add(j);
-                        itemsByPosition.put(j, wiDO);
-                    }
                     waVDO = pooledAnalyses.get(i);
                     wm.analysis.move(waVDO, wiDO);
                     j++;
@@ -185,11 +182,9 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
             }
                 
             for (i = 0; i < nonPooledAnalyses.size(); i++) {
-                wiDO = itemsByPosition.get(j);
-                if (wiDO == null) {
+                wiDO = wm.item.get(j);
+                if (wiDO == null)
                     wiDO = wm.item.add(j);
-                    itemsByPosition.put(j, wiDO);
-                }
                 waVDO = nonPooledAnalyses.get(i);
                 wm.analysis.move(waVDO, wiDO);
                 j++;
@@ -200,6 +195,62 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);
+        }
+    }
+    
+    /**
+     * If a pooled result is "Detected", set the status of all analyses in the pool
+     * to "Requeue"
+     */
+    private void requeuePools(WorksheetSO data) {
+        int i, j, k;
+        ArrayList<IdNameVO> worksheetColumns;
+        Integer resultColumn;
+        WorksheetAnalysisViewDO waVDO;
+        WorksheetItemDO wiDO;
+        WorksheetManager1 wm;
+        WorksheetResultViewDO wrVDO;
+
+        resultColumn = 0;
+        wm = data.getManager();
+        try {
+            worksheetColumns = proxy.getColumnNames(wm.getWorksheet().getFormatId());
+        } catch (Exception anyE) {
+            data.setStatus(Status.FAILED);
+            data.addException(new Exception("Error loading column names for format; " + anyE.getMessage()));
+            return;
+        }
+        for (IdNameVO col : worksheetColumns) {
+            if ("final_value".equals(col.getName())) {
+                resultColumn = col.getId() - 10;
+                break;
+            }
+        }
+
+        for (i = 0; i < wm.item.count(); i++) {
+            wiDO = wm.item.get(i);
+            if (wm.analysis.count(wiDO) > 1) {
+                analyses:
+                for (j = 0; j < wm.analysis.count(wiDO); j++) {
+                    waVDO = wm.analysis.get(wiDO, j);
+                    if (waVDO.getAnalysisId() != null && proxy.canEdit(waVDO)) {
+                        for (k = 0; k < wm.result.count(waVDO); k++) {
+                            wrVDO = wm.result.get(waVDO, k);
+                            if ("chl_result".equals(wrVDO.getAnalyteExternalId()) ||
+                                "gc_result".equals(wrVDO.getAnalyteExternalId())) {
+                                if ("Detected".equals(wrVDO.getValueAt(resultColumn)) ||
+                                    "Equivocal".equals(wrVDO.getValueAt(resultColumn))) {
+                                    for (j = 0; j < wm.analysis.count(wiDO); j++) {
+                                        waVDO = wm.analysis.get(wiDO, j);
+                                        waVDO.setStatusId(Constants.dictionary().ANALYSIS_REQUEUE);
+                                    }
+                                    break analyses;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

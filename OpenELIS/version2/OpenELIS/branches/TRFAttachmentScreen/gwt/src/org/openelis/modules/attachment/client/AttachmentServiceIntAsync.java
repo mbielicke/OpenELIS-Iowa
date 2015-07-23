@@ -54,8 +54,6 @@ public interface AttachmentServiceIntAsync {
 
     public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
     
-    public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
-
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
 
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);

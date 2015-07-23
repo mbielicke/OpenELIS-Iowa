@@ -31,9 +31,9 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 /**
- * The class extends the label DO and carries an additional scriptlet name
- * field. This additional fields is for read/display only and does not get
- * committed to the database. Note: isChanged will reflect any changes to
+ * The class extends the inventory xuse DO and carries additional storage
+ * location fields. This additional fields is for read/display only and does not
+ * get committed to the database. Note: isChanged will reflect any changes to
  * read/display fields.
  */
 
@@ -46,20 +46,20 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
                               inventoryReceiptExternalReference;
     protected Datetime        inventoryLocationExpirationDate, inventoryReceiptReceivedDate;
     protected Double          inventoryReceiptUnitCost;
-    protected Integer         storageLocationId,inventoryItemId, inventoryLocationQuantityOnhand, orderItemOrderId;  
+    protected Integer         storageLocationId,inventoryItemId, inventoryLocationQuantityOnhand, iorderItemIorderId;  
 
     public InventoryXUseViewDO() {
     }
 
-    public InventoryXUseViewDO(Integer id, Integer inventoryLocationId, Integer orderItemId,
+    public InventoryXUseViewDO(Integer id, Integer inventoryLocationId, Integer iorderItemId,
                                Integer quantity, String inventoryLocationLotNumber,
                                Date inventoryLocationExpirationDate, Integer inventoryLocationQuantityOnhand,
                                Integer storageLocationId,String storageLocationName,
                                String storageLocationUnitDescription, String storageLocationLocation,
                                Integer inventoryItemId, String inventoryItemName,
                                Date inventoryReceiptReceivedDate, Double inventoryReceiptUnitCost,
-                               String inventoryReceiptExternalReference, Integer orderItemOrderId) {
-        super(id, inventoryLocationId, orderItemId, quantity);
+                               String inventoryReceiptExternalReference, Integer iorderItemIorderId) {
+        super(id, inventoryLocationId, iorderItemId, quantity);
         setInventoryLocationLotNumber(inventoryLocationLotNumber);
         setInventoryLocationExpirationDate(DataBaseUtil.toYD(inventoryLocationExpirationDate));
         setInventoryLocationQuantityOnhand(inventoryLocationQuantityOnhand);
@@ -72,7 +72,7 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
         setInventoryReceiptReceivedDate(DataBaseUtil.toYM(inventoryReceiptReceivedDate));
         setInventoryReceiptUnitCost(inventoryReceiptUnitCost);
         setInventoryReceiptExternalReference(inventoryReceiptExternalReference);
-        setOrderItemOrderId(orderItemOrderId);
+        setIorderItemIorderId(iorderItemIorderId);
     }
 
     public String getInventoryLocationLotNumber() {
@@ -171,11 +171,11 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
         this.inventoryReceiptExternalReference = DataBaseUtil.trim(externalReference);
     }
 
-    public Integer getOrderItemOrderId() {
-        return orderItemOrderId;
+    public Integer getIorderItemIorderId() {
+        return iorderItemIorderId;
     }
 
-    public void setOrderItemOrderId(Integer orderItemOrderId) {
-        this.orderItemOrderId = orderItemOrderId;
+    public void setIorderItemIorderId(Integer orderItemOrderId) {
+        this.iorderItemIorderId = orderItemOrderId;
     }
 }

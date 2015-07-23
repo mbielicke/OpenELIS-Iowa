@@ -33,7 +33,7 @@ import org.openelis.ui.common.MetaMap;
 
 public class SampleWebMeta implements Meta, MetaMap {
 
-    private static final String    ID = "_sample.id",
+    public static final String     ID = "_sample.id",
                     DOMAIN = "_sample.domain",
                     ACCESSION_NUMBER = "_sample.accessionNumber",
                     ACCESSION_NUMBER_FROM = "_display.accessionNumberFrom",
@@ -45,6 +45,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RECEIVED_DATE = "_sample.receivedDate",
                     RECEIVED_DATE_FROM = "_sample.receivedDateFrom",
                     RECEIVED_DATE_TO = "_sample.receivedDateTo",
+                    RECEIVED_BY_ID = "_sample.receivedById",
                     COLLECTION_DATE = "_sample.collectionDate",
                     COLLECTION_DATE_FROM = "_display.collectionDateFrom",
                     COLLECTION_DATE_TO = "_display.collectionDateTo",
@@ -53,16 +54,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     CLIENT_REFERENCE = "_sample.clientReference",
                     CLIENT_REFERENCE_HEADER = "_sample.clientReferenceHeader",
                     RELEASED_DATE = "_sample.releasedDate",
-                    RELEASED_DATE_FROM = "_display.releasedDateFrom",
-                    RELEASED_DATE_TO = "_display.releasedDateTo",
-
-                    // sample clinical
-                    CLIN_PATIENT_LAST_NAME = "_clinicalPatient.lastName",
-                    CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
-                    CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
-                    CLIN_PATIENT_BIRTH_DATE_FROM = "display.patientBirthDateFrom",
-                    CLIN_PATIENT_BIRTH_DATE_TO = "display.patientBirthDateTo",
-                    CLIN_PATIENT_BIRTH_TIME = "_clinicalPatient.birthTime",
+                    RELEASED_DATE_FROM = "_sample.releasedDateFrom",
+                    RELEASED_DATE_TO = "_sample.releasedDateTo",
 
                     // sample environmental
                     ENV_ID = "_sampleEnvironmental.id",
@@ -76,6 +69,18 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ENV_LOCATION = "_sampleEnvironmental.location",
                     ENV_LOCATION_HEADER = "_sampleEnvironmental.locationHeader",
                     ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
+
+                    LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
+                    LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress",
+                    LOCATION_ADDR_CITY = "_locationAddress.city",
+                    LOCATION_ADDR_STATE = "_locationAddress.state",
+                    LOCATION_ADDR_ZIP_CODE = "_locationAddress.zipCode",
+                    LOCATION_ADDR_WORK_PHONE = "_locationAddress.workPhone",
+                    LOCATION_ADDR_HOME_PHONE = "_locationAddress.homePhone",
+                    LOCATION_ADDR_CELL_PHONE = "_locationAddress.cellPhone",
+                    LOCATION_ADDR_FAX_PHONE = "_locationAddress.faxPhone",
+                    LOCATION_ADDR_EMAIL = "_locationAddress.email",
+                    LOCATION_ADDR_COUNTRY = "_locationAddress.country",
 
                     // sample private well
                     WELL_ID = "_samplePrivateWell.id",
@@ -91,8 +96,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     WELL_COLLECTOR = "_samplePrivateWell.collector",
                     WELL_WELL_NUMBER = "_samplePrivateWell.wellNumber",
                     WELL_REPORT_TO_ADDR_CITY = "_privateWellReportToAddress.city",
+                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_privateWellReportToAddress.workPhone",
                     WELL_REPORT_TO_ADDR_FAX_PHONE = "_privateWellReportToAddress.faxPhone",
-                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone",
 
                     WELL_LOCATION_ADDR_ID = "_wellLocationAddress.id",
                     WELL_LOCATION_ADDR_MULTIPLE_UNIT = "_wellLocationAddress.multipleUnit",
@@ -100,9 +105,11 @@ public class SampleWebMeta implements Meta, MetaMap {
                     WELL_LOCATION_ADDR_CITY = "_wellLocationAddress.city",
                     WELL_LOCATION_ADDR_STATE = "_wellLocationAddress.state",
                     WELL_LOCATION_ADDR_ZIP_CODE = "_wellLocationAddress.zipCode",
+                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone",
 
                     // sample sdwis
-                    SDWIS_ID = "_sampleSDWIS.id", SDWIS_SAMPLE_ID = "_sampleSDWIS.sampleId",
+                    SDWIS_ID = "_sampleSDWIS.id",
+                    SDWIS_SAMPLE_ID = "_sampleSDWIS.sampleId",
                     SDWIS_PWS_ID = "_sampleSDWIS.pwsId",
                     SDWIS_STATE_LAB_ID = "_sampleSDWIS.stateLabId",
                     SDWIS_FACILITY_ID = "_sampleSDWIS.facilityId",
@@ -112,10 +119,90 @@ public class SampleWebMeta implements Meta, MetaMap {
                     SDWIS_PRIORITY = "_sampleSDWIS.priority",
                     SDWIS_LOCATION = "_sampleSDWIS.location",
                     SDWIS_COLLECTOR = "_sampleSDWIS.collector",
+                    SDWIS_COLLECTOR_HEADER = "_sampleSDWIS.collectorHeader",
 
-                    PWS_NUMBER0 = "_pws.number0", PWS_ID = "_pws.id", PWS_NAME = "_pws.name",
+                    PWS_NUMBER0 = "_pws.number0",
+                    PWS_ID = "_pws.id",
+                    PWS_NAME = "_pws.name",
 
-                    LOCATION_ADDR_CITY = "_locationAddress.city",
+                    // sample neonatal
+                    NEO_PATIENT_ID = "_sampleNeonatal.patientId",
+                    NEO_BIRTH_ORDER = "_sampleNeonatal.birthOrder",
+                    NEO_GESTATIONAL_AGE = "_sampleNeonatal.gestationalAge",
+                    NEO_NEXT_OF_KIN_ID = "_sampleNeonatal.nextOfKinId",
+                    NEO_NEXT_OF_KIN_RELATION_ID = "_sampleNeonatal.nextOfKinRelationId",
+                    NEO_IS_REPEAT = "_sampleNeonatal.isRepeat",
+                    NEO_IS_NICU = "_sampleNeonatal.isNicu",
+                    NEO_FEEDING_ID = "_sampleNeonatal.feedingId",
+                    NEO_WEIGHT = "_sampleNeonatal.weight",
+                    NEO_IS_TRANSFUSED = "_sampleNeonatal.isTransfused",
+                    NEO_TRANSFUSION_DATE = "_sampleNeonatal.transfusionDate",
+                    NEO_IS_COLLECTION_VALID = "_sampleNeonatal.isCollectionValid",
+                    NEO_COLLECTION_AGE = "_sampleNeonatal.collectionAge",
+                    NEO_FORM_NUMBER = "_sampleNeonatal.formNumber",
+
+                    NEO_PATIENT_LAST_NAME = "_neonatalPatient.lastName",
+                    NEO_PATIENT_FIRST_NAME = "_neonatalPatient.firstName",
+                    NEO_PATIENT_MIDDLE_NAME = "_neonatalPatient.middleName",
+                    NEO_PATIENT_ADDRESS_ID = "_neonatalPatient.addressId",
+                    NEO_PATIENT_BIRTH_DATE = "_neonatalPatient.birthDate",
+                    NEO_PATIENT_BIRTH_TIME = "_neonatalPatient.birthTime",
+                    NEO_PATIENT_GENDER_ID = "_neonatalPatient.genderId",
+                    NEO_PATIENT_RACE_ID = "_neonatalPatient.raceId",
+                    NEO_PATIENT_ETHNICITY_ID = "_neonatalPatient.ethnicityId",
+                    NEO_PATIENT_NATIONAL_ID = "_neonatalPatient.nationalId",
+
+                    NEO_PATIENT_ADDR_MULTIPLE_UNIT = "_neonatalPatientAddress.multipleUnit",
+                    NEO_PATIENT_ADDR_STREET_ADDRESS = "_neonatalPatientAddress.streetAddress",
+                    NEO_PATIENT_ADDR_CITY = "_neonatalPatientAddress.city",
+                    NEO_PATIENT_ADDR_STATE = "_neonatalPatientAddress.state",
+                    NEO_PATIENT_ADDR_ZIP_CODE = "_neonatalPatientAddress.zipCode",
+
+                    NEO_NEXT_OF_KIN_LAST_NAME = "_neonatalNextOfKin.lastName",
+                    NEO_NEXT_OF_KIN_FIRST_NAME = "_neonatalNextOfKin.firstName",
+                    NEO_NEXT_OF_KIN_MIDDLE_NAME = "_neonatalNextOfKin.middleName",
+                    NEO_NEXT_OF_KIN_BIRTH_DATE = "_neonatalNextOfKin.birthDate",
+                    NEO_NEXT_OF_KIN_GENDER_ID = "_neonatalNextOfKin.genderId",
+                    NEO_NEXT_OF_KIN_RACE_ID = "_neonatalNextOfKin.raceId",
+                    NEO_NEXT_OF_KIN_ETHNICITY_ID = "_neonatalNextOfKin.ethnicityId",
+                    NEO_NEXT_OF_KIN_NATIONAL_ID = "_neonatalNextOfKin.nationalId",
+
+                    NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT = "_neonatalNextOfKinAddress.multipleUnit",
+                    NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS = "_neonatalNextOfKinAddress.streetAddress",
+                    NEO_NEXT_OF_KIN_ADDR_CITY = "_neonatalNextOfKinAddress.city",
+                    NEO_NEXT_OF_KIN_ADDR_STATE = "_neonatalNextOfKinAddress.state",
+                    NEO_NEXT_OF_KIN_ADDR_ZIP_CODE = "_neonatalNextOfKinAddress.zipCode",
+                    NEO_NEXT_OF_KIN_ADDR_HOME_PHONE = "_neonatalNextOfKinAddress.homePhone",
+
+                    // sample clinical
+                    CLIN_PATIENT_ID = "_clinicalPatient.id",
+                    CLIN_PROVIDER_PHONE = "_sampleClinical.providerPhone",
+                    CLIN_PATIENT_LAST_NAME = "_clinicalPatient.lastName",
+                    CLIN_PATIENT_LAST_NAME_HEADER = "_clinicalPatient.lastNameHeader",
+                    CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
+                    CLIN_PATIENT_FIRST_NAME_HEADER = "_clinicalPatient.firstNameHeader",
+                    CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
+                    CLIN_PATIENT_BIRTH_DATE_FROM = "_clinicalPatient.birthDateFrom",
+                    CLIN_PATIENT_BIRTH_DATE_TO = "_clinicalPatient.birthDateTo",
+                    CLIN_PATIENT_BIRTH_TIME = "_clinicalPatient.birthTime",
+                    CLIN_PATIENT_GENDER_ID = "_clinicalPatient.genderId",
+                    CLIN_PATIENT_RACE_ID = "_clinicalPatient.raceId",
+                    CLIN_PATIENT_ETHNICITY_ID = "_clinicalPatient.ethnicityId",
+                    CLIN_PATIENT_NATIONAL_ID = "_clinicalPatient.nationalId",
+
+                    CLIN_PATIENT_ADDR_MULTIPLE_UNIT = "_clinicalPatientAddress.multipleUnit",
+                    CLIN_PATIENT_ADDR_STREET_ADDRESS = "_clinicalPatientAddress.streetAddress",
+                    CLIN_PATIENT_ADDR_CITY = "_clinicalPatientAddress.city",
+                    CLIN_PATIENT_ADDR_STATE = "_clinicalPatientAddress.state",
+                    CLIN_PATIENT_ADDR_ZIP_CODE = "_clinicalPatientAddress.zipCode",
+                    CLIN_PATIENT_ADDR_HOME_PHONE = "_clinicalPatientAddress.homePhone",
+
+                    // sample pt
+                    PT_ID = "_samplePT.id", PT_SAMPLE_ID = "_samplePT.sampleId",
+                    PT_PT_PROVIDER_ID = "_samplePT.ptProviderId", PT_SERIES = "_samplePT.series",
+                    PT_DUE_DATE = "_samplePT.dueDate",
+                    PT_ADDITIONAL_DOMAIN = "_samplePT.additionalDomain",
+
                     LOCATION_ADDR_CITY_HEADER = "_locationAddress.cityHeader",
 
                     ITEM_ID = "_sampleItem.id", ITEM_SAMPLE_ID = "_sampleItem.sampleId",
@@ -130,6 +217,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ANALYSIS_ID = "_analysis.id",
                     ANALYSIS_SAMPLE_ITEM_ID = "_analysis.sampleItemId",
                     ANALYSIS_REVISION = "_analysis.revision",
+                    ANALYSIS_TYPE_ID = "_analysis.typeId",
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
                     ANALYSIS_IS_REPORTABLE_HEADER = "_analysis.isReportableHeader",
                     ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
@@ -179,6 +267,12 @@ public class SampleWebMeta implements Meta, MetaMap {
                     PROJECT_ID = "_project.id", PROJECT_ID_HEADER = "_project.idHeader",
                     PROJECT_NAME = "_project.name", PROJECT_DESCRIPTION = "_project.description",
 
+                    NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
+                    NEO_PROVIDER_FIRST_NAME = "_neonatalProvider.firstName",
+
+                    CLIN_PROVIDER_LAST_NAME = "_clinicalProvider.lastName",
+                    CLIN_PROVIDER_FIRST_NAME = "_clinicalProvider.firstName",
+
                     AUX_DATA_ID = "_auxData.id", AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
                     AUX_DATA_REFERENCE_ID = "_auxData.referenceId",
                     AUX_DATA_REFERENCE_TABLE_ID = "_auxData.referenceTableId",
@@ -195,8 +289,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RESULT_TEST_ANALYTE_TYPE_ID = "_result.testAnalyte.typeId",
                     RESULT_TEST_ANALYTE_RESULT_GROUP = "_result.testAnalyte.resultGroup",
 
-                    AUX_DATA_AUX_FIELD_ANALYTE_ID = "_auxField.analyteId",
-                    AUX_DATA_AUX_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
+                    AUX_DATA_FIELD_ID = "_auxField.id",
+                    AUX_DATA_FIELD_ANALYTE_ID = "_auxField.analyteId",
+                    AUX_DATA_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
 
     private static HashSet<String> names;
 
@@ -213,6 +308,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RECEIVED_DATE,
                                                   RECEIVED_DATE_FROM,
                                                   RECEIVED_DATE_TO,
+                                                  RECEIVED_BY_ID,
                                                   COLLECTION_DATE,
                                                   COLLECTION_DATE_FROM,
                                                   COLLECTION_DATE_TO,
@@ -223,12 +319,6 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RELEASED_DATE,
                                                   RELEASED_DATE_FROM,
                                                   RELEASED_DATE_TO,
-                                                  CLIN_PATIENT_LAST_NAME,
-                                                  CLIN_PATIENT_FIRST_NAME,
-                                                  CLIN_PATIENT_BIRTH_DATE,
-                                                  CLIN_PATIENT_BIRTH_DATE_FROM,
-                                                  CLIN_PATIENT_BIRTH_DATE_TO,
-                                                  CLIN_PATIENT_BIRTH_TIME,
                                                   ENV_ID,
                                                   ENV_SAMPLE_ID,
                                                   ENV_IS_HAZARDOUS,
@@ -241,7 +331,17 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ENV_LOCATION_HEADER,
                                                   ENV_LOCATION_ADDRESS_ID,
                                                   ENV_LOCATION_ADDRESS_ID,
+                                                  LOCATION_ADDR_MULTIPLE_UNIT,
+                                                  LOCATION_ADDR_STREET_ADDRESS,
                                                   LOCATION_ADDR_CITY,
+                                                  LOCATION_ADDR_STATE,
+                                                  LOCATION_ADDR_ZIP_CODE,
+                                                  LOCATION_ADDR_WORK_PHONE,
+                                                  LOCATION_ADDR_HOME_PHONE,
+                                                  LOCATION_ADDR_CELL_PHONE,
+                                                  LOCATION_ADDR_FAX_PHONE,
+                                                  LOCATION_ADDR_EMAIL,
+                                                  LOCATION_ADDR_COUNTRY,
                                                   WELL_ID,
                                                   WELL_SAMPLE_ID,
                                                   WELL_ORGANIZATION_ID,
@@ -255,13 +355,14 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   WELL_COLLECTOR,
                                                   WELL_WELL_NUMBER,
                                                   WELL_REPORT_TO_ADDR_CITY,
+                                                  WELL_REPORT_TO_ADDR_WORK_PHONE,
                                                   WELL_REPORT_TO_ADDR_FAX_PHONE,
-                                                  WELL_LOCATION_ADDR_WORK_PHONE,
                                                   WELL_LOCATION_ADDR_MULTIPLE_UNIT,
                                                   WELL_LOCATION_ADDR_STREET_ADDRESS,
                                                   WELL_LOCATION_ADDR_CITY,
                                                   WELL_LOCATION_ADDR_STATE,
                                                   WELL_LOCATION_ADDR_ZIP_CODE,
+                                                  WELL_LOCATION_ADDR_WORK_PHONE,
                                                   SDWIS_ID,
                                                   SDWIS_SAMPLE_ID,
                                                   SDWIS_PWS_ID,
@@ -273,9 +374,79 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   SDWIS_PRIORITY,
                                                   SDWIS_LOCATION,
                                                   SDWIS_COLLECTOR,
+                                                  SDWIS_COLLECTOR_HEADER,
                                                   PWS_NUMBER0,
                                                   PWS_ID,
                                                   PWS_NAME,
+                                                  NEO_PATIENT_ID,
+                                                  NEO_BIRTH_ORDER,
+                                                  NEO_GESTATIONAL_AGE,
+                                                  NEO_NEXT_OF_KIN_ID,
+                                                  NEO_NEXT_OF_KIN_RELATION_ID,
+                                                  NEO_IS_REPEAT,
+                                                  NEO_IS_NICU,
+                                                  NEO_FEEDING_ID,
+                                                  NEO_WEIGHT,
+                                                  NEO_IS_TRANSFUSED,
+                                                  NEO_TRANSFUSION_DATE,
+                                                  NEO_IS_COLLECTION_VALID,
+                                                  NEO_COLLECTION_AGE,
+                                                  NEO_FORM_NUMBER,
+                                                  NEO_PATIENT_LAST_NAME,
+                                                  NEO_PATIENT_FIRST_NAME,
+                                                  NEO_PATIENT_MIDDLE_NAME,
+                                                  NEO_PATIENT_ADDRESS_ID,
+                                                  NEO_PATIENT_BIRTH_DATE,
+                                                  NEO_PATIENT_BIRTH_TIME,
+                                                  NEO_PATIENT_GENDER_ID,
+                                                  NEO_PATIENT_RACE_ID,
+                                                  NEO_PATIENT_ETHNICITY_ID,
+                                                  NEO_PATIENT_NATIONAL_ID,
+                                                  NEO_PATIENT_ADDR_MULTIPLE_UNIT,
+                                                  NEO_PATIENT_ADDR_STREET_ADDRESS,
+                                                  NEO_PATIENT_ADDR_CITY,
+                                                  NEO_PATIENT_ADDR_STATE,
+                                                  NEO_PATIENT_ADDR_ZIP_CODE,
+                                                  NEO_NEXT_OF_KIN_LAST_NAME,
+                                                  NEO_NEXT_OF_KIN_FIRST_NAME,
+                                                  NEO_NEXT_OF_KIN_MIDDLE_NAME,
+                                                  NEO_NEXT_OF_KIN_BIRTH_DATE,
+                                                  NEO_NEXT_OF_KIN_GENDER_ID,
+                                                  NEO_NEXT_OF_KIN_RACE_ID,
+                                                  NEO_NEXT_OF_KIN_ETHNICITY_ID,
+                                                  NEO_NEXT_OF_KIN_NATIONAL_ID,
+                                                  NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT,
+                                                  NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS,
+                                                  NEO_NEXT_OF_KIN_ADDR_CITY,
+                                                  NEO_NEXT_OF_KIN_ADDR_STATE,
+                                                  NEO_NEXT_OF_KIN_ADDR_ZIP_CODE,
+                                                  NEO_NEXT_OF_KIN_ADDR_HOME_PHONE,
+                                                  CLIN_PATIENT_ID,
+                                                  CLIN_PROVIDER_PHONE,
+                                                  CLIN_PATIENT_LAST_NAME,
+                                                  CLIN_PATIENT_LAST_NAME_HEADER,
+                                                  CLIN_PATIENT_FIRST_NAME,
+                                                  CLIN_PATIENT_FIRST_NAME_HEADER,
+                                                  CLIN_PATIENT_BIRTH_DATE,
+                                                  CLIN_PATIENT_BIRTH_DATE_FROM,
+                                                  CLIN_PATIENT_BIRTH_DATE_TO,
+                                                  CLIN_PATIENT_BIRTH_TIME,
+                                                  CLIN_PATIENT_GENDER_ID,
+                                                  CLIN_PATIENT_RACE_ID,
+                                                  CLIN_PATIENT_ETHNICITY_ID,
+                                                  CLIN_PATIENT_NATIONAL_ID,
+                                                  CLIN_PATIENT_ADDR_MULTIPLE_UNIT,
+                                                  CLIN_PATIENT_ADDR_STREET_ADDRESS,
+                                                  CLIN_PATIENT_ADDR_CITY,
+                                                  CLIN_PATIENT_ADDR_STATE,
+                                                  CLIN_PATIENT_ADDR_ZIP_CODE,
+                                                  CLIN_PATIENT_ADDR_HOME_PHONE,
+                                                  PT_ID,
+                                                  PT_SAMPLE_ID,
+                                                  PT_PT_PROVIDER_ID,
+                                                  PT_SERIES,
+                                                  PT_DUE_DATE,
+                                                  PT_ADDITIONAL_DOMAIN,
                                                   ITEM_ID,
                                                   ITEM_SAMPLE_ID,
                                                   ITEM_SAMPLE_ITEM_ID,
@@ -288,6 +459,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ANALYSIS_ID,
                                                   ANALYSIS_SAMPLE_ITEM_ID,
                                                   ANALYSIS_REVISION,
+                                                  ANALYSIS_TYPE_ID,
                                                   ANALYSIS_IS_REPORTABLE,
                                                   ANALYSIS_IS_REPORTABLE_HEADER,
                                                   ANALYSIS_UNIT_OF_MEASURE_ID,
@@ -337,6 +509,10 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   PROJECT_ID,
                                                   PROJECT_NAME,
                                                   PROJECT_DESCRIPTION,
+                                                  NEO_PROVIDER_LAST_NAME,
+                                                  NEO_PROVIDER_FIRST_NAME,
+                                                  CLIN_PROVIDER_LAST_NAME,
+                                                  CLIN_PROVIDER_FIRST_NAME,
                                                   AUX_DATA_ID,
                                                   AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID,
@@ -353,8 +529,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RESULT_TEST_ANALYTE_ROW_GROUP,
                                                   RESULT_TEST_ANALYTE_TYPE_ID,
                                                   RESULT_TEST_ANALYTE_RESULT_GROUP,
-                                                  AUX_DATA_AUX_FIELD_ANALYTE_ID,
-                                                  AUX_DATA_AUX_FIELD_ANALYTE_NAME));
+                                                  AUX_DATA_FIELD_ID,
+                                                  AUX_DATA_FIELD_ANALYTE_ID,
+                                                  AUX_DATA_FIELD_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -405,6 +582,10 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RECEIVED_DATE_TO;
     }
 
+    public static String getReceivedById() {
+        return RECEIVED_BY_ID;
+    }
+
     public static String getCollectionDate() {
         return COLLECTION_DATE;
     }
@@ -445,36 +626,52 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RELEASED_DATE_TO;
     }
 
-    public static String getClinPatientLastName() {
-        return CLIN_PATIENT_LAST_NAME;
-    }
-
-    public static String getClinPatientFirstName() {
-        return CLIN_PATIENT_FIRST_NAME;
-    }
-
-    public static String getClinPatientBirthDate() {
-        return CLIN_PATIENT_BIRTH_DATE;
-    }
-
-    public static String getClinPatientBirthDateFrom() {
-        return CLIN_PATIENT_BIRTH_DATE_FROM;
-    }
-
-    public static String getClinPatientBirthDateTo() {
-        return CLIN_PATIENT_BIRTH_DATE_TO;
-    }
-
-    public static String getClinPatientBirthTime() {
-        return CLIN_PATIENT_BIRTH_TIME;
-    }
-
     public static String getEnvLocationAddrId() {
         return ENV_LOCATION_ADDRESS_ID;
     }
 
+    public static String getLocationAddrMultipleUnit() {
+        return LOCATION_ADDR_MULTIPLE_UNIT;
+    }
+    
+    public static String getLocationAddrStreetAddress() {
+        return LOCATION_ADDR_STREET_ADDRESS;
+    }
+    
     public static String getLocationAddrCity() {
         return LOCATION_ADDR_CITY;
+    }
+
+    public static String getLocationAddrState() {
+        return LOCATION_ADDR_STATE;
+    }
+    
+    public static String getLocationAddrZipCode() {
+        return LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getLocationAddrWorkPhone() {
+        return LOCATION_ADDR_WORK_PHONE;
+    }
+    
+    public static String getLocationAddrHomePhone() {
+        return LOCATION_ADDR_HOME_PHONE;
+    }
+    
+    public static String getLocationAddrCellPhone() {
+        return LOCATION_ADDR_CELL_PHONE;
+    }
+    
+    public static String getLocationAddrFaxPhone() {
+        return LOCATION_ADDR_FAX_PHONE;
+    }
+    
+    public static String getLocationAddrEmail() {
+        return LOCATION_ADDR_EMAIL;
+    }
+    
+    public static String getLocationAddrCountry() {
+        return LOCATION_ADDR_COUNTRY;
     }
 
     public static String getLocationAddrCityHeader() {
@@ -576,15 +773,15 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getWellReportToAddressCity() {
         return WELL_REPORT_TO_ADDR_CITY;
     }
+    
+    public static String getWellReportToAddressWorkPhone() {
+        return WELL_REPORT_TO_ADDR_WORK_PHONE;
+    }
 
     public static String getWellReportToAddressFaxPhone() {
         return WELL_REPORT_TO_ADDR_FAX_PHONE;
     }
-
-    public static String getWellReportToAddressWorkPhone() {
-        return WELL_LOCATION_ADDR_WORK_PHONE;
-    }
-
+    
     public static String getWellLocationAddrId() {
         return WELL_LOCATION_ADDR_ID;
     }
@@ -607,6 +804,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getWellLocationAddrZipCode() {
         return WELL_LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getWellLocationAddrWorkPhone() {
+        return WELL_LOCATION_ADDR_WORK_PHONE;
     }
 
     public static String getSDWISId() {
@@ -652,7 +853,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getSDWISCollector() {
         return SDWIS_COLLECTOR;
     }
-
+    
+    public static String getSDWISCollectorHeader() {
+        return SDWIS_COLLECTOR_HEADER;
+    }
+    
     public static String getPwsNumber0() {
         return PWS_NUMBER0;
     }
@@ -663,6 +868,278 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getPwsName() {
         return PWS_NAME;
+    }
+
+    public static String getNeonatalPatientId() {
+        return NEO_PATIENT_ID;
+    }
+
+    public static String getNeonatalBirthOrder() {
+        return NEO_BIRTH_ORDER;
+    }
+
+    public static String getNeonatalGestationalAge() {
+        return NEO_GESTATIONAL_AGE;
+    }
+
+    public static String getNeonatalNextOfKinId() {
+        return NEO_NEXT_OF_KIN_ID;
+    }
+
+    public static String getNeonatalNextOfKinRelationId() {
+        return NEO_NEXT_OF_KIN_RELATION_ID;
+    }
+
+    public static String getNeonatalIsRepeat() {
+        return NEO_IS_REPEAT;
+    }
+
+    public static String getNeonatalIsNicu() {
+        return NEO_IS_NICU;
+    }
+
+    public static String getNeonatalFeedingId() {
+        return NEO_FEEDING_ID;
+    }
+
+    public static String getNeonatalWeight() {
+        return NEO_WEIGHT;
+    }
+
+    public static String getNeonatalIsTransfused() {
+        return NEO_IS_TRANSFUSED;
+    }
+
+    public static String getNeonatalTransfusionDate() {
+        return NEO_TRANSFUSION_DATE;
+    }
+
+    public static String getNeonatalIsCollectionValid() {
+        return NEO_IS_COLLECTION_VALID;
+    }
+
+    public static String getNeonatalCollectionAge() {
+        return NEO_COLLECTION_AGE;
+    }
+
+    public static String getNeonatalFormNumber() {
+        return NEO_FORM_NUMBER;
+    }
+
+    public static String getNeonatalPatientLastName() {
+        return NEO_PATIENT_LAST_NAME;
+    }
+
+    public static String getNeonatalPatientFirstName() {
+        return NEO_PATIENT_FIRST_NAME;
+    }
+
+    public static String getNeonatalPatientMiddleName() {
+        return NEO_PATIENT_MIDDLE_NAME;
+    }
+
+    public static String getNeonatalPatientAddressId() {
+        return NEO_PATIENT_ADDRESS_ID;
+    }
+
+    public static String getNeonatalPatientBirthDate() {
+        return NEO_PATIENT_BIRTH_DATE;
+    }
+
+    public static String getNeonatalPatientBirthTime() {
+        return NEO_PATIENT_BIRTH_TIME;
+    }
+
+    public static String getNeonatalPatientGenderId() {
+        return NEO_PATIENT_GENDER_ID;
+    }
+
+    public static String getNeonatalPatientRaceId() {
+        return NEO_PATIENT_RACE_ID;
+    }
+
+    public static String getNeonatalPatientEthnicityId() {
+        return NEO_PATIENT_ETHNICITY_ID;
+    }
+
+    public static String getNeonatalPatientNationalId() {
+        return NEO_PATIENT_NATIONAL_ID;
+    }
+
+    public static String getNeonatalPatientAddrMultipleUnit() {
+        return NEO_PATIENT_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getNeonatalPatientAddrStreetAddress() {
+        return NEO_PATIENT_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getNeonatalPatientAddrCity() {
+        return NEO_PATIENT_ADDR_CITY;
+    }
+
+    public static String getNeonatalPatientAddrState() {
+        return NEO_PATIENT_ADDR_STATE;
+    }
+
+    public static String getNeonatalPatientAddrZipCode() {
+        return NEO_PATIENT_ADDR_ZIP_CODE;
+    }
+
+    public static String getNeonatalNextOfKinLastName() {
+        return NEO_NEXT_OF_KIN_LAST_NAME;
+    }
+
+    public static String getNeonatalNextOfKinFirstName() {
+        return NEO_NEXT_OF_KIN_FIRST_NAME;
+    }
+
+    public static String getNeonatalNextOfKinMiddleName() {
+        return NEO_NEXT_OF_KIN_MIDDLE_NAME;
+    }
+
+    public static String getNeonatalNextOfKinBirthDate() {
+        return NEO_NEXT_OF_KIN_BIRTH_DATE;
+    }
+
+    public static String getNeonatalNextOfKinGenderId() {
+        return NEO_NEXT_OF_KIN_GENDER_ID;
+    }
+
+    public static String getNeonatalNextOfKinRaceId() {
+        return NEO_NEXT_OF_KIN_RACE_ID;
+    }
+
+    public static String getNeonatalNextOfKinEthnicityId() {
+        return NEO_NEXT_OF_KIN_ETHNICITY_ID;
+    }
+
+    public static String getNeonatalNextOfKinNationalId() {
+        return NEO_NEXT_OF_KIN_NATIONAL_ID;
+    }
+
+    public static String getNeonatalNextOfKinAddrMultipleUnit() {
+        return NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getNeonatalNextOfKinAddrStreetAddress() {
+        return NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getNeonatalNextOfKinAddrCity() {
+        return NEO_NEXT_OF_KIN_ADDR_CITY;
+    }
+
+    public static String getNeonatalNextOfKinAddrState() {
+        return NEO_NEXT_OF_KIN_ADDR_STATE;
+    }
+
+    public static String getNeonatalNextOfKinAddrZipCode() {
+        return NEO_NEXT_OF_KIN_ADDR_ZIP_CODE;
+    }
+
+    public static String getNeonatalNextOfKinAddrHomePhone() {
+        return NEO_NEXT_OF_KIN_ADDR_HOME_PHONE;
+    }
+
+    public static String getClinicalPatientId() {
+        return CLIN_PATIENT_ID;
+    }
+
+    public static String getClinicalProviderPhone() {
+        return CLIN_PROVIDER_PHONE;
+    }
+
+    public static String getClinicalPatientLastName() {
+        return CLIN_PATIENT_LAST_NAME;
+    }
+    
+    public static String getClinicalPatientLastNameHeader() {
+        return CLIN_PATIENT_LAST_NAME_HEADER;
+    }
+
+    public static String getClinicalPatientFirstName() {
+        return CLIN_PATIENT_FIRST_NAME;
+    }
+
+    public static String getClinicalPatientFirstNameHeader() {
+        return CLIN_PATIENT_FIRST_NAME_HEADER;
+    }
+
+    public static String getClinicalPatientBirthDate() {
+        return CLIN_PATIENT_BIRTH_DATE;
+    }
+
+    public static String getClinicalPatientBirthDateFrom() {
+        return CLIN_PATIENT_BIRTH_DATE_FROM;
+    }
+
+    public static String getClinicalPatientBirthDateTo() {
+        return CLIN_PATIENT_BIRTH_DATE_TO;
+    }
+
+    public static String getClinicalPatientBirthTime() {
+        return CLIN_PATIENT_BIRTH_TIME;
+    }
+
+    public static String getClinicalPatientGenderId() {
+        return CLIN_PATIENT_GENDER_ID;
+    }
+
+    public static String getClinicalPatientRaceId() {
+        return CLIN_PATIENT_RACE_ID;
+    }
+
+    public static String getClinicalPatientEthnicityId() {
+        return CLIN_PATIENT_ETHNICITY_ID;
+    }
+
+    public static String getClinicalPatientNationalId() {
+        return CLIN_PATIENT_NATIONAL_ID;
+    }
+
+    public static String getClinicalPatientAddrMultipleUnit() {
+        return CLIN_PATIENT_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getClinicalPatientAddrStreetAddress() {
+        return CLIN_PATIENT_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getClinicalPatientAddrCity() {
+        return CLIN_PATIENT_ADDR_CITY;
+    }
+
+    public static String getClinicalPatientAddrState() {
+        return CLIN_PATIENT_ADDR_STATE;
+    }
+
+    public static String getClinicalPatientAddrZipCode() {
+        return CLIN_PATIENT_ADDR_ZIP_CODE;
+    }
+
+    public static String getClinicalPatientAddrHomePhone() {
+        return CLIN_PATIENT_ADDR_HOME_PHONE;
+    }
+
+    public static String getPTSampleId() {
+        return PT_SAMPLE_ID;
+    }
+
+    public static String getPTPTProviderId() {
+        return PT_PT_PROVIDER_ID;
+    }
+
+    public static String getPTSeries() {
+        return PT_SERIES;
+    }
+
+    public static String getPTDueDate() {
+        return PT_DUE_DATE;
+    }
+
+    public static String getPTAdditionalDomain() {
+        return PT_ADDITIONAL_DOMAIN;
     }
 
     public static String getItemId() {
@@ -711,6 +1188,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getAnalysisRevision() {
         return ANALYSIS_REVISION;
+    }
+    
+    public static String getAnalysisTypeId() {
+        return ANALYSIS_TYPE_ID;
     }
 
     public static String getAnalysisIsReportable() {
@@ -933,6 +1414,22 @@ public class SampleWebMeta implements Meta, MetaMap {
         return AUX_DATA_VALUE;
     }
 
+    public static String getNeonatalProviderLastName() {
+        return NEO_PROVIDER_LAST_NAME;
+    }
+
+    public static String getNeonatalProviderFirstName() {
+        return NEO_PROVIDER_FIRST_NAME;
+    }
+
+    public static String getClinicalProviderLastName() {
+        return CLIN_PROVIDER_LAST_NAME;
+    }
+
+    public static String getClinicalProviderFirstName() {
+        return CLIN_PROVIDER_FIRST_NAME;
+    }
+
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
     }
@@ -969,12 +1466,16 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RESULT_TEST_ANALYTE_RESULT_GROUP;
     }
 
-    public static String getAuxDataAuxFieldAnalyteId() {
-        return AUX_DATA_AUX_FIELD_ANALYTE_ID;
+    public static String getAuxDataFieldId() {
+        return AUX_DATA_FIELD_ID;
     }
 
-    public static String getAuxDataAuxFieldAnalyteName() {
-        return AUX_DATA_AUX_FIELD_ANALYTE_NAME;
+    public static String getAuxDataFieldAnalyteId() {
+        return AUX_DATA_FIELD_ANALYTE_ID;
+    }
+
+    public static String getAuxDataFieldAnalyteName() {
+        return AUX_DATA_FIELD_ANALYTE_NAME;
     }
 
     public boolean hasColumn(String columnName) {
@@ -1030,11 +1531,23 @@ public class SampleWebMeta implements Meta, MetaMap {
         }
 
         // sample clinical
-        if (where.indexOf("sampleClinical.") > -1 || where.indexOf("clinicalPatient.") > -1)
+        if (where.indexOf("sampleClinical.") > -1 || where.indexOf("clinicalPatient.") > -1 ||
+            where.indexOf("clinicalPatientAddress.") > -1 ||
+            where.indexOf("clinicalProvider.") > -1)
             from += ", IN (_sample.sampleClinical) _sampleClinical ";
 
-        if (where.indexOf("clinicalPatient.") > -1)
+        // sample pt
+        if (where.indexOf("samplePT.") > -1)
+            from += ", IN (_sample.samplePT) _samplePT ";
+
+        if (where.indexOf("clinicalPatient.") > -1 || where.indexOf("clinicalPatientAddress.") > -1)
             from += " LEFT JOIN _sampleClinical.patient _clinicalPatient ";
+
+        if (where.indexOf("clinicalPatientAddress.") > -1)
+            from += " LEFT JOIN _clinicalPatient.address _clinicalPatientAddress ";
+
+        if (where.indexOf("clinicalProvider.") > -1)
+            from += " LEFT JOIN _sampleClinical.provider _clinicalProvider ";
 
         if (where.indexOf("project.") > -1) {
             from += " LEFT JOIN _sample.sampleProject _sampleProject ";

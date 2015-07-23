@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.manager.SampleManager1;
 
 /**
@@ -38,6 +40,10 @@ public interface ChlGcWorksheetScriptlet1Proxy {
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
     
     public ArrayList<SampleManager1> fetchSampleManagersByAnalyses(ArrayList<Integer> analysisIds) throws Exception;
+    
+    public boolean canEdit(WorksheetAnalysisViewDO waVDO);
+    
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception;
 
     public void log(Level level, String message, Exception e);
 }

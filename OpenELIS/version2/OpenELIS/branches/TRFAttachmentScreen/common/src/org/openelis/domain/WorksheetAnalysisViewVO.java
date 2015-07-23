@@ -38,11 +38,12 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, changeFlagsId, dueDays, id, fromOtherId, priority,
-                       qcId, qcLotId, statusId, testId, timeHolding, timeTaAverage,
-                       unitOfMeasureId, worksheetAnalysisId, worksheetId, worksheetItemId;
+    protected Integer  analysisId, analysisStatusId, analysisTypeId, changeFlagsId,
+                       dueDays, id, formatId, fromOtherId, priority, qcId, qcLotId,
+                       testId, timeHolding, timeTaAverage, unitOfMeasureId, worksheetAnalysisId,
+                       worksheetId, worksheetItemId;
     protected String   accessionNumber, description, methodName, sectionName, systemUsers,
-                       testName, unitOfMeasure;
+                       testName, unitOfMeasure, worksheetDescription;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate,
                        startedDate, completedDate;
     
@@ -50,16 +51,21 @@ public class WorksheetAnalysisViewVO extends DataObject {
     }
 
     public WorksheetAnalysisViewVO(Integer id, Integer worksheetItemId, Integer worksheetId,
+                                   Integer formatId, String worksheetDescription,
                                    String accessionNumber, Integer analysisId, Integer qcLotId,
                                    Integer qcId, Integer worksheetAnalysisId, String systemUsers,
                                    Date startedDate, Date completedDate, Integer fromOtherId,
                                    Integer changeFlagsId, String description, Integer testId,
                                    String testName, String methodName, Integer timeTaAverage,
                                    Integer timeHolding, String sectionName, Integer unitOfMeasureId,
-                                   String unitOfMeasure, Integer statusId, Date collectionDate,
+                                   String unitOfMeasure, Integer analysisStatusId,
+                                   Integer analysisTypeId, Date collectionDate,
                                    Date collectionTime, Date receivedDate, Integer priority) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
+        setWorksheetId(worksheetId);
+        setFormatId(formatId);
+        setWorksheetDescription(worksheetDescription);
         setAccessionNumber(accessionNumber);
         setAnalysisId(analysisId);
         setQcLotId(qcLotId);
@@ -70,7 +76,6 @@ public class WorksheetAnalysisViewVO extends DataObject {
         setCompletedDate(DataBaseUtil.toYM(completedDate));
         setFromOtherId(fromOtherId);
         setChangeFlagsId(changeFlagsId);
-        setWorksheetId(worksheetId);
         setDescription(description);
         setTestId(testId);
         setTestName(testName);
@@ -80,7 +85,8 @@ public class WorksheetAnalysisViewVO extends DataObject {
         setSectionName(sectionName);
         setUnitOfMeasureId(unitOfMeasureId);
         setUnitOfMeasure(unitOfMeasure);
-        setStatusId(statusId);
+        setAnalysisStatusId(analysisStatusId);
+        setAnalysisTypeId(analysisTypeId);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
@@ -101,6 +107,30 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     public void setWorksheetItemId(Integer worksheetItemId) {
         this.worksheetItemId = worksheetItemId;
+    }
+
+    public Integer getWorksheetId() {
+        return worksheetId;
+    }
+
+    public void setWorksheetId(Integer worksheetId) {
+        this.worksheetId = worksheetId;
+    }
+
+    public Integer getFormatId() {
+        return formatId;
+    }
+
+    public void setFormatId(Integer formatId) {
+        this.formatId = formatId;
+    }
+
+    public String getWorksheetDescription() {
+        return worksheetDescription;
+    }
+
+    public void setWorksheetDescription(String worksheetDescription) {
+        this.worksheetDescription = DataBaseUtil.trim(worksheetDescription);
     }
 
     public String getAccessionNumber() {
@@ -183,14 +213,6 @@ public class WorksheetAnalysisViewVO extends DataObject {
         this.changeFlagsId = changeFlagsId;
     }
 
-    public Integer getWorksheetId() {
-        return worksheetId;
-    }
-
-    public void setWorksheetId(Integer worksheetId) {
-        this.worksheetId = worksheetId;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -263,12 +285,20 @@ public class WorksheetAnalysisViewVO extends DataObject {
         this.unitOfMeasure = DataBaseUtil.trim(unitOfMeasure);
     }
 
-    public Integer getStatusId() {
-        return statusId;
+    public Integer getAnalysisStatusId() {
+        return analysisStatusId;
     }
 
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
+    public void setAnalysisStatusId(Integer analysisStatusId) {
+        this.analysisStatusId = analysisStatusId;
+    }
+
+    public Integer getAnalysisTypeId() {
+        return analysisTypeId;
+    }
+
+    public void setAnalysisTypeId(Integer analysisTypeId) {
+        this.analysisTypeId = analysisTypeId;
     }
 
     public Datetime getCollectionDate() {

@@ -102,6 +102,7 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -156,18 +157,17 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     @UiField
     protected Button                                     expandButton, collapseButton,
                     similarButton, queryButton, updateButton, addTestButton, cancelTestButton,
-                    commitButton, abortButton, optionsButton, prevPageButton, nextPageButton,
-                    popoutTreeButton;
+                    commitButton, abortButton, optionsButton, nextPageButton, popoutTreeButton;
 
     @UiField
     protected Menu                                       optionsMenu, historyMenu;
 
     @UiField
     protected MenuItem                                   unreleaseSample, viewFinalReport,
-                    changeDomain, historySample, historySampleSpecific, historySampleProject,
-                    historySampleOrganization, historySampleItem, historyAnalysis,
-                    historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
-                    historyAuxData;
+                    changeDomain, historySample, historySampleSpecific, historyPatient,
+                    historyPatientRelation, historySampleProject, historySampleOrganization,
+                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
+                    historySampleQA, historyAnalysisQA, historyAuxData;
 
     @UiField
     protected Tree                                       tree;
@@ -192,7 +192,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected ClinicalTabUI                              clinicalTab;
-    
+
     @UiField(provided = true)
     protected PTTabUI                                    ptTab;
 
@@ -230,7 +230,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1>           managers;
 
-    protected boolean                                    canEdit, isBusy, unrelease;
+    protected boolean                                    canEdit, isBusy, unrelease,
+                    hasEnvScriptlet, hasNeonatalScriptlet, hasSDWISScriptlet;
 
     protected ModulePermission                           userPermission, unreleasePermission,
                     changeDomainPermission;
@@ -278,20 +279,20 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
 
     protected static final String                        SAMPLE_LEAF   = "sample",
-                    SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis",
-                    STORAGE_LEAF = "storage", NOTE_LEAF = "note", QA_EVENT_LEAF = "qaEvent",
-                    AUX_DATA_LEAF = "auxData", RESULT_LEAF = "result",
+                    PATIENT_LEAF = "patient", SAMPLE_ITEM_LEAF = "sampleItem",
+                    ANALYSIS_LEAF = "analysis", STORAGE_LEAF = "storage", NOTE_LEAF = "note",
+                    QA_EVENT_LEAF = "qaEvent", AUX_DATA_LEAF = "auxData", RESULT_LEAF = "result",
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM,
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
-        ATTACHMENT, BLANK
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT, BLANK
     };
 
-    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_ia_scriptlet_1",
-                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_ia_scriptlet_1",
-                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_ia_scriptlet_1";
+    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
+                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_scriptlet",
+                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_scriptlet";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -435,6 +436,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         initialize();
         manager = null;
         managers = null;
+        hasEnvScriptlet = true;
+        hasSDWISScriptlet = true;
+        hasNeonatalScriptlet = true;
         showTabs(Tab.BLANK);
         setData();
         evaluateEdit();
@@ -620,6 +624,46 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.clinical(manager);
                 else if (Constants.domain().PT.equals(domain))
                     SampleHistoryUtility1.pt(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                String domain;
+
+                domain = manager != null ? manager.getSample().getDomain() : null;
+                historyPatient.setEnabled(isState(DISPLAY) &&
+                                          (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
+            }
+        });
+
+        historyPatient.addCommand(new Command() {
+            @Override
+            public void execute() {
+                String domain;
+
+                domain = manager != null ? manager.getSample().getDomain() : null;
+                if (Constants.domain().CLINICAL.equals(domain))
+                    SampleHistoryUtility1.clinicalPatient(manager);
+                else if (Constants.domain().NEONATAL.equals(domain))
+                    SampleHistoryUtility1.neonatalPatient(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                String domain;
+
+                domain = manager != null ? manager.getSample().getDomain() : null;
+                historyPatientRelation.setEnabled(isState(DISPLAY) &&
+                                                  (Constants.domain().NEONATAL.equals(domain)));
+            }
+        });
+
+        historyPatientRelation.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatalNextOfKin(manager);
             }
         });
 
@@ -824,12 +868,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
                 setData();
                 refreshTabs(node);
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                prevPageButton.setEnabled(isState(DISPLAY));
+                enablePatientHistory();
+                enablePatientRelationHistory();
             }
         });
 
@@ -988,7 +1028,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * screens
          */
         clinicalTab.setCanQuery(true);
-        
+
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 ptTab.onDataChange();
@@ -1344,6 +1384,51 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Fetches samples "similar" to the one selected in the tree; the
+     * "similarity" is specific to the domain of the sample
+     */
+    @UiHandler("similarButton")
+    protected void similar(ClickEvent event) {
+        UUID data;
+        SampleManager1 sm;
+        QueryData field;
+        ArrayList<QueryData> fields;
+
+        data = tree.getNodeAt(tree.getSelectedNode()).getData();
+        sm = managers.get(data.sampleId);
+
+        /*
+         * this feature is only available for the clinical domain for now
+         */
+        if ( !Constants.domain().CLINICAL.equals(sm.getSample().getDomain()))
+            return;
+
+        fields = new ArrayList<QueryData>();
+        /*
+         * the domain is set here to make sure that no PT samples for the
+         * patient are fetched; this can happen if a PT sample has clinical as
+         * the additional domain; fetched samples should have the same patient
+         * id as the selected sample
+         */
+        field = new QueryData();
+        field.setKey(SampleMeta.getDomain());
+        field.setQuery(Constants.domain().CLINICAL);
+        field.setType(QueryData.Type.STRING);
+        fields.add(field);
+
+        field = new QueryData();
+        field.setKey(SampleMeta.getClinicalPatientId());
+        field.setQuery(sm.getSampleClinical().getPatient().getId().toString());
+        field.setType(QueryData.Type.INTEGER);
+        fields.add(field);
+
+        query = new Query();
+        query.setFields(fields);
+        query.setRowsPerPage(ROWS_PER_PAGE);
+        executeQuery(query);
+    }
+
+    /**
      * Puts the screen in query state, sets the manager to null and instantiates
      * the cache so that it can be used by aux data tab
      */
@@ -1590,7 +1675,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
-        
+
         if (ptTab.getQueryFields().size() > 0) {
             domain = Constants.domain().PT;
             numDomains++ ;
@@ -1876,29 +1961,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
             SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
-    }
-
-    /**
-     * Executes the user query to get the previous page of results
-     */
-    @UiHandler("prevPageButton")
-    protected void prevPage(ClickEvent event) {
-        int page;
-
-        /*
-         * query is a class variable because this screen doesn't use a screen
-         * navigator but it needs to keep track of the previously executed query
-         * and not a query created from the screen's current data
-         */
-        page = query.getPage();
-
-        if (page == 0) {
-            clearStatus();
-            return;
-        }
-
-        query.setPage(page - 1);
-        executeQuery(query);
     }
 
     /**
@@ -2368,7 +2430,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         Node selNode;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -2483,28 +2545,102 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     /**
      * Returns the id of the scriptlet for the selected sample's domain; returns
-     * null if the domain is quick entry
+     * null if a scriptlet is not defined for the domain
      */
-    private Integer getDomainScriptlet() throws Exception {
+    private Integer getDomainScriptlet() {
         SystemVariableDO data;
 
+        data = null;
+        /*
+         * add the scriptlet for the domain, which is the value of this system
+         * variable; don't try to look up the system variable again if it's not
+         * found the first time because the scriptlet is optional
+         */
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
-            if (envScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
-                envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasEnvScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasEnvScriptlet = false;
             }
             return envScriptletId;
         } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
-            if (sdwisScriptletId == null) {
-                data = SystemVariableService.get()
-                                            .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
-                sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasSDWISScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasSDWISScriptlet = false;
             }
             return sdwisScriptletId;
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
-            if (neonatalScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
-                neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasNeonatalScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasNeonatalScriptlet = false;
             }
             return neonatalScriptletId;
         }
@@ -2626,25 +2762,53 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
+                    int index;
                     UUID data;
+                    Node root, first, last;
 
                     /*
-                     * this map is used to link a table row with the manager
-                     * containing the sample and analysis that it's showing
+                     * if "managers" is null, it's a new query i.e. the first
+                     * page will be loaded in the tree; otherwise, the next page
+                     * will be loaded after all the previous pages
                      */
-                    managers = new HashMap<Integer, SampleManager1>();
+                    if (managers == null) {
+                        managers = new HashMap<Integer, SampleManager1>();
+                        index = 0;
+                        root = getRoot(result);
+                    } else {
+                        root = tree.getRoot();
+                        index = root.getChildCount();
+                        loadSamples(root, result);
+                    }
+
+                    /*
+                     * this map is used to link a tree node with the manager
+                     * containing the sample and analysis that the node is
+                     * showing
+                     */
                     for (SampleManager1 sm : result)
                         managers.put(sm.getSample().getId(), sm);
 
-                    tree.setRoot(getRoot(result));
-                    tree.selectNodeAt(0);
+                    /*
+                     * reload the tree; select the first node of the newest page
+                     * and load the screen with its sample's data; make sure
+                     * that only the nodes of the newest page are in the visible
+                     * area
+                     */
+                    tree.setRoot(root);
+                    first = root.getChildAt(index);
+                    last = root.getLastChild();
+                    tree.selectNodeAt(first);
+                    tree.scrollToVisible(tree.getNodeViewIndex(last));
 
-                    data = tree.getNodeAt(0).getData();
+                    data = first.getData();
                     manager = managers.get(data.sampleId);
                     setData();
                     evaluateEdit();
                     setState(DISPLAY);
-                    refreshTabs(tree.getNodeAt(0));
+                    refreshTabs(first);
+                    enablePatientHistory();
+                    enablePatientRelationHistory();
                     clearStatus();
                 }
 
@@ -2773,7 +2937,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * passed list has a different subtree and returns the root node
      */
     private Node getRoot(ArrayList<SampleManager1> sms) {
-        Node root, node;
+        Node root;
 
         /*
          * this prevents any problems with trying to show the errors that were
@@ -2785,13 +2949,29 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         if (sms == null)
             return root;
 
+        loadSamples(root, sms);
+
+        return root;
+    }
+
+    /**
+     * Creates subtrees for each sample in the passed list; adds all subtrees to
+     * the passed node, which is the root of the tree
+     */
+    private void loadSamples(Node root, ArrayList<SampleManager1> sms) {
+        Node node;
+
+        /*
+         * this prevents any problems with trying to show the errors that were
+         * added to the previous nodes and not to the latest ones added below
+         */
+        tree.clearExceptions();
+
         for (SampleManager1 sm : sms) {
             node = new Node(1);
             loadSample(node, sm);
             root.add(node);
         }
-
-        return root;
     }
 
     /**
@@ -2804,6 +2984,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         AnalysisViewDO ana;
         SampleItemViewDO item;
         SampleDO sample;
+        PatientDO pat;
         Node inode, rnode;
         UUID sdata, idata, adata;
 
@@ -2822,6 +3003,18 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         setSampleNodeDisplay(node, sample);
         sdata = new UUID(null, sample.getId());
         node.setData(sdata);
+
+        /*
+         * patient
+         */
+        pat = null;
+        if (Constants.domain().CLINICAL.equals(sample.getDomain()))
+            pat = sm.getSampleClinical().getPatient();
+        else if (Constants.domain().NEONATAL.equals(sample.getDomain()))
+            pat = sm.getSampleNeonatal().getPatient();
+
+        if (pat != null)
+            node.add(createPatientNode(pat, sdata));
 
         /*
          * sample items
@@ -3000,9 +3193,43 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Creates a node for the passed patient and sets the passed UUID as its
+     * data
+     */
+    private Node createPatientNode(PatientDO patient, UUID data) {
+        Node node;
+
+        node = new Node(1);
+        node.setType(PATIENT_LEAF);
+
+        node.setCell(0, DataBaseUtil.concatWithSeparator(patient.getLastName(),
+                                                         ", ",
+                                                         patient.getFirstName()));
+        node.setData(data);
+
+        return node;
+    }
+
+    /**
+     * Creates a node for the passed sample item and sets the passed UUID as its
+     * data
+     */
+    private Node createItemNode(SampleItemViewDO item, UUID data) {
+        Node node;
+
+        node = new Node(1);
+        node.setType(SAMPLE_ITEM_LEAF);
+
+        setItemNodeDisplay(node, item);
+        node.setData(data);
+
+        return node;
+    }
+
+    /**
      * Shows the passed sample item's information on the passed node
      */
-    private void setItemDisplay(Node node, SampleItemViewDO item) {
+    private void setItemNodeDisplay(Node node, SampleItemViewDO item) {
         StringBuilder sb;
 
         sb = new StringBuilder();
@@ -3016,6 +3243,46 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             sb.append(item.getContainer());
             sb.append("]");
         }
+        node.setCell(0, sb.toString());
+    }
+
+    /**
+     * Creates a node for the passed analysis' results and sets the passed UUID
+     * as its data
+     */
+    private Node createResultNode(AnalysisViewDO ana, UUID data) {
+        Node node;
+
+        node = new Node(1);
+        node.setType(RESULT_LEAF);
+
+        setResultNodeDisplay(ana, node);
+        node.setData(data);
+
+        return node;
+    }
+
+    /**
+     * Shows the passed analysis' information on the passed node
+     */
+    private void setResultNodeDisplay(AnalysisViewDO ana, Node node) {
+        StringBuilder sb;
+
+        sb = new StringBuilder();
+        sb.append(ana.getTestName());
+        sb.append(", ");
+        sb.append(ana.getMethodName());
+        if (ana.getStatusId() != null) {
+            try {
+                sb.append(" [");
+                sb.append(DictionaryCache.getById(ana.getStatusId()).getEntry());
+                sb.append("]");
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
         node.setCell(0, sb.toString());
     }
 
@@ -3041,68 +3308,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         return null;
     }
 
-    private Node createItemNode(SampleItemViewDO item, UUID data) {
-        Node node;
-        StringBuilder sb;
-
-        node = new Node(1);
-        node.setType(SAMPLE_ITEM_LEAF);
-
-        sb = new StringBuilder();
-        sb.append(item.getItemSequence());
-        if (item.getTypeOfSample() != null) {
-            sb.append(" - ");
-            sb.append(item.getTypeOfSample());
-        }
-        if (item.getContainer() != null) {
-            sb.append(" [");
-            sb.append(item.getContainer());
-            sb.append("]");
-        }
-        node.setCell(0, sb.toString());
-        node.setData(data);
-
-        return node;
-    }
-
     /**
-     * Shows the passed analysis' information on the passed node
-     */
-    private Node createResultNode(AnalysisViewDO ana, UUID data) {
-        Node node;
-
-        node = new Node(1);
-        node.setType(RESULT_LEAF);
-
-        setResultNodeDisplay(ana, node);
-        node.setData(data);
-
-        return node;
-    }
-
-    private void setResultNodeDisplay(AnalysisViewDO ana, Node node) {
-        StringBuilder sb;
-
-        sb = new StringBuilder();
-        sb.append(ana.getTestName());
-        sb.append(", ");
-        sb.append(ana.getMethodName());
-        if (ana.getStatusId() != null) {
-            try {
-                sb.append(" [");
-                sb.append(DictionaryCache.getById(ana.getStatusId()).getEntry());
-                sb.append("]");
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
-
-        node.setCell(0, sb.toString());
-    }
-
-    /**
-     * Shows the passed analysis' information on the passed node
+     * Creates a node for an analysis and sets the passed UUID as its data
      */
     private Node createAnalysisNode(AnalysisViewDO ana, UUID data) {
         Node node;
@@ -3347,7 +3554,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         tabs = new ArrayList<Tab>();
         data = selection.getData();
 
-        if (SAMPLE_LEAF.equals(selection.getType())) {
+        if (SAMPLE_LEAF.equals(selection.getType()) || PATIENT_LEAF.equals(selection.getType())) {
             /*
              * show sample and domain
              */
@@ -3455,6 +3662,30 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         if (tabs.get(0) != Tab.BLANK && tabPanel.getSelectedIndex() < 0)
             tabPanel.selectTab(tabs.get(0).ordinal());
+    }
+
+    /**
+     * Enables or disables the menu item for patient history, based on the
+     * domain of the sample and the state
+     */
+    private void enablePatientHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatient.setEnabled(isState(DISPLAY) &&
+                                  (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
+    }
+
+    /**
+     * Enables or disables the menu item for patient relation history, based on
+     * the domain of the sample and the state
+     */
+    private void enablePatientRelationHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatientRelation.setEnabled(isState(DISPLAY) &&
+                                          (Constants.domain().NEONATAL.equals(domain)));
     }
 
     /**
@@ -3646,7 +3877,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          */
         item = (SampleItemViewDO)manager.getObject(itemUid);
         inode = tree.getNodeAt(tree.getSelectedNode());
-        setItemDisplay(inode, item);
+        setItemNodeDisplay(inode, item);
         tree.refreshNode(inode);
 
         if ( !SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(action))
@@ -3665,7 +3896,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     /**
      * Adds a warning to the node if the unit assigned to the analysis it is
-     * showing, isn't valid for the passed type
+     * showing, isn't valid for the passed type or if the test doesn't have the
+     * type
      */
     private void validateSampleType(Node node, Integer typeId) {
         AnalysisViewDO ana;
@@ -3678,14 +3910,18 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         try {
             tm = get(ana.getTestId(), TestManager.class);
-            if (ana.getUnitOfMeasureId() != null &&
-                !tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
+            tree.clearEndUserExceptions(node, 0);
+            if (ana.getUnitOfMeasureId() != null) {
+                if ( !tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
+                    tree.addException(node,
+                                      0,
+                                      new FormErrorWarning(Messages.get()
+                                                                   .analysis_unitInvalidForSampleType()));
+            } else if ( !tm.getSampleTypes().hasType(typeId)) {
                 tree.addException(node,
                                   0,
-                                  new FormErrorWarning(Messages.get()
-                                                               .analysis_unitInvalidForSampleType()));
-            else
-                tree.clearExceptions(node, 0);
+                                  new FormErrorWarning(Messages.get().analysis_sampleTypeInvalid()));
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3773,17 +4009,15 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             reloadSample(findAncestorByType(SAMPLE_LEAF));
 
             clearStatus();
-            
+
             /*
              * add scriptlets for any newly added tests and aux data
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3791,10 +4025,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runDomainScriptlet(Action_Before.ANALYSIS);
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -3850,11 +4090,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
              * add scriptlets for the changed test
              */
             addTestScriptlets();
-            
+
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3862,12 +4100,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

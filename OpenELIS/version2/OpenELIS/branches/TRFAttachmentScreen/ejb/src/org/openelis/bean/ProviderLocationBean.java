@@ -22,14 +22,13 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ProviderLocationBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                manager;
+    private EntityManager manager;
 
     @EJB
-    private AddressBean                 addressBean;
+    private AddressBean   addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<ProviderLocationDO> fetchByProviderId(Integer id) throws Exception {
@@ -47,13 +46,30 @@ public class ProviderLocationBean {
 
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<ProviderLocationDO> fetchByProviderIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List<ProviderLocationDO> o;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("ProviderLocation.FetchByProviderIds");
+        o = new ArrayList<ProviderLocationDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(o);
+    }
+
     public ProviderLocationDO add(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
-        
+
         entity = new ProviderLocation();
         entity.setAddressId(data.getAddress().getId());
         entity.setLocation(data.getLocation());
@@ -69,10 +85,10 @@ public class ProviderLocationBean {
     public ProviderLocationDO update(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
 
-        if (!data.isChanged() && !data.getAddress().isChanged())
+        if ( !data.isChanged() && !data.getAddress().isChanged())
             return data;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);            
+
+        manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
@@ -89,8 +105,8 @@ public class ProviderLocationBean {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         if (entity != null) {
-            addressBean.delete(data.getAddress());
             manager.remove(entity);
+            addressBean.delete(data.getAddress());
         }
     }
 
@@ -99,7 +115,8 @@ public class ProviderLocationBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getProviderLocationLocation()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProviderMeta.getProviderLocationLocation()));
 
         if (list.size() > 0)
             throw list;

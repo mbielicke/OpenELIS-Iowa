@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.clinicalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -75,17 +79,18 @@ import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.project.client.ProjectService;
-import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider1.client.ProviderService1;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
@@ -203,8 +208,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     @UiField
     protected TextBox<String>                           clientReference, orderId, patientLastName,
                     patientFirstName, patientNationalId, patientAddrMultipleUnit,
-                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode, patientAddrHomePhone,
-                    providerFirstName, providerPhone;
+                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode,
+                    patientAddrHomePhone, providerFirstName, providerPhone;
 
     @UiField
     protected Dropdown<Integer>                         status, patientGender, patientRace,
@@ -286,7 +291,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected EOrderLookupUI                            eorderLookup;
 
-    protected AttachmentScreenUI                        attachmentScreen;
+    protected TRFAttachmentScreenUI                        trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -312,15 +317,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
-    
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT,
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
+
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT
     };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
-                    BILL_TO_KEY = "billTo";
+    private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -1254,7 +1259,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientAddrHomePhone : patientAddrState;
                              }
                          });
-        
+
         addScreenHandler(patientAddrHomePhone,
                          SampleMeta.getClinicalPatientAddrHomePhone(),
                          new ScreenHandler<String>() {
@@ -1262,17 +1267,17 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                              }
 
-                            public void onValueChange(ValueChangeEvent<String> event) {
+                             public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressHomePhone(event.getValue());
                                  runScriptlets(null,
                                                SampleMeta.getClinicalPatientAddrHomePhone(),
                                                null);
                              }
 
-                            public void onStateChange(StateChangeEvent event) {
+                             public void onStateChange(StateChangeEvent event) {
                                  patientAddrHomePhone.setEnabled(isState(QUERY) ||
-                                                               (canEditSample && canEditPatient && isState(ADD,
-                                                                                                           UPDATE)));
+                                                                 (canEditSample && canEditPatient && isState(ADD,
+                                                                                                             UPDATE)));
                                  patientAddrHomePhone.setQueryMode(isState(QUERY));
                              }
 
@@ -1280,7 +1285,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientGender : patientAddrZipCode;
                              }
                          });
-        
+
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
@@ -1428,8 +1433,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = ProviderService.get()
-                                          .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ProviderService1.get()
+                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);
@@ -1616,8 +1621,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -1695,8 +1699,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -2197,7 +2200,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -2306,7 +2309,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          */
                         event.cancel();
                         closeLoginScreen = true;
-                        attachmentScreen.getWindow().close();
+                        trfAttachmentScreen.getWindow().close();
                         closeLoginScreen = false;
                     } else {
                         /*
@@ -2658,8 +2661,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                      */
                     cache = null;
                     clearScriptlets();
-                    if (attachmentScreen != null)
-                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2721,8 +2722,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setDone(Messages.get().gen_addAborted());
             cache = null;
             clearScriptlets();
-            if (attachmentScreen != null)
-                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             /*
              * unlock the patient if it's locked
@@ -2868,8 +2867,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              * record locked on it, the checkbox doesn't stay unchecked
              */
             fromTRF.setCheck(true);
-            if (attachmentScreen != null)
-                attachmentScreen.getWindow().close();
+            if (trfAttachmentScreen != null)
+                trfAttachmentScreen.getWindow().close();
             return;
         }
 
@@ -2885,13 +2884,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
              */
-            if (attachmentScreen == null) {
-                attachmentScreen = new AttachmentScreenUI() {
-                    @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-
+            if (trfAttachmentScreen == null) {
+                trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
                     public void search() {
                         QueryData field;
@@ -2903,30 +2897,22 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                         field = new QueryData();
                         field.setQuery(attachmentPatternVariable.getValue());
                         query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
                         managers = null;
 
                         executeQuery(query);
-                    }
-
-                    @Override
-                    public void searchSuccessful() {
-                        attachmentSearchSuccessful();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().attachment_attachment());
-            window.setSize("782px", "521px");
-            attachmentScreen.setWindow(window);
-            window.setContent(attachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "attachment");
+            window.setName(Messages.get().trfAttachment_trfAttachment());
+            window.setSize("610px", "520px");
+            trfAttachmentScreen.setWindow(window);
+            window.setContent(trfAttachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "trfAttachment");
             isAttachmentScreenOpen = true;
 
-            attachmentScreen.search();
+            trfAttachmentScreen.search();
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -3727,7 +3713,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = attachmentScreen.getReserved();
+        am = trfAttachmentScreen.getReserved();
         /*
          * add an attachment item for the record selected on the attachment
          * screen
@@ -3911,7 +3897,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             manager.getSampleClinical().setPaperOrderValidator(null);
             return;
         }
-        
+
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             manager.getSample().setOrderId(null);
@@ -3919,9 +3905,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             orderId.setValue(null);
             return;
         }
-        
+
+        /*
+         * don't allow loading the order if the patient is locked
+         */
         if (isPatientLocked) {
             Window.alert(Messages.get().sample_cantLoadEOrderPatientLocked());
+            orderId.setValue(getOrderId());
             return;
         }
 
@@ -3950,7 +3940,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     }
 
                     try {
-                        screen.setBusy(Messages.get().fetching());
+                        screen.setBusy(Messages.get().gen_fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
                     } catch (Exception e) {
                         manager.getSample().setOrderId(null);
@@ -3985,20 +3975,23 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                         /*
                          * show any validation errors encountered while
-                         * importing the order or the pop up for selecting the
-                         * prep/reflex tests for the tests added during the
-                         * import
+                         * importing the order
                          */
                         errors = ret.getErrors();
                         if (errors != null && errors.size() > 0) {
                             if (errors.hasWarnings())
                                 Window.alert(getWarnings(errors.getErrorList(), false));
                             if (errors.hasErrors())
-                                screen.showErrors(errors);
-                            isBusy = false;
-                        } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                                showErrors(errors);
+                        }
+
+                        if (ret.getTests() == null || ret.getTests().size() == 0) {
                             isBusy = false;
                         } else {
+                            /*
+                             * show the pop up for selecting the prep/reflex
+                             * tests for the tests added during the import
+                             */
                             showTests(ret);
                         }
                     } catch (Exception e) {
@@ -4354,7 +4347,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void setPatientAddressZipCode(String zipCode) {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
     }
-    
+
     /**
      * Returns the patient's home phone or null if either the manager or the
      * patient DO is null
@@ -4408,8 +4401,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                 @Override
                 public void patientsFound() {
-                    Integer id;
-                    PatientDO data;
+                    PatientDO samPat, otherPat;
 
                     /*
                      * if the query on the popup was executed only for NID, at
@@ -4417,9 +4409,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                      * patient is the same as the sample's patient
                      */
                     if (queryByNId) {
-                        data = patientTable.getRowAt(0).getData();
-                        id = manager.getSampleClinical().getPatientId();
-                        nidUsedForOther = id != null && !id.equals(data.getId());
+                        samPat = manager.getSampleClinical().getPatient();
+                        otherPat = patientTable.getRowAt(0).getData();
+                        nidUsedForOther = !otherPat.getId().equals(samPat.getId());
                     }
                 }
             };
@@ -4702,7 +4694,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             if (Constants.dictionary().ORG_REPORT_TO.equals(type))
                 setReportTo(data);
             else if (Constants.dictionary().ORG_BILL_TO.equals(type))
-                setBillTo(data);            
+                setBillTo(data);
         }
     }
 
@@ -4880,9 +4872,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4890,16 +4880,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                /*
-                 * if any widget like order # had focus before adding tests,
-                 * this will set the focus to the field next in the tabbing
-                 * order
-                 */
-                if (focusedWidget != null) {
-                    screen.focusNextWidget(focusedWidget, true);
-                    focusedWidget = null;
-                }
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.ANALYSIS);
                 /*
@@ -4912,6 +4895,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     focusedWidget = null;
                 }
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -4956,22 +4943,24 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

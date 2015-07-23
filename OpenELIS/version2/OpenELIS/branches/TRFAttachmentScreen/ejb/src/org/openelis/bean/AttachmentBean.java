@@ -107,11 +107,18 @@ public class AttachmentBean {
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List<AttachmentDO> a;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Attachment.FetchByIds");
-        query.setParameter("ids", ids);
+        a = new ArrayList<AttachmentDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            a.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(a);
     }
 
     /**
@@ -138,18 +145,9 @@ public class AttachmentBean {
                                                                 int max) throws Exception {
         Query query;
         List list;
-        Calendar cal;
-        Date startDate, endDate;
 
-        cal = Calendar.getInstance();
-        endDate = cal.getTime();
-        cal.add(Calendar.WEEK_OF_YEAR, -2);
-        startDate = cal.getTime();
-
-        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescAndCreatedDate");
+        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescription");
         query.setParameter("description", description);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
         query.setMaxResults(first + max);
 
         list = query.getResultList();

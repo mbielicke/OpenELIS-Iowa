@@ -127,7 +127,7 @@ public class WorksheetExcelHelperBean {
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrMap;
         HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> wqrMap;
         HashMap<Integer, WorksheetAnalysisViewDO> waLinkMap;
-        HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap;
+        HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap;
         HashMap<String, String> tCellNames;
         Cell cell;
         CellRangeAddressList /*statusCells, */reportableColumn;
@@ -201,7 +201,7 @@ public class WorksheetExcelHelperBean {
         o = 1;
         i = 0;
         aCount = 0;
-        apMap = new HashMap<String, HashMap<Integer, AnalyteParameterViewDO>>();
+        apMap = new HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>>();
         waMap = new HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>>();
         waLinkMap = new HashMap<Integer, WorksheetAnalysisViewDO>();
         wrMap = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
@@ -966,12 +966,12 @@ public class WorksheetExcelHelperBean {
                                            WorksheetAnalysisViewDO waVDO,
                                            ArrayList<WorksheetResultViewDO> wrList,
                                            boolean isEditable,
-                                           HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) {
+                                           HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap) {
         int c, i, r;
         String cellNameIndex, name;
-        ArrayList<AnalyteParameterViewDO> anaParams;
+        ArrayList<AnalyteParameterViewDO> anaParams, apList;
         DecimalFormat df;
-        HashMap<Integer, AnalyteParameterViewDO> pMap;
+        HashMap<Integer, ArrayList<AnalyteParameterViewDO>> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
@@ -1035,18 +1035,25 @@ public class WorksheetExcelHelperBean {
                 } else {
                     setCellValue(cell, wrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("T"+waVDO.getTestId());
                         if (pMap == null) {
-                            pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                            pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
                             apMap.put("T"+waVDO.getTestId(), pMap);
                             try {
                                 anaParams = analyteParameter.fetchByActiveDate(waVDO.getTestId(),
                                                                                     Constants.table().TEST,
                                                                                     wVDO.getCreatedDate().getDate());
-                                for (AnalyteParameterViewDO anaParam : anaParams)
-                                    pMap.put(anaParam.getAnalyteId(), anaParam);
+                                for (AnalyteParameterViewDO anaParam : anaParams) {
+                                    apList = pMap.get(anaParam.getAnalyteId());
+                                    if (apList == null) {
+                                        apList = new ArrayList<AnalyteParameterViewDO>();
+                                        pMap.put(anaParam.getAnalyteId(), apList);
+                                    }
+                                    apList.add(anaParam);
+                                }
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
@@ -1057,13 +1064,28 @@ public class WorksheetExcelHelperBean {
                             }
                         }
 
-                        apVDO = pMap.get(wrVDO.getAnalyteId());
-                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
-                            setCellValue(cell, df.format(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
-                            setCellValue(cell, df.format(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
-                            setCellValue(cell, df.format(apVDO.getP3()));
+                        apList = pMap.get(wrVDO.getAnalyteId());
+                        apVDO = null;
+                        if (apList != null && apList.size() > 0) {
+                            for (AnalyteParameterViewDO ap: apList) {
+                                if (ap.getUnitOfMeasureId() == null || ap.getUnitOfMeasureId().equals(waVDO.getUnitOfMeasureId())) {
+                                    if (ap.getUnitOfMeasureId() != null) {
+                                        apVDO = ap;
+                                        break;
+                                    } else if (apVDO == null) {
+                                        apVDO = ap;
+                                    }
+                                }
+                            }
+                        }
+                        if (apVDO != null) {
+                            if (("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
+                                setCellValue(cell, df.format(apVDO.getP1()));
+                            } else if (("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
+                                setCellValue(cell, df.format(apVDO.getP2()));
+                            } else if (("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
+                                setCellValue(cell, df.format(apVDO.getP3()));
+                            }
                         }
                     }
                 }
@@ -1083,12 +1105,12 @@ public class WorksheetExcelHelperBean {
                                              WorksheetViewDO wVDO,
                                              Integer qcId,
                                              ArrayList<WorksheetQcResultViewDO> wqrList,
-                                             HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) {
+                                             HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap) {
         int c, i, r;
         String cellNameIndex, name;
-        ArrayList<AnalyteParameterViewDO> anaParams;
+        ArrayList<AnalyteParameterViewDO> anaParams, apList;
         DecimalFormat df;
-        HashMap<Integer, AnalyteParameterViewDO> pMap;
+        HashMap<Integer, ArrayList<AnalyteParameterViewDO>> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
@@ -1144,18 +1166,25 @@ public class WorksheetExcelHelperBean {
                 } else {
                     setCellValue(cell, wqrVDO.getValueAt(c - 9));
                 }
-                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                if ("p1".equals(name) || "p2".equals(name) || "p3".equals(name) ||
+                    "p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c - 9) == null) {
                         pMap = apMap.get("Q"+qcId);
                         if (pMap == null) {
-                            pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                            pMap = new HashMap<Integer, ArrayList<AnalyteParameterViewDO>>();
                             apMap.put("Q"+qcId, pMap);
                             try {
                                 anaParams = analyteParameter.fetchByActiveDate(qcId,
-                                                                                    Constants.table().QC,
-                                                                                    wVDO.getCreatedDate().getDate());
-                                for (AnalyteParameterViewDO anaParam : anaParams)
-                                    pMap.put(anaParam.getAnalyteId(), apVDO);
+                                                                               Constants.table().QC,
+                                                                               wVDO.getCreatedDate().getDate());
+                                for (AnalyteParameterViewDO anaParam : anaParams) {
+                                    apList = pMap.get(anaParam.getAnalyteId());
+                                    if (apList == null) {
+                                        apList = new ArrayList<AnalyteParameterViewDO>();
+                                        pMap.put(anaParam.getAnalyteId(), apList);
+                                    }
+                                    apList.add(anaParam);
+                                }
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
@@ -1166,13 +1195,18 @@ public class WorksheetExcelHelperBean {
                             }
                         }
 
-                        apVDO = pMap.get(wqrVDO.getAnalyteId());
-                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP3()));
+                        apList = pMap.get(wqrVDO.getAnalyteId());
+                        apVDO = null;
+                        if (apList != null && apList.size() > 0)
+                            apVDO = apList.get(0);
+                        if (apVDO != null) {
+                            if (("p1".equals(name) || "p_1".equals(name)) && apVDO.getP1() != null) {
+                                setCellValue(cell, String.valueOf(apVDO.getP1()));
+                            } else if (("p2".equals(name) || "p_2".equals(name)) && apVDO.getP2() != null) {
+                                setCellValue(cell, String.valueOf(apVDO.getP2()));
+                            } else if (("p3".equals(name) || "p_3".equals(name)) && apVDO.getP3() != null) {
+                                setCellValue(cell, String.valueOf(apVDO.getP3()));
+                            }
                         }
                     }
                 }

@@ -4,9 +4,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -37,7 +39,6 @@ import org.openelis.domain.QcChartResultVO;
 import org.openelis.meta.QcChartMeta;
 import org.openelis.report.qcchart.QcChartDataSource;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
@@ -68,8 +69,8 @@ public class QcChartReportBean {
 
     public QcChartReportViewVO fetchForQcChart(ArrayList<QueryData> paramList) throws Exception {
         Integer plot, qc, number, location;
-        String analyteName, worksheetCreatedDateFrom, worksheetCreatedDateTo, numInstances, qcName, plotType, systemName, qcType, qcLocation;
-        Datetime startDate, endDate;
+        String analyteName, qcName, systemName;
+        Date startDate, endDate;
         QcChartReportViewVO.Value vo;
         QcChartReportViewVO data, qcChartVO;
         ArrayList<Value> qcList, list;
@@ -80,23 +81,16 @@ public class QcChartReportBean {
 
         param = ReportUtil.getMapParameter(paramList);
 
-        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param,
-                                                                 QcChartMeta.getWorksheetCreatedDateFrom());
-        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param,
-                                                               QcChartMeta.getWorksheetCreatedDateTo());
-        numInstances = ReportUtil.getSingleParameter(param, QcChartMeta.getNumInstances());
-        qcName = ReportUtil.getSingleParameter(param, QcChartMeta.getQCName());
-        qcType = ReportUtil.getSingleParameter(param, QcChartMeta.getQCType());
-        plotType = ReportUtil.getSingleParameter(param, QcChartMeta.getPlotType());
-        qcLocation = ReportUtil.getSingleParameter(param, QcChartMeta.getLocationId());
+        startDate = ReportUtil.getDateParameter(param, QcChartMeta.getWorksheetCreatedDateFrom());
+        endDate = ReportUtil.getDateParameter(param, QcChartMeta.getWorksheetCreatedDateTo());
+        number = ReportUtil.getIntegerParameter(param, QcChartMeta.getNumInstances());
+        qcName = ReportUtil.getStringParameter(param, QcChartMeta.getQCName());
+        qc = ReportUtil.getIntegerParameter(param, QcChartMeta.getQCType());
+        plot = ReportUtil.getIntegerParameter(param, QcChartMeta.getPlotType());
+        location = ReportUtil.getIntegerParameter(param, QcChartMeta.getLocationId());
 
-        try {
-            plot = Integer.parseInt(plotType);
-            qc = Integer.parseInt(qcType);
-            location = Integer.parseInt(qcLocation);
-        } catch (Exception e) {
+        if (plot == null || qc == null || location == null)
             throw new InconsistencyException("You must specify a valid plot type, qc type, or location.");
-        }
 
         /*
          * The report can be run either by dates or number of instances going
@@ -104,17 +98,14 @@ public class QcChartReportBean {
          */
         resultList = null;
         try {
-            if (worksheetCreatedDateFrom != null && worksheetCreatedDateTo != null) {
-                startDate = ReportUtil.getDate(worksheetCreatedDateFrom);
-                endDate = ReportUtil.getDate(worksheetCreatedDateTo);
-                resultList = worksheetAnalysis.fetchByDateForQcChart(startDate.getDate(),
-                                                                     endDate.getDate(),
+            if (startDate != null && endDate != null)
+                resultList = worksheetAnalysis.fetchByDateForQcChart(startDate,
+                                                                     endDate,
                                                                      qcName,
                                                                      location);
-            } else if (numInstances != null) {
-                number = Integer.parseInt(numInstances);
+            else if (number != null)
                 resultList = worksheetAnalysis.fetchByInstancesForQcChart(number, qcName, location);
-            }
+
             if (resultList.size() == 0)
                 throw new NotFoundException("No data found for the query. Please change your query parameters.");
         } catch (Exception e) {

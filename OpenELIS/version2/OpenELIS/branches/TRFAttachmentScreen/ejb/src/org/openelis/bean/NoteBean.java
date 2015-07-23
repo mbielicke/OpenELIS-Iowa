@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -89,61 +90,71 @@ public class NoteBean {
     }
     
     public ArrayList<NoteViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId) {
+        int i;
         Query query;
-        NoteViewDO data;
-        SystemUserVO user;
-        ArrayList<NoteViewDO> list;
+        SystemUserVO u;
+        NoteViewDO n;
+        List<NoteViewDO> ns;
+        ArrayList<Integer> r;
 
         // TODO
         // we are currently returning any requested note without checking to see
         // if the user have permission to this note -- we need to fix this
         //        
         query = manager.createNamedQuery("Note.FetchByIds");
-        query.setParameter("ids", referenceIds);
         query.setParameter("tableId", referenceTableId);
+        ns = new ArrayList<NoteViewDO>();        
+        r = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", referenceIds.subList(r.get(i), r.get(i + 1)));
+            ns.addAll(query.getResultList());
+        }
 
-        list = DataBaseUtil.toArrayList(query.getResultList());
+        for (i = 0; i < ns.size(); i++ ) {
+            n = ns.get(i);
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
-
-            if (data.getSystemUserId() != null) {
-                user = userCache.getSystemUser(data.getSystemUserId());
-                if (user != null)
-                    data.setSystemUser(user.getLoginName());
+            if (n.getSystemUserId() != null) {
+                u = userCache.getSystemUser(n.getSystemUserId());
+                if (u != null)
+                    n.setSystemUser(u.getLoginName());
             }
         }
 
-        return list;
+        return DataBaseUtil.toArrayList(ns);
     }
     
     public ArrayList<NoteViewDO> fetchByIdsAndTables(ArrayList<Integer> referenceIds, ArrayList<Integer> referenceTableIds) {
+        int i;
         Query query;
-        NoteViewDO data;
-        SystemUserVO user;
-        ArrayList<NoteViewDO> list;
+        SystemUserVO u;
+        NoteViewDO n;
+        List<NoteViewDO> ns;
+        ArrayList<Integer> r;
 
         // TODO
         // we are currently returning any requested note without checking to see
         // if the user have permission to this note -- we need to fix this
         //        
         query = manager.createNamedQuery("Note.FetchByIdsAndTables");
-        query.setParameter("ids", referenceIds);
-        query.setParameter("tableIds", referenceTableIds);
+        query.setParameter("tableIds", referenceTableIds);        
+        ns = new ArrayList<NoteViewDO>();        
+        r = DataBaseUtil.createSubsetRange(referenceIds.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", referenceIds.subList(r.get(i), r.get(i + 1)));
+            ns.addAll(query.getResultList());
+        }
 
-        list = DataBaseUtil.toArrayList(query.getResultList());
+        for (i = 0; i < ns.size(); i++ ) {
+            n = ns.get(i);
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
-
-            if (data.getSystemUserId() != null) {
-                user = userCache.getSystemUser(data.getSystemUserId());
-                if (user != null)
-                    data.setSystemUser(user.getLoginName());
+            if (n.getSystemUserId() != null) {
+                u = userCache.getSystemUser(n.getSystemUserId());
+                if (u != null)
+                    n.setSystemUser(u.getLoginName());
             }
         }
 
-        return list;
+        return DataBaseUtil.toArrayList(ns);
     }
 
     public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId,

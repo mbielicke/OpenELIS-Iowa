@@ -32,12 +32,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +48,9 @@ import javax.ejb.Stateless;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.NotFoundException;
@@ -123,11 +125,8 @@ public class UIHCFinalReportExportBean {
         Calendar fromDate, toDate;
         Date beginReleased, endReleased;
         HashMap<String, QueryData> param;
-        Integer uihcOrgId, pathologyOrgId;
+        HashSet<Integer> uihcOrgIds, pathologyOrgIds;
         ReportStatus status;
-        SimpleDateFormat format;
-
-        format = new SimpleDateFormat(Messages.get().dateTimePattern());
 
         status = new ReportStatus();
         session.setAttribute("UIHCFinalReportExport", status);
@@ -139,8 +138,8 @@ public class UIHCFinalReportExportBean {
         endReleased = null;
         if (paramList != null) {
             param = ReportUtil.getMapParameter(paramList);
-            beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
-            endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
+            beginReleased = ReportUtil.getTimestampParameter(param, "BEGIN_RELEASED");
+            endReleased = ReportUtil.getTimestampParameter(param, "END_RELEASED");
         }
 
         if (beginReleased == null || endReleased == null) {
@@ -160,26 +159,26 @@ public class UIHCFinalReportExportBean {
             endReleased = toDate.getTime();
         }
         
-        uihcOrgId = null;
-        pathologyOrgId = null;
+        uihcOrgIds = new HashSet<Integer>();
+        pathologyOrgIds = new HashSet<Integer>();
         orgParams = organizationParameter.fetchByDictionarySystemName("org_type");
         for (OrganizationParameterDO opDO : orgParams) {
             if ("UIHC TRANSFER".equals(opDO.getValue()))
-                uihcOrgId = opDO.getOrganizationId();
+                uihcOrgIds.add(opDO.getOrganizationId());
             else if ("UIHC PATHOLOGY TRANSFER".equals(opDO.getValue()))
-                pathologyOrgId = opDO.getOrganizationId();
+                pathologyOrgIds.add(opDO.getOrganizationId());
         }
         
         error = false;
-        if (uihcOrgId != null) {
-            exportUIHC(beginReleased, endReleased, uihcOrgId);
+        if (uihcOrgIds != null && uihcOrgIds.size() > 0) {
+            exportUIHC(beginReleased, endReleased, uihcOrgIds);
         } else {
             log.log(Level.SEVERE, "No Organzation ID found for UIHC Transfer");
             error = true;
         }
 
-        if (pathologyOrgId != null) {
-            exportUIHCPathology(beginReleased, endReleased, pathologyOrgId);
+        if (pathologyOrgIds != null && pathologyOrgIds.size() > 0) {
+            exportUIHCPathology(beginReleased, endReleased, pathologyOrgIds);
         } else {
             log.log(Level.SEVERE, "No Organzation ID found for UIHC Pathology Transfer");
             error = true;
@@ -195,14 +194,16 @@ public class UIHCFinalReportExportBean {
         return status;
     }
     
-    private void exportUIHC(Date beginReleased, Date endReleased, Integer orgId) {
+    private void exportUIHC(Date beginReleased, Date endReleased, HashSet<Integer> orgIds) {
         ArrayList<QueryData> fields;
         ArrayList<SampleManager1> sms;
+        ArrayList<SampleOrganizationViewDO> sampleOrgs;
+        Integer orgId;
         OutputStream out;
         Path srcFile, destFile;
         QueryData field;
         ReportStatus status;
-        String fileName, tempDirectory, excludedTestIds, uploadStreamDirectory;
+        String excludedTestIds, fileName, orgIdsString, tempDirectory, uploadStreamDirectory;
         StringBuilder emailBody;
 
         try {
@@ -243,7 +244,9 @@ public class UIHCFinalReportExportBean {
 
         field = new QueryData();
         field.setKey(SampleMeta.getOrgId());
-        field.setQuery(orgId.toString());
+        orgIdsString = orgIds.toString();
+        orgIdsString = orgIdsString.substring(1, orgIdsString.length() - 1).replace(',', '|');
+        field.setQuery(orgIdsString);
         field.setType(QueryData.Type.INTEGER);
         fields.add(field);
 
@@ -271,6 +274,26 @@ public class UIHCFinalReportExportBean {
         
         if (sms.size() > 0) {
             for (SampleManager1 sm : sms) {
+                orgId = null;
+                sampleOrgs = sm.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                if (sampleOrgs != null && sampleOrgs.size() > 0 &&
+                    orgIds.contains(sampleOrgs.get(0).getOrganizationId())) {
+                    orgId = sampleOrgs.get(0).getOrganizationId();
+                } else {
+                    sampleOrgs = sm.organization.getByType(Constants.dictionary().ORG_SECOND_REPORT_TO);
+                    if (sampleOrgs != null && sampleOrgs.size() > 0) {
+                        for (SampleOrganizationViewDO soVDO : sampleOrgs) {
+                            if (orgIds.contains(soVDO.getOrganizationId())) {
+                                orgId = soVDO.getOrganizationId();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (orgId == null)
+                    continue;
+                
                 fields = new ArrayList<QueryData>();
                 
                 field = new QueryData();
@@ -308,7 +331,7 @@ public class UIHCFinalReportExportBean {
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
-                    return;
+                    continue;
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")
@@ -335,14 +358,16 @@ public class UIHCFinalReportExportBean {
         log.log(Level.FINE, "UIHC Final Report Transfer exported");
     }
 
-    private void exportUIHCPathology(Date beginReleased, Date endReleased, Integer orgId) {
+    private void exportUIHCPathology(Date beginReleased, Date endReleased, HashSet<Integer> orgIds) {
         ArrayList<QueryData> fields;
         ArrayList<SampleManager1> sms;
+        ArrayList<SampleOrganizationViewDO> sampleOrgs;
+        Integer orgId;
         OutputStream out;
         Path srcFile, destFile;
         QueryData field;
         ReportStatus status;
-        String fileName, tempDirectory, uploadStreamDirectory;
+        String fileName, orgIdsString, tempDirectory, uploadStreamDirectory;
         StringBuilder emailBody;
 
         try {
@@ -376,7 +401,9 @@ public class UIHCFinalReportExportBean {
 
         field = new QueryData();
         field.setKey(SampleMeta.getOrgId());
-        field.setQuery(orgId.toString());
+        orgIdsString = orgIds.toString();
+        orgIdsString = orgIdsString.substring(1, orgIdsString.length() - 1).replace(',', '|');
+        field.setQuery(orgIdsString);
         field.setType(QueryData.Type.INTEGER);
         fields.add(field);
 
@@ -396,6 +423,26 @@ public class UIHCFinalReportExportBean {
         
         if (sms.size() > 0) {
             for (SampleManager1 sm : sms) {
+                orgId = null;
+                sampleOrgs = sm.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                if (sampleOrgs != null && sampleOrgs.size() > 0 &&
+                    orgIds.contains(sampleOrgs.get(0).getOrganizationId())) {
+                    orgId = sampleOrgs.get(0).getOrganizationId();
+                } else {
+                    sampleOrgs = sm.organization.getByType(Constants.dictionary().ORG_SECOND_REPORT_TO);
+                    if (sampleOrgs != null && sampleOrgs.size() > 0) {
+                        for (SampleOrganizationViewDO soVDO : sampleOrgs) {
+                            if (orgIds.contains(soVDO.getOrganizationId())) {
+                                orgId = soVDO.getOrganizationId();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (orgId == null)
+                    continue;
+                
                 fields = new ArrayList<QueryData>();
                 
                 field = new QueryData();
@@ -433,7 +480,7 @@ public class UIHCFinalReportExportBean {
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Pathology Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
-                    return;
+                    continue;
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")

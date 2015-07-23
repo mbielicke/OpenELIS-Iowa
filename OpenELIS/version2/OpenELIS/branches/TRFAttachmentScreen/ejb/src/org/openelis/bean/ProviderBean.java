@@ -57,7 +57,7 @@ import org.openelis.util.QueryBuilderV2;
 public class ProviderBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager             manager;
+    EntityManager             manager;
 
     private static final ProviderMeta meta = new ProviderMeta();
 
@@ -78,16 +78,23 @@ public class ProviderBean {
     }
     
     @SuppressWarnings("unchecked")
-    public ArrayList<ProviderDO> fetchByIds(Collection<Integer> ids) {
+    public ArrayList<ProviderDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<ProviderDO> p;
+        ArrayList<Integer> r;
         
         if (ids.size() == 0)
             return new ArrayList<ProviderDO>();
         
         query = manager.createNamedQuery("Provider.FetchByIds");
-        query.setParameter("ids", ids);
+        p = new ArrayList<ProviderDO>(); 
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            p.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(p);
     }
 
     @SuppressWarnings("unchecked")

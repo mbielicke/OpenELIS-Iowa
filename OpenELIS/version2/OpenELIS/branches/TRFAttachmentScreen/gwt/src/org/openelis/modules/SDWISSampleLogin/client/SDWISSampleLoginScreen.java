@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -1324,16 +1324,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
     protected void onOrderLookupClick() {
         Integer id;
-        OrderManager man;
+        IOrderManager man;
 
         man = null;
         id = manager.getSample().getOrderId();
         if (id == null) {
-            man = OrderManager.getInstance();
+            man = IOrderManager.getInstance();
         } else {
             try {
-                man = OrderManager.fetchById(id);
-                if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                man = IOrderManager.fetchById(id);
+                if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType())) {
                     orderNumber.addException(new Exception(Messages.get().orderIdInvalidException()));
                     return;
                 }
@@ -1349,7 +1349,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             showOrder(man);
     }
 
-    private void showOrder(OrderManager orderManager) {
+    private void showOrder(IOrderManager orderManager) {
         ScreenWindow modal;
         try {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
@@ -1536,7 +1536,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         int i;
         Integer orgId;
         ArrayList<Integer> orgIds;
-        OrderManager man;
+        IOrderManager man;
         SampleManager quickEntryMan;
         SampleItemManager itemMan;
         SampleOrganizationManager sorgMan;
@@ -1558,8 +1558,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             window.setBusy(Messages.get().fetching());
 
-            man = OrderManager.fetchById(orderId);
-            if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+            man = IOrderManager.fetchById(orderId);
+            if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType())) {
                 orderNumber.addException(new Exception(Messages.get().orderIdInvalidException()));
                 window.clearStatus();
                 return;

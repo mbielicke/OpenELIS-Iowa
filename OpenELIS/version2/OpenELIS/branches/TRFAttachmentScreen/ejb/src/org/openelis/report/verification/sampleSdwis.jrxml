@@ -10,18 +10,18 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     p.number0, p.name pws_name, ss.state_lab_id, ss.facility_id, d1.entry sample_type,
-     d2.entry sample_category, ss.sample_point_id, ss.location, ss.collector,
+     p.number0, p.name as pws_name, ss.state_lab_id, ss.facility_id, d1.entry as sample_type,
+     d2.entry as sample_category, ss.sample_point_id, ss.location, ss.collector,
      so.organization_id, so.organization_attention
 FROM
-     sample_sdwis ss, pws p, outer dictionary d1, outer dictionary d2, outer sample_organization so
+     sample_sdwis ss
+     join pws p on p.id = ss.pws_id
+     left join dictionary d1 on d1.id = ss.sample_type_id
+     left join dictionary d2 on d2.id = ss.sample_category_id
+     left join sample_organization so on so.sample_id = ss.sample_id and
+               so.type_id in (select id from dictionary where system_name = 'org_report_to')
 WHERE
-     ss.sample_id = $P{SAMPLE_ID}
-     AND ss.pws_id = p.id
-     AND ss.sample_type_id = d1.id
-     AND ss.sample_category_id = d2.id
-     AND so.sample_id = ss.sample_id
-     AND so.type_id in (select id from dictionary where system_name = 'org_report_to')]]>
+     ss.sample_id = $P{SAMPLE_ID}]]>
 	</queryString>
 	<field name="number0" class="java.lang.String"/>
 	<field name="pws_name" class="java.lang.String"/>

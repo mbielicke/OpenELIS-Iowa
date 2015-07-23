@@ -29,7 +29,7 @@ package org.openelis.modules.order.client;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.ui.widget.WindowInt;
 
@@ -37,14 +37,14 @@ import com.google.gwt.user.client.Window;
 
 public class SampleNoteTab extends NotesTab {
 
-    protected OrderManager parentManager;
+    protected IOrderManager parentManager;
     
     public SampleNoteTab(ScreenDefInt def, WindowInt window, String notesPanelKey,
                         String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
     
-    public void setManager(OrderManager parentManager) {
+    public void setManager(IOrderManager parentManager) {
         this.parentManager = parentManager;
         loaded = false;
     }

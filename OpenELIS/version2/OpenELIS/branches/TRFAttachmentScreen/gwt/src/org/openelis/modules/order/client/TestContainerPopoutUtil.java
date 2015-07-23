@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 
 /** 
  * This class is used to maintain a single instance of TestContainerPopoutLookup
@@ -49,7 +49,7 @@ public class TestContainerPopoutUtil {
         handlers.add(handler);
     }
     
-    public void showPopout(String name, State state, OrderManager manager) throws Exception {
+    public void showPopout(String name, State state, IOrderManager manager) throws Exception {
         ScreenWindow modal;
         
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);

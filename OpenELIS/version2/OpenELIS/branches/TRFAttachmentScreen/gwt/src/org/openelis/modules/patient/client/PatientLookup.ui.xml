@@ -116,7 +116,7 @@
             <c:Calendar width="75" begin="0" end="2" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="75" label="{msg.patient_relation}" sortable="true">
+        <t:Column width="75" label="{msg.gen_relation}" sortable="true">
           <t:DropdownCell>
             <w:Dropdown ui:field="patientRelation" width="59" field="Integer" />
           </t:DropdownCell>

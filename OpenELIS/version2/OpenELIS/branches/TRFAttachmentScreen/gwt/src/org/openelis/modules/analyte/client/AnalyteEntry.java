@@ -19,7 +19,7 @@ public class AnalyteEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.ANALYTE, this);        
+//        ScreenBus.get().addHandler(ScreenBus.ANALYTE, this);        
     }
     
     public void showScreen() {

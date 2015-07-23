@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -86,16 +85,23 @@ public class OrganizationBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrganizationViewDO> fetchByIds(Collection<Integer> ids) {
+    public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<OrganizationViewDO> o;
+        ArrayList<Integer> r;
         
         if (ids.size() == 0)
             return new ArrayList<OrganizationViewDO>();
         
         query = manager.createNamedQuery("Organization.FetchByIds");
-        query.setParameter("ids", ids);
+        o = new ArrayList<OrganizationViewDO>(); 
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            o.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(o);
     }
 
     public OrganizationDO fetchActiveById(Integer id) throws Exception {

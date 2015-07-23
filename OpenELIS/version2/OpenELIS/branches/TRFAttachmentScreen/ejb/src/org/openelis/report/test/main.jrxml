@@ -20,28 +20,28 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT 'T' ref_type, t.id t_id, s.name s_name, t.name t_name,
-       t.description t_description, m.name m_name
-FROM test t, method m, test_section ts, section s
-WHERE t.is_active = 'Y' and
-      t.method_id = m.id and
-      t.id = ts.test_id and ts.section_id = s.id
+		<![CDATA[SELECT 'T' as ref_type, t.id as t_id, s.name as s_name, t.name as t_name,
+       t.description as t_description, m.name as m_name
+FROM  test t
+      join method m on m.id = t.method_id
+      join test_section ts on ts.test_id = t.id
+      join section s on s.id = ts.section_id
+WHERE t.is_active = 'Y'
       $P!{TEST} $P!{SECTION}
 
 UNION
 
-SELECT distinct 'P' ref_type, p.id t_id, '' s_name, p.name t_name,
-       p.description t_description,  '' m_name
-FROM panel p, panel_item pi, test t, method m, test_section ts, section s
+SELECT distinct 'P' as ref_type, p.id as t_id, '' as s_name, p.name as t_name,
+      p.description as t_description,  '' as m_name
+FROM  panel p
+      join panel_item pi on pi.panel_id = p.id
+      join test t on pi.name = t.name
+      join method m on m.id = t.method_id
+      join test_section ts on ts.test_id = t.id
+      join section s on s.id = ts.section_id
 WHERE $P{DETAIL} != 'FD' and
-      pi.panel_id = p.id and
-      pi.name = t.name and
-      pi.method_name = m.name and
-      t.method_id = m.id and
-      t.is_active = 'Y' and
-      ts.test_id = t.id and ts.section_id = s.id
+      t.is_active = 'Y'
       $P!{TEST} $P!{SECTION}
-
 ORDER BY ref_type desc, s_name, t_name, m_name]]>
 	</queryString>
 	<field name="ref_type" class="java.lang.String"/>

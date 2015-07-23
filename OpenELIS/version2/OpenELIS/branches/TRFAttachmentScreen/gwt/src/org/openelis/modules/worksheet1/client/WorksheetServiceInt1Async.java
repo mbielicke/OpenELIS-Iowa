@@ -35,6 +35,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
@@ -52,6 +53,8 @@ public interface WorksheetServiceInt1Async {
 
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
+    public void queryForLookup(Query query, AsyncCallback<ArrayList<WorksheetViewDO>> callback);
+
     public void fetchForUpdate(Integer worksheetId, AsyncCallback<WorksheetManager1> callback);
 
     public void fetchForTransfer(Integer worksheetId, AsyncCallback<WorksheetResultsTransferVO> callback);
@@ -63,7 +66,8 @@ public interface WorksheetServiceInt1Async {
                        AsyncCallback<WorksheetManager1> callback);
 
     public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetResultsTransferVO> callback);
+                                ArrayList<SampleManager1> sampleMans, boolean ignoreWarnings,
+                                AsyncCallback<WorksheetResultsTransferVO> callback);
 
     public void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback);
 

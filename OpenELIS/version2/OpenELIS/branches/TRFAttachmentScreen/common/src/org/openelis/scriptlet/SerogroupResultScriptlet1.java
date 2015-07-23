@@ -25,16 +25,23 @@
  */
 package org.openelis.scriptlet;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
+
+import javax.xml.crypto.Data;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
-import org.openelis.scriptlet.SampleSO.Action_Before;
+import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletObject;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
@@ -43,7 +50,7 @@ import org.openelis.utilcommon.ResultHelper;
  * The scriptlet for tests with serogroup column analytes. It determines the
  * result based on the value specified for serogroup.
  */
-public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
+public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> {
 
     private SerogroupResultScriptlet1Proxy proxy;
 
@@ -59,39 +66,47 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
     }
 
     @Override
-    public SampleSO run(SampleSO data) {
+    public ScriptletObject run(ScriptletObject data) {
         int i, j;
         AnalysisViewDO ana;
         ResultViewDO res;
         SampleManager1 sm;
+        WorksheetManager1 wm;
+        WorksheetResultViewDO wrVDO;
 
         proxy.log(Level.FINE, "In SerogroupResultScriptlet1.run", null);
-        ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
-        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
-            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
-            return data;
-
-        /*
-         * manage result changed
-         */
-        res = null;
-        if (data.getActionBefore().contains(Action_Before.COMPLETE)) {
-            if (analysisId.equals(ana.getId())) {
-               sm = data.getManager();
-               for (i = 0; i < sm.result.count(ana); i++ ) {
-                   for (j = 0; j < sm.result.count(ana, i); j++ ) {
-                       res = sm.result.get(ana, i, j);
-                       if ("serogroup".equals(res.getAnalyteExternalId())) {
-                           setResult(data, ana, res);
-                           break;
+        if (data instanceof SampleSO) {
+            sm = ((SampleSO)data).getManager();
+            ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(analysisId));
+            if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                return data;
+    
+            /*
+             * manage result changed
+             */
+            res = null;
+            if (((SampleSO)data).getActionBefore().contains(SampleSO.Action_Before.COMPLETE)) {
+                if (analysisId.equals(ana.getId())) {
+                   for (i = 0; i < sm.result.count(ana); i++ ) {
+                       for (j = 0; j < sm.result.count(ana, i); j++ ) {
+                           res = sm.result.get(ana, i, j);
+                           if ("serogroup".equals(res.getAnalyteExternalId())) {
+                               setResult((SampleSO)data, ana, res);
+                               break;
+                           }
                        }
                    }
-               }
+                }
+            } else if (((SampleSO)data).getActionBefore().contains(SampleSO.Action_Before.RESULT)) {
+                res = (ResultViewDO)sm.getObject(((SampleSO)data).getUid());
+                if (analysisId.equals(res.getAnalysisId()) && "serogroup".equals(res.getAnalyteExternalId()))
+                    setResult((SampleSO)data, ana, res);
             }
-        } else if (data.getActionBefore().contains(Action_Before.RESULT)) {
-            res = (ResultViewDO)data.getManager().getObject(data.getUid());
-            if (analysisId.equals(res.getAnalysisId()) && "serogroup".equals(res.getAnalyteExternalId()))
-                setResult(data, ana, res);
+        } else if (data instanceof WorksheetSO && ((WorksheetSO)data).getActionBefore().contains(WorksheetSO.Action_Before.RESULT)) {
+            wm = ((WorksheetSO)data).getManager();
+            wrVDO = (WorksheetResultViewDO)wm.getObject(((WorksheetSO)data).getUid());
+            setResult((WorksheetSO)data, wrVDO);
         }
 
         return data;
@@ -102,11 +117,11 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
      */
     private void setResult(SampleSO data, AnalysisViewDO ana, ResultViewDO resSero) {
         int i, j;
+        DictionaryDO dict;
         SampleManager1 sm;
         ResultViewDO res;
-        DictionaryDO dict;
-        TestManager tm;
         ResultFormatter rf;
+        TestManager tm;
 
         /*
          * find the values for the various analytes
@@ -125,14 +140,14 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         try {
-            dict = getDictionaryByValue(resSero.getValue());
+            dict = getDictionaryById(resSero.getValue());
             if (dict == null || dict.getRelatedEntryId() == null)
                 return;
 
             /*
              * get the value for result
              */
-            dict = getDictionaryByValue(dict.getRelatedEntryId().toString());
+            dict = getDictionaryById(dict.getRelatedEntryId());
             if (dict == null)
                 return;
 
@@ -154,13 +169,105 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
     }
 
     /**
+     * Sets the value of result based on the value of serogroup
+     */
+    private void setResult(WorksheetSO data, WorksheetResultViewDO res) {
+        Integer changedCol, resultCol, seroCol;
+        ArrayList<IdNameVO> worksheetColumns;
+        DictionaryDO dict;
+        WorksheetManager1 wm;
+
+        wm = data.getManager();
+        try {
+            worksheetColumns = proxy.getColumnNames(wm.getWorksheet().getFormatId());
+        } catch (Exception anyE) {
+            data.setStatus(Status.FAILED);
+            data.addException(new Exception("Error loading column names for format; " + anyE.getMessage()));
+            return;
+        }
+
+        if (data.getChanged() == null || data.getChanged().length() <= 0)
+            return;
+        
+        changedCol = Integer.parseInt(data.getChanged());
+        resultCol = -1;
+        seroCol = -1;
+        for (IdNameVO col : worksheetColumns) {
+            if ("final_value".equals(col.getName())) {
+                resultCol = col.getId() - 10;
+            } else if ("serogroup".equals(col.getName())) {
+                if (changedCol.equals(col.getId() + 1))
+                    seroCol = col.getId() - 10;
+                else
+                    return;
+            }
+        }
+        
+        if (resultCol == -1 || seroCol == -1) {
+            data.setStatus(Status.FAILED);
+            data.addException(new Exception("Invalid column format for this scriptlet."));
+            return;
+        }
+
+        try {
+            dict = getDictionaryByEntry(res.getValueAt(seroCol));
+            if (dict == null || dict.getRelatedEntryId() == null)
+                return;
+
+            /*
+             * get the value for result
+             */
+            dict = getDictionaryById(dict.getRelatedEntryId());
+            if (dict == null)
+                return;
+
+            /*
+             * set the result
+             */
+            res.setValueAt(resultCol, dict.getEntry());
+            proxy.log(Level.FINE, "Setting the value of result as: " + dict.getEntry(), null);
+            data.addRerun(String.valueOf(resultCol + 11));
+            data.addChangedUid(Constants.uid().getResult(res.getId()));
+        } catch (Exception e) {
+            data.setStatus(Status.FAILED);
+            data.addException(e);
+        }
+    }
+
+    /**
      * Returns the dictionary entry whose id's string equivalent is the passed
      * value
      */
-    private DictionaryDO getDictionaryByValue(String value) throws Exception {
-        if (value == null)
+    private DictionaryDO getDictionaryById(Integer id) throws Exception {
+        if (id == null)
             return null;
 
-        return proxy.getDictionaryById(Integer.valueOf(value));
+        return proxy.getDictionaryById(id);
+    }
+
+    /**
+     * Returns the dictionary entry whose id's string equivalent is the passed
+     * value
+     */
+    private DictionaryDO getDictionaryById(String id) throws Exception {
+        if (id == null)
+            return null;
+
+        return proxy.getDictionaryById(Integer.valueOf(id));
+    }
+
+    /**
+     * Returns the dictionary entry whose value is the passed value
+     */
+    private DictionaryViewDO getDictionaryByEntry(String entry) throws Exception {
+        ArrayList<DictionaryViewDO> dictList;
+        
+        if (entry != null) {
+            dictList = proxy.getDictionaryByEntry(entry);
+            if (dictList != null && dictList.size() > 0)
+                return dictList.get(0);
+        }
+        
+        return null;
     }
 }

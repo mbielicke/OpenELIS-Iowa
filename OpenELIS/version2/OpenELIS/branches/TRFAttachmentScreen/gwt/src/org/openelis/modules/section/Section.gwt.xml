@@ -26,7 +26,7 @@ UIRF Software License are applicable instead of those above.
 -->
 <module>
   <inherits name="org.openelis.modules.history.History"/>
-  <inherits name="org.openelis.modules.organization.OrganizationService"/>
+  <inherits name="org.openelis.modules.organization1.OrganizationService1"/>
   <inherits name="org.openelis.modules.note.NoteService"/>
   
   <entry-point class="org.openelis.modules.section.client.SectionEntry"/>

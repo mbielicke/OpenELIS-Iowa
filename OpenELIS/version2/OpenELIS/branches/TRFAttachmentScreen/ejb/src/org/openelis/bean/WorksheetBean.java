@@ -108,10 +108,16 @@ public class WorksheetBean {
         Query query;
         SystemUserVO user;
         WorksheetViewDO worksheet;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Worksheet.FetchByIds");
-        query.setParameter("ids", ids);
-        data = DataBaseUtil.toArrayList(query.getResultList());
+        data = new ArrayList<WorksheetViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            data.addAll(query.getResultList());
+        }
+        
         for (i = 0; i < data.size(); i++) {
             worksheet = data.get(i);
             if (worksheet.getSystemUserId() != null) {
@@ -156,23 +162,29 @@ public class WorksheetBean {
     public ArrayList<AnalysisWorksheetVO> fetchByAnalysisIds(ArrayList<Integer> ids) throws Exception {
         int i;
         Query query;
-        ArrayList<AnalysisWorksheetVO> data;
-        SystemUserVO user;
-        AnalysisWorksheetVO worksheet;
+        SystemUserVO u;
+        AnalysisWorksheetVO w;
+        List<AnalysisWorksheetVO> ws;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Worksheet.FetchByAnalysisIds");
-        query.setParameter("ids", ids);
-        data = (ArrayList<AnalysisWorksheetVO>)query.getResultList();
-        for (i = 0; i < data.size(); i++) {
-            worksheet = data.get(i);
-            if (worksheet.getSystemUserId() != null) {
-                user = userCache.getSystemUser(worksheet.getSystemUserId());
-                if (user != null)
-                    worksheet.setSystemUser(user.getLoginName());
+        ws = new ArrayList<AnalysisWorksheetVO>(); 
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            ws.addAll(query.getResultList());
+        }
+
+        for (i = 0; i < ws.size(); i++) {
+            w = ws.get(i);
+            if (w.getSystemUserId() != null) {
+                u = userCache.getSystemUser(w.getSystemUserId());
+                if (u != null)
+                    w.setSystemUser(u.getLoginName());
             }
         }
 
-        return data;
+        return DataBaseUtil.toArrayList(ws);
     }
 
     @SuppressWarnings({"unchecked", "static-access"})

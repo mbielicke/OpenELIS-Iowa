@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -51,11 +52,18 @@ public class SamplePTBean {
     
     public ArrayList<SamplePTDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
+        List<SamplePTDO> p;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SamplePT.FetchBySampleIds");
-        query.setParameter("ids", sampleIds);
+        p = new ArrayList<SamplePTDO>();        
+        r = DataBaseUtil.createSubsetRange(sampleIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
+            p.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(p);
     }
     
     public SamplePTDO add(SamplePTDO data) throws Exception {

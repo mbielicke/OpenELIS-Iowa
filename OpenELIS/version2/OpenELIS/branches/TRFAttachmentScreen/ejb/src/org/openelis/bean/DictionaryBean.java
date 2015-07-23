@@ -55,16 +55,15 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class DictionaryBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager        manager;
+    private EntityManager       manager;
 
     @EJB
-    private DictionaryCacheBean dictCache;        
+    private DictionaryCacheBean dictCache;
 
-    private static CategoryMeta  meta = new CategoryMeta();
+    private static CategoryMeta meta = new CategoryMeta();
 
     public ArrayList<DictionaryViewDO> fetchByCategoryId(Integer id) throws Exception {
         List<DictionaryViewDO> list;
@@ -78,6 +77,15 @@ public class DictionaryBean {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
+    }
+
+    public ArrayList<DictionaryViewDO> fetchByCategoryIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Dictionary.FetchByCategoryIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception {
@@ -116,14 +124,21 @@ public class DictionaryBean {
 
         return data;
     }
-    
-    public ArrayList<DictionaryViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+
+    public ArrayList<DictionaryViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
+        List<DictionaryViewDO> d;
+        ArrayList<Integer> r;
 
         query = manager.createNamedQuery("Dictionary.FetchByIds");
-        query.setParameter("ids", ids);
+        d = new ArrayList<DictionaryViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            d.addAll(query.getResultList());
+        }
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(d);
     }
 
     public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception {
@@ -174,7 +189,7 @@ public class DictionaryBean {
 
         query = manager.createNamedQuery("Dictionary.FetchBySystemNames");
         query.setParameter("names", systemNames);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
@@ -224,17 +239,17 @@ public class DictionaryBean {
 
     public void delete(DictionaryDO data) throws Exception {
         Dictionary entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Dictionary.class, data.getId());
-        
+
         if (entity != null) {
             dictCache.evict(entity.getId());
             dictCache.evict(entity.getSystemName());
             manager.remove(entity);
         }
     }
-    
+
     public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception {
         CategoryCacheVO catVO;
 

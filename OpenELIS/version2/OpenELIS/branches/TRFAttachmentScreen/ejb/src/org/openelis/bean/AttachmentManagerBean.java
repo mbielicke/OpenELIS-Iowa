@@ -48,7 +48,6 @@ import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.DataBaseUtil;
@@ -85,7 +84,7 @@ public class AttachmentManagerBean {
 
     @EJB
     private SectionCacheBean    sectionCache;
-    
+
     @EJB
     private WorksheetBean       worksheet;
 
@@ -106,12 +105,27 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Returns attachment managers for specified primary ids. The returned
-     * managers are sorted in descending order of the ids because this method
-     * can be called for the front-end and there the most recent attachments are
-     * shown first.
+     * Returns attachment managers for specified primary ids
      */
     public ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds) throws Exception {
+        return fetchByIds(attachmentIds, false);
+    }
+
+    /**
+     * Returns attachment managers for specified primary ids. The returned
+     * managers are sorted in descending order of the ids.
+     */
+    public ArrayList<AttachmentManager> fetchByIdsDescending(ArrayList<Integer> attachmentIds) throws Exception {
+        return fetchByIds(attachmentIds, true);
+    }
+
+    /**
+     * Returns attachment managers for specified primary ids. If the passed flag
+     * is true, the returned managers are sorted in descending order of the ids;
+     * otherwise they're sorted in ascending order.
+     */
+    private ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds,
+                                                    boolean descending) throws Exception {
         AttachmentManager am;
         SampleDO s;
         WorksheetViewDO w;
@@ -136,9 +150,10 @@ public class AttachmentManagerBean {
          * current method needs to return the managers sorted in descending
          * order as explained at the top
          */
-        attachments = attachment.fetchByIdsDescending(attachmentIds);
-        if (attachments.size() < 1)
-            return ams;
+        if (descending)
+            attachments = attachment.fetchByIdsDescending(attachmentIds);
+        else
+            attachments = attachment.fetchByIds(attachmentIds);
 
         /*
          * build level 1, everything is based on attachment ids
@@ -156,7 +171,7 @@ public class AttachmentManagerBean {
         }
 
         sids = new ArrayList<Integer>();
-        wids = new ArrayList<Integer>(); 
+        wids = new ArrayList<Integer>();
         for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(ids)) {
             am = map.get(data.getAttachmentId());
             addItem(am, data);
@@ -169,13 +184,13 @@ public class AttachmentManagerBean {
         /*
          * fetch all the samples, worksheets linked to the attachments
          */
-        smap = new HashMap<Integer, SampleDO>();        
+        smap = new HashMap<Integer, SampleDO>();
         if (sids.size() > 0) {
             samples = sample.fetchByIds(sids);
             for (SampleDO data : samples)
                 smap.put(data.getId(), data);
         }
-        
+
         wmap = new HashMap<Integer, WorksheetViewDO>();
         if (wids.size() > 0) {
             worksheets = worksheet.fetchByIds(wids);
@@ -224,10 +239,7 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Returns attachment managers based on the specified description. The
-     * returned managers are sorted in descending order of the ids because this
-     * method can be called from the front-end and there the most recent
-     * attachments are shown first.
+     * Returns attachment managers based on the specified description.
      */
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first,
                                                                      int max) throws Exception {
@@ -260,19 +272,6 @@ public class AttachmentManagerBean {
     public ArrayList<AttachmentManager> fetchForUpdate(ArrayList<Integer> attachmentIds) throws Exception {
         lock.lock(Constants.table().ATTACHMENT, attachmentIds);
         return fetchByIds(attachmentIds);
-    }
-
-    /**
-     * Returns the manager for the passed id if the attachment has either been
-     * attached at least once or if it can be locked
-     */
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
-        AttachmentManager am;
-
-        am = fetchById(attachmentId);
-        if (getItems(am) != null)
-            return am;
-        return fetchForUpdate(attachmentId);
     }
 
     /**

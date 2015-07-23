@@ -140,6 +140,7 @@
                 <w:Menu display="{msg.summary}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="sampleInhouseReport" display="{msg.sampleInhouseReport}" />
                   <w:MenuItem enabled="false" ui:field="volumeReport" display="{msg.volumeReport}" />
+                  <w:MenuItem enabled="false" ui:field="abnormalsReport" display="{msg.abnormals_abnormalsReport}" />
                   <w:MenuItem enabled="false" ui:field="toDoAnalyteReport" display="{msg.toDoAnalyteReport}" />
                   <w:MenuItem enabled="false" ui:field="sampleDataExport" display="{msg.sampleDataExport}" />
                   <w:MenuItem enabled="false" ui:field="QASummaryReport" display="{msg.QASummaryReport}" />
@@ -158,6 +159,7 @@
                 </w:Menu>
                 <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />
+                  <w:MenuItem enabled="false" ui:field="chlGcToCDCExport" display="CHL-GC to CDC Export" />
                 </w:Menu>
               </w:Menu>
               <w:Menu label="{msg.maintenance}" ui:field="maintenanceMenu">

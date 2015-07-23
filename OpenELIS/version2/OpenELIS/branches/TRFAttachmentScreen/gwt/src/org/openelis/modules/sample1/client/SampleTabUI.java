@@ -1,7 +1,10 @@
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -21,7 +24,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
-import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -83,7 +86,7 @@ public class SampleTabUI extends Screen {
     protected TextBox<Integer>       accessionNumber;
 
     @UiField
-    protected Calendar               collectionDate, collectionTime, receivedDate;
+    protected Calendar               collectionDate, collectionTime, receivedDate, releasedDate;
 
     @UiField
     protected TextBox<String>        clientReference, orderId;
@@ -316,9 +319,24 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? organizationTable : status;
+                                 return forward ? releasedDate : status;
                              }
                          });
+        
+        addScreenHandler(releasedDate, SampleMeta.getReleasedDate(), new ScreenHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                releasedDate.setValue(getReleasedDate());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                releasedDate.setEnabled(isState(QUERY));
+                releasedDate.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? organizationTable : clientReference;
+            }
+        });
 
         addScreenHandler(organizationTable,
                          "organizationTable",
@@ -492,8 +510,7 @@ public class SampleTabUI extends Screen {
 
                 parentScreen.setBusy();
                 try {
-                    list = OrganizationService.get()
-                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(5);
@@ -1067,6 +1084,15 @@ public class SampleTabUI extends Screen {
      */
     private void setClientReference(String clientReference) {
         manager.getSample().setClientReference(clientReference);
+    }
+    
+    /**
+     * returns the released date or null if the manager is null
+     */
+    private Datetime getReleasedDate() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getReleasedDate();
     }
 
     private ArrayList<Row> getOrganizationTableModel() {

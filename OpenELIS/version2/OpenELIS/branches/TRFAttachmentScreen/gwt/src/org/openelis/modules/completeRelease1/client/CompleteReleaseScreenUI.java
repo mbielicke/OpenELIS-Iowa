@@ -104,6 +104,7 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -172,9 +173,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected MenuItem                         unreleaseAnalysis, queryByWorksheet, historySample,
-                    historySampleSpecific, historySampleProject, historySampleOrganization,
-                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+                    historySampleSpecific, historyPatient, historyPatientRelation,
+                    historySampleProject, historySampleOrganization, historySampleItem,
+                    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+                    historyAnalysisQA, historyAuxData;
 
     @UiField
     protected CheckMenuItem                    previewFinalReport;
@@ -205,7 +207,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected ClinicalTabUI                    clinicalTab;
-    
+
     @UiField(provided = true)
     protected PTTabUI                          ptTab;
 
@@ -243,7 +245,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1> managers;
 
-    protected boolean                          isBusy;
+    protected boolean                          isBusy, hasEnvScriptlet, hasNeonatalScriptlet,
+                    hasSDWISScriptlet;
 
     protected ModulePermission                 userPermission;
 
@@ -277,24 +280,26 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.SINGLERESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT},
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT,
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER    },
 
                     resultElements[] = {SampleManager1.Load.ANALYSISUSER,
                     SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
                     SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
                     SampleManager1.Load.QA, SampleManager1.Load.RESULT,
                     SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET,
-                    SampleManager1.Load.ATTACHMENT};
+                    SampleManager1.Load.ATTACHMENT, SampleManager1.Load.EORDER,
+                    SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM,
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
-        ATTACHMENT, BLANK
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT, BLANK
     };
 
-    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_ia_scriptlet_1",
-                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_ia_scriptlet_1",
-                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_ia_scriptlet_1";
+    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
+                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_scriptlet",
+                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_scriptlet";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -430,6 +435,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         initialize();
         manager = null;
         managers = null;
+        hasEnvScriptlet = true;
+        hasSDWISScriptlet = true;
+        hasNeonatalScriptlet = true;
         showTabs(Tabs.BLANK);
         setData();
         setState(DEFAULT);
@@ -595,6 +603,38 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.clinical(manager);
                 else if (Constants.domain().PT.equals(domain))
                     SampleHistoryUtility1.pt(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                enablePatientHistory();
+            }
+        });
+
+        historyPatient.addCommand(new Command() {
+            @Override
+            public void execute() {
+                String domain;
+
+                domain = manager != null ? manager.getSample().getDomain() : null;
+                if (Constants.domain().CLINICAL.equals(domain))
+                    SampleHistoryUtility1.clinicalPatient(manager);
+                else if (Constants.domain().NEONATAL.equals(domain))
+                    SampleHistoryUtility1.neonatalPatient(manager);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                enablePatientRelationHistory();
+            }
+        });
+
+        historyPatientRelation.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatalNextOfKin(manager);
             }
         });
 
@@ -779,6 +819,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                 setData();
                 refreshTabs(data, false);
+                enablePatientHistory();
+                enablePatientRelationHistory();
             }
         });
 
@@ -907,7 +949,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * querying by this tab is not allowed on this screen
          */
         clinicalTab.setCanQuery(false);
-        
+
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 ptTab.onDataChange();
@@ -1595,7 +1637,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 break;
             }
         }
-        
+
         /*
          * make sure that only the samples belonging to the domain queried by
          * are returned by the query
@@ -2190,7 +2232,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         Row selRow;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -2305,28 +2347,102 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     /**
      * Returns the id of the scriptlet for the selected sample's domain; returns
-     * null if the domain is quick entry
+     * null if a scriptlet is not defined for the domain
      */
     private Integer getDomainScriptlet() throws Exception {
         SystemVariableDO data;
 
+        data = null;
+        /*
+         * add the scriptlet for the domain, which is the value of this system
+         * variable; don't try to look up the system variable again if it's not
+         * found the first time because the scriptlet is optional
+         */
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
-            if (envScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
-                envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasEnvScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasEnvScriptlet = false;
             }
             return envScriptletId;
         } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
-            if (sdwisScriptletId == null) {
-                data = SystemVariableService.get()
-                                            .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
-                sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasSDWISScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasSDWISScriptlet = false;
             }
             return sdwisScriptletId;
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
-            if (neonatalScriptletId == null) {
-                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
-                neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            if (hasNeonatalScriptlet) {
+                try {
+                    data = SystemVariableService.get()
+                                                .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                /*
+                 * if the system variable was found, its value must point to an
+                 * existing dictionary entry; so if an exception is thrown on
+                 * trying to look up the dictionary, the user must be informed
+                 * of it even if it's a NotFoundException
+                 */
+                if (data != null) {
+                    try {
+                        neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+                hasNeonatalScriptlet = false;
             }
             return neonatalScriptletId;
         }
@@ -2430,7 +2546,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         }
     }
-    
+
     /**
      * Returns a string containing all passed domains, separated by the wild
      * card character for "OR"
@@ -2700,6 +2816,31 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
+    }
+    
+
+    /**
+     * Enables or disables the menu item for patient history, based on the
+     * domain of the sample and the state
+     */
+    private void enablePatientHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatient.setEnabled(isState(DISPLAY) &&
+                                  (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
+    }
+    
+    /**
+     * Enables or disables the menu item for patient relation history, based on
+     * the domain of the sample and the state
+     */
+    private void enablePatientRelationHistory() {
+        String domain;
+
+        domain = manager != null ? manager.getSample().getDomain() : null;
+        historyPatientRelation.setEnabled(isState(DISPLAY) &&
+                                          (Constants.domain().NEONATAL.equals(domain)));
     }
 
     /**
@@ -3301,9 +3442,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             addAuxScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while adding the tests
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3311,10 +3450,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runDomainScriptlet(Action_Before.ANALYSIS);
             } else {
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
+                 */
                 showTests(ret);
             }
         } catch (Exception e) {
@@ -3361,9 +3506,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3371,12 +3514,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
             }
+
+            if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
+            else
+                /*
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
+                 */
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
