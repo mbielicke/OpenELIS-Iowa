@@ -137,7 +137,6 @@ public class EmailNotificationScreen extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
 
         for (OrganizationViewDO data : organizationList)
             model.add(new Item<Integer>(data.getId(), data.getName()));
@@ -145,7 +144,6 @@ public class EmailNotificationScreen extends Screen {
         ui.getOrg().setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         for (DictionaryDO data : filterList) {
             smodel.add(new Item<String>(data.getCode(), data.getEntry()));
         }

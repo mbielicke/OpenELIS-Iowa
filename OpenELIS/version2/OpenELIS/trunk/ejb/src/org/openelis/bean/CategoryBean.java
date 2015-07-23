@@ -44,7 +44,7 @@ import org.openelis.entity.Category;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -194,19 +194,22 @@ public class CategoryBean {
 
     public void validate(CategoryDO data) throws Exception {
         ValidationErrorsList list;
-        Integer catId;
-        String sysName, name;
+        Integer catId, cid;
+        String sysName;
         CategoryDO category;
 
         list = new ValidationErrorsList();
 
+        cid = data.getId();
+        if (cid == null)
+            cid = 0;
+
         sysName = data.getSystemName();
-        name = data.getName();
         catId = null;
 
         if (DataBaseUtil.isEmpty(sysName)) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             CategoryMeta.getSystemName()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .dictionary_systemNameRequiredException(cid)));
         } else {
             try {
                 category = fetchBySystemName(sysName);
@@ -214,16 +217,13 @@ public class CategoryBean {
             } catch (NotFoundException ignE) {
                 // do nothing
             }
-
             if ( !DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
-                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
-                                                 CategoryMeta.getSystemName()));
+                list.add(new FormErrorException(Messages.get().dictionary_uniqueException(cid)));
             }
         }
 
-        if (DataBaseUtil.isEmpty(name))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             CategoryMeta.getName()));
+        if (DataBaseUtil.isEmpty(data.getName()))
+            list.add(new FormErrorException(Messages.get().dictionary_nameRequiredException(cid)));
 
         if (list.size() > 0)
             throw list;

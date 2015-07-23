@@ -38,12 +38,10 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.entity.AuxField;
-import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -174,12 +172,17 @@ public class AuxFieldBean {
     }
 
     public void validate(AuxFieldDO data) throws Exception {
+        Integer gid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+
+        gid = data.getAuxFieldGroupId();
+        if (gid == null)
+            gid = 0;
+
         if (DataBaseUtil.isEmpty(data.getAnalyteId())) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             AuxFieldGroupMeta.getFieldAnalyteName()));
+            list.add(new FormErrorException(Messages.get().aux_analyteRequiredException(gid)));
             throw list;
         }
     }

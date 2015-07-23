@@ -45,7 +45,7 @@ import org.openelis.entity.Organization;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -178,7 +178,7 @@ public class OrganizationBean {
     public OrganizationDO update(OrganizationDO data) throws Exception {
         Organization entity;
 
-        if (!data.isChanged() && !data.getAddress().isChanged())
+        if ( !data.isChanged() && !data.getAddress().isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -194,30 +194,35 @@ public class OrganizationBean {
     }
 
     public void validate(OrganizationDO data) throws Exception {
+        Integer oid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+
+        oid = data.getId();
+        if (oid == null)
+            oid = 0;
+
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrganizationMeta.getName()));                    
+            list.add(new FormErrorException(Messages.get().organization_nameRequiredException(oid)));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getAddressStreetAddress()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .organization_addressRequiredException(oid)));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getAddressCity()));
+            list.add(new FormErrorException(Messages.get().organization_cityRequiredException(oid)));
 
         if (list.size() > 0)
             throw list;
     }
-    
+
     public boolean hasDontPrintFinalReport(Integer id) throws Exception {
         try {
             organizationParameter.fetchByOrgIdAndDictSystemName(id, "org_no_finalreport");
             return true;
         } catch (NotFoundException e) {
             return false;
-        }        
+        }
     }
 }

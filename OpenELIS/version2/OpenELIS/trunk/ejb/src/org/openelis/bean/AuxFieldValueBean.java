@@ -45,10 +45,9 @@ import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.AuxFieldValue;
-import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -243,25 +242,23 @@ public class AuxFieldValueBean {
             manager.remove(entity);
     }
 
+    // TODO
     public void validate(AuxFieldValueDO data) throws Exception {
         ValidationErrorsList list;
         Integer typeId;
         String value;
 
         list = new ValidationErrorsList();
-
         value = data.getValue();
         typeId = data.getTypeId();
 
         if (typeId == null)
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             AuxFieldGroupMeta.getFieldValueTypeId()));
+            list.add(new FormErrorException(Messages.get().aux_typeRequiredException()));
 
         if (value == null &&
             (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY,
                                                                                                     typeId))) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             AuxFieldGroupMeta.getFieldValueValue()));
+            list.add(new FormErrorException(Messages.get().aux_valueRequiredException()));
         } else if (value != null &&
                    (DataBaseUtil.isSame(Constants.dictionary().AUX_DATE_TIME, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_TIME, typeId) ||
@@ -269,8 +266,7 @@ public class AuxFieldValueBean {
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_LOWER, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_UPPER, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_MIXED,
                                                                                                                typeId))) {
-            list.add(new FieldErrorException(Messages.get().valuePresentForTypeException(),
-                                             AuxFieldGroupMeta.getFieldValueValue()));
+            list.add(new FormErrorException(Messages.get().aux_valuePresentForTypeException(value)));
         }
 
         if (list.size() > 0)

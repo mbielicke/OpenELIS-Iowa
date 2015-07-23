@@ -256,7 +256,6 @@ public class ContactTabUI extends Screen {
         });
 
         imodel = new ArrayList<Item<Integer>>();
-        imodel.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("contact_type");
         for (DictionaryDO d : list) {
             irow = new Item<Integer>(d.getId(), d.getEntry());
@@ -266,7 +265,6 @@ public class ContactTabUI extends Screen {
         type.setModel(imodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             srow = new Item<String>(d.getEntry(), d.getEntry());
@@ -276,7 +274,6 @@ public class ContactTabUI extends Screen {
         stateDrop.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             srow = new Item<String>(d.getEntry(), d.getEntry());

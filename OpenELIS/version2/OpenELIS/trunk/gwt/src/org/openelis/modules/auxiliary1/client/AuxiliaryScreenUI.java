@@ -881,7 +881,6 @@ public class AuxiliaryScreenUI extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("unit_of_measure");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -892,7 +891,6 @@ public class AuxiliaryScreenUI extends Screen {
         unitId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("scriptlet_aux_field");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -903,7 +901,6 @@ public class AuxiliaryScreenUI extends Screen {
         scriptletId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("aux_field_value_type");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
