@@ -83,6 +83,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.report.client.WorksheetLabelReportScreen;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
@@ -137,7 +138,6 @@ import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
-import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
