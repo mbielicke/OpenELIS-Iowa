@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,61 +119,63 @@ import org.w3c.dom.Node;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DataExchangeXMLMapperBean {
     @EJB
-    private UserCacheBean             systemUserCache;
+    private UserCacheBean                systemUserCache;
 
     @EJB
-    private DictionaryCacheBean       dictionaryCache;
+    private DictionaryCacheBean          dictionaryCache;
 
     @EJB
-    private MethodBean                method;
+    private MethodBean                   method;
 
     @EJB
-    private ProjectBean               project;
+    private ProjectBean                  project;
 
     @EJB
-    private OrganizationBean          organization;
+    private OrganizationBean             organization;
 
     @EJB
-    private PWSBean                   pws;
+    private PWSBean                      pws;
 
     @EJB
-    private QaEventBean               qaevent;
+    private QaEventBean                  qaevent;
 
     @EJB
-    private TestBean                  test;
+    private TestBean                     test;
 
     @EJB
-    private AnalyteBean               analyte;
+    private AnalyteBean                  analyte;
 
     @EJB
-    private ExchangeExternalTermBean  exchangeExternalTerm;
+    private ExchangeExternalTermBean     exchangeExternalTerm;
 
     @EJB
-    private TestTrailerBean           testTrailer;
+    private TestTrailerBean              testTrailer;
 
     @EJB
-    private SectionCacheBean          sectionCache;
+    private SectionCacheBean             sectionCache;
 
     @EJB
-    private PanelBean                 panel;
+    private PanelBean                    panel;
 
     @EJB
-    private TestResultBean            testResult;
+    private TestResultBean               testResult;
 
     @EJB
-    private OrganizationParameterBean organizationParameter;
+    private OrganizationParameterBean    organizationParameter;
 
-    private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
-                    analytes, projects, organizations, qas, trailers, sections, panels;
+    private HashSet<Integer>             users, dicts, tests, testAnalytes, testResults, methods,
+                    analytes, projects, organizations, qas, trailers, sections;
 
-    private HashMap<String, Integer>  resultRepeat;
+    private HashMap<String, Integer>     resultRepeat;
 
-    private static SimpleDateFormat   dateFormat, timeFormat;
+    private HashMap<Integer, Datetime[]> panels;
 
-    private static Integer            ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
+    private static SimpleDateFormat      dateFormat, timeFormat;
+
+    private static Integer               ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
                     ORG_EPARTNER_AGGR;
 
-    private static final Logger       log = Logger.getLogger("openelis");
+    private static final Logger          log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -208,7 +211,8 @@ public class DataExchangeXMLMapperBean {
      * each segment can be used to nest the segments.
      */
 
-    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Date releasedStart, Date releasedEnd, Object... optional) throws Exception {
+    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Date releasedStart,
+                           Date releasedEnd, Object... optional) throws Exception {
         Boolean sampleOverridden, showValue;
         Document doc;
         Element root, header, elm, elm1;
@@ -238,7 +242,7 @@ public class DataExchangeXMLMapperBean {
         root.appendChild(header);
 
         /*
-         * either export all the analyses or just the specified tests; 
+         * either export all the analyses or just the specified tests;
          */
         for (QueryData field : cm.getExchangeCriteria().getFields()) {
             if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
@@ -344,7 +348,8 @@ public class DataExchangeXMLMapperBean {
          * to the header
          */
         if (reportTo != null) {
-            log.log(Level.FINE, "Fetching organization parameters for org id: "+reportTo.getOrganizationId());
+            log.log(Level.FINE, "Fetching organization parameters for org id: " +
+                                reportTo.getOrganizationId());
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
                 if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
@@ -404,11 +409,11 @@ public class DataExchangeXMLMapperBean {
                     ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                     continue;
                 /*
-                 * don't want all the analysis, just those that were released in the run
-                 * window. 
+                 * don't want all the analysis, just those that were released in
+                 * the run window.
                  */
                 if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
-                    if (!Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()) ||
+                    if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()) ||
                         (releasedStart != null && a.getReleasedDate().before(releasedStart)) ||
                         (releasedEnd != null && a.getReleasedDate().after(releasedEnd)))
                         continue;
@@ -499,7 +504,8 @@ public class DataExchangeXMLMapperBean {
             }
         }
 
-        log.log(Level.FINE, "Fetching various referenced records e.g. tests, projects, qa events etc.");
+        log.log(Level.FINE,
+                "Fetching various referenced records e.g. tests, projects, qa events etc.");
         /*
          * lookup and output various referenced objects; order is important
          */
@@ -539,7 +545,7 @@ public class DataExchangeXMLMapperBean {
         }
 
         if (panels != null) {
-            for (PanelDO p : panel.fetchByIds(DataBaseUtil.toArrayList(panels)))
+            for (PanelDO p : panel.fetchByIds(DataBaseUtil.toArrayList(panels.keySet())))
                 root.appendChild(toXML(doc, p));
         }
 
@@ -623,7 +629,11 @@ public class DataExchangeXMLMapperBean {
             }
 
             if (panels != null && panels.size() > 0) {
-                elm = toXML(Constants.table().PANEL, panels, profiles, "panel_translations", doc);
+                elm = toXML(Constants.table().PANEL,
+                            panels.keySet(),
+                            profiles,
+                            "panel_translations",
+                            doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
@@ -955,7 +965,7 @@ public class DataExchangeXMLMapperBean {
         addTest(analysis.getTestId());
         addMethod(analysis.getMethodId());
         addSection(analysis.getSectionId());
-        addPanel(analysis.getPanelId());
+        addPanel(analysis.getPanelId(), analysis.getReleasedDate());
         addDictionary(analysis.getTypeId());
         addDictionary(analysis.getUnitOfMeasureId());
         addDictionary(analysis.getStatusId());
@@ -1034,6 +1044,8 @@ public class DataExchangeXMLMapperBean {
 
         elm = doc.createElement("panel");
         setAttribute(elm, "id", panel.getId());
+        setAttribute(elm, "earliest_released_date", panels.get(panel.getId())[0]);
+        setAttribute(elm, "latest_released_date", panels.get(panel.getId())[1]);
         setText(doc, elm, "name", panel.getName());
         setText(doc, elm, "description", panel.getDescription());
 
@@ -1394,7 +1406,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    private Element toXML(int referenceTable, HashSet<Integer> referenceIds,
+    private Element toXML(int referenceTable, Set<Integer> referenceIds,
                           ArrayList<Integer> profiles, String nodeName, Document doc) throws Exception {
         Element elm;
         ArrayList<ExchangeExternalTermViewDO> terms;
@@ -1487,11 +1499,22 @@ public class DataExchangeXMLMapperBean {
         }
     }
 
-    private void addPanel(Integer id) {
+    private void addPanel(Integer id, Datetime released) {
+        Datetime minmax[];
         if (id != null) {
             if (panels == null)
-                panels = new HashSet<Integer>();
-            panels.add(id);
+                panels = new HashMap<Integer, Datetime[]>();
+            minmax = panels.get(id);
+            if (minmax == null) {
+                minmax = new Datetime[2];
+                panels.put(id, minmax);
+            }
+            if (released != null) {
+                if (minmax[0] == null || released.before(minmax[0]))
+                    minmax[0] = released;
+                if (minmax[1] == null || released.after(minmax[1]))
+                    minmax[1] = released;
+            }
         }
     }
 
