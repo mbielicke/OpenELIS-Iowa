@@ -159,7 +159,7 @@
 			use="required" />
 		<xs:attribute name="sample_category_id" type="xs:integer"
 			use="required" />
-        <xs:attribute name="priority" type="xs:integer" />
+		<xs:attribute name="priority" type="xs:integer" />
 	</xs:complexType>
 
 	<xs:complexType name="pws">
@@ -428,7 +428,7 @@
 		<xs:attribute name="id" type="xs:integer" use="required" />
 		<xs:attribute name="parent_section_id" type="xs:integer" />
 		<xs:attribute name="is_external" type="xs:string" use="required" />
-        <xs:attribute name="organization_id" type="xs:integer" />
+		<xs:attribute name="organization_id" type="xs:integer" />
 	</xs:complexType>
 
 	<xs:complexType name="panel">
@@ -438,6 +438,8 @@
 			<xs:element name="translation" minOccurs="0" type="translation" />
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:integer" use="required" />
+		<xs:attribute name="earliest_released_date" type="xs:dateTime" />
+		<xs:attribute name="latest_released_date" type="xs:dateTime" />
 	</xs:complexType>
 
 	<xs:complexType name="testTrailer">
@@ -494,13 +496,15 @@
 		</xs:sequence>
 		<xs:attribute name="id" use="required" type="xs:integer" />
 		<xs:attribute name="analysis_id" type="xs:integer" use="required" />
-		<xs:attribute name="test_analyte_id" type="xs:integer" use="required" />
+		<xs:attribute name="test_analyte_id" type="xs:integer"
+			use="required" />
 		<xs:attribute name="test_result_id" type="xs:integer" />
 		<xs:attribute name="is_column" type="xs:string" use="required" />
 		<xs:attribute name="sort_order" type="xs:integer" use="required" />
 		<xs:attribute name="is_reportable" type="xs:string" use="required" />
-        <xs:attribute name="analyte_id" type="xs:integer" use="required" />
-        <xs:attribute name="analyte_reportable_repeat" type="xs:integer" use="required" />
+		<xs:attribute name="analyte_id" type="xs:integer" use="required" />
+		<xs:attribute name="analyte_reportable_repeat" type="xs:integer"
+			use="required" />
 		<xs:attribute name="type_id" type="xs:integer" />
 	</xs:complexType>
 
