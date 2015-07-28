@@ -29,10 +29,17 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 
@@ -45,11 +52,15 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 @SecurityDomain("openelis")
 public class LockCacheBean {
 
-    private int                     maxLocks = 0;
+    private int                                   maxLocks     = 0;
 
-    private HashMap<Lock.Key, Lock> locks    = new HashMap<Lock.Key, Lock>();
+    private HashMap<Lock.Key, Lock>               locks        = new HashMap<Lock.Key, Lock>();
+    private HashMap<Transaction, TransactionSync> transactions = new HashMap<Transaction, TransactionSync>();
 
-    private static final Logger     log      = Logger.getLogger("openelis");
+    private static final Logger                   log          = Logger.getLogger("openelis");
+    
+    @Resource(lookup="java:/TransactionManager")
+    private TransactionManager transactionManager;
 
     /**
      * Returns a lock a record specified by key
@@ -66,12 +77,14 @@ public class LockCacheBean {
      * Adds a lock record
      */
     @javax.ejb.Lock(LockType.WRITE)
-    public void add(Lock lock) {
+    public void add(Lock lock) throws Exception {
         locks.put(lock.key, lock);
-        maxLocks = Math.max(maxLocks, locks.size());
-        log.fine("Added - " + lock.toString());
-    }
+        getSync().add(lock.key);
 
+        maxLocks = Math.max(maxLocks, locks.size());
+        log.info("Added - "+lock.toString());
+    }
+    
     /**
      * Removes a lock record
      */
@@ -82,25 +95,6 @@ public class LockCacheBean {
         lock = locks.get(key);
         locks.remove(key);
         log.fine("Removed - " + lock.toString());
-    }
-
-    /**
-     * Removes all the locks for specified transaction
-     */
-    @javax.ejb.Lock(LockType.WRITE)
-    public void rollback(int transaction) {
-        ArrayList<Lock> userLocks;
-
-        userLocks = new ArrayList<Lock>();
-        for (Lock l : locks.values()) {
-            if (l.transaction == transaction) {
-                userLocks.add(l);
-                log.fine("Rollback lock " + l.toString());
-            }
-        }
-
-        for (Lock l : userLocks)
-            locks.remove(l.key);
     }
 
     /**
@@ -168,6 +162,28 @@ public class LockCacheBean {
         for (Lock l : userLocks)
             locks.remove(l.key);
     }
+    
+    /*
+     * Returns a listening handler for current transaction
+     */
+    private TransactionSync getSync() throws Exception {
+        TransactionSync sync;
+        Transaction transaction;
+
+        try {
+            transaction = transactionManager.getTransaction();
+            sync = transactions.get(transaction);
+            if (sync == null) {
+                sync = new TransactionSync(transaction);
+                transaction.registerSynchronization(sync);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        }
+
+        return sync;
+    }
 
     /**
      * A simple class to manage lock records. The class is used internally by
@@ -178,19 +194,17 @@ public class LockCacheBean {
         protected Key  key;
         protected long expires;
         protected String username, sessionId;
-        protected int    transaction;
 
         public Lock(Integer tableId, Integer id) {
             this.key = new Key(tableId, id);
         }
 
         public Lock(Integer tableId, Integer id, String username, long expires,
-                    String sessionId, int transaction) {
+                    String sessionId) {
             this(tableId, id);
             this.username = username;
             this.expires = expires;
             this.sessionId = sessionId;
-            this.transaction = transaction;
         }
 
         @Override
@@ -218,8 +232,6 @@ public class LockCacheBean {
             sb.append(username);
             sb.append(":");
             sb.append(sessionId);
-            sb.append(":");
-            sb.append(transaction);
             return sb.toString();
         }
 
@@ -250,6 +262,38 @@ public class LockCacheBean {
                 }
                 return false;
             }
+        }
+    }
+    
+    /*
+     * A simple class to manage locks for transactions. The class is
+     * registered to the transaction manager.
+     */
+    private class TransactionSync implements Synchronization {
+        List<Lock.Key> locks;
+        Transaction    transaction;
+
+        public TransactionSync(Transaction transaction) {
+            this.transaction = transaction;
+            locks = new ArrayList<Lock.Key>();
+        }
+
+        public void add(Lock.Key lock) {
+            locks.add(lock);
+        }
+
+        @Override
+        public void beforeCompletion() {
+
+        }
+
+        @Override
+        public void afterCompletion(int status) {
+            if (Status.STATUS_COMMITTED != status) {
+                for (Lock.Key key : locks)
+                    remove(key);
+            }
+            transactions.remove(transaction);
         }
     }
 }
