@@ -268,7 +268,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? lastName : middleName;
+                return forward ? lastName : source;
             }
         });
 
@@ -287,7 +287,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? typeId : id;
+                return forward ? firstName : id;
             }
         });
 
@@ -306,7 +306,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? firstName : lastName;
+                return forward ? npi : middleName;
             }
         });
 
@@ -325,7 +325,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? npi : typeId;
+                return forward ? middleName : lastName;
             }
         });
 
@@ -344,7 +344,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? middleName : firstName;
+                return forward ? source : typeId;
             }
         });
 
@@ -363,7 +363,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? source : npi;
+                return forward ? typeId : firstName;
             }
         });
 
@@ -382,7 +382,7 @@ public class ProviderScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? id : middleName;
+                return forward ? id : npi;
             }
         });
 
