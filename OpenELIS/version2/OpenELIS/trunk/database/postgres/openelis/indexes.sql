@@ -4,7 +4,7 @@
 --
 -------------------------------------------------------------------------------
 
-create unique index on address(id);
+create unique index address_1_idx on address(id)
 
 create unique index analysis_1_idx on analysis(id);
 create        index analysis_2_idx on analysis(sample_item_id);
@@ -97,11 +97,11 @@ create        index inventory_location_2_idx on inventory_location(inventory_ite
 
 create unique index inventory_receipt_1_idx on inventory_receipt(id);
 create        index inventory_receipt_2_idx on inventory_receipt(inventory_item_id);
-create        index inventory_receipt_3_idx on inventory_receipt(order_item_id);
+create        index inventory_receipt_3_idx on inventory_receipt(iorder_item_id);
 
-create unique index inventory_receipt_order_item_1_idx on inventory_receipt_order_item(id);
-create        index inventory_receipt_order_item_2_idx on inventory_receipt_order_item(inventory_receipt_id);
-create        index inventory_receipt_order_item_3_idx on inventory_receipt_order_item(order_item_id);
+create unique index inventory_receipt_iorder_item_1_idx on inventory_receipt_iorder_item(id);
+create        index inventory_receipt_iorder_item_2_idx on inventory_receipt_iorder_item(inventory_receipt_id);
+create        index inventory_receipt_iorder_item_3_idx on inventory_receipt_iorder_item(iorder_item_id);
 
 create unique index inventory_x_adjust_1_idx on inventory_x_adjust(id);
 create        index inventory_x_adjust_2_idx on inventory_x_adjust(inventory_adjustment_id);
@@ -113,7 +113,7 @@ create        index inventory_x_put_3_idx on inventory_x_put(inventory_receipt_i
 
 create unique index inventory_x_use_1_idx on inventory_x_use(id);
 create        index inventory_x_use_2_idx on inventory_x_use(inventory_location_id);
-create        index inventory_x_use_3_idx on inventory_x_use(order_item_id);
+create        index inventory_x_use_3_idx on inventory_x_use(iorder_item_id);
 
 create unique index label_1_idx on label(id);
 create unique index label_2_idx on label(name);
@@ -126,26 +126,26 @@ create        index method_2_idx on method(name);
 create unique index note_1_idx on note(id);
 create        index note_2_idx on note(reference_id, reference_table_id);
 
-create unique index order_1_idx on "order"(id);
-create        index order_2_idx on "order"(organization_id);
+create unique index iorder_1_idx on iorder(id);
+create        index iorder_2_idx on iorder(organization_id);
 
-create unique index order_container_1_idx on order_container(id);
-create        index order_container_2_idx on order_container(order_id);
+create unique index iorder_container_1_idx on iorder_container(id);
+create        index iorder_container_2_idx on iorder_container(iorder_id);
 
-create unique index order_item_1_idx on order_item(id);
-create        index order_item_2_idx on order_item(order_id);
+create unique index iorder_item_1_idx on iorder_item(id);
+create        index iorder_item_2_idx on iorder_item(iorder_id);
 
-create unique index order_organization_1_idx on order_organization(id);
-create        index order_organization_2_idx on order_organization(order_id);
+create unique index iorder_organization_1_idx on iorder_organization(id);
+create        index iorder_organization_2_idx on iorder_organization(iorder_id);
 
-create unique index order_recurrence_1_idx on order_recurrence(id);
-create unique index order_recurrence_2_idx on order_recurrence(order_id);
+create unique index iorder_recurrence_1_idx on iorder_recurrence(id);
+create unique index iorder_recurrence_2_idx on iorder_recurrence(iorder_id);
 
-create unique index order_test_1_idx on order_test(id);
-create        index order_test_2_idx on order_test(order_id);
+create unique index iorder_test_1_idx on iorder_test(id);
+create        index iorder_test_2_idx on iorder_test(iorder_id);
 
-create unique index order_test_analyte_1_idx on order_test_analyte(id);
-create        index order_test_analyte_2_idx on order_test_analyte(order_test_id);
+create unique index iorder_test_analyte_1_idx on iorder_test_analyte(id);
+create        index iorder_test_analyte_2_idx on iorder_test_analyte(iorder_test_id);
 
 create unique index organization_1_idx on organization(id);
 create        index organization_2_idx on organization(name);
@@ -187,7 +187,7 @@ create        index provider_location_2_idx on provider_location(provider_id);
 
 create unique index pws_1_idx on pws(id);
 create unique index pws_2_idx on pws(tinwsys_is_number);
-create        index pws_3_idx on pws(number0);
+create unique index pws_3_idx on pws(number0);
 
 create unique index pws_address_1_idx on pws_address(tinwslec_is_number, tinlgent_is_number);
 create        index pws_address_2_idx on pws_address(tinwsys_is_number);
@@ -251,6 +251,9 @@ create unique index sample_project_1_idx on sample_project(id);
 create        index sample_project_2_idx on sample_project(sample_id);
 create        index sample_project_3_idx on sample_project(project_id);
 
+create unique index sample_pt_1_idx on sample_pt(id);
+create        index sample_pt_2_idx on sample_pt(sample_id);
+
 create unique index sample_qaevent_1_idx on sample_qaevent(id);
 create        index sample_qaevent_2_idx on sample_qaevent(sample_id);
 create        index sample_qaevent_3_idx on sample_qaevent(qaevent_id);
@@ -258,6 +261,8 @@ create        index sample_qaevent_3_idx on sample_qaevent(qaevent_id);
 create unique index sample_sdwis_1_idx on sample_sdwis(id);
 create unique index sample_sdwis_2_idx on sample_sdwis(sample_id);
 create        index sample_sdwis_3_idx on sample_sdwis(pws_id);
+
+create unique index scriptlet_1_idx on scriptlet(id);
 
 create unique index section_1_idx on section(id);
 
@@ -472,12 +477,12 @@ alter table inventory_location add foreign key(storage_location_id) references s
 
 alter table inventory_receipt add primary key(id);
 alter table inventory_receipt add foreign key(inventory_item_id) references inventory_item(id);
-alter table inventory_receipt add foreign key(order_item_id) references order_item(id);
+alter table inventory_receipt add foreign key(iorder_item_id) references iorder_item(id);
 alter table inventory_receipt add foreign key(organization_id) references organization(id);
 
-alter table inventory_receipt_order_item add primary key(id);
-alter table inventory_receipt_order_item add foreign key(inventory_receipt_id) references inventory_receipt(id);
-alter table inventory_receipt_order_item add foreign key(order_item_id) references order_item(id);
+alter table inventory_receipt_iorder_item add primary key(id);
+alter table inventory_receipt_iorder_item add foreign key(inventory_receipt_id) references inventory_receipt(id);
+alter table inventory_receipt_iorder_item add foreign key(iorder_item_id) references iorder_item(id);
 
 alter table inventory_x_adjust add primary key(id);
 alter table inventory_x_adjust add foreign key(inventory_adjustment_id) references inventory_adjustment(id);
@@ -489,7 +494,7 @@ alter table inventory_x_put add foreign key(inventory_location_id) references in
 
 alter table inventory_x_use add primary key(id);
 alter table inventory_x_use add foreign key(inventory_location_id) references inventory_location(id);
-alter table inventory_x_use add foreign key(order_item_id) references order_item(id);
+alter table inventory_x_use add foreign key(iorder_item_id) references iorder_item(id);
 
 alter table label add primary key(id);
 alter table label add foreign key(printer_type_id) references dictionary(id);
@@ -501,38 +506,38 @@ alter table method add primary key(id);
 
 alter table note add primary key(id);
 
-alter table "order" add primary key(id);
-alter table "order" add foreign key(parent_order_id) references "order"(id);
-alter table "order" add foreign key(status_id) references dictionary(id);
-alter table "order" add foreign key(cost_center_id) references dictionary(id);
-alter table "order" add foreign key(organization_id) references organization(id);
-alter table "order" add foreign key(ship_from_id) references dictionary(id);
+alter table iorder add primary key(id);
+alter table iorder add foreign key(parent_iorder_id) references iorder(id);
+alter table iorder add foreign key(status_id) references dictionary(id);
+alter table iorder add foreign key(cost_center_id) references dictionary(id);
+alter table iorder add foreign key(organization_id) references organization(id);
+alter table iorder add foreign key(ship_from_id) references dictionary(id);
 
-alter table order_container add primary key(id);
-alter table order_container add foreign key(order_id) references "order"(id);
-alter table order_container add foreign key(container_id) references dictionary(id);
-alter table order_container add foreign key(type_of_sample_id) references dictionary(id);
+alter table iorder_container add primary key(id);
+alter table iorder_container add foreign key(iorder_id) references iorder(id);
+alter table iorder_container add foreign key(container_id) references dictionary(id);
+alter table iorder_container add foreign key(type_of_sample_id) references dictionary(id);
 
-alter table order_item add primary key(id);
-alter table order_item add foreign key(order_id) references "order"(id);
-alter table order_item add foreign key(inventory_item_id) references inventory_item(id);
+alter table iorder_item add primary key(id);
+alter table iorder_item add foreign key(iorder_id) references iorder(id);
+alter table iorder_item add foreign key(inventory_item_id) references inventory_item(id);
 
-alter table order_organization add primary key(id);
-alter table order_organization add foreign key(order_id) references "order"(id);
-alter table order_organization add foreign key(organization_id) references organization(id);
-alter table order_organization add foreign key(type_id) references dictionary(id);
+alter table iorder_organization add primary key(id);
+alter table iorder_organization add foreign key(iorder_id) references iorder(id);
+alter table iorder_organization add foreign key(organization_id) references organization(id);
+alter table iorder_organization add foreign key(type_id) references dictionary(id);
 
-alter table order_recurrence add primary key(id);
-alter table order_recurrence add foreign key(order_id) references "order"(id);
-alter table order_recurrence add foreign key(unit_id) references dictionary(id);
+alter table iorder_recurrence add primary key(id);
+alter table iorder_recurrence add foreign key(iorder_id) references iorder(id);
+alter table iorder_recurrence add foreign key(unit_id) references dictionary(id);
 
-alter table order_test add primary key(id);
-alter table order_test add foreign key(order_id) references "order"(id);
-alter table order_test add foreign key(test_id) references test(id);
+alter table iorder_test add primary key(id);
+alter table iorder_test add foreign key(iorder_id) references iorder(id);
+alter table iorder_test add foreign key(test_id) references test(id);
 
-alter table order_test_analyte add primary key(id);
-alter table order_test_analyte add foreign key(order_test_id) references order_test(id);
-alter table order_test_analyte add foreign key(analyte_id) references analyte(id);
+alter table iorder_test_analyte add primary key(id);
+alter table iorder_test_analyte add foreign key(iorder_test_id) references iorder_test(id);
+alter table iorder_test_analyte add foreign key(analyte_id) references analyte(id);
 
 alter table organization add primary key(id);
 alter table organization add foreign key(parent_organization_id) references organization(id);
@@ -664,6 +669,10 @@ alter table sample_project add primary key(id);
 alter table sample_project add foreign key(sample_id) references sample(id);
 alter table sample_project add foreign key(project_id) references project(id);
 
+alter table sample_pt add primary key(id);
+alter table sample_pt add foreign key(sample_id) references sample(id);
+alter table sample_pt add foreign key(pt_provider_id) references dictionary(id);
+
 alter table sample_qaevent add primary key(id);
 alter table sample_qaevent add foreign key(sample_id) references sample(id);
 alter table sample_qaevent add foreign key(qaevent_id) references qaevent(id);
@@ -674,6 +683,8 @@ alter table sample_sdwis add foreign key(sample_id) references sample(id);
 alter table sample_sdwis add foreign key(pws_id) references pws(id);
 alter table sample_sdwis add foreign key(sample_type_id) references dictionary(id);
 alter table sample_sdwis add foreign key(sample_category_id) references dictionary(id);
+
+alter table scriptlet add primary key(id);
 
 alter table section add primary key(id);
 alter table section add foreign key(parent_section_id) references section(id);

@@ -1,0 +1,4 @@
+1|1x2 acc+pat+rec+test|1x2 Accession Number+Patient Name+Received Date+Test|4456|\N
+2|1x2 acc+rec|1x2 Accession Number+Received Date|4456|\N
+3|1x2 acc+rec+test|1x2 Accession Number+Received Date+Test|4456|\N
+4|1x2 acc+rec+test+method|1x2 Accession Number+Received Date+Test+Method|4456|\N

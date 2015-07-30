@@ -1,3 +1,9 @@
+\copy aux_field from 'aux_field.dat' with delimiter as '|';
+\copy aux_field_group from 'aux_field_group.dat' with delimiter as '|';
+\copy aux_field_value from 'aux_field_value.dat' with delimiter as '|';
+\copy panel_item from 'panel_item.dat' with delimiter as '|';
+\copy panel from 'panel.dat' with delimiter as '|';
+\copy qaevent from 'qaevent.dat' with delimiter as '|';
 \copy section from 'section.dat' with delimiter as '|';
 \copy method from 'method.dat' with delimiter as '|';
 \copy test_trailer from 'test_trailer.dat' with delimiter as '|';
@@ -12,6 +18,12 @@
 \copy test_worksheet from 'test_worksheet.dat' with delimiter as '|';
 \copy test_worksheet_item from 'test_worksheet_item.dat' with delimiter as '|';
 
+select setval('aux_field_id_seq', max(id)) from aux_field;
+select setval('aux_field_group_id_seq', max(id)) from aux_field_group;
+select setval('aux_field_value_id_seq', max(id)) from aux_field_value;
+select setval('panel_item_id_seq', max(id)) from panel_item;
+select setval('panel_id_seq', max(id)) from panel;
+select setval('qaevent_id_seq', max(id)) from qaevent;
 select setval('section_id_seq', max(id)) from section;
 select setval('method_id_seq', max(id)) from method;
 select setval('test_trailer_id_seq', max(id)) from test_trailer;
