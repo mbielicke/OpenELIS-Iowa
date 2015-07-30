@@ -54,97 +54,103 @@
 54|description_unit_of_measure|Description - Unit of Measure|Descriptions for Unit of Measure|\N|N
 55|general_results|General Results|General result values that can be used by any test|\N|N
 56|analyte_parameter_type|Analyte Parameter Type|Analyte Parameter Type|\N|Y
-57|extraction_kit|Extraction Kit|Extraction Kit|\N|N
-58|bacterial_results|Bacterial Results|\N|\N|N
-59|order_recurrence_unit|Order Recurrence Unit|\N|\N|Y
-60|laboratory_procedure|Laboratory Procedure|Laboratory Procedure|\N|N
-61|asbestos|Asbestos|\N|\N|N
-62|goofus|Goofus|goofy item|\N|N
-63|sample_domain|Sample Domain|List of Sample Domains|\N|Y
-64|kit_special_instructions|Kit Special Instructions|Special instructions to be printed on kit labels|\N|Y
-65|section_parameter_type|Section Parameter Type|Section Parameter Type|\N|Y
-66|wf_anklach|Worksheet Format AnkenyLachat|Columns for Worksheet Format AnkenyLachat|\N|Y
-67|wf_chem1|Worksheet Format Chemstation1|Columns for Worksheet Format Chemstation1|\N|Y
+57|order_recurrence_unit|Order Recurrence Unit|\N|\N|Y
+58|sample_domain|Sample Domain|List of Sample Domains|\N|Y
+59|laboratory_procedure|Laboratory Procedure|Laboratory Procedure|\N|N
+60|asbestos|Asbestos|Asbestos Types and Properties|\N|N
+61|color|Color|Colors|\N|N
+62|section_parameter_type|Section Parameter Type|Section Parameter Type|\N|Y
+63|kit_special_instructions|Kit Special Instructions|Special instructions to be printed on kit labels|\N|Y
+64|wf_anklach|Worksheet Format AnkenyLachat|Columns for Worksheet Format AnkenyLachat|\N|Y
+80|qc_chart_type|QC Chart Type|\N|\N|Y
+66|wf_colimpn|Worksheet Format ColiformMPN|Columns for Worksheet Format ColiformMPN|\N|Y
+67|wf_colipa|Worksheet Format ColiformPA|Columns for Worksheet Format ColiformPA|\N|Y
 68|wf_cphylla|Worksheet Format ChlorophyllA|Columns for Worksheet Format ChlorophyllA|\N|Y
 69|wf_cphyllps|Worksheet Format ChlorophyllPS|Columns for Worksheet Format ChlorophyllPS|\N|Y
-70|wf_colimpn|Worksheet Format ColiformMPN|Columns for Worksheet Format ColiformMPN|\N|Y
-71|wf_colipa|Worksheet Format ColiformPA|Columns for Worksheet Format ColiformPA|\N|Y
-72|wf_total|Worksheet Format DefaultTotal|Columns for Worksheet Format DefaultTotal|\N|Y
-73|wf_totalql|Worksheet Format DefaultTotalWithQL|Columns for Worksheet Format DefaultTotalWithQL|\N|Y
-83|qc_chart_type|QC Chart Type|\N|\N|Y
-84|exchange_profile|Exchange Profile|The external interfaces for electronic messaging|\N|Y
-74|wf_envana1|Worksheet Format EnvAnalytical1|Columns for Worksheet Format EnvAnalytical1|\N|Y
-75|wf_envana2|Worksheet Format EnvAnalytical2|Columns for Worksheet Format EnvAnalytical2|\N|Y
-76|wf_hpc|Worksheet Format HPC|Columns for Worksheet Format HPC|\N|Y
-77|wf_nitrate|Worksheet Format Nitrate|Columns for Worksheet Format Nitrate|\N|Y
-78|wf_preppest|Worksheet Format PrepPesticides|Columns for Worksheet Format PrepPesticides|\N|Y
-79|wf_qt2000|Worksheet Format QuantTray2000|Columns for Worksheet Format QuantTray2000|\N|Y
-80|wf_rad1|Worksheet Format Radchem1|Columns for Worksheet Format Radchem1|\N|Y
-81|wf_tc1|Worksheet Format TC1|Columns for Worksheet Format TC1|\N|Y
-82|wf_unh3|Worksheet Format UnionizedAmmonia|Columns for Worksheet Format UnionizedAmmonia|\N|Y
-85|exchange_local_type|Exchange Local Type|The types for which vocabulary mappings can be defined|\N|Y
-86|wf_chemstation_interface1|Worksheet Format ChemStation Interface1|Columns for Worksheet Format ChemStation Interface1|\N|Y
-87|wf_cs_air_toxics_interface1|Worksheet Format CS Air Toxics Interface1|Columns for Worksheet Format CS Air Toxics Interface1|\N|Y
-88|wf_empower_interface1|Worksheet Format Empower Interface1|Columns for Worksheet Format Empower Interface1|\N|Y
-89|wf_lcmsms|Worksheet Format LCMSMS|Columns for Worksheet Format LCMSMS|\N|Y
-90|newborn_results|Newborn Screening Results|\N|\N|N
-91|newborn_interpretation|Newborn Interpretation|All the interpretations used by newborn screening program|\N|N
-92|event_log_type|Event Log Type|The general types to which the events in the log belong|\N|Y
-93|event_log_level|Event Log Level|The levels for the various events recorded in the log|\N|Y
-94|exchange_environment|Exchange Environment|Exchange Environment|\N|Y
-95|turnaround_statistic_range|Turnaround Statistic Range|List of Turnaround Statistic ranges|\N|Y
-96|turnaround_plot_interval|Turnaround Plot Interval|List of Turnaround Plot Intervals|\N|Y
-97|wf_elan|Worksheet Format ELAN|Columns for Worksheet Format ELAN|\N|Y
-98|wf_nitrate2|Worksheet Format Nitrate (ver. 2)|Columns for Worksheet Format Nitrate (ver. 2)|\N|Y
-99|wf_cphylla2|Worksheet Format ChlorophyllA (ver. 2)|Columns for Worksheet Format ChlorophyllA (ver. 2)|\N|Y
-100|laboratory_section|Laboratory Section|The list of the various sections of the laboratory|\N|N
-101|bacterial_typing|Bacterial Typing|\N|\N|N
-102|bacteriology_modifiers|Bacteriology Modifiers|\N|\N|N
-103|atmospheric_requirement|Atmospheric Requirement|\N|\N|N
-104|wf_lcmsms1|Worksheet Format LCMSMS1|Columns for Worksheet Format LCMSMS1 for interface|\N|Y
-105|null_data_code|Null Data Code|List of all possible Null Data Codes (Air Quality)|\N|N
-106|air_quality_action|Air Quality Action|The action of the air quality string|\N|N
-107|air_quality_location|Air Quality Location|List of all possible air quality locations|\N|N
-108|scriptlet_aux_field|Scriptlet Aux Field|List of the scriptlets for aux fields|\N|Y
-109|scriptlet_domain|Scriptlet Domain|List of the scriptlets for domains|\N|Y
-110|scriptlet_test|Scriptlet Test|List of the scriptlets for tests|\N|Y
-111|scriptlet_test_analyte|Scriptlet Test Analyte|List of the scriptlets for test analytes|\N|Y
-112|scriptlet_worksheet|Scriptlet Worksheet|List of the scriptlets for worksheets|\N|Y
-113|analysis_type|Analysis Type|Analysis Type|\N|Y
-114|patient_relation|Patient Relation|List of Patient Relations|\N|Y
-115|wf_ll_lachat|Worksheet Format LimsLink Latchat (S/D)|Columns for Worksheet Format LimsLink Latchat (S/D)|\N|Y
-116|wf_ll_carbonyl|Worksheet Format LimsLink Carbonyl|Columns for Worksheet Format LimsLink Latchat|\N|Y
-117|wf_ll_chromeleon|Worksheet Format LimsLink Chromeleon|Columns for Worksheet Format LimsLink Chromeleon|\N|Y
-118|wf_ll_icmps|Worksheet Format LimsLink ICPMS|Columns for Worksheet Format LimsLink ICPMS|\N|Y
-119|wf_ll_mercury|Worksheet Format LimsLink Mercury|Columns for Worksheet Format LimsLink Mercury|\N|Y
-120|wf_ll_pe600|Worksheet Format LimsLink PE600|Columns for Worksheet Format LimsLink PE600|\N|Y
-121|wf_ll_elan|Worksheet Format LimsLink Elan|Columns for Worksheet Format LimsLink ICPMS|\N|Y
-122|wf_ll_4100bl|Worksheet Format LimsLink 4100 Blood Lead|Columns for Worksheet Format LimsLink 4100 Blood Lead|\N|Y
-123|wf_ll_analyst|Worksheet Format LimsLink Analyst|Columns for Worksheet Format LimsLink Analyst|\N|Y
-124|wf_ll_csat|Worksheet Format LimsLink Chemstation Air Toxic|Columns for Worksheet Format LimsLink Chemstation Air Toxic|\N|Y
-125|wf_ll_cs|Worksheet Format LimsLink Chemstation|Columns for Worksheet Format LimsLink Chemstation|\N|Y
-126|wf_ll_form|Worksheet Format LimsLink Empower Formulation|Columns for Worksheet Format LimsLink Empower Formulation|\N|Y
-127|wf_ll_em|Worksheet Format LimsLink Empower|Columns for Worksheet Format LimsLink Empower|\N|Y
-128|wf_ll_em_ih|Worksheet Format LimsLink Empower IH|Columns for Worksheet Format LimsLink Empower IH|\N|Y
-129|wf_ll_ls55|Worksheet Format LimsLink LS55|Columns for Worksheet Format LimsLink LS55|\N|Y
-130|wf_ll_mm|Worksheet Format LimsLink MicroMass|Columns for Worksheet Format LimsLink MicroMass|\N|Y
-131|insurance_company|Insurance Company|List of insurance companies/payers|\N|N
-132|insurance_relation|Insurance  Relation|Insurance to Insured Relation|\N|N
-133|hiv_results|HIV Results|HIV Results|\N|N
-134|serology_results|Serology Results|\N|\N|N
-135|iowa_counties|Iowa Counties|Iowa Counties|\N|N
-136|arbo_temperature_codes|Arbo Temperature Codes|Arbo Temperature Codes|\N|N
-137|means_of_death|Means of Death|Means of Death|\N|N
-138|symptoms|Symptoms|Symptoms|\N|N
-139|cf_enthnicities|Cystic Fibrosis Ethnicities|Cystic Fibrosis Ethnicities|\N|N
-140|cf_family_history|Cystic Fibrosis Family History|Cystic Fibrosis Family History|\N|N
-141|chl_gc_insurance_types|Chl-Gc Insurance Types|Chl-Gc Insurance Types|\N|N
-142|chl_gc_visit_reasons|Chl-Gc Visit Reasons|Chl-Gc Visit Reasons|\N|N
-143|chl_gc_risk_histories|Chl-Gc Risk Histories|Chl-Gc Risk Histories|\N|N
-144|chl_gc_signs|Chl-Gc Signs|Chl-Gc Signs|\N|N
-145|gc_request_types|GC Request Types|GC Request Types|\N|N
-146|gc_antibiotic_therapies|GC Antibiotic Therapies|GC Antibiotic Therapies|\N|N
-147|parasitology_results|Parasitology Results|Parasitology Results|\N|N
-148|virus_results|Virus Results|Virus Results|\N|N
-149|serogroups|Serogroups|Serogroups|\N|N
-150|mycology_results|Mycology Results|Mycology Results|\N|N
+70|wf_envana1|Worksheet Format EnvAnalytical1|Columns for Worksheet Format EnvAnalytical1|\N|Y
+71|wf_envana2|Worksheet Format EnvAnalytical2|Columns for Worksheet Format EnvAnalytical2|\N|Y
+72|wf_hpc|Worksheet Format HPC|Columns for Worksheet Format HPC|\N|Y
+73|wf_nitrate|Worksheet Format Nitrate|Columns for Worksheet Format Nitrate|\N|Y
+81|turnaround_plot_interval|Turnaround Plot Interval|List of Turnaround Plot Intervals|\N|Y
+74|wf_preppest|Worksheet Format PrepPesticides|Columns for Worksheet Format PrepPesticides|\N|Y
+75|wf_qt2000|Worksheet Format QuantTray2000|Columns for Worksheet Format QuantTray2000|\N|Y
+76|wf_rad1|Worksheet Format Radchem1|Columns for Worksheet Format Radchem1|\N|Y
+77|wf_total|Worksheet Format DefaultTotal|Columns for Worksheet Format DefaultTotal|\N|Y
+78|wf_totalql|Worksheet Format DefaultTotalWithQL|Columns for Worksheet Format DefaultTotalWithQL|\N|Y
+79|wf_unh3|Worksheet Format UnionizedAmmonia|Columns for Worksheet Format UnionizedAmmonia|\N|Y
+82|turnaround_statistic_range|Turnaround Statistic Range|List of Turnaround Statistic ranges|\N|Y
+83|event_log_level|Event Log Level|The levels for the various events recorded in the log|\N|Y
+84|event_log_type|Event Log Type|The general types to which the events in the log belong|\N|Y
+85|exchange_environment|Exchange Environment|Exchange Environment|\N|Y
+86|exchange_local_type|Exchange Local Type|The types for which vocabulary mappings can be defined|\N|Y
+87|exchange_profile|Exchange Profile|The external interfaces for electronic messaging|\N|Y
+88|laboratory_section|Laboratory Section|The list of the various sectionst of the laboratory|\N|N
+89|air_quality_action|Air Quality Action|The action of the air quality string|\N|N
+90|air_quality_location|Air Quality Location|List of all possible air quality locations|\N|N
+91|null_data_code|Null Data Code|List of all possible Null Data Codes (Air Quality)|\N|N
+92|analysis_type|Analysis Type|Analysis Type|\N|Y
+93|newborn_interpretation|Newborn Interpretation|All the interpretations used by newborn screening program|\N|N
+94|newborn_results|Newborn Screening Results|\N|\N|N
+95|patient_relation|Patient Relation|List of Patient Relations|\N|Y
+96|scriptlet_aux_field|Scriptlet Aux Field|List of the scriptlets for aux fields|\N|Y
+97|scriptlet_domain|Scriptlet Domain|List of the scriptlets for domains|\N|Y
+98|scriptlet_test|Scriptlet Test|List of the scriptlets for tests|\N|Y
+99|scriptlet_test_analyte|Scriptlet Test Analyte|List of the scriptlets for test analytes|\N|Y
+100|scriptlet_worksheet|Scriptlet Worksheet|List of the scriptlets for worksheets|\N|Y
+101|wf_ll_latchat|Worksheet Format LimsLink Latchat (S/D)|Columns for Worksheet Format LimsLink Latchat (S/D)|\N|Y
+102|wf_ll_carbnyl|Worksheet Format LimsLink Carbonyl|Columns for Worksheet Format LimsLink Latchat|\N|Y
+103|wf_ll_chromeleon|Worksheet Format LimsLink Chromeleon|Columns for Worksheet Format LimsLink Chromeleon|\N|Y
+104|wf_ll_icmps|Worksheet Format LimsLink ICPMS|Columns for Worksheet Format LimsLink ICPMS|\N|Y
+105|wf_ll_mercury|Worksheet Format LimsLink Mercury|Columns for Worksheet Format LimsLink Mercury|\N|Y
+106|wf_ll_pe600|Worksheet Format LimsLink PE600|Columns for Worksheet Format LimsLink PE600|\N|Y
+107|wf_ll_elan|Worksheet Format LimsLink Elan|Columns for Worksheet Format LimsLink ICPMS|\N|Y
+108|wf_ll_4100bl|Worksheet Format LimsLink 4100 Blood Lead|Columns for Worksheet Format LimsLink 4100 Blood Lead|\N|Y
+109|wf_ll_analyst|Worksheet Format LimsLink Analyst|Columns for Worksheet Format LimsLink Analyst|\N|Y
+110|wf_ll_csat|Worksheet Format LimsLink Chemstation Air Toxic|Columns for Worksheet Format LimsLink Chemstation Air Toxic|\N|Y
+111|wf_ll_cs|Worksheet Format LimsLink Chemstation|Columns for Worksheet Format LimsLink Chemstation|\N|Y
+112|wf_ll_form|Worksheet Format LimsLink Empower Formulation|Columns for Worksheet Format LimsLink Empower Formulation|\N|Y
+113|wf_ll_em|Worksheet Format LimsLink Empower|Columns for Worksheet Format LimsLink Empower|\N|Y
+114|wf_ll_em_ih|Worksheet Format LimsLink Empower IH|Columns for Worksheet Format LimsLink Empower IH|\N|Y
+115|wf_ll_ls55|Worksheet Format LimsLink LS55|Columns for Worksheet Format LimsLink LS55|\N|Y
+116|wf_ll_mm|Worksheet Format LimsLink MicroMass|Columns for Worksheet Format LimsLink MicroMass|\N|Y
+117|wf_ll_5300icp|Worksheet Format LimsLink 5300_ICP|Columns for Worksheet Format LimsLink 5300_ICP|\N|Y
+118|insurance_company|Insurance Company|List of insurance companies/payers|\N|N
+119|Insurance to Insured Relation|Insurance  Relation|Insurance to Insured Relation|\N|N
+120|bacterial_results|Bacterial Results|Baterial Results|\N|N
+121|serogroups|Serogroups|Serogroups|\N|N
+122|iowa_counties|Iowa Counties|Iowa Counties|\N|N
+123|bacteriology_modifiers|Bacteriology Modifiers|Bacteriology Modifiers|\N|N
+124|atmospheric_requirement|Atmospheric Requirement|Atmospheric Requirement|\N|N
+125|parasitology_results|Parasitology Results|Parasitology Results|\N|N
+126|serology_results|Serology Results|Serology Results|\N|N
+127|cf_results|Cystic Fibrosis Results|Cystic Fibrosis Results|\N|N
+128|cf_enthnicity|Cystic Fibrosis Ethnicity|Cystic Fibrosis Ethnicity|\N|N
+129|cf_relation|Cystic Fibrosis Relation|Cystic Fibrosis Relation|\N|N
+130|cf_family_history|Cystic Fibrosis Family History|Cystic Fibrosis Family History|\N|N
+131|sign_symptom|Sign and Symptom|Sign and Symptom|\N|N
+132|risk_history|Risk History|Risk History|\N|N
+133|visit_reasons|Visit Reason|Visit Reason|\N|N
+134|insurance_condition|Insurance Condition|Insurance Condition|\N|N
+135|mycology_results|Mycology Results|Mycology Results|\N|N
+136|request_type|Request Type|Request Type|\N|N
+137|antibiotic_therapy|Antibiotic Therapy|Antibiotic Therapy|\N|N
+138|hiv_results|HIV Results|HIV Results|\N|N
+139|virus_results|Virus Results|Virus Results|\N|N
+140|wf_elfa|Worksheet Format ELFA|Columns for Worksheet Format ELFA|\N|Y
+141|wf_hiv_multispot|Worksheet Format HIV Multispot|Columns for Worksheet Format HIV Multispot|\N|Y
+142|wf_latex_agglut|Worksheet Format Latex Agglutination|Columns for Worksheet Format Latex Agglutnation|\N|Y
+143|wf_tppa|Worksheet Format Syphilis TPPA|Columns for Worksheet Format Syphilis TPPA|\N|Y
+144|wf_test_strip|Worksheet Format Test Strip|Columns for Worksheet Format Test Strip|\N|Y
+145|wf_afb_biochem|Worksheet Format AFP Biochemical|Columns for Worksheet Format AFP Biochemical|\N|Y
+146|wf_afb_culture|Worksheet Format AFB Culture|Columns for Worksheet Format AFB Culture|\N|Y
+147|wf_bacti_mod|Worksheet Format Bacti Modifier|Columns for Worksheet Format Bacti Modifier|\N|Y
+148|wf_bacti_sero|Worksheet Format Bacti Serogroup|Columns for Worksheet Format Bacti Serogroup|\N|Y
+149|wf_clinical|Worksheet Format Default Clinical|Columns for Worksheet Format Default Clinical|\N|Y
+150|wf_enteric|Worksheet Format Enteric Culture|Columns for Worksheet Format Enteric Culture|\N|Y
+151|wf_gram_stain|Worksheet Format Gram Stain|Columns for Worksheet Format Gram Stain|\N|Y
+152|wf_hsv_culture|Worksheet Format HSV Culture|Columns for Worksheet Format HSV Culture|\N|Y
+153|wf_refbacti|Worksheet Format Refbacti|Columns for Worksheet Format Refbacti|\N|Y
+154|processing_location|Processing Location|List of Processing Locations|\N|N
+155|wf_norovirus|Worksheet Format Norovirus|Columns for Worksheet Format Norovirus|\N|Y
+156|pt_provider|PT Provider|List of PT Sample Provider names|\N|Y
+157|wf_ll_aptima|Worksheet Format LimsLink Aptima CT-GC|Columns for Worksheet Format LimsLink Aptima CT-GC|\N|Y

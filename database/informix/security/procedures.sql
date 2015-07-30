@@ -1,9 +1,16 @@
+-------------------------------------------------------------------------------
+--
+-- procedures/functions
+--
+-------------------------------------------------------------------------------
+
 create procedure ejb_roles(user_name varchar(30), application_name varchar(30))
        returning varchar(50), char(5);
 --
+--  This procedure is used by JBOSS to grant access to beans.
 --  procedure returns:
 --      1) the module name with permission postfix for given user_name
---      2) contant "Roles"
+--      2) contant 'Roles'
 --
     define mod_name         char(32);
     define has_select       char(1);
@@ -44,7 +51,13 @@ create procedure ejb_roles(user_name varchar(30), application_name varchar(30))
 
 end procedure;
 
-create procedure getgroups(username char(30), databasename char(18))
+-------------------------------------------------------------------------------
+--
+-- following procedures are not used by OpenELIS; ignore
+--
+-------------------------------------------------------------------------------
+
+create procedure getgroups(username char(30), databasename char(20))
                  returning char(20), char(5);
 --
 -- returns the group.name/group.permission list for the
@@ -106,7 +119,7 @@ create procedure getgroups(username char(30), databasename char(18))
 
 end procedure;
 
-create procedure getmodules(username char(30), databasename char(18))
+create procedure getmodules(username char(30), databasename char(20))
                  returning char(32), char(4);
 --
 -- returns the modules.name/modules.permission list for the

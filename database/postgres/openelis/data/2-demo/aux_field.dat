@@ -1,0 +1,165 @@
+1|1|1|8|mg/L|\N|\N|N|Y|Y|\N
+2|1|2|9|mg/L|\N|\N|N|Y|Y|\N
+3|1|3|10|upstream, downstream, original, or other|\N|\N|N|Y|N|\N
+4|1|4|11|\N|\N|\N|N|Y|N|\N
+5|2|1|13|First & Last Name|\N|\N|N|Y|N|\N
+6|2|2|12|Format 000/111-2222|\N|\N|N|Y|N|\N
+7|3|1|14|Initials of receiving person|\N|\N|Y|Y|N|\N
+8|3|2|15|Add if required by method|\N|\N|N|Y|N|\N
+9|3|3|16|Is sample intact|\N|\N|Y|Y|N|\N
+10|3|4|17|Temp upon receipt|\N|1039|N|Y|N|\N
+11|4|1|18|e.g. 0.07 or 0.070|\N|\N|Y|Y|Y|\N
+12|5|1|20|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+13|5|2|21|24 hour format hh:mm|\N|\N|N|Y|Y|\N
+14|5|3|22|\N|\N|\N|N|Y|Y|\N
+15|5|4|30|\N|\N|\N|N|Y|N|\N
+16|5|5|29|Print last, first name|\N|\N|N|Y|Y|\N
+17|5|6|28|kitchen sink, plant tap, etc.|\N|\N|N|Y|Y|\N
+18|5|7|31|\N|\N|\N|N|Y|N|\N
+19|5|8|32|\N|\N|\N|N|Y|N|\N
+20|5|9|33|\N|\N|\N|N|Y|Y|\N
+21|5|10|34|\N|\N|\N|N|Y|N|\N
+22|5|11|35|\N|\N|\N|N|Y|N|\N
+23|5|12|36|\N|\N|\N|N|Y|N|\N
+24|5|13|37|1 day, 2 day, etc. (rush charges apply)|\N|\N|N|Y|N|\N
+25|5|14|38|000/111-2222|\N|\N|N|Y|Y|\N
+26|5|15|39|\N|\N|\N|N|Y|Y|\N
+27|5|16|40|Laboratory approved projects only|\N|\N|N|Y|N|\N
+28|6|1|20|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+29|6|2|21|24 hour format hh:mm|\N|\N|N|Y|Y|\N
+30|6|3|22|\N|\N|\N|N|Y|Y|\N
+31|6|4|19|\N|\N|\N|N|Y|Y|\N
+32|6|5|23|\N|\N|\N|N|Y|N|\N
+33|6|6|24|\N|\N|\N|N|Y|Y|\N
+34|6|7|25|\N|\N|\N|N|Y|Y|\N
+35|6|8|26|\N|\N|\N|N|Y|Y|\N
+36|6|9|27|\N|\N|\N|N|Y|Y|\N
+37|6|10|28|address, plant tap, sink|\N|\N|N|Y|Y|\N
+38|7|1|20|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+39|7|2|21|24 hour format hh:mm|\N|\N|N|Y|Y|\N
+40|7|3|22|additional client information if any|\N|\N|N|Y|Y|\N
+41|7|4|41|\N|\N|\N|N|Y|N|\N
+42|7|5|43|\N|\N|\N|N|Y|N|\N
+43|7|6|42|\N|\N|\N|N|Y|N|\N
+44|7|7|47|\N|\N|\N|N|Y|N|\N
+45|7|8|44|\N|\N|\N|N|Y|N|\N
+46|7|9|46|\N|\N|\N|N|Y|N|\N
+47|7|10|48|\N|\N|\N|N|Y|N|\N
+48|7|11|45|000/111-2222|\N|\N|N|Y|Y|\N
+49|7|12|28|kitchen sink, plant tap, etc.|\N|\N|N|Y|Y|\N
+50|7|13|31|\N|\N|\N|N|Y|Y|\N
+51|7|14|32|\N|\N|\N|N|Y|Y|\N
+52|7|15|33|\N|\N|\N|N|Y|Y|\N
+53|7|16|34|\N|\N|\N|N|Y|Y|\N
+54|7|17|35|\N|\N|\N|N|Y|Y|\N
+55|7|18|49|Print last, first name|\N|\N|N|Y|Y|\N
+56|7|19|29|Print last, first name|\N|\N|N|Y|Y|\N
+57|7|20|50|7 digit number if known|\N|\N|N|Y|Y|\N
+58|7|21|40|Laboratory approved projects only|\N|\N|N|Y|N|\N
+59|8|1|19|\N|\N|\N|N|Y|Y|\N
+60|8|2|51|\N|\N|\N|N|Y|Y|\N
+61|8|3|24|\N|\N|\N|N|Y|Y|\N
+62|8|4|27|\N|\N|\N|N|Y|Y|\N
+63|8|5|25|Field or Matrix Spike|\N|\N|N|Y|Y|\N
+64|8|6|52|Specify as NTU|\N|\N|N|Y|Y|\N
+65|8|7|54|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+66|8|8|53|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+67|8|9|55|\N|\N|\N|N|Y|Y|\N
+68|8|10|56|Gallons or Liters|\N|\N|N|Y|Y|\N
+69|9|1|19|\N|\N|\N|N|Y|Y|\N
+70|9|2|51|\N|\N|\N|N|Y|Y|\N
+71|9|3|54|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+72|9|4|53|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+73|9|5|55|\N|\N|\N|N|Y|Y|\N
+74|9|6|56|Gallons or Liters|\N|\N|N|Y|Y|\N
+75|9|7|58|\N|\N|\N|N|Y|Y|\N
+76|9|8|57|\N|\N|\N|N|Y|Y|\N
+77|10|1|59|\N|\N|\N|N|Y|N|\N
+78|10|2|60|\N|\N|\N|N|Y|N|\N
+79|10|3|61|\N|\N|\N|N|Y|N|\N
+80|10|4|62|\N|\N|\N|N|Y|N|\N
+81|11|1|51|\N|\N|\N|N|Y|Y|\N
+82|11|2|63|\N|\N|\N|N|Y|Y|\N
+83|11|3|64|\N|\N|\N|N|Y|Y|\N
+84|11|4|15|\N|\N|\N|N|Y|Y|\N
+85|11|5|65|\N|\N|\N|N|Y|Y|\N
+86|11|6|66|\N|\N|\N|N|Y|N|\N
+87|12|1|67|\N|\N|\N|N|Y|Y|\N
+88|12|2|11|\N|\N|\N|N|Y|N|\N
+89|13|1|68|\N|\N|\N|N|Y|Y|\N
+90|13|2|69|\N|\N|\N|N|Y|Y|\N
+91|13|3|71|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+92|13|4|70|\N|\N|\N|N|Y|Y|\N
+93|14|1|71|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+94|14|2|69|\N|\N|\N|N|Y|Y|\N
+95|15|1|944|SM 2550, degree C|\N|1039|N|Y|N|\N
+96|15|2|1151|SM 4500 H, pH Units|\N|\N|N|Y|N|\N
+97|15|3|937|SM 4500-O G, mg/L|\N|919|N|Y|Y|\N
+98|15|4|937|ASTM D 888-05 C, mg/L|\N|919|N|Y|Y|\N
+99|16|1|1184|Specify: SW or GU|\N|\N|N|Y|Y|\N
+100|16|2|52|Specify in NTU units e.g 70 or 70.5|\N|\N|N|Y|Y|\N
+101|6|11|29|last name, first name|\N|\N|N|Y|Y|\N
+102|6|12|40|Laboratory approved projects only|\N|\N|N|Y|N|\N
+103|17|1|55|\N|\N|\N|N|Y|Y|\N
+104|17|2|56|\N|\N|\N|N|Y|Y|\N
+105|17|3|53|\N|\N|\N|N|Y|Y|\N
+106|17|4|54|\N|\N|\N|N|Y|Y|\N
+107|6|13|38|111/222-3333|\N|\N|N|Y|Y|\N
+108|3|5|1285|Container label Build Id|\N|\N|N|Y|N|\N
+109|18|1|1319|\N|\N|\N|Y|Y|Y|\N
+110|18|2|1320|\N|\N|\N|Y|Y|N|\N
+111|18|3|1321|\N|\N|\N|Y|Y|Y|\N
+112|18|4|1322|\N|\N|\N|Y|Y|Y|\N
+113|19|1|11|\N|\N|\N|Y|Y|N|\N
+114|20|1|68|\N|\N|\N|N|Y|Y|\N
+115|20|2|69|\N|\N|\N|N|Y|Y|\N
+116|20|3|71|yyyy-MM-dd|\N|\N|N|Y|Y|\N
+117|21|1|17|\N|\N|\N|N|Y|N|\N
+118|21|2|1375|\N|\N|\N|N|Y|N|\N
+119|21|3|1376|\N|\N|\N|N|Y|N|\N
+120|21|4|1377|\N|\N|\N|N|Y|N|\N
+121|21|5|1378|\N|\N|\N|Y|Y|N|\N
+122|21|6|1379|\N|\N|\N|Y|Y|Y|\N
+123|21|7|1380|\N|\N|\N|Y|Y|Y|\N
+124|21|8|1381|\N|\N|\N|Y|Y|Y|\N
+125|21|10|1419|\N|\N|\N|N|Y|Y|\N
+126|21|9|1383|\N|\N|\N|Y|Y|Y|\N
+127|22|1|1388|Please Print|\N|\N|N|Y|Y|\N
+128|22|2|1389|24hr clock|\N|\N|N|Y|Y|\N
+129|22|3|1390|\N|\N|\N|N|Y|Y|\N
+130|22|4|1391|e.g. C18 7284|\N|\N|N|Y|Y|\N
+131|22|5|1392|\N|\N|\N|N|Y|Y|\N
+132|21|11|1418|\N|\N|\N|N|Y|Y|\N
+133|21|12|1420|\N|\N|\N|N|Y|Y|\N
+134|21|13|1421|\N|\N|\N|N|Y|Y|\N
+135|21|14|1422|\N|\N|\N|N|Y|Y|\N
+136|23|1|1423|\N|\N|\N|Y|Y|N|\N
+137|23|2|1424|\N|\N|\N|Y|Y|N|\N
+138|23|3|1427|\N|\N|\N|N|Y|N|\N
+139|23|4|1426|\N|\N|\N|N|Y|N|\N
+140|23|5|1428|\N|\N|\N|Y|Y|N|\N
+141|23|6|1429|\N|\N|\N|N|Y|N|\N
+142|23|7|1430|\N|\N|\N|N|Y|N|\N
+143|21|15|55|L/min|\N|\N|N|Y|Y|\N
+144|21|16|1638|minutes|\N|\N|N|Y|Y|\N
+145|21|17|1639|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+146|21|18|1640|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+147|21|19|1641|yes/no|\N|\N|N|Y|Y|\N
+148|21|20|1642|yes/no|\N|\N|N|Y|Y|\N
+149|21|21|1643|yes/no|\N|\N|N|Y|Y|\N
+150|21|22|1644|yyyy-mm-dd|\N|\N|N|Y|Y|\N
+151|21|23|1704|PSIA|\N|\N|N|Y|Y|\N
+152|21|24|1645|PSIA|\N|\N|N|Y|Y|\N
+153|21|25|1646|PSIA|\N|\N|N|Y|Y|\N
+154|24|1|49|Print last, first name|\N|\N|N|Y|Y|\N
+155|24|2|50|7 digit number if known|\N|\N|N|Y|Y|\N
+156|25|1|19|\N|\N|\N|N|Y|Y|\N
+157|25|2|51|\N|\N|\N|N|Y|Y|\N
+158|25|3|24|\N|\N|\N|N|Y|Y|\N
+159|25|4|27|\N|\N|\N|N|Y|Y|\N
+160|25|5|25|Specify RT, MS, or SP|\N|\N|N|Y|Y|\N
+161|25|6|54|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+162|25|7|53|yyyy-mm-dd hh:mm (24 hour format)|\N|\N|N|Y|Y|\N
+163|25|8|55|Liters per minute|\N|\N|N|Y|Y|\N
+164|25|9|56|Liters|\N|\N|N|Y|Y|\N
+165|25|10|1716|\N|\N|\N|N|Y|Y|\N

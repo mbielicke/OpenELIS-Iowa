@@ -86,7 +86,6 @@ create table analyte_parameter
     analyte_id                     integer not null,
     type_of_sample_id              integer,
     unit_of_measure_id             integer,
-    is_active                      char(1) not null,
     active_begin                   timestamp not null,
     active_end                     timestamp not null,
     p1                             float,
@@ -193,28 +192,28 @@ create table dictionary
 
 create table eorder
 (
-   id                              serial not null,
-   entered_date                    timestamp not null,
-   paper_order_validator           varchar(40),
-   description                     varchar(60)
+    id                             serial not null,
+    entered_date                   timestamp not null,
+    paper_order_validator          varchar(40),
+    description                    varchar(60)
 );
 
 create table eorder_body
 (
-   id                              serial not null,
-   eorder_id                       integer not null,
-   xml                             text
+    id                             serial not null,
+    eorder_id                      integer not null,
+    xml                            text
 );
 
 create table eorder_link
 (
-   id                              serial not null,
-   eorder_id                       integer not null,
-   reference                       varchar(40),
-   sub_id                          varchar(20),
-   name                            varchar(20) not null,
-   value                           varchar(255)
-);  
+    id                             serial not null,
+    eorder_id                      integer not null,
+    reference                      varchar(40),
+    sub_id                         varchar(20),
+    name                           varchar(20) not null,
+    value                          varchar(255)
+);
 
 create table event_log
 (
@@ -246,7 +245,7 @@ create table exchange_external_term
     profile_id                     integer not null,
     is_active                      char(1) not null,
     external_term                  varchar(60) not null,
-    external_description           varchar(60),
+    external_description           varchar(255),
     external_coding_system         varchar(60),
     version                        varchar(60)
 );
@@ -361,7 +360,7 @@ create table inventory_receipt
 (
     id                             serial not null,
     inventory_item_id              integer not null,
-    order_item_id                  integer,
+    iorder_item_id                 integer,
     organization_id                integer,
     received_date                  timestamp not null,
     quantity_received              integer not null,
@@ -371,11 +370,11 @@ create table inventory_receipt
     upc                            varchar(15)
 );
 
-create table inventory_receipt_order_item
+create table inventory_receipt_iorder_item
 (
     id                             serial not null,
     inventory_receipt_id           integer not null,
-    order_item_id                  integer not null
+    iorder_item_id                 integer not null
 );
 
 create table inventory_x_adjust
@@ -399,8 +398,81 @@ create table inventory_x_use
 (
     id                             serial not null,
     inventory_location_id          integer not null,
-    order_item_id                  integer not null,
+    iorder_item_id                 integer not null,
     quantity                       integer not null
+);
+
+create table iorder
+(
+    id                             serial not null,
+    parent_iorder_id               integer,
+    description                    varchar(60),
+    status_id                      integer not null,
+    ordered_date                   date not null,
+    needed_in_days                 integer,
+    requested_by                   varchar(30),
+    cost_center_id                 integer,
+    organization_id                integer,
+    organization_attention         varchar(30),
+    type                           char(1) not null,
+    external_order_number          varchar(20),
+    ship_from_id                   integer,
+    number_of_forms                integer
+);
+
+create table iorder_container
+(
+    id                             serial not null,
+    iorder_id                      integer not null,
+    container_id                   integer not null,
+    item_sequence                  integer not null,
+    type_of_sample_id              integer
+);
+
+create table iorder_item
+(
+    id                             serial not null,
+    iorder_id                      integer not null,
+    inventory_item_id              integer not null,
+    quantity                       integer not null,
+    catalog_number                 varchar(30),
+    unit_cost                      float
+);
+
+create table iorder_organization
+(
+    id                             serial not null,
+    iorder_id                      integer not null,
+    organization_id                integer not null,
+    organization_attention         varchar(30),
+    type_id                        integer not null
+);
+
+create table iorder_recurrence
+(
+    id                             serial not null,
+    iorder_id                      integer not null,
+    is_active                      char(1) not null,
+    active_begin                   date,
+    active_end                     date,
+    frequency                      smallint,
+    unit_id                        integer
+);
+
+create table iorder_test
+(
+    id                             serial not null,
+    iorder_id                      integer not null,
+    item_sequence                  integer not null,
+    sort_order                     integer not null,
+    test_id                        integer not null
+);
+
+create table iorder_test_analyte
+(
+    id                             serial not null,
+    iorder_test_id                 integer not null,
+    analyte_id                     integer not null
 );
 
 create table label
@@ -442,79 +514,6 @@ create table note
     system_user_id                 integer not null,
     subject                        varchar(60),
     text                           text
-);
-
-create table "order"
-(
-    id                             serial not null,
-    parent_order_id                integer,
-    description                    varchar(60),
-    status_id                      integer not null,
-    ordered_date                   date not null,
-    needed_in_days                 integer,
-    requested_by                   varchar(30),
-    cost_center_id                 integer,
-    organization_id                integer,
-    organization_attention         varchar(30),
-    type                           char(1) not null,
-    external_order_number          varchar(20),
-    ship_from_id                   integer,
-    number_of_forms                integer
-);
-
-create table order_container
-(
-    id                             serial not null,
-    order_id                       integer not null,
-    container_id                   integer not null,
-    item_sequence                  integer not null,
-    type_of_sample_id              integer
-);
-
-create table order_item
-(
-    id                             serial not null,
-    order_id                       integer not null,
-    inventory_item_id              integer not null,
-    quantity                       integer not null,
-    catalog_number                 varchar(30),
-    unit_cost                      float
-);
-
-create table order_organization
-(
-    id                             serial not null,
-    order_id                       integer not null,
-    organization_id                integer not null,
-    organization_attention         varchar(30),
-    type_id                        integer not null
-);
-
-create table order_recurrence
-(
-    id                             serial not null,
-    order_id                       integer not null,
-    is_active                      char(1) not null,
-    active_begin                   date,
-    active_end                     date,
-    frequency                      smallint,
-    unit_id                        integer
-);
-
-create table order_test
-(
-    id                             serial not null,
-    order_id                       integer not null,
-    item_sequence                  integer not null,
-    sort_order                     integer not null,
-    test_id                        integer not null
-);
-
-create table order_test_analyte
-(
-    id                             serial not null,
-    order_test_id                  integer not null,
-    analyte_id                     integer not null
 );
 
 create table organization
@@ -614,10 +613,12 @@ create table project_parameter
 create table provider
 (
     id                             serial not null,
+    reference_id                   varchar(40),
+    reference_source_id            integer,
     last_name                      varchar(30),
     first_name                     varchar(20),
     middle_name                    varchar(20),
-    type_id                        integer not null,
+    type_id                        integer,
     npi                            varchar(10)
 );
 
@@ -705,7 +706,7 @@ create table pws_violation
     st_asgn_ident_cd               char(12) not null,
     series                         varchar(64) not null,
     violation_date                 date not null,
-    sample_id                      integer not null
+    sample_id                      integer
 );
 
 create table qaevent
@@ -727,7 +728,7 @@ create table qc
     type_id                        integer,
     inventory_item_id              integer,
     source                         varchar(30) not null,
-    is_active                      char(1)
+    is_active                      char(1) not null
 );
 
 create table qc_analyte
@@ -833,7 +834,7 @@ create table sample_item
     source_of_sample_id            integer,
     source_other                   varchar(40),
     container_id                   integer,
-    container_reference            varchar(20),
+    container_reference            varchar(40),
     quantity                       float,
     unit_of_measure_id             integer
 );
@@ -892,6 +893,16 @@ create table sample_project
     is_permanent                   char(1) not null
 );
 
+create table sample_pt
+(
+    id                             serial not null,
+    sample_id                      integer not null,
+    pt_provider_id                 integer not null,
+    series                         varchar(50) not null,
+    due_date                       timestamp,
+    additional_domain              char(1)
+);
+
 create table sample_qaevent
 (
     id                             serial not null,
@@ -914,6 +925,16 @@ create table sample_sdwis
     priority                       integer,
     location                       varchar(40),
     collector                      varchar(20)
+);
+
+create table scriptlet
+(
+    id                             serial not null,
+    name                           varchar(40) not null,
+    bean                           varchar(255) not null,
+    is_active                      char(1) not null,
+    active_begin                   date not null,
+    active_end                     date not null
 );
 
 create table section
@@ -1258,310 +1279,3 @@ create table worksheet_result
     value_30                       varchar(80),
     change_flags_id                integer
 );
-
--------------------------------------------------------------------------------
---
--- views
---
--------------------------------------------------------------------------------
-
-CREATE OR REPLACE VIEW analysis_view AS
-   SELECT s.id AS sample_id, s.domain, s.accession_number, s.received_date, s.collection_date,
-          s.collection_time, s.entered_date,
-      CASE
-         WHEN spw.organization_id IS NOT NULL THEN spw_org.name
-         WHEN spw.report_to_name IS NOT NULL THEN spw.report_to_name
-         ELSE o.name
-      END AS primary_organization_name,
-      CASE
-          WHEN s.domain = 'E' THEN
-             CASE
-                WHEN sen.priority IS NOT NULL THEN '[pri]' || sen.priority || ' '
-                ELSE ''
-             END ||
-             CASE
-                WHEN p.name IS NOT NULL THEN '[prj]' || btrim(p.name) || ' '
-                ELSE ''
-             END ||
-             CASE
-                WHEN sen.location IS NOT NULL THEN '[loc]' || sen.location
-                ELSE ''
-             END
-          WHEN s.domain = 'W' THEN
-             CASE
-                WHEN spw.owner IS NOT NULL THEN '[own]' || spw.owner
-                ELSE NULL
-             END
-          WHEN s.domain = 'S' THEN
-             CASE
-                WHEN pws.name IS NOT NULL THEN '[pws]' || pws.name || ' '
-                ELSE ''
-             END ||
-             CASE
-                WHEN ssd.facility_id IS NOT NULL THEN '[fac]' || ssd.facility_id || ' '
-                ELSE ''
-             END ||
-             CASE
-                WHEN ssd.priority IS NOT NULL THEN '[pri]' || ssd.priority
-                ELSE ''
-             END
-          ELSE NULL
-      END AS todo_description,
-      CASE
-          WHEN s.domain = 'E' THEN
-             CASE
-                WHEN sen.location IS NOT NULL THEN '[loc]' || sen.location || ' '
-                ELSE NULL
-             END ||
-             CASE
-                WHEN o.name IS NOT NULL THEN '[rpt]' || o.name
-                ELSE ''
-             END
-          WHEN s.domain = 'S' THEN
-             CASE
-                WHEN ssd.location IS NOT NULL THEN '[loc]' || ssd.location || ' '
-                ELSE ''
-             END ||
-             CASE
-                WHEN o.name IS NOT NULL THEN '[rpt]' || o.name
-                ELSE ''
-             END
-          WHEN s.domain = 'W' THEN
-             CASE
-                WHEN spw.location IS NOT NULL THEN '[loc]' || spw.location
-                ELSE NULL
-             END
-          ELSE NULL
-      END AS worksheet_description,
-      CASE
-          WHEN s.domain = 'E' THEN sen.priority
-          WHEN s.domain = 'S' THEN ssd.priority
-          ELSE NULL
-      END AS priority, t.id AS test_id, t.name AS test_name, m.name AS method_name,
-                       t.time_ta_average, t.time_holding, si.type_of_sample_id,
-                       a.id AS analysis_id, a.status_id AS analysis_status_id,
-                       sec.id AS section_id, sec.name AS section_name, a.available_date,
-                       a.started_date, a.completed_date, a.released_date,
-      CASE
-          WHEN sqa.id IS NOT NULL OR aqa.id IS NOT NULL THEN 'Y'
-          ELSE 'N'
-      END AS analysis_result_override, a.unit_of_measure_id, tw.format_id AS worksheet_format_id
-   FROM sample s
-   JOIN sample_item si ON s.id = si.sample_id
-   JOIN analysis a ON si.id = a.sample_item_id
-   JOIN test t ON a.test_id = t.id
-   JOIN method m ON t.method_id = m.id
-   JOIN section sec ON a.section_id = sec.id
-   LEFT JOIN sample_environmental sen ON s.id = sen.sample_id
-   LEFT JOIN (sample_private_well spw LEFT JOIN organization spw_org ON spw.organization_id = spw_org.id) ON s.id = spw.sample_id
-   LEFT JOIN (sample_sdwis ssd LEFT JOIN pws ON ssd.pws_id = pws.id) ON s.id = ssd.sample_id
-   LEFT JOIN (sample_organization so LEFT JOIN organization o ON so.organization_id = o.id) ON s.id = so.sample_id AND
-              so.type_id = (SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'org_report_to')
-   LEFT JOIN (sample_project sp LEFT JOIN project p ON sp.project_id = p.id) ON s.id = sp.sample_id AND
-              sp.is_permanent = 'Y'
-   LEFT JOIN (sample_qaevent sqa LEFT JOIN qaevent sq ON sqa.qaevent_id = sq.id) ON s.id = sqa.sample_id AND
-              sqa.type_id = (SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'qaevent_override')
-   LEFT JOIN (analysis_qaevent aqa LEFT JOIN qaevent aq ON aqa.qaevent_id = aq.id) ON a.id = aqa.analysis_id AND
-              aqa.type_id = (( SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'qaevent_override'))
-   LEFT JOIN test_worksheet tw ON tw.test_id = t.id;
-  
-CREATE OR REPLACE VIEW sample_patient_view AS
-   SELECT s.id AS sample_id, p.id AS patient_id
-   FROM sample s
-   JOIN sample_neonatal sn ON s.id = sn.sample_id
-   JOIN patient p ON sn.patient_id = p.id
- UNION
-   SELECT s.id AS sample_id, p.id AS patient_id
-   FROM sample s
-   JOIN sample_clinical sc ON s.id = sc.sample_id
-   JOIN patient p ON sc.patient_id = p.id;  
-
-CREATE OR REPLACE VIEW test_analyte_view AS
-   SELECT ca.id, t.id AS test_id, t.name AS test_name, m.id AS method_id,
-          m.name AS method_name, t.is_active AS test_is_active,
-          t.active_begin AS test_analyte_view, t.active_end AS test_active_end,
-          ra.id AS row_test_analyte_id, ra.analyte_id AS row_analyte_id,
-          raa.name AS row_analyte_name, ca.analyte_id AS col_analyte_id,
-          caa.name AS col_analyte_name
-   FROM test t
-   JOIN method m ON m.id = t.method_id
-   JOIN test_analyte ra ON ra.test_id = t.id
-   JOIN test_analyte ca ON ca.test_id = t.id
-   JOIN analyte raa ON raa.id = ra.analyte_id
-   JOIN analyte caa ON caa.id = ca.analyte_id
-  WHERE ra.test_id = ca.test_id AND
-        ra.sort_order = (SELECT max(ta.sort_order) AS max
-                         FROM test_analyte ta
-                         WHERE ta.test_id = t.id AND ta.row_group = ca.row_group AND
-                               ta.is_column = 'N' AND ta.sort_order <= ca.sort_order)
-  ORDER BY t.name, m.name, ra.sort_order, ca.sort_order;  
-
-CREATE OR REPLACE VIEW todo_sample_view AS
-   SELECT s.id AS sample_id, s.domain, s.accession_number, s.received_date, s.collection_date,
-          s.collection_time,
-      CASE
-         WHEN spw.organization_id IS NOT NULL THEN spw_org.name
-         WHEN spw.report_to_name IS NOT NULL THEN spw.report_to_name
-         ELSE o.name
-      END AS primary_organization_name,
-      CASE
-         WHEN s.domain = 'E' THEN
-            CASE
-               WHEN sen.priority IS NOT NULL THEN '[pri]' || sen.priority || ' '
-               ELSE ''
-            END ||
-            CASE
-               WHEN p.name IS NOT NULL THEN '[prj]' || btrim(p.name) || ' '
-               ELSE ''
-            END ||
-            CASE
-               WHEN sen.location IS NOT NULL THEN '[loc]' || sen.location
-               ELSE ''
-            END
-         WHEN s.domain = 'W' THEN
-            CASE
-                WHEN spw.owner IS NOT NULL THEN '[own]' || spw.owner
-                ELSE NULL
-            END
-         WHEN s.domain = 'S' THEN
-            CASE
-                WHEN pws.name IS NOT NULL THEN '[pws]' || pws.name || ' '
-                ELSE ''
-            END ||
-            CASE
-                WHEN ssd.facility_id IS NOT NULL THEN '[fac]' || ssd.facility_id || ' '
-                ELSE ''
-            END ||
-            CASE
-                WHEN ssd.priority IS NOT NULL THEN '[pri]' || ssd.priority
-                ELSE ''
-            END
-         ELSE NULL
-      END AS description, s.status_id AS sample_status_id,
-      CASE
-         WHEN sqa.id IS NOT NULL OR (s.id IN (
-               SELECT sample_item.sample_id
-               FROM sample_item, analysis, analysis_qaevent
-               WHERE analysis.sample_item_id = sample_item.id AND
-                     analysis_qaevent.analysis_id = analysis.id AND
-                     analysis_qaevent.type_id = (SELECT dictionary.id
-                                                 FROM dictionary
-                                                 WHERE dictionary.system_name = 'qaevent_override') AND
-                     sample_item.sample_id = s.id)) THEN 'Y'
-         ELSE 'N'
-      END AS sample_result_override
-   FROM sample s
-   JOIN sample_item si ON s.id = si.sample_id
-   LEFT JOIN sample_environmental sen ON s.id = sen.sample_id
-   LEFT JOIN (sample_private_well spw LEFT JOIN organization spw_org ON spw.organization_id = spw_org.id) ON s.id = spw.sample_id
-   LEFT JOIN (sample_sdwis ssd LEFT JOIN pws ON ssd.pws_id = pws.id) ON s.id = ssd.sample_id
-   LEFT JOIN (sample_organization so LEFT JOIN organization o ON so.organization_id = o.id) ON s.id = so.sample_id AND
-              so.type_id = (SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'org_report_to')
-   LEFT JOIN (sample_project sp LEFT JOIN project p ON sp.project_id = p.id) ON s.id = sp.sample_id AND
-              sp.is_permanent = 'Y'
-   LEFT JOIN (sample_qaevent sqa LEFT JOIN qaevent sq ON sqa.qaevent_id = sq.id) ON s.id = sqa.sample_id AND
-              sqa.type_id = (SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'qaevent_override');
-
-CREATE OR REPLACE VIEW worksheet_analysis_view AS
-   SELECT wa.id, wa.worksheet_item_id, wi.worksheet_id,
-      CASE
-         WHEN wa.analysis_id IS NOT NULL THEN s.accession_number::character(10)
-         WHEN wa.qc_lot_id IS NOT NULL THEN
-            CASE
-               WHEN wa.from_other_id IS NOT NULL THEN wi2.worksheet_id || '.' || wi2."position"
-               WHEN wa.from_other_id IS NULL THEN wi.worksheet_id || '.' || wi."position"
-               ELSE NULL
-            END
-            ELSE NULL
-      END AS accession_number, wa.analysis_id, wa.qc_lot_id, q.id AS qc_id,
-             wa.worksheet_analysis_id, wa.system_users, wa.started_date, wa.completed_date,
-             wa.from_other_id, wa.change_flags_id,
-      CASE
-         WHEN wa.analysis_id IS NOT NULL THEN
-            CASE
-               WHEN s.domain = 'E' THEN
-                  CASE
-                     WHEN sen.location IS NOT NULL THEN '[loc]' || sen.location || ' '
-                     ELSE ''
-                  END ||
-                  CASE
-                     WHEN o.name IS NOT NULL THEN '[rpt]' || o.name
-                     ELSE ''
-                  END
-               WHEN s.domain = 'S' THEN
-                  CASE
-                     WHEN ssd.location IS NOT NULL THEN ('[loc]' || ssd.location) || ' '
-                     ELSE ''
-                  END ||
-                  CASE
-                     WHEN o.name IS NOT NULL THEN '[rpt]' || o.name
-                     ELSE ''
-                  END
-               WHEN s.domain = 'W' THEN
-                  CASE
-                     WHEN spw.location IS NOT NULL THEN ('[loc]' || spw.location) || ' '
-                     ELSE ''
-                  END ||
-                  CASE
-                     WHEN o.name IS NOT NULL THEN '[rpt]' || o.name
-                     ELSE ''
-                  END
-               WHEN s.domain = 'W' THEN
-                  CASE
-                     WHEN spw.location IS NOT NULL THEN '[loc]' || spw.location
-                     ELSE NULL
-                  END
-               ELSE NULL
-            END
-         WHEN wa.qc_lot_id IS NOT NULL THEN btrim(q.name) || ' (' || ql.lot_number || ')'
-         ELSE NULL
-      END AS description, t.id AS test_id, t.name AS test_name, m.name AS method_name,
-             t.time_ta_average, t.time_holding, sec.name AS section_name, a.unit_of_measure_id,
-             d.entry AS unit_of_measure, a.status_id, s.collection_date, s.collection_time,
-             s.received_date,
-      CASE
-         WHEN s.domain = 'E' THEN sen.priority
-         WHEN s.domain = 'S' THEN ssd.priority
-         ELSE NULL::integer
-      END AS priority
-   FROM worksheet_analysis wa
-   JOIN worksheet_item wi ON wa.worksheet_item_id = wi.id
-   LEFT JOIN (worksheet_analysis wa2
-   LEFT JOIN worksheet_item wi2 ON wa2.worksheet_item_id = wi2.id) ON wa.from_other_id = wa2.id
-   LEFT JOIN (qc_lot ql LEFT JOIN qc q ON ql.qc_id = q.id) ON wa.qc_lot_id = ql.id
-   LEFT JOIN (analysis a
-              JOIN test t ON a.test_id = t.id
-              JOIN method m ON t.method_id = m.id
-              JOIN section sec ON a.section_id = sec.id
-              JOIN sample_item si ON a.sample_item_id = si.id
-              JOIN sample s ON si.sample_id = s.id
-              LEFT JOIN sample_environmental sen ON s.id = sen.sample_id
-              LEFT JOIN sample_private_well spw ON s.id = spw.sample_id
-              LEFT JOIN organization spw_org ON spw.organization_id = spw_org.id
-              LEFT JOIN sample_sdwis ssd ON s.id = ssd.sample_id
-              LEFT JOIN pws ON ssd.pws_id = pws.id
-              LEFT JOIN sample_organization so ON s.id = so.sample_id AND
-                        so.type_id = ( SELECT dictionary.id FROM dictionary WHERE dictionary.system_name = 'org_report_to')
-              LEFT JOIN organization o ON so.organization_id = o.id
-              LEFT JOIN dictionary d ON a.unit_of_measure_id = d.id) ON wa.analysis_id = a.id;
-
-CREATE OR REPLACE VIEW worksheet_qc_result_view AS
-   SELECT wqr.id, wqr.worksheet_analysis_id, wqr.sort_order,
-          wqr.value_1, wqr.value_2, wqr.value_3, wqr.value_4, wqr.value_5,
-          wqr.value_6, wqr.value_7, wqr.value_8, wqr.value_9, wqr.value_10,
-          wqr.value_11, wqr.value_12, wqr.value_13, wqr.value_14, wqr.value_15,
-          wqr.value_16, wqr.value_17, wqr.value_18, wqr.value_19, wqr.value_20,
-          wqr.value_21, wqr.value_22, wqr.value_23, wqr.value_24, wqr.value_25,
-          wqr.value_26, wqr.value_27, wqr.value_28, wqr.value_29, wqr.value_30,
-          q.name AS qc_name, q.type_id AS qc_type_id, q.source, ql.lot_number,
-          ql.location_id, ql.prepared_date, ql.prepared_volume,
-          ql.prepared_unit_id, ql.prepared_by_id, ql.usable_date, ql.expire_date,
-          qa.analyte_id, qa.type_id AS qc_analyte_type_id, qa.value AS
-          expected_value, w.format_id
-   FROM worksheet_qc_result wqr
-   JOIN worksheet_analysis wa ON wqr.worksheet_analysis_id = wa.id
-   JOIN worksheet_item wi ON wa.worksheet_item_id = wi.id
-   JOIN worksheet w ON wi.worksheet_id = w.id
-   JOIN qc_analyte qa ON wqr.qc_analyte_id = qa.id
-   JOIN qc_lot ql ON wa.qc_lot_id = ql.id
-   JOIN qc q ON ql.qc_id = q.id;  

@@ -1,0 +1,38 @@
+1|coliform mpn panel|Panel - Total Coliform & E.coli mpn & nitrate - privates
+2|coliform pa panel|Panel - Total coliform, E.coli P/A & Nitrate - Private wells
+3|sdwa coliform mpn am|Panel- SDWA Coliform MPN am
+4|sdwa coliform mpn pm|Panel-SDWA Coliform MPN pm
+5|sdwa coliform pa am|Panel- SDWA Coliform PA am
+6|sdwa coliform pa pm|Panel- SDWA Coliform PA pm
+7|giardia crypto bulk|Panel- Giardia Crypto for Bulk, filter, aux groups
+24|lang stab aqua|Langlier Index Stability Index Aquapoise pH
+9|hpc ice|Panal - Total Coliform & HPC for Ice Samples
+10|pool|Panel - Pool coliforms, spa coliforms recheck & aux data
+11|spa|Panel - Total Coliform & Pseudomonas for Spas
+12|spa pos pseudo check|Panal - Spa recheck for pseudomonas ONLY
+13|rad alpha exclu only|Panel - gross alpha (excluding uranium) only
+14|rad alpha exclu,ra,u|Panel - gross alpha (excluding), ra 226 and 228, uran
+15|rad alpha inclu, ra|Panel - gross alpha (including), radium 226 and 228
+16|rad composit default|Panel - ordering a composite sample (no result) plus aux
+17|rad composited|Panel - bottle poured off in lab (composited) plus aux
+18|rad radiums only|Panel - radium 226 and 228, combined only
+19|air toxics|Panel - Air Toxics Canisters
+20|sdwa thm haa|Panel - THM and HAA tests for drinking water
+21|sdwa voc soc|Panel - Volatiles, Semivols, and Pests for drinking water
+22|tclp metals organics|Panel - Metals, Volatiles, Semivols, and Pests
+23|sdwa iocs|Panel - inorganics for public drinking water
+25|arbo panel|Arbovirus IgM Antibody Panel
+26|asper panel|Aspergillus Antibody Panel
+27|ehrlichia panel|Ehrlichia IgG Antibody Panel
+28|enteric cult panel|enteric culture panel
+29|enteric sero panel|enteric sero panel
+30|fungal sero panel cf|Fungal Serology Panel by Complement Fixation
+31|fungal sero panel id|Fungal Serolgy Antibody Panel by ID
+32|hsv ab panel|HSV IgG/IgM Panel
+33|hsv igg ab panel|HSV IgG Ab Panel
+34|lyme wb panel|Lyme Antibody Western Blot Panel
+35|torch panel|Torch Panel
+36|legionella panel|legionella panel
+37|o and p panel|o and p panel
+38|afb clinical panel|afb culture and smear
+39|flu panel|Influenza Panel (Influenza A & B PCR)
