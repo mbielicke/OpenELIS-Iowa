@@ -194,10 +194,10 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
         seroCol = -1;
         for (IdNameVO col : worksheetColumns) {
             if ("final_value".equals(col.getName())) {
-                resultCol = col.getId() - 10;
+                resultCol = col.getId();
             } else if ("serogroup".equals(col.getName())) {
-                if (changedCol.equals(col.getId() + 1))
-                    seroCol = col.getId() - 10;
+                if (changedCol.equals(col.getId() + 12))
+                    seroCol = col.getId();
                 else
                     return;
             }
@@ -226,7 +226,7 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
              */
             res.setValueAt(resultCol, dict.getEntry());
             proxy.log(Level.FINE, "Setting the value of result as: " + dict.getEntry(), null);
-            data.addRerun(String.valueOf(resultCol + 11));
+            data.addRerun(String.valueOf(resultCol + 12));
             data.addChangedUid(Constants.uid().getResult(res.getId()));
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
