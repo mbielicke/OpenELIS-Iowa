@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -5936,6 +5936,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Path to eorder import file directory is missing. Please contact the system administrator.")
   @Key("eorderImport.missingPath")
   String eorderImport_missingPath();
+
+  /**
+   * Translated "No Order-In Profile preference found for organization id {0,number,#0}.".
+   * 
+   * @return translated "No Order-In Profile preference found for organization id {0,number,#0}."
+   */
+  @DefaultMessage("No Order-In Profile preference found for organization id {0,number,#0}.")
+  @Key("eorderImport.missingProfilePreferenceParameter")
+  String eorderImport_missingProfilePreferenceParameter(Integer arg0);
 
   /**
    * Translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.".
