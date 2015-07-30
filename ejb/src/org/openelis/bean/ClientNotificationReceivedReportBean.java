@@ -179,6 +179,7 @@ public class ClientNotificationReceivedReportBean {
                 qaOverride = null;
 
                 accessionNumbers.add(accession);
+                lastAccession = accession;
             }
             if (data.getSampleQaeventId() != null || data.getAnalysisQaeventId() != null)
                 qaOverride = "YES";
