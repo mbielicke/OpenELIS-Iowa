@@ -128,7 +128,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                     data = row.getData();
                     if (data.startsWith("R")) {
                         rgRow = resultGroupMap.get(Integer.valueOf(data.substring(1)));
-                        rg = rgRow.get(event.getCol() + 9);
+                        rg = rgRow.get(event.getCol() - 1);
     
                         resultKey = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
                         model = dictionaryResultMap.get(resultKey);

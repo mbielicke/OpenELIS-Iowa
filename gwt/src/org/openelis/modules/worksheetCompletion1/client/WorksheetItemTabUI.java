@@ -273,7 +273,7 @@ public class WorksheetItemTabUI extends Screen {
                             event.cancel();
                         } else if (event.getCol() >= 12) {
                             rgRow = resultGroupMap.get(((WorksheetResultViewDO)data).getTestAnalyteId());
-                            rg = rgRow.get(event.getCol() - 1);
+                            rg = rgRow.get(event.getCol() - 12);
                             testId = waVDO.getTestId();
                             unitId = waVDO.getUnitOfMeasureId();
 
