@@ -151,19 +151,23 @@ public class ClientNotificationReleasedReportBean {
                         /*
                          * reference field 1 should be collector
                          */
-                        if (!data.getReferenceField1().contains(filterValue))
+                        if (DataBaseUtil.isEmpty(data.getReferenceField1()) ||
+                            !data.getReferenceField1().contains(filterValue))
                             continue;
                         break;
                     case "R:":
                         /*
                          * reference field 3 should be client reference string
                          */
-                        if (!data.getReferenceField3().contains(filterValue))
+                        if (DataBaseUtil.isEmpty(data.getReferenceField3()) ||
+                            !data.getReferenceField3().contains(filterValue))
                             continue;
                         break;
                     case "P:":
-                        // TODO add provider to data object
-                        if (!data.getReferenceField2().contains(filterValue))
+                        // for clinical domain samples, reference field 1 should
+                        // be provider last name
+                        if (DataBaseUtil.isEmpty(data.getReferenceField1()) ||
+                            !data.getReferenceField1().contains(filterValue))
                             continue;
                         break;
                     default:

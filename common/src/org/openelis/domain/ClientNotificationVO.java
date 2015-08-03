@@ -43,8 +43,8 @@ public class ClientNotificationVO implements Serializable {
     private static final long serialVersionUID = 1L;
     protected Integer         accessionNumber, analysisId, analysisQaeventId, sampleQaeventId;
     protected Datetime        collectionDate, collectionTime, receivedDate;
-    protected String          email, projectName, providerLastName, referenceField1,
-                              referenceField2, referenceField3;
+    protected String          email, projectName, referenceField1, referenceField2,
+                              referenceField3;
 
     public ClientNotificationVO() {
     }
@@ -53,7 +53,7 @@ public class ClientNotificationVO implements Serializable {
                                 Date receivedDate, String email, Integer sampleQaeventId,
                                 Integer analysisQaeventId, String referenceField1,
                                 String referenceField2, String referenceField3, String projectName,
-                                String providerLastName, Integer analysisId) {
+                                Integer analysisId) {
         if (collectionTime instanceof Time)
             collectionTime = new Date(collectionTime.getTime());
         setAccessionNumber(accessionNumber);
@@ -67,7 +67,6 @@ public class ClientNotificationVO implements Serializable {
         setReferenceField2(referenceField2);
         setReferenceField3(referenceField3);
         setProjectName(projectName);
-        setProviderLastName(providerLastName);
         setAnalysisId(analysisId);
     }
 
@@ -157,14 +156,6 @@ public class ClientNotificationVO implements Serializable {
 
     public void setProjectName(String projectName) {
         this.projectName = DataBaseUtil.trim(projectName);
-    }
-
-    public String getProviderLastName() {
-        return providerLastName;
-    }
-
-    public void setProviderLastName(String providerLastName) {
-        this.providerLastName = DataBaseUtil.trim(providerLastName);
     }
 
     public Integer getAnalysisId() {
