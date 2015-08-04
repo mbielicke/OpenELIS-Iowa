@@ -44,7 +44,7 @@
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
-            <w:CheckMenuItem ui:field="fromTRF" display="{msg.sample_fromTRF}" />
+            <w:CheckMenuItem ui:field="addWithTRF" display="{msg.sample_addWithTRF}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >

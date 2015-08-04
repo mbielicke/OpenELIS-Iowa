@@ -233,7 +233,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     historySampleQA, historyAnalysisQA, historyAuxData;
 
     @UiField
-    protected CheckMenuItem                             fromTRF;
+    protected CheckMenuItem                             addWithTRF;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -281,7 +281,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected TRFAttachmentScreenUI                      trfAttachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -555,14 +555,15 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                fromTRF.setEnabled(true);
+                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                                      userPermission.hasAddPermission());
             }
         });
 
-        fromTRF.addCommand(new Command() {
+        addWithTRF.addCommand(new Command() {
             @Override
             public void execute() {
-                fromTRF();
+                addWithTRF();
             }
         });
 
@@ -2671,21 +2672,22 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     }
 
     /**
-     * If the checkbox of the menu item "From TRF" is checked, then opens the
-     * Attachment screen and executes the query to fetch unattached attachments
-     * for this domain, if it's unchecked then closes that screen if it's open.
+     * If the checkbox of the menu item "Add With TRF" is checked, opens the
+     * data entry attachment screen and executes the query to fetch unattached
+     * attachments for this domain; if the checkbox is unchecked, closes
+     * the attachment screen if it's open.
      */
-    protected void fromTRF() {
+    protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
 
-        if ( !fromTRF.isChecked()) {
+        if ( !addWithTRF.isChecked()) {
             /*
              * the user unchecked the checkbox for showing Attachment screen, so
              * try to close that screen if it's open, but recheck the checkbox
              * to make sure that if the screen can't be closed due to some
              * record locked on it, the checkbox doesn't stay unchecked
              */
-            fromTRF.setCheck(true);
+            addWithTRF.setCheck(true);
             if (trfAttachmentScreen != null)
                 trfAttachmentScreen.getWindow().close();
             return;
@@ -2707,32 +2709,21 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             if (trfAttachmentScreen == null) {
                 trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public void search() {
-                        QueryData field;
-
-                        /*
-                         * query for the TRFs for this domain
-                         */
-                        query = new Query();
-                        field = new QueryData();
-                        field.setQuery(attachmentPatternVariable.getValue());
-                        query.setFields(field);
-                        managers = null;
-
-                        executeQuery(query);
+                    public String getDescription() {
+                        return attachmentPatternVariable.getValue();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().trfAttachment_trfAttachment());
+            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
             window.setSize("610px", "520px");
             trfAttachmentScreen.setWindow(window);
             window.setContent(trfAttachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "trfAttachment");
+            OpenELIS.getBrowser().addWindow(window, "envTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.search();
+            trfAttachmentScreen.search(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -2744,7 +2735,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                          */
                         screen.window.close();
                     else
-                        fromTRF.setCheck(false);
+                        addWithTRF.setCheck(false);
                 }
             });
         } catch (Throwable e) {
@@ -4358,8 +4349,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -4405,7 +4396,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4419,8 +4410,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

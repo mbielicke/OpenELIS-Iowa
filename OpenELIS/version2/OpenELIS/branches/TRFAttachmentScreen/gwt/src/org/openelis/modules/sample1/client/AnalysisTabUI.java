@@ -299,7 +299,7 @@ public class AnalysisTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 type.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                type.setQueryMode(isState(QUERY));
+                type.setQueryMode(isState(QUERY));                
             }
 
             public Widget onTab(boolean forward) {

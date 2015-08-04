@@ -366,7 +366,7 @@ public class OrganizationScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? name : null;
+                return forward ? name : isActive;
             }
         });
 
@@ -385,7 +385,7 @@ public class OrganizationScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? city : id;
+                return forward ? multipleUnit : id;
             }
         });
 
@@ -404,7 +404,7 @@ public class OrganizationScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? multipleUnit : name;
+                return forward ? state : streetAddress;
             }
         });
 
@@ -427,7 +427,7 @@ public class OrganizationScreenUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? state : city;
+                                 return forward ? streetAddress : name;
                              }
                          });
 
@@ -446,7 +446,7 @@ public class OrganizationScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? zipCode : multipleUnit;
+                return forward ? zipCode : city;
             }
         });
 
@@ -469,7 +469,7 @@ public class OrganizationScreenUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? streetAddress : state;
+                                 return forward ? country : state;
                              }
                          });
 
@@ -492,7 +492,7 @@ public class OrganizationScreenUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? country : zipCode;
+                                 return forward ? city : multipleUnit;
                              }
                          });
 
@@ -512,6 +512,10 @@ public class OrganizationScreenUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  country.setEnabled(isState(QUERY, ADD, UPDATE));
                                  country.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? parentName : zipCode;
                              }
                          });
 
@@ -589,7 +593,7 @@ public class OrganizationScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? name : parentName;
+                return forward ? id : parentName;
             }
         });
 
@@ -727,7 +731,6 @@ public class OrganizationScreenUI extends Screen {
 
         // country dropdown
         model = new ArrayList<Item<String>>();
-        model.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             row = new Item<String>(d.getEntry(), d.getEntry());
@@ -739,7 +742,6 @@ public class OrganizationScreenUI extends Screen {
 
         // state dropdown
         model = new ArrayList<Item<String>>();
-        model.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             row = new Item<String>(d.getEntry(), d.getEntry());
