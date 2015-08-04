@@ -206,19 +206,12 @@ public class SampleManagerOrderHelperBean {
         HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap;
         HashMap<String, ArrayList<OrderResult>> resultMap;
         HashMap<String, String> dataMap, testMap;
-        Integer accession, orderInProfileId;
+        Integer accession;
         SampleDO data;
         SampleTestReturnVO ret;
 
-        try {
-            orderInProfileId = dictionaryCache.getIdBySystemName("profile_order_in");
-        } catch (Exception anyE) {
-            log.log(Level.SEVERE, "Dictionary with system name 'profile_order_in' is not available");
-            throw new Exception("Dictionary with system name 'profile_order_in' is not available");
-        }
-
         profileIndexMap = new HashMap<Integer, Integer>(); 
-        profileIndexMap.put(orderInProfileId, 0);
+        profileIndexMap.put(Constants.dictionary().PROFILE_ORDER_IN, 0);
         
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
@@ -747,7 +740,7 @@ public class SampleManagerOrderHelperBean {
                                 }
                             }
                         } catch (NotFoundException nfE2) {
-                            log.log(Level.WARNING, nfE2.getMessage(), nfE2);
+                            log.log(Level.WARNING, Messages.get().eorderImport_missingProfilePreferenceParameter(orgId));
                         }
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
@@ -1238,11 +1231,12 @@ public class SampleManagerOrderHelperBean {
                                     resultIndex = analyteResultIndexMap.get(analyteId);
                                 }
                                 if (resultIndex != null) {
+                                    dictId = null;
                                     rf = tMan.getFormatter();
                                     rVDO = getResults(sm).get(resultIndex);
-                                    if (orderResult.result.startsWith("extTerm:")) {
+                                    if (orderResult.vocabTerm != null) {
                                         dictId = getLocalTermFromCodedElement("result",
-                                                                              orderResult.result,
+                                                                              orderResult.vocabTerm,
                                                                               externalTermMap,
                                                                               Constants.table().DICTIONARY,
                                                                               profileIndexMap,
@@ -1258,7 +1252,7 @@ public class SampleManagerOrderHelperBean {
                                                                              rf);
                                             } catch (NotFoundException nfE) {
                                                 e.add(new FormErrorWarning(Messages.get()
-                                                                                   .eorderImport_dictionaryNotFound(orderResult.result)));
+                                                                                   .eorderImport_dictionaryNotFound(orderResult.vocabTerm)));
                                             } catch (ParseException parE) {
                                                 e.add(new FormErrorWarning(Messages.get()
                                                                                    .eorderImport_invalidValue(dictDO.getEntry(),
@@ -1270,10 +1264,12 @@ public class SampleManagerOrderHelperBean {
                                             } catch (Exception anyE) {
                                                 log.log(Level.SEVERE, anyE.getMessage(), anyE);
                                                 e.add(new FormErrorWarning(Messages.get()
-                                                                                   .eorderImport_dictionaryLookupFailure(orderResult.result)));
+                                                                                   .eorderImport_dictionaryLookupFailure(orderResult.vocabTerm)));
                                             }
                                         }
-                                    } else {
+                                    }
+                                    
+                                    if (dictId == null) {
                                         try {
                                             ResultHelper.formatValue(rVDO,
                                                                      orderResult.result,
@@ -1520,27 +1516,24 @@ public class SampleManagerOrderHelperBean {
                                            XMLUtil.getNodeText((Element)identNode, "coding_system");
 
                             valueNode = ((Element)obvNode).getElementsByTagName("value").item(0);
-                            if ("CE".equals(XMLUtil.getNodeText((Element)obvNode, "value_type"))) {
-                                termKey2 = "extTerm:" +
-                                           XMLUtil.getNodeText((Element)valueNode, "term");
-                                if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode,
-                                                                                     "term")))
-                                    externalTermMap.put(XMLUtil.getNodeText((Element)valueNode,
+                            termKey2 = "extTerm:" +
+                                       XMLUtil.getNodeText((Element)valueNode, "term");
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode,
+                                                                                 "term")))
+                                externalTermMap.put(XMLUtil.getNodeText((Element)valueNode,
+                                                                        "term"),
+                                                    new ArrayList<ExchangeExternalTermViewDO>());
+                            if (((Element)valueNode).getElementsByTagName("coding_system") != null &&
+                                ((Element)valueNode).getElementsByTagName("coding_system")
+                                                    .getLength() > 0 &&
+                                XMLUtil.getNodeText((Element)valueNode, "coding_system") != null)
+                                termKey2 += "extCS:" +
+                                            XMLUtil.getNodeText((Element)valueNode,
+                                                                "coding_system");
+                            results.add(new OrderResult(termKey,
+                                                        XMLUtil.getNodeText((Element)valueNode,
                                                                             "term"),
-                                                        new ArrayList<ExchangeExternalTermViewDO>());
-                                if ( ((Element)valueNode).getElementsByTagName("coding_system") != null &&
-                                    ((Element)valueNode).getElementsByTagName("coding_system")
-                                                        .getLength() > 0 &&
-                                    XMLUtil.getNodeText((Element)valueNode, "coding_system") != null)
-                                    termKey2 += "extCS:" +
-                                                XMLUtil.getNodeText((Element)valueNode,
-                                                                    "coding_system");
-                                results.add(new OrderResult(termKey, termKey2));
-                            } else {
-                                results.add(new OrderResult(termKey,
-                                                            XMLUtil.getNodeText((Element)valueNode,
-                                                                                "term")));
-                            }
+                                                        termKey2));
                         }
 
                         noteText = "";
@@ -1561,7 +1554,7 @@ public class SampleManagerOrderHelperBean {
                                     }
                                 }
                             }
-                            results.add(new OrderResult("note", noteText));
+                            results.add(new OrderResult("note", noteText, null));
                         }
                     }
                 } else {
@@ -2017,11 +2010,12 @@ public class SampleManagerOrderHelperBean {
     }
 
     private class OrderResult {
-        String analyte, result;
+        String analyte, result, vocabTerm;
 
-        public OrderResult(String analyte, String result) {
+        public OrderResult(String analyte, String result, String vocabTerm) {
             this.analyte = analyte;
             this.result = result;
+            this.vocabTerm = vocabTerm;
         }
     }
 

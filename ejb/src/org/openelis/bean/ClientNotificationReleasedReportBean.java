@@ -237,7 +237,7 @@ public class ClientNotificationReleasedReportBean {
          * for the remaining analyses. Email associated with the failed analysis
          * will get multiple emails.
          */
-        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(new ArrayList<Integer>(analysisIds));
+        anaList = analysisReportFlags.fetchByAnalysisIds(new ArrayList<Integer>(analysisIds));
         for (AnalysisReportFlagsDO anaData : anaList) {
             try {
                 analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
