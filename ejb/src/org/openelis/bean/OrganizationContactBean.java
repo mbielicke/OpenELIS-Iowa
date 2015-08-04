@@ -39,9 +39,8 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.OrganizationContact;
-import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -135,15 +134,21 @@ public class OrganizationContactBean {
     }
 
     public void validate(OrganizationContactDO data) throws Exception {
+        Integer oid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+
+        oid = data.getOrganizationId();
+        if (oid == null)
+            oid = 0;
+
         if (DataBaseUtil.isEmpty(data.getContactTypeId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getContactContactTypeId()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .organization_contactTypeRequiredException(oid)));
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getContactName()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .organization_contactNameRequiredException(oid)));
 
         if (list.size() > 0)
             throw list;

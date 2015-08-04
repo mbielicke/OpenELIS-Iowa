@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,61 +119,63 @@ import org.w3c.dom.Node;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DataExchangeXMLMapperBean {
     @EJB
-    private UserCacheBean             systemUserCache;
+    private UserCacheBean                systemUserCache;
 
     @EJB
-    private DictionaryCacheBean       dictionaryCache;
+    private DictionaryCacheBean          dictionaryCache;
 
     @EJB
-    private MethodBean                method;
+    private MethodBean                   method;
 
     @EJB
-    private ProjectBean               project;
+    private ProjectBean                  project;
 
     @EJB
-    private OrganizationBean          organization;
+    private OrganizationBean             organization;
 
     @EJB
-    private PWSBean                   pws;
+    private PWSBean                      pws;
 
     @EJB
-    private QaEventBean               qaevent;
+    private QaEventBean                  qaevent;
 
     @EJB
-    private TestBean                  test;
+    private TestBean                     test;
 
     @EJB
-    private AnalyteBean               analyte;
+    private AnalyteBean                  analyte;
 
     @EJB
-    private ExchangeExternalTermBean  exchangeExternalTerm;
+    private ExchangeExternalTermBean     exchangeExternalTerm;
 
     @EJB
-    private TestTrailerBean           testTrailer;
+    private TestTrailerBean              testTrailer;
 
     @EJB
-    private SectionCacheBean          sectionCache;
+    private SectionCacheBean             sectionCache;
 
     @EJB
-    private PanelBean                 panel;
+    private PanelBean                    panel;
 
     @EJB
-    private TestResultBean            testResult;
+    private TestResultBean               testResult;
 
     @EJB
-    private OrganizationParameterBean organizationParameter;
+    private OrganizationParameterBean    organizationParameter;
 
-    private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
-                    analytes, projects, organizations, qas, trailers, sections, panels;
+    private HashSet<Integer>             users, dicts, tests, testAnalytes, testResults, methods,
+                    analytes, projects, organizations, qas, trailers, sections;
 
-    private HashMap<String, Integer>  resultRepeat;
+    private HashMap<String, Integer>     resultRepeat;
 
-    private static SimpleDateFormat   dateFormat, timeFormat;
+    private HashMap<Integer, Datetime[]> panels;
 
-    private static Integer            ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
+    private static SimpleDateFormat      dateFormat, timeFormat;
+
+    private static Integer               ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
                     ORG_EPARTNER_AGGR;
 
-    private static final Logger       log = Logger.getLogger("openelis");
+    private static final Logger          log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -208,7 +211,8 @@ public class DataExchangeXMLMapperBean {
      * each segment can be used to nest the segments.
      */
 
-    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Date releasedStart, Date releasedEnd, Object... optional) throws Exception {
+    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Date releasedStart,
+                           Date releasedEnd, Object... optional) throws Exception {
         Boolean sampleOverridden, showValue;
         Document doc;
         Element root, header, elm, elm1;
@@ -219,416 +223,445 @@ public class DataExchangeXMLMapperBean {
         HashMap<Integer, Boolean> analyses;
         HashSet<Integer> onlyTests;
 
-        /*
-         * bunch of lookup lists that we need through the code
-         */
-        profiles = new ArrayList<Integer>();
-        onlyTests = new HashSet<Integer>();
-        analyses = new HashMap<Integer, Boolean>();
-        resultRepeat = new HashMap<String, Integer>();
-
-        /*
-         * this xml doc is for sending results
-         */
-        doc = XMLUtil.createNew("message");
-        root = doc.getDocumentElement();
-        root.setAttribute("Type", "result-out");
-
-        header = toXML(doc, cm.getExchangeCriteria());
-        root.appendChild(header);
-
-        /*
-         * either export all the analyses or just the specified tests; 
-         */
-        for (QueryData field : cm.getExchangeCriteria().getFields()) {
-            if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
-                testIds = field.getQuery().split("\\|");
-                for (String id : testIds)
-                    onlyTests.add(Integer.valueOf(id));
-                break;
-            }
-        }
-
-        /*
-         * order of preference for translations
-         */
-        if (cm.getProfiles().count() > 0) {
-            elm1 = doc.createElement("profiles");
-            for (int i = 0; i < cm.getProfiles().count(); i++ ) {
-                elm1.appendChild(toXML(doc, cm.getProfiles().getProfileAt(i)));
-                profiles.add(cm.getProfiles().getProfileAt(i).getProfileId());
-            }
-            header.appendChild(elm1);
-        }
-
-        /*
-         * first level - sample, organizations, project ...
-         */
-        root.appendChild(toXML(doc, getSample(sm)));
-
-        log.log(Level.FINE, "Adding elements for sample, domain, etc.");
-        if (getSampleEnvironmental(sm) != null) {
-            root.appendChild(toXML(doc, getSampleEnvironmental(sm)));
-
-            if (getSampleEnvironmental(sm).getLocationAddress().getId() != null)
-                root.appendChild(toXML(doc, getSampleEnvironmental(sm).getLocationAddress()));
-        } else if (getSamplePrivateWell(sm) != null) {
-            root.appendChild(toXML(doc, getSamplePrivateWell(sm)));
-
-            if (getSamplePrivateWell(sm).getReportToAddress().getId() != null)
-                root.appendChild(toXML(doc, getSamplePrivateWell(sm).getReportToAddress()));
-
-            if (getSamplePrivateWell(sm).getLocationAddress().getId() != null)
-                root.appendChild(toXML(doc, getSamplePrivateWell(sm).getLocationAddress()));
-        } else if (getSampleSDWIS(sm) != null) {
-            root.appendChild(toXML(doc, getSampleSDWIS(sm)));
-            root.appendChild(toXML(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
-        } else if (getSampleNeonatal(sm) != null) {
-            root.appendChild(toXML(doc, getSampleNeonatal(sm)));
-
-            if (getSampleNeonatal(sm).getPatient() != null) {
-                root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient()));
-
-                if (getSampleNeonatal(sm).getPatient().getAddress().getId() != null)
-                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient().getAddress()));
-            }
-
-            if (getSampleNeonatal(sm).getNextOfKin() != null) {
-                root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin()));
-
-                if (getSampleNeonatal(sm).getNextOfKin().getAddress().getId() != null)
-                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin().getAddress()));
-            }
-
-            if (getSampleNeonatal(sm).getProviderId() != null)
-                root.appendChild(toXML(doc, getSampleNeonatal(sm).getProvider()));
-        } else if (getSampleClinical(sm) != null) {
-            root.appendChild(toXML(doc, getSampleClinical(sm)));
-
-            if (getSampleClinical(sm).getPatient() != null) {
-                root.appendChild(toXML(doc, getSampleClinical(sm).getPatient()));
-
-                if (getSampleClinical(sm).getPatient().getAddress().getId() != null)
-                    root.appendChild(toXML(doc, getSampleClinical(sm).getPatient().getAddress()));
-            }
-
-            if (getSampleClinical(sm).getProviderId() != null)
-                root.appendChild(toXML(doc, getSampleClinical(sm).getProvider()));
-        }
-
-        sampleOverridden = false;
-        if (getSampleQAs(sm) != null) {
-            for (SampleQaEventViewDO sq : getSampleQAs(sm)) {
-                root.appendChild(toXML(doc, sq));
-                if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId()))
-                    sampleOverridden = true;
-            }
-        }
-
-        if (getProjects(sm) != null) {
-            for (SampleProjectViewDO p : getProjects(sm))
-                root.appendChild(toXML(doc, p));
-        }
-
-        reportTo = null;
-        if (getOrganizations(sm) != null) {
-            for (SampleOrganizationViewDO o : getOrganizations(sm)) {
-                if (Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId()))
-                    reportTo = o;
-                root.appendChild(toXML(doc, o));
-            }
-        }
-
-        /*
-         * add the report to organization's destination URL and aggregator URL
-         * to the header
-         */
-        if (reportTo != null) {
-            log.log(Level.FINE, "Fetching organization parameters for org id: "+reportTo.getOrganizationId());
-            try {
-                orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
-                if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
-                    ORG_EPARTNER_AGGR == null) {
-                    log.log(Level.SEVERE,
-                            "One or more dictionary constants for electronic partner url not initialized");
-                    return doc;
-                }
-                for (OrganizationParameterDO op : orgps) {
-                    if (ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
-                        ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
-                        ORG_EPARTNER_AGGR.equals(op.getTypeId()))
-                        header.appendChild(toXML(doc, op));
-                }
-            } catch (NotFoundException e) {
-                // ignore
-            }
-        }
-
-        if (getSampleExternalNote(sm) != null) {
+        try {
             /*
-             * put the sample note in its own group so it can be distinguished
-             * from analysis external notes
+             * bunch of lookup lists that we need through the code
              */
-            elm = doc.createElement("sample_external_notes");
-            elm.appendChild(toXML(doc, getSampleExternalNote(sm)));
-            root.appendChild(elm);
-        }
+            profiles = new ArrayList<Integer>();
+            onlyTests = new HashSet<Integer>();
+            analyses = new HashMap<Integer, Boolean>();
+            resultRepeat = new HashMap<String, Integer>();
 
-        if (getAuxiliary(sm) != null) {
-            for (AuxDataViewDO a : getAuxiliary(sm)) {
-                root.appendChild(toXML(doc, a));
-                if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
-                    a.getValue() != null)
-                    root.appendChild(toXML(doc,
-                                           "aux_data_dictionary",
-                                           a.getId(),
-                                           Integer.valueOf(a.getValue())));
+            /*
+             * this xml doc is for sending results
+             */
+            doc = XMLUtil.createNew("message");
+            root = doc.getDocumentElement();
+            root.setAttribute("Type", "result-out");
+
+            header = toXML(doc, cm.getExchangeCriteria());
+            root.appendChild(header);
+
+            /*
+             * either export all the analyses or just the specified tests;
+             */
+            for (QueryData field : cm.getExchangeCriteria().getFields()) {
+                if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
+                    testIds = field.getQuery().split("\\|");
+                    for (String id : testIds)
+                        onlyTests.add(Integer.valueOf(id));
+                    break;
+                }
             }
-        }
 
-        /*
-         * second level - sample items
-         */
-        for (SampleItemViewDO item : getItems(sm))
-            root.appendChild(toXML(doc, item));
+            /*
+             * order of preference for translations
+             */
+            if (cm.getProfiles().count() > 0) {
+                elm1 = doc.createElement("profiles");
+                for (int i = 0; i < cm.getProfiles().count(); i++ ) {
+                    elm1.appendChild(toXML(doc, cm.getProfiles().getProfileAt(i)));
+                    profiles.add(cm.getProfiles().getProfileAt(i).getProfileId());
+                }
+                header.appendChild(elm1);
+            }
 
-        /*
-         * third level - analyses
-         */
-        if (getAnalyses(sm) != null) {
-            for (AnalysisViewDO a : getAnalyses(sm)) {
+            /*
+             * first level - sample, organizations, project ...
+             */
+            root.appendChild(toXML(doc, getSample(sm)));
+
+            log.log(Level.FINE, "Adding elements for sample, domain, etc.");
+            if (getSampleEnvironmental(sm) != null) {
+                root.appendChild(toXML(doc, getSampleEnvironmental(sm)));
+
+                if (getSampleEnvironmental(sm).getLocationAddress().getId() != null)
+                    root.appendChild(toXML(doc, getSampleEnvironmental(sm).getLocationAddress()));
+            } else if (getSamplePrivateWell(sm) != null) {
+                root.appendChild(toXML(doc, getSamplePrivateWell(sm)));
+
+                if (getSamplePrivateWell(sm).getReportToAddress().getId() != null)
+                    root.appendChild(toXML(doc, getSamplePrivateWell(sm).getReportToAddress()));
+
+                if (getSamplePrivateWell(sm).getLocationAddress().getId() != null)
+                    root.appendChild(toXML(doc, getSamplePrivateWell(sm).getLocationAddress()));
+            } else if (getSampleSDWIS(sm) != null) {
+                root.appendChild(toXML(doc, getSampleSDWIS(sm)));
+                root.appendChild(toXML(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
+            } else if (getSampleNeonatal(sm) != null) {
+                root.appendChild(toXML(doc, getSampleNeonatal(sm)));
+
+                if (getSampleNeonatal(sm).getPatient() != null) {
+                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient()));
+
+                    if (getSampleNeonatal(sm).getPatient().getAddress().getId() != null)
+                        root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient().getAddress()));
+                }
+
+                if (getSampleNeonatal(sm).getNextOfKin() != null) {
+                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin()));
+
+                    if (getSampleNeonatal(sm).getNextOfKin().getAddress().getId() != null)
+                        root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin()
+                                                                         .getAddress()));
+                }
+
+                if (getSampleNeonatal(sm).getProviderId() != null)
+                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getProvider()));
+            } else if (getSampleClinical(sm) != null) {
+                root.appendChild(toXML(doc, getSampleClinical(sm)));
+
+                if (getSampleClinical(sm).getPatient() != null) {
+                    root.appendChild(toXML(doc, getSampleClinical(sm).getPatient()));
+
+                    if (getSampleClinical(sm).getPatient().getAddress().getId() != null)
+                        root.appendChild(toXML(doc, getSampleClinical(sm).getPatient().getAddress()));
+                }
+
+                if (getSampleClinical(sm).getProviderId() != null)
+                    root.appendChild(toXML(doc, getSampleClinical(sm).getProvider()));
+            }
+
+            sampleOverridden = false;
+            if (getSampleQAs(sm) != null) {
+                for (SampleQaEventViewDO sq : getSampleQAs(sm)) {
+                    root.appendChild(toXML(doc, sq));
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId()))
+                        sampleOverridden = true;
+                }
+            }
+
+            if (getProjects(sm) != null) {
+                for (SampleProjectViewDO p : getProjects(sm))
+                    root.appendChild(toXML(doc, p));
+            }
+
+            reportTo = null;
+            if (getOrganizations(sm) != null) {
+                for (SampleOrganizationViewDO o : getOrganizations(sm)) {
+                    if (Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId()))
+                        reportTo = o;
+                    root.appendChild(toXML(doc, o));
+                }
+            }
+
+            /*
+             * add the report to organization's destination URL and aggregator
+             * URL to the header
+             */
+            if (reportTo != null) {
+                log.log(Level.FINE, "Fetching organization parameters for org id: " +
+                                    reportTo.getOrganizationId());
+                try {
+                    orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
+                    if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
+                        ORG_EPARTNER_AGGR == null) {
+                        log.log(Level.SEVERE,
+                                "One or more dictionary constants for electronic partner url not initialized");
+                        return doc;
+                    }
+                    for (OrganizationParameterDO op : orgps) {
+                        if (ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
+                            ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
+                            ORG_EPARTNER_AGGR.equals(op.getTypeId()))
+                            header.appendChild(toXML(doc, op));
+                    }
+                } catch (NotFoundException e) {
+                    // ignore
+                }
+            }
+
+            if (getSampleExternalNote(sm) != null) {
                 /*
-                 * skip cancelled and test id's that were not in restricted list
+                 * put the sample note in its own group so it can be
+                 * distinguished from analysis external notes
                  */
-                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
-                    ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
-                    continue;
-                /*
-                 * don't want all the analysis, just those that were released in the run
-                 * window. 
-                 */
-                if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
-                    if (!Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()) ||
-                        (releasedStart != null && a.getReleasedDate().before(releasedStart)) ||
-                        (releasedEnd != null && a.getReleasedDate().after(releasedEnd)))
+                elm = doc.createElement("sample_external_notes");
+                elm.appendChild(toXML(doc, getSampleExternalNote(sm)));
+                root.appendChild(elm);
+            }
+
+            if (getAuxiliary(sm) != null) {
+                for (AuxDataViewDO a : getAuxiliary(sm)) {
+                    root.appendChild(toXML(doc, a));
+                    if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
+                        a.getValue() != null)
+                        root.appendChild(toXML(doc,
+                                               "aux_data_dictionary",
+                                               a.getId(),
+                                               Integer.valueOf(a.getValue())));
+                }
+            }
+
+            /*
+             * second level - sample items
+             */
+            for (SampleItemViewDO item : getItems(sm))
+                root.appendChild(toXML(doc, item));
+
+            /*
+             * third level - analyses
+             */
+            if (getAnalyses(sm) != null) {
+                for (AnalysisViewDO a : getAnalyses(sm)) {
+                    /*
+                     * skip cancelled and test id's that were not in restricted
+                     * list
+                     */
+                    if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
+                        ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                         continue;
-                }
-                root.appendChild(toXML(doc, a));
-                analyses.put(a.getId(),
-                             Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()));
-            }
-        }
-
-        /*
-         * mark the analysis if it has overridden QA event
-         */
-        if (getAnalysisQAs(sm) != null) {
-            for (AnalysisQaEventViewDO aq : getAnalysisQAs(sm)) {
-                if (analyses.containsKey(aq.getAnalysisId())) {
-                    root.appendChild(toXML(doc, aq));
-                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId()))
-                        analyses.put(aq.getAnalysisId(), false);
+                    /*
+                     * don't want all the analysis, just those that were
+                     * released in the run window.
+                     */
+                    if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
+                        if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()) ||
+                            (releasedStart != null && a.getReleasedDate().before(releasedStart)) ||
+                            (releasedEnd != null && a.getReleasedDate().after(releasedEnd)))
+                            continue;
+                    }
+                    root.appendChild(toXML(doc, a));
+                    analyses.put(a.getId(),
+                                 Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()));
                 }
             }
-        }
 
-        /*
-         * fourth level - results
-         */
-        if (getResults(sm) != null) {
-            for (ResultViewDO r : getResults(sm)) {
-                /*
-                 * skip the results if analysis cancelled or we are not
-                 * reporting all the tests. don't show result value if analysis
-                 * is not released or overridden.
-                 */
-                showValue = analyses.get(r.getAnalysisId());
-                if (showValue == null)
-                    continue;
-
-                root.appendChild(toXML(doc, r, showValue && !sampleOverridden));
-                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(r.getTypeId()) &&
-                    r.getValue() != null && showValue && !sampleOverridden) {
-                    root.appendChild(toXML(doc,
-                                           "result_dictionary",
-                                           r.getId(),
-                                           Integer.valueOf(r.getValue())));
-                }
-            }
-        }
-
-        if (getUsers(sm) != null) {
-            for (AnalysisUserViewDO u : getUsers(sm)) {
-                if (analyses.containsKey(u.getAnalysisId()))
-                    root.appendChild(toXML(doc, u));
-            }
-        }
-
-        if (getAnalysisExternalNotes(sm) != null) {
             /*
-             * put the analyses notes in its own group so it can be
-             * distinguished from sample external notes
+             * mark the analysis if it has overridden QA event
              */
-            elm = null;
-            for (NoteViewDO n : getAnalysisExternalNotes(sm)) {
-                if (analyses.containsKey(n.getReferenceId())) {
-                    if (elm == null) {
-                        elm = doc.createElement("analysis_external_notes");
-                        root.appendChild(elm);
+            if (getAnalysisQAs(sm) != null) {
+                for (AnalysisQaEventViewDO aq : getAnalysisQAs(sm)) {
+                    if (analyses.containsKey(aq.getAnalysisId())) {
+                        root.appendChild(toXML(doc, aq));
+                        if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId()))
+                            analyses.put(aq.getAnalysisId(), false);
                     }
-                    elm.appendChild(toXML(doc, n));
                 }
             }
-        }
 
-        /*
-         * process optional parameters
-         */
-        if (optional != null) {
-            for (Object o : optional) {
-                if (o instanceof Collection<?>) {
-                    for (Object o1 : (Collection<?>)o) {
-                        for (Element e : processOptional(doc, o1))
+            /*
+             * fourth level - results
+             */
+            if (getResults(sm) != null) {
+                for (ResultViewDO r : getResults(sm)) {
+                    /*
+                     * skip the results if analysis cancelled or we are not
+                     * reporting all the tests. don't show result value if
+                     * analysis is not released or overridden.
+                     */
+                    showValue = analyses.get(r.getAnalysisId());
+                    if (showValue == null)
+                        continue;
+
+                    root.appendChild(toXML(doc, r, showValue && !sampleOverridden));
+                    if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(r.getTypeId()) &&
+                        r.getValue() != null && showValue && !sampleOverridden) {
+                        root.appendChild(toXML(doc,
+                                               "result_dictionary",
+                                               r.getId(),
+                                               Integer.valueOf(r.getValue())));
+                    }
+                }
+            }
+
+            if (getUsers(sm) != null) {
+                for (AnalysisUserViewDO u : getUsers(sm)) {
+                    if (analyses.containsKey(u.getAnalysisId()))
+                        root.appendChild(toXML(doc, u));
+                }
+            }
+
+            if (getAnalysisExternalNotes(sm) != null) {
+                /*
+                 * put the analyses notes in its own group so it can be
+                 * distinguished from sample external notes
+                 */
+                elm = null;
+                for (NoteViewDO n : getAnalysisExternalNotes(sm)) {
+                    if (analyses.containsKey(n.getReferenceId())) {
+                        if (elm == null) {
+                            elm = doc.createElement("analysis_external_notes");
+                            root.appendChild(elm);
+                        }
+                        elm.appendChild(toXML(doc, n));
+                    }
+                }
+            }
+
+            /*
+             * process optional parameters
+             */
+            if (optional != null) {
+                for (Object o : optional) {
+                    if (o instanceof Collection<?>) {
+                        for (Object o1 : (Collection<?>)o) {
+                            for (Element e : processOptional(doc, o1))
+                                root.appendChild(e);
+                        }
+                    } else if (o != null) {
+                        for (Element e : processOptional(doc, o)) {
                             root.appendChild(e);
-                    }
-                } else if (o != null) {
-                    for (Element e : processOptional(doc, o)) {
-                        root.appendChild(e);
+                        }
                     }
                 }
             }
-        }
 
-        log.log(Level.FINE, "Fetching various referenced records e.g. tests, projects, qa events etc.");
-        /*
-         * lookup and output various referenced objects; order is important
-         */
-        if (projects != null) {
-            for (ProjectViewDO p : project.fetchByIds(DataBaseUtil.toArrayList(projects)))
-                root.appendChild(toXML(doc, p));
-        }
-
-        if (qas != null) {
-            for (QaEventViewDO qa : qaevent.fetchByIds(DataBaseUtil.toArrayList(qas)))
-                root.appendChild(toXML(doc, qa));
-        }
-
-        if (tests != null) {
-            for (TestViewDO t : test.fetchByIds(DataBaseUtil.toArrayList(tests)))
-                root.appendChild(toXML(doc, t));
-        }
-
-        if (methods != null) {
-            for (MethodDO m : method.fetchByIds(DataBaseUtil.toArrayList(methods)))
-                root.appendChild(toXML(doc, m));
-        }
-
-        if (trailers != null) {
-            for (TestTrailerDO t : testTrailer.fetchByIds(DataBaseUtil.toArrayList(trailers)))
-                root.appendChild(toXML(doc, t));
-        }
-
-        if (testResults != null) {
-            for (TestResultViewDO tr : testResult.fetchByIds(DataBaseUtil.toArrayList(testResults)))
-                root.appendChild(toXML(doc, tr));
-        }
-
-        if (users != null) {
-            for (Integer id : users)
-                root.appendChild(toXML(doc, systemUserCache.getSystemUser(id)));
-        }
-
-        if (panels != null) {
-            for (PanelDO p : panel.fetchByIds(DataBaseUtil.toArrayList(panels)))
-                root.appendChild(toXML(doc, p));
-        }
-
-        if (sections != null) {
-            for (Integer id : sections)
-                root.appendChild(toXML(doc, sectionCache.getById(id)));
-        }
-
-        if (organizations != null) {
-            for (OrganizationViewDO org : organization.fetchByIds(DataBaseUtil.toArrayList(organizations))) {
-                root.appendChild(toXML(doc, org));
-                root.appendChild(toXML(doc, org.getAddress()));
-            }
-        }
-
-        if (analytes != null) {
-            for (AnalyteViewDO ana : analyte.fetchByIds(DataBaseUtil.toArrayList(analytes)))
-                root.appendChild(toXML(doc, ana));
-        }
-
-        if (dicts != null) {
-            for (Integer id : dicts)
-                root.appendChild(toXML(doc, dictionaryCache.getById(id)));
-        }
-
-        /*
-         * add the translation mappings (external terms) for various reference
-         * tables
-         */
-        if (profiles != null && profiles.size() > 0) {
-            if (organizations != null && organizations.size() > 0) {
-                elm = toXML(Constants.table().ORGANIZATION,
-                            organizations,
-                            profiles,
-                            "organization_translations",
-                            doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            log.log(Level.FINE,
+                    "Fetching various referenced records e.g. tests, projects, qa events etc.");
+            /*
+             * lookup and output various referenced objects; order is important
+             */
+            if (projects != null) {
+                for (ProjectViewDO p : project.fetchByIds(DataBaseUtil.toArrayList(projects)))
+                    root.appendChild(toXML(doc, p));
             }
 
-            if (tests != null && tests.size() > 0) {
-                elm = toXML(Constants.table().TEST, tests, profiles, "test_translations", doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (qas != null) {
+                for (QaEventViewDO qa : qaevent.fetchByIds(DataBaseUtil.toArrayList(qas)))
+                    root.appendChild(toXML(doc, qa));
             }
 
-            if (methods != null && methods.size() > 0) {
-                elm = toXML(Constants.table().METHOD, methods, profiles, "method_translations", doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (tests != null) {
+                for (TestViewDO t : test.fetchByIds(DataBaseUtil.toArrayList(tests)))
+                    root.appendChild(toXML(doc, t));
             }
 
-            if (testAnalytes != null && testAnalytes.size() > 0) {
-                elm = toXML(Constants.table().TEST_ANALYTE,
-                            testAnalytes,
-                            profiles,
-                            "test_analyte_translations",
-                            doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (methods != null) {
+                for (MethodDO m : method.fetchByIds(DataBaseUtil.toArrayList(methods)))
+                    root.appendChild(toXML(doc, m));
             }
 
-            if (analytes != null && analytes.size() > 0) {
-                elm = toXML(Constants.table().ANALYTE,
-                            analytes,
-                            profiles,
-                            "analyte_translations",
-                            doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (trailers != null) {
+                for (TestTrailerDO t : testTrailer.fetchByIds(DataBaseUtil.toArrayList(trailers)))
+                    root.appendChild(toXML(doc, t));
             }
 
-            if (dicts != null && dicts.size() > 0) {
-                elm = toXML(Constants.table().DICTIONARY,
-                            dicts,
-                            profiles,
-                            "dictionary_translations",
-                            doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (testResults != null) {
+                for (TestResultViewDO tr : testResult.fetchByIds(DataBaseUtil.toArrayList(testResults)))
+                    root.appendChild(toXML(doc, tr));
             }
 
-            if (panels != null && panels.size() > 0) {
-                elm = toXML(Constants.table().PANEL, panels, profiles, "panel_translations", doc);
-                if (elm != null)
-                    root.appendChild(elm);
+            if (users != null) {
+                for (Integer id : users)
+                    root.appendChild(toXML(doc, systemUserCache.getSystemUser(id)));
             }
+
+            if (panels != null) {
+                for (PanelDO p : panel.fetchByIds(DataBaseUtil.toArrayList(panels.keySet())))
+                    root.appendChild(toXML(doc, p));
+            }
+
+            if (sections != null) {
+                for (Integer id : sections)
+                    root.appendChild(toXML(doc, sectionCache.getById(id)));
+            }
+
+            if (organizations != null) {
+                for (OrganizationViewDO org : organization.fetchByIds(DataBaseUtil.toArrayList(organizations))) {
+                    root.appendChild(toXML(doc, org));
+                    root.appendChild(toXML(doc, org.getAddress()));
+                }
+            }
+
+            if (analytes != null) {
+                for (AnalyteViewDO ana : analyte.fetchByIds(DataBaseUtil.toArrayList(analytes)))
+                    root.appendChild(toXML(doc, ana));
+            }
+
+            if (dicts != null) {
+                for (Integer id : dicts)
+                    root.appendChild(toXML(doc, dictionaryCache.getById(id)));
+            }
+
+            /*
+             * add the translation mappings (external terms) for various
+             * reference tables
+             */
+            if (profiles != null && profiles.size() > 0) {
+                if (organizations != null && organizations.size() > 0) {
+                    elm = toXML(Constants.table().ORGANIZATION,
+                                organizations,
+                                profiles,
+                                "organization_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (tests != null && tests.size() > 0) {
+                    elm = toXML(Constants.table().TEST, tests, profiles, "test_translations", doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (methods != null && methods.size() > 0) {
+                    elm = toXML(Constants.table().METHOD,
+                                methods,
+                                profiles,
+                                "method_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (testAnalytes != null && testAnalytes.size() > 0) {
+                    elm = toXML(Constants.table().TEST_ANALYTE,
+                                testAnalytes,
+                                profiles,
+                                "test_analyte_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (analytes != null && analytes.size() > 0) {
+                    elm = toXML(Constants.table().ANALYTE,
+                                analytes,
+                                profiles,
+                                "analyte_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (dicts != null && dicts.size() > 0) {
+                    elm = toXML(Constants.table().DICTIONARY,
+                                dicts,
+                                profiles,
+                                "dictionary_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+
+                if (panels != null && panels.size() > 0) {
+                    elm = toXML(Constants.table().PANEL,
+                                panels.keySet(),
+                                profiles,
+                                "panel_translations",
+                                doc);
+                    if (elm != null)
+                        root.appendChild(elm);
+                }
+            }
+            return doc;
+        } finally {
+            users = null;
+            dicts = null;
+            tests = null;
+            testAnalytes = null;
+            testResults = null;
+            methods = null;
+            analytes = null;
+            projects = null;
+            organizations = null;
+            qas = null;
+            trailers = null;
+            sections = null;
+            resultRepeat = null;
+            panels = null;
         }
-        return doc;
     }
 
     /**
@@ -955,7 +988,7 @@ public class DataExchangeXMLMapperBean {
         addTest(analysis.getTestId());
         addMethod(analysis.getMethodId());
         addSection(analysis.getSectionId());
-        addPanel(analysis.getPanelId());
+        addPanel(analysis.getPanelId(), analysis.getReleasedDate());
         addDictionary(analysis.getTypeId());
         addDictionary(analysis.getUnitOfMeasureId());
         addDictionary(analysis.getStatusId());
@@ -1034,6 +1067,8 @@ public class DataExchangeXMLMapperBean {
 
         elm = doc.createElement("panel");
         setAttribute(elm, "id", panel.getId());
+        setAttribute(elm, "earliest_released_date", panels.get(panel.getId())[0]);
+        setAttribute(elm, "latest_released_date", panels.get(panel.getId())[1]);
         setText(doc, elm, "name", panel.getName());
         setText(doc, elm, "description", panel.getDescription());
 
@@ -1394,7 +1429,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    private Element toXML(int referenceTable, HashSet<Integer> referenceIds,
+    private Element toXML(int referenceTable, Set<Integer> referenceIds,
                           ArrayList<Integer> profiles, String nodeName, Document doc) throws Exception {
         Element elm;
         ArrayList<ExchangeExternalTermViewDO> terms;
@@ -1487,11 +1522,22 @@ public class DataExchangeXMLMapperBean {
         }
     }
 
-    private void addPanel(Integer id) {
+    private void addPanel(Integer id, Datetime released) {
+        Datetime minmax[];
         if (id != null) {
             if (panels == null)
-                panels = new HashSet<Integer>();
-            panels.add(id);
+                panels = new HashMap<Integer, Datetime[]>();
+            minmax = panels.get(id);
+            if (minmax == null) {
+                minmax = new Datetime[2];
+                panels.put(id, minmax);
+            }
+            if (released != null) {
+                if (minmax[0] == null || released.before(minmax[0]))
+                    minmax[0] = released;
+                if (minmax[1] == null || released.after(minmax[1]))
+                    minmax[1] = released;
+            }
         }
     }
 

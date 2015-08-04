@@ -1564,6 +1564,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analyte_history();
 
   /**
+   * Translated "ID {0,number,#0}: Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("analyte.nameRequiredException")
+  String analyte_nameRequiredException(Integer arg0);
+
+  /**
    * Translated "Parent Analyte".
    * 
    * @return translated "Parent Analyte"
@@ -1571,6 +1580,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Parent Analyte")
   @Key("analyte.parent")
   String analyte_parent();
+
+  /**
+   * Translated "ID {0,number,#0}: An analyte with this name already exists. Please enter a unique name for this analyte.".
+   * 
+   * @return translated "ID {0,number,#0}: An analyte with this name already exists. Please enter a unique name for this analyte."
+   */
+  @DefaultMessage("ID {0,number,#0}: An analyte with this name already exists. Please enter a unique name for this analyte.")
+  @Key("analyte.uniqueException")
+  String analyte_uniqueException(Integer arg0);
 
   /**
    * Translated "Only those analytes that aren''t added to a group can be grouped".
@@ -2266,6 +2284,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String autoReorder();
 
   /**
+   * Translated "ID {0,number,#0}: Active Begin is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Active Begin is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Active Begin is required.")
+  @Key("aux.activeBeginRequiredException")
+  String aux_activeBeginRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Active End is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Active End is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Active End is required.")
+  @Key("aux.activeEndRequiredException")
+  String aux_activeEndRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Analyte is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Analyte is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Analyte is required.")
+  @Key("aux.analyteRequiredException")
+  String aux_analyteRequiredException(Integer arg0);
+
+  /**
    * Translated "Aux Data".
    * 
    * @return translated "Aux Data"
@@ -2302,6 +2347,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_deleteException();
 
   /**
+   * Translated "ID {0,number,#0}: Description is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Description is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Description is required.")
+  @Key("aux.descriptionRequiredException")
+  String aux_descriptionRequiredException(Integer arg0);
+
+  /**
    * Translated "Analyte ''{0}'': Values of type Dictionary must be unique among the field values belonging to an auxiliary field.".
    * 
    * @return translated "Analyte ''{0}'': Values of type Dictionary must be unique among the field values belonging to an auxiliary field."
@@ -2311,6 +2365,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_dictEntryNotUniqueException(String arg0);
 
   /**
+   * Translated "End date must not be before begin date.".
+   * 
+   * @return translated "End date must not be before begin date."
+   */
+  @DefaultMessage("End date must not be before begin date.")
+  @Key("aux.endDateAfterBeginDateException")
+  String aux_endDateAfterBeginDateException();
+
+  /**
+   * Translated "There is already an active auxiliary field group in the system with the same name".
+   * 
+   * @return translated "There is already an active auxiliary field group in the system with the same name"
+   */
+  @DefaultMessage("There is already an active auxiliary field group in the system with the same name")
+  @Key("aux.fieldGroupActiveException")
+  String aux_fieldGroupActiveException();
+
+  /**
    * Translated "History - Field Group".
    * 
    * @return translated "History - Field Group"
@@ -2318,6 +2390,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Field Group")
   @Key("aux.fieldGroupHistory")
   String aux_fieldGroupHistory();
+
+  /**
+   * Translated "This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one.".
+   * 
+   * @return translated "This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one."
+   */
+  @DefaultMessage("This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one.")
+  @Key("aux.fieldGroupTimeOverlapException")
+  String aux_fieldGroupTimeOverlapException();
 
   /**
    * Translated "History - Field".
@@ -2419,6 +2500,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_moreThanOneTypeException(String arg0);
 
   /**
+   * Translated "ID {0,number,#0}: Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("aux.nameRequiredException")
+  String aux_nameRequiredException(Integer arg0);
+
+  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -2455,6 +2545,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_selectAnalyteBeforeValue();
 
   /**
+   * Translated "Type is required.".
+   * 
+   * @return translated "Type is required."
+   */
+  @DefaultMessage("Type is required.")
+  @Key("aux.typeRequiredException")
+  String aux_typeRequiredException();
+
+  /**
    * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid".
    * 
    * @return translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid"
@@ -2462,6 +2561,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid")
   @Key("aux.valueInvalidException")
   String aux_valueInvalidException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Value ''{0}'': A value must not be specified for this type".
+   * 
+   * @return translated "Value ''{0}'': A value must not be specified for this type"
+   */
+  @DefaultMessage("Value ''{0}'': A value must not be specified for this type")
+  @Key("aux.valuePresentForTypeException")
+  String aux_valuePresentForTypeException(String arg0);
+
+  /**
+   * Translated "Value is required.".
+   * 
+   * @return translated "Value is required."
+   */
+  @DefaultMessage("Value is required.")
+  @Key("aux.valueRequiredException")
+  String aux_valueRequiredException();
 
   /**
    * Translated "An auxiliary group cannot be added to a panel more than once ".
@@ -5056,6 +5173,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dictionary_entries();
 
   /**
+   * Translated "ID {0,number,#0}: Entry is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Entry is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Entry is required.")
+  @Key("dictionary.entryRequiredException")
+  String dictionary_entryRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("dictionary.nameRequiredException")
+  String dictionary_nameRequiredException(Integer arg0);
+
+  /**
    * Translated "Related Entry".
    * 
    * @return translated "Related Entry"
@@ -5099,6 +5234,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("System Name")
   @Key("dictionary.systemName")
   String dictionary_systemName();
+
+  /**
+   * Translated "ID {0,number,#0}: System Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: System Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: System Name is required.")
+  @Key("dictionary.systemNameRequiredException")
+  String dictionary_systemNameRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: A category with this System Name already exists. Please enter a unique System Name for this category.".
+   * 
+   * @return translated "ID {0,number,#0}: A category with this System Name already exists. Please enter a unique System Name for this category."
+   */
+  @DefaultMessage("ID {0,number,#0}: A category with this System Name already exists. Please enter a unique System Name for this category.")
+  @Key("dictionary.uniqueException")
+  String dictionary_uniqueException(Integer arg0);
 
   /**
    * Translated "One or more dictionary entries cannot be deleted, other entries are linked to them".
@@ -8206,6 +8359,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_test();
 
   /**
+   * Translated "The text entered is too long for this field. The maximum length is {0,number}.".
+   * 
+   * @return translated "The text entered is too long for this field. The maximum length is {0,number}."
+   */
+  @DefaultMessage("The text entered is too long for this field. The maximum length is {0,number}.")
+  @Key("gen.textTooLong")
+  String gen_textTooLong(Integer arg0);
+
+  /**
    * Translated "Time".
    * 
    * @return translated "Time"
@@ -9653,15 +9815,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("{0} is an invalid entry, please try again")
   @Key("invalidEntryException")
   String invalidEntryException(String arg0);
-
-  /**
-   * Translated "Invalid format for email address: {0} ".
-   * 
-   * @return translated "Invalid format for email address: {0} "
-   */
-  @DefaultMessage("Invalid format for email address: {0} ")
-  @Key("invalidFormatEmailException")
-  String invalidFormatEmailException(String arg0);
 
   /**
    * Translated "Quantity needs to be at least 0".
@@ -12850,6 +13003,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization_addressHistory();
 
   /**
+   * Translated "ID {0,number,#0}: Address is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Address is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Address is required.")
+  @Key("organization.addressRequiredException")
+  String organization_addressRequiredException(Integer arg0);
+
+  /**
    * Translated "Cell #".
    * 
    * @return translated "Cell #"
@@ -12857,6 +13019,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Cell #")
   @Key("organization.cellNumber")
   String organization_cellNumber();
+
+  /**
+   * Translated "ID {0,number,#0}: City is required.".
+   * 
+   * @return translated "ID {0,number,#0}: City is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: City is required.")
+  @Key("organization.cityRequiredException")
+  String organization_cityRequiredException(Integer arg0);
 
   /**
    * Translated "History - Contact Address".
@@ -12875,6 +13046,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Contact")
   @Key("organization.contactHistory")
   String organization_contactHistory();
+
+  /**
+   * Translated "ID {0,number,#0}: Contact Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Contact Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Contact Name is required.")
+  @Key("organization.contactNameRequiredException")
+  String organization_contactNameRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Contact Type is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Contact Type is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Contact Type is required.")
+  @Key("organization.contactTypeRequiredException")
+  String organization_contactTypeRequiredException(Integer arg0);
 
   /**
    * Translated "Email".
@@ -12913,6 +13102,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization_homeNumber();
 
   /**
+   * Translated "Invalid format for email address: {0}".
+   * 
+   * @return translated "Invalid format for email address: {0}"
+   */
+  @DefaultMessage("Invalid format for email address: {0}")
+  @Key("organization.invalidFormatEmailException")
+  String organization_invalidFormatEmailException(String arg0);
+
+  /**
    * Translated "Organization Name".
    * 
    * @return translated "Organization Name"
@@ -12920,6 +13118,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Organization Name")
   @Key("organization.name")
   String organization_name();
+
+  /**
+   * Translated "ID {0,number,#0}: Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("organization.nameRequiredException")
+  String organization_nameRequiredException(Integer arg0);
 
   /**
    * Translated "Organization #".
@@ -12938,6 +13145,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Parameter")
   @Key("organization.parameterHistory")
   String organization_parameterHistory();
+
+  /**
+   * Translated "ID {0,number,#0}: Parameter Type is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Parameter Type is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Parameter Type is required.")
+  @Key("organization.parameterTypeRequiredException")
+  String organization_parameterTypeRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Parameter Value is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Parameter Value is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Parameter Value is required.")
+  @Key("organization.parameterValueRequiredException")
+  String organization_parameterValueRequiredException(Integer arg0);
 
   /**
    * Translated "Work #".
@@ -13111,13 +13336,31 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String panel_itemHistory();
 
   /**
-   * Translated "Test and Auxiliary Item".
+   * Translated "ID {0,number,#0}: Name is required.".
    * 
-   * @return translated "Test and Auxiliary Item"
+   * @return translated "ID {0,number,#0}: Name is required."
    */
-  @DefaultMessage("Test and Auxiliary Item")
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("panel.nameRequiredException")
+  String panel_nameRequiredException(Integer arg0);
+
+  /**
+   * Translated "Test/Auxiliary Group".
+   * 
+   * @return translated "Test/Auxiliary Group"
+   */
+  @DefaultMessage("Test/Auxiliary Group")
   @Key("panel.testAuxItem")
   String panel_testAuxItem();
+
+  /**
+   * Translated "ID {0,number,#0}: A panel with this name already exists. Please enter a unique name for this panel.".
+   * 
+   * @return translated "ID {0,number,#0}: A panel with this name already exists. Please enter a unique name for this panel."
+   */
+  @DefaultMessage("ID {0,number,#0}: A panel with this name already exists. Please enter a unique name for this panel.")
+  @Key("panel.uniqueException")
+  String panel_uniqueException(Integer arg0);
 
   /**
    * Translated "Define a grouping of tests that are often assigned to a sample.".
@@ -14281,6 +14524,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String provider_lastName();
 
   /**
+   * Translated "ID {0,number,#0}: Last Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Last Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Last Name is required.")
+  @Key("provider.lastNameRequiredException")
+  String provider_lastNameRequiredException(Integer arg0);
+
+  /**
    * Translated "Provider (L,F)".
    * 
    * @return translated "Provider (L,F)"
@@ -14297,6 +14549,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Provider Location")
   @Key("provider.locationHistory")
   String provider_locationHistory();
+
+  /**
+   * Translated "ID {0,number,#0}: Location is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Location is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Location is required.")
+  @Key("provider.locationRequiredException")
+  String provider_locationRequiredException(Integer arg0);
 
   /**
    * Translated "NPI".
@@ -16027,6 +16288,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_accessionPrefix(Integer arg0);
 
   /**
+   * Translated "Add With TRF".
+   * 
+   * @return translated "Add With TRF"
+   */
+  @DefaultMessage("Add With TRF")
+  @Key("sample.addWithTRF")
+  String sample_addWithTRF();
+
+  /**
    * Translated "Sample is released. You cannot add an analysis.".
    * 
    * @return translated "Sample is released. You cannot add an analysis."
@@ -16313,15 +16583,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Environmental")
   @Key("sample.environmental")
   String sample_environmental();
-
-  /**
-   * Translated "From TRF".
-   * 
-   * @return translated "From TRF"
-   */
-  @DefaultMessage("From TRF")
-  @Key("sample.fromTRF")
-  String sample_fromTRF();
 
   /**
    * Translated "Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
@@ -19312,6 +19573,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String systemVariable_missingInvalidSystemVariable(String arg0);
 
   /**
+   * Translated "ID {0,number,#0}: Name is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Name is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Name is required.")
+  @Key("systemVariable.nameRequiredException")
+  String systemVariable_nameRequiredException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: A system variable with this name already exists. Please enter a unique name for this system variable.".
+   * 
+   * @return translated "ID {0,number,#0}: A system variable with this name already exists. Please enter a unique name for this system variable."
+   */
+  @DefaultMessage("ID {0,number,#0}: A system variable with this name already exists. Please enter a unique name for this system variable.")
+  @Key("systemVariable.uniqueException")
+  String systemVariable_uniqueException(Integer arg0);
+
+  /**
+   * Translated "ID {0,number,#0}: Value is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Value is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Value is required.")
+  @Key("systemVariable.valueRequiredException")
+  String systemVariable_valueRequiredException(Integer arg0);
+
+  /**
    * Translated "Define system properties used by OpenELIS administrators.".
    * 
    * @return translated "Define system properties used by OpenELIS administrators."
@@ -20248,6 +20536,87 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String today();
 
   /**
+   * Translated "Acc #".
+   * 
+   * @return translated "Acc #"
+   */
+  @DefaultMessage("Acc #")
+  @Key("todo.accNum")
+  String todo_accNum();
+
+  /**
+   * Translated "Days in Initiated".
+   * 
+   * @return translated "Days in Initiated"
+   */
+  @DefaultMessage("Days in Initiated")
+  @Key("todo.daysInInitiated")
+  String todo_daysInInitiated();
+
+  /**
+   * Translated "Domain".
+   * 
+   * @return translated "Domain"
+   */
+  @DefaultMessage("Domain")
+  @Key("todo.domain")
+  String todo_domain();
+
+  /**
+   * Translated "Domain Specific Field".
+   * 
+   * @return translated "Domain Specific Field"
+   */
+  @DefaultMessage("Domain Specific Field")
+  @Key("todo.domainSpecField")
+  String todo_domainSpecField();
+
+  /**
+   * Translated "% Exp Completion".
+   * 
+   * @return translated "% Exp Completion"
+   */
+  @DefaultMessage("% Exp Completion")
+  @Key("todo.expCompletion")
+  String todo_expCompletion();
+
+  /**
+   * Translated "Export To Excel".
+   * 
+   * @return translated "Export To Excel"
+   */
+  @DefaultMessage("Export To Excel")
+  @Key("todo.exportToXl")
+  String todo_exportToXl();
+
+  /**
+   * Translated "% Holding Used".
+   * 
+   * @return translated "% Holding Used"
+   */
+  @DefaultMessage("% Holding Used")
+  @Key("todo.holding")
+  String todo_holding();
+
+  /**
+   * Translated "Override".
+   * 
+   * @return translated "Override"
+   */
+  @DefaultMessage("Override")
+  @Key("todo.override")
+  String todo_override();
+
+  /**
+   * Translated "My section(s)".
+   * 
+   * @return translated "My section(s)"
+   */
+  @DefaultMessage("My section(s)")
+  @Key("todo.showMySectOnly")
+  String todo_showMySectOnly();
+
+  /**
    * Translated "Total".
    * 
    * @return translated "Total"
@@ -20392,6 +20761,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_attached();
 
   /**
+   * Translated "Data Entry TRF Attachment".
+   * 
+   * @return translated "Data Entry TRF Attachment"
+   */
+  @DefaultMessage("Data Entry TRF Attachment")
+  @Key("trfAttachment.dataEntryTRFAttachment")
+  String trfAttachment_dataEntryTRFAttachment();
+
+  /**
+   * Translated "You must first unlock all attachments".
+   * 
+   * @return translated "You must first unlock all attachments"
+   */
+  @DefaultMessage("You must first unlock all attachments")
+  @Key("trfAttachment.firstUnlockAll")
+  String trfAttachment_firstUnlockAll();
+
+  /**
    * Translated "Locked by {0}".
    * 
    * @return translated "Locked by {0}"
@@ -20410,15 +20797,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_reserve();
 
   /**
-   * Translated "TRF Attachment".
-   * 
-   * @return translated "TRF Attachment"
-   */
-  @DefaultMessage("TRF Attachment")
-  @Key("trfAttachment.trfAttachment")
-  String trfAttachment_trfAttachment();
-
-  /**
    * Translated "Unlock All".
    * 
    * @return translated "Unlock All"
@@ -20426,15 +20804,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Unlock All")
   @Key("trfAttachment.unlockAll")
   String trfAttachment_unlockAll();
-
-  /**
-   * Translated "Please unlock all attachments before refreshing".
-   * 
-   * @return translated "Please unlock all attachments before refreshing"
-   */
-  @DefaultMessage("Please unlock all attachments before refreshing")
-  @Key("trfAttachment.unlockAllBeforeRefresh")
-  String trfAttachment_unlockAllBeforeRefresh();
 
   /**
    * Translated "Tube #".

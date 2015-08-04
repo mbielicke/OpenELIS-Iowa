@@ -48,7 +48,7 @@ import org.openelis.entity.Panel;
 import org.openelis.meta.PanelMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -246,9 +246,9 @@ public class PanelBean {
                         break;
                     }
                 }
-                if (!found)
+                if ( !found)
                     idVO.setId(tests.get(0).getId());
-                
+
                 returnList.add(idVO);
             }
         }
@@ -273,10 +273,10 @@ public class PanelBean {
         // fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
         query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
-        for (i = 0; i < panelItemList.size(); i++) {
+        for (i = 0; i < panelItemList.size(); i++ ) {
             panelItem = panelItemList.get(i);
 
-            if (!"A".equals(panelItem.getType()))
+            if ( !"A".equals(panelItem.getType()))
                 continue;
 
             query.setParameter("name", panelItem.getName());
@@ -372,16 +372,21 @@ public class PanelBean {
     }
 
     public void validate(PanelDO data) throws Exception {
+        Integer pid;
         String name;
         ValidationErrorsList list;
         Query query;
         PanelDO panel;
 
         list = new ValidationErrorsList();
+
+        pid = data.getId();
+        if (pid == null)
+            pid = 0;
+
         name = data.getName();
         if (DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             PanelMeta.getName()));
+            list.add(new FormErrorException(Messages.get().panel_nameRequiredException(pid)));
             throw list;
         }
 
@@ -390,8 +395,7 @@ public class PanelBean {
         try {
             panel = (PanelDO)query.getSingleResult();
             if (DataBaseUtil.isDifferent(panel.getId(), data.getId()))
-                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
-                                                 PanelMeta.getName()));
+                list.add(new FormErrorException(Messages.get().panel_uniqueException(pid)));
         } catch (NoResultException ignE) {
             // do nothing
         }

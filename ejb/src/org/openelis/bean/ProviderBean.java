@@ -44,7 +44,7 @@ import org.openelis.entity.Provider;
 import org.openelis.meta.ProviderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -183,11 +183,17 @@ public class ProviderBean {
     }
 
     public void validate(ProviderDO providerDO) throws ValidationErrorsList {
+        Integer pid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+
+        pid = providerDO.getId();
+        if (pid == null)
+            pid = 0;
+        
         if (DataBaseUtil.isEmpty(providerDO.getLastName()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getLastName()));
+            list.add(new FormErrorException(Messages.get().provider_lastNameRequiredException(pid)));
 
         if (list.size() > 0)
             throw list;

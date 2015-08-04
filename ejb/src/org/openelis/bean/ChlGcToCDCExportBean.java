@@ -398,7 +398,7 @@ public class ChlGcToCDCExportBean {
                                     if (adrDO != null) {
                                         if (adrDO.getState() != null)
                                             row.put("state_fips", getStateFIPS(adrDO.getState()));
-                                        if ("IA".equals(adrDO.getState())) {
+                                        if ("IA".equals(adrDO.getState()) && adrDO.getCity() != null) {
                                             countyNumber = cityCountyMap.get(adrDO.getCity()
                                                                                   .toLowerCase());
                                             if (countyNumber != null) {

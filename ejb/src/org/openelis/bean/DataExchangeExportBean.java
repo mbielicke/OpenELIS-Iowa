@@ -291,26 +291,29 @@ public class DataExchangeExportBean {
                                        SampleManager1.Load.RESULT,
                                        SampleManager1.Load.PROVIDER);
 
-        messageStart();
-        status.setMessage(Messages.get().gen_generatingReport());
-        for (SampleManager1 sm : sms) {
-            eo = null;
-            eols = null;
-            if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
-                getSample(sm).getOrderId() != null) {
-                log.log(Level.FINE, "Fetching eorder with id " + getSample(sm).getOrderId());
-                try {
-                    eo = eOrder.fetchById(getSample(sm).getOrderId());
-                    eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
-                } catch (NotFoundException e) {
-                    status.setMessage(status.getMessage() +
-                                      "; E-Order/E-OrderLink record not found for accession " +
-                                      getSample(sm).getAccessionNumber());
+        try {
+            messageStart();
+            status.setMessage(Messages.get().gen_generatingReport());
+            for (SampleManager1 sm : sms) {
+                eo = null;
+                eols = null;
+                if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
+                    getSample(sm).getOrderId() != null) {
+                    log.log(Level.FINE, "Fetching eorder with id " + getSample(sm).getOrderId());
+                    try {
+                        eo = eOrder.fetchById(getSample(sm).getOrderId());
+                        eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
+                    } catch (NotFoundException e) {
+                        status.setMessage(status.getMessage() +
+                                          "; E-Order/E-OrderLink record not found for accession " +
+                                          getSample(sm).getAccessionNumber());
+                    }
                 }
+                messageOutput(sm, cm, null, null, eo, eols);
             }
-            messageOutput(sm, cm, null, null, eo, eols);
+        } finally {
+            messageEnd();
         }
-        messageEnd();
 
         return status;
     }
@@ -581,12 +584,12 @@ public class DataExchangeExportBean {
     }
 
     private void messageEnd() {
-        transformer = null;
         try {
             if (transformerStream != null)
                 transformerStream.close();
         } catch (Exception e) {
         } finally {
+            transformer = null;
             transformerStream = null;
         }
     }

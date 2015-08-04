@@ -106,7 +106,13 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.MCLViolationReportVO(s.id, s.accessionNumber, s.collectionDate, s.collectionTime, ss.stateLabId, ss.facilityId, ss.sampleTypeId, d1.entry, ss.sampleCategoryId, ss.samplePointId, ss.location, ss.collector, p.number0, p.name, p.alternateStNum, o.name, a.id, a.sectionId, se.name, a.unitOfMeasureId, a.startedDate, a.releasedDate, d2.entry, t.name, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.sectionId = se.id and a.unitOfMeasureId = d2.id and"
-                      + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate and a.isReportable = 'Y' order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate")})
+                      + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate and a.isReportable = 'Y' order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate"),
+    @NamedQuery( name = "Analysis.FetchByPatientId",
+                query = "select distinct new org.openelis.domain.SampleAnalysisVO(s.id, s.accessionNumber, s.receivedDate, a.id, t.id, t.name, m.name)"
+                      + " from Analysis a join a.sampleItem si join si.sample s left join s.sampleClinical sc left join s.sampleNeonatal sn"
+                      + " join a.test t join t.method m"
+                      + " where sc.patientId = :patientId or sn.patientId = :patientId"
+                      + " order by s.accessionNumber desc, t.name, m.name")})
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Analysis.FetchForTurnaroundWarningReport",
                      query = "select distinct a.id a_id, a.available_date, t.time_ta_warning, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
