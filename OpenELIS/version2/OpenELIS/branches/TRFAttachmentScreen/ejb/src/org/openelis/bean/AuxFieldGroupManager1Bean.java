@@ -435,16 +435,6 @@ public class AuxFieldGroupManager1Bean {
                     }
                 }
             }
-
-            if (getValues(am) != null) {
-                for (AuxFieldValueViewDO data : getValues(am)) {
-                    try {
-                        auxFieldValue.validate(data);
-                    } catch (Exception err) {
-                        DataBaseUtil.mergeException(e, err);
-                    }
-                }
-            }
         }
 
         if (e.size() > 0)

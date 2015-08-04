@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -82,14 +81,19 @@ public class AttachmentBean {
     private static final AttachmentMeta meta = new AttachmentMeta();
 
     /**
-     * Returns the attachment record using its id
+     * Fetches the attachment records whose ids are "attachmentId"
+     * 
+     * @param attachmentId
+     *        the id of the attachment record to be returned
+     * @return the DO corresponding to the fetched attachment record
+     * @throws Exception
      */
-    public AttachmentDO fetchById(Integer id) throws Exception {
+    public AttachmentDO fetchById(Integer attachmentId) throws Exception {
         Query query;
         AttachmentDO data;
 
         query = manager.createNamedQuery("Attachment.FetchById");
-        query.setParameter("id", id);
+        query.setParameter("id", attachmentId);
 
         try {
             data = (AttachmentDO)query.getSingleResult();
@@ -102,19 +106,49 @@ public class AttachmentBean {
     }
 
     /**
-     * Returns a distinct list of attachment records for given list of ids.
+     * Fetches the attachment records whose ids are "attachmentIds"; if
+     * "isDescending" is true, the returned DOs are sorted in descending order
+     * of the ids; otherwise they're sorted in ascending order
+     * 
+     * @param attachmentIds
+     *        the ids of the attachment records to be returned
+     * @param isDescending
+     *        a flag that determines whether the returned DOs are sorted in
+     *        descending or ascending order
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
+     */
+    public ArrayList<AttachmentDO> fetchByIds(ArrayList<Integer> attachmentIds) throws Exception {
+        return fetchByIds(attachmentIds, false);
+    }
+
+    /**
+     * Fetches the attachment whose ids are "attachmentIds"; if "isDescending"
+     * is true, the returned DOs are sorted in descending order of the ids;
+     * otherwise they're sorted in ascending order
+     * 
+     * @param attachmentIds
+     *        the ids of the attachment records to be returned
+     * @param isDescending
+     *        a flag that determines whether the returned DOs are sorted in
+     *        descending or ascending order
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
+    public ArrayList<AttachmentDO> fetchByIds(ArrayList<Integer> attachmentIds, boolean isDescending) throws Exception {
         Query query;
         List<AttachmentDO> a;
         ArrayList<Integer> r;
 
-        query = manager.createNamedQuery("Attachment.FetchByIds");
+        if (isDescending)
+            query = manager.createNamedQuery("Attachment.FetchByIdsDescending");
+        else
+            query = manager.createNamedQuery("Attachment.FetchByIds");
         a = new ArrayList<AttachmentDO>();
-        r = DataBaseUtil.createSubsetRange(ids.size());
+        r = DataBaseUtil.createSubsetRange(attachmentIds.size());
         for (int i = 0; i < r.size() - 1; i++ ) {
-            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            query.setParameter("ids", attachmentIds.subList(r.get(i), r.get(i + 1)));
             a.addAll(query.getResultList());
         }
 
@@ -122,23 +156,18 @@ public class AttachmentBean {
     }
 
     /**
-     * Returns a distinct list of attachment records for given list of ids,
-     * sorted in descending order of the ids.
-     */
-    @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> fetchByIdsDescending(ArrayList<Integer> ids) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Attachment.FetchByIdsDescending");
-        query.setParameter("ids", ids);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
-    /**
-     * Returns a distinct list of attachment records that don't have any
-     * attachment items, match the given description and no older than 2 weeks
-     * from the current time, sorted in descending order of the ids.
+     * Fetches attachments that don't have attachment items, based on
+     * "description"
+     * 
+     * @param description
+     *        the value for description used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentDO> fetchUnattachedByDescription(String description, int first,
@@ -161,8 +190,13 @@ public class AttachmentBean {
     }
 
     /**
-     * Returns a distinct list of attachment records that don't have any
-     * attachment items and were created before the passed date
+     * Fetches the attachment records that don't have any attachment items and
+     * were created before "createdDate"
+     * 
+     * @param createdDate
+     *        all fetched attachment records were created before this date
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentDO> fetchUnattachedBeforeCreatedDate(Date createdDate) throws Exception {
@@ -171,7 +205,7 @@ public class AttachmentBean {
 
         query = manager.createNamedQuery("Attachment.FetchUnattachedBeforeCreatedDate");
         query.setParameter("createdDate", createdDate);
-        
+
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
@@ -179,17 +213,41 @@ public class AttachmentBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public AttachmentDO fetchForUpdate(Integer id) throws Exception {
-        try {
-            lock.lock(Constants.table().ATTACHMENT, id);
-            return fetchById(id);
-        } catch (NotFoundException e) {
-            throw new DatabaseException(e);
-        }
+    /**
+     * Fetches attachments based on the query specified in "fields"
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
+     */
+    public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        return query(fields, first, max, false);
     }
 
+    /**
+     * Fetches attachments based on the query specified in "fields"; if
+     * "isDescending" is true, the returned attachments are sorted in descending
+     * order of the ids; otherwise they're sorted in ascending order
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max,
+                                         boolean isDescending) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -202,7 +260,10 @@ public class AttachmentBean {
                           AttachmentMeta.getDescription() + ", " +
                           AttachmentMeta.getStorageReference() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(AttachmentMeta.getId() + " DESC");
+        if (isDescending)
+            builder.setOrderBy(AttachmentMeta.getId() + " DESC");
+        else
+            builder.setOrderBy(AttachmentMeta.getId() + " ASC");
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
@@ -218,8 +279,12 @@ public class AttachmentBean {
     }
 
     /**
-     * Adds the specified attachment record to the database. If also sets
-     * created date if one is not specified within the record.
+     * Adds the attachment record corresponding to "data", to the database; also
+     * sets created date if it's not specified within "data"
+     * 
+     * @param "data" the DO representing the attachment record to be added
+     * @return the DO corresponding to the added attachment
+     * @throws Exception
      */
     public AttachmentDO add(AttachmentDO data) throws Exception {
         Attachment entity;
@@ -242,7 +307,11 @@ public class AttachmentBean {
     }
 
     /**
-     * Updates the attachment record.
+     * Updates the attachment record corresponding to "data"
+     * 
+     * @param "data" the DO representing the attachment record to be updated
+     * @return the DO corresponding to the updated attachment
+     * @throws Exception
      */
     public AttachmentDO update(AttachmentDO data) throws Exception {
         Attachment entity;
@@ -262,31 +331,56 @@ public class AttachmentBean {
         return data;
     }
 
-    public AttachmentDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(Constants.table().ATTACHMENT, id);
-        return fetchById(id);
+    /**
+     * Unlocks the attachment record whose id is "attachmentId"
+     * 
+     * @param attachmentId
+     *        the id of the attachment record to be unlocked
+     * @return the DO corresponding to the unlocked attachment
+     * @throws Exception
+     */
+    public AttachmentDO abortUpdate(Integer attachmentId) throws Exception {
+        lock.unlock(Constants.table().ATTACHMENT, attachmentId);
+        return fetchById(attachmentId);
     }
 
     /**
-     * Removes the attachment record and data file from the file system.
+     * Removes the attachment record corresponding to "data" from the database,
+     * if its id is not null
+     * 
+     * @param "data" the DO representing the attachment record to be deleted
+     * @throws Exception
      */
     public void delete(AttachmentDO data) throws Exception {
         if (data.getId() != null)
             delete(data.getId());
     }
 
-    public void delete(Integer id) throws Exception {
+    /**
+     * Removes the attachment record whose id is "attachmentId" from the
+     * database
+     * 
+     * @param attachmentId
+     *        the id of the attachment record to be deleted
+     * @throws Exception
+     */
+    public void delete(Integer attachmentId) throws Exception {
         Attachment entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(Attachment.class, id);
-        if (entity != null) {
-
+        entity = manager.find(Attachment.class, attachmentId);
+        if (entity != null)
             manager.remove(entity);
-        }
     }
 
+    /**
+     * Validates "data"
+     * 
+     * @param data
+     *        the DO for the attachment record to be validated
+     * @throws Exception
+     */
     public void validate(AttachmentDO data) throws Exception {
         ValidationErrorsList e;
 

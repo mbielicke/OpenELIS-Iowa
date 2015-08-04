@@ -47,10 +47,10 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
+import org.openelis.domain.SampleAnalysisVO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.entity.Analysis;
 import org.openelis.manager.SampleManager1;
@@ -226,11 +226,11 @@ public class AnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
-        List<AnalysisViewVO> list;
+    public ArrayList<SampleAnalysisVO> fetchByPatientId(Integer patientId) throws Exception {
+        List<SampleAnalysisVO> list;
         Query query;
 
-        query = manager.createNamedQuery("AnalysisView.FetchByPatientId");
+        query = manager.createNamedQuery("Analysis.FetchByPatientId");
         query.setParameter("patientId", patientId);
 
         list = query.getResultList();
