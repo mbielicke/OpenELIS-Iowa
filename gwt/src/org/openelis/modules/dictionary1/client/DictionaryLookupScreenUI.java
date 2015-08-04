@@ -169,7 +169,6 @@ public class DictionaryLookupScreenUI extends Screen
         try {
             list = service.fetchByCategoryName("%");
             model = new ArrayList<Item<Integer>>();
-            model.add(new Item<Integer>(null, ""));
             for (IdNameVO data : list) {
                 row = new Item<Integer>(data.getId(), data.getName());
                 model.add(row);

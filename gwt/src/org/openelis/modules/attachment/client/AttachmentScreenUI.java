@@ -802,7 +802,7 @@ public class AttachmentScreenUI extends Screen {
             };
         }
 
-        AttachmentService.get().fetchByQuery(query.getFields(),
+        AttachmentService.get().fetchByQueryDescending(query.getFields(),
                                              query.getPage() * query.getRowsPerPage(),
                                              query.getRowsPerPage(),
                                              queryCall);

@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.clinicalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -76,7 +72,6 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentAddedEvent;
-import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
@@ -239,7 +234,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     historyAuxData;
 
     @UiField
-    protected CheckMenuItem                             fromTRF;
+    protected CheckMenuItem                             addWithTRF;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -564,18 +559,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disable until the new data entry attachment screen is ready
-                 * to be used
-                 */
-                fromTRF.setEnabled(false);
+                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                                      userPermission.hasAddPermission());
             }
         });
 
-        fromTRF.addCommand(new Command() {
+        addWithTRF.addCommand(new Command() {
             @Override
             public void execute() {
-                fromTRF();
+                addWithTRF();
             }
         });
 
@@ -2852,21 +2844,22 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     }
 
     /**
-     * If the checkbox of the menu item "From TRF" is checked, then opens the
-     * Attachment screen and executes the query to fetch unattached attachments
-     * for this domain, if it's unchecked then closes that screen if it's open.
+     * If the checkbox of the menu item "Add With TRF" is checked, opens the
+     * data entry attachment screen and executes the query to fetch unattached
+     * attachments for this domain; if the checkbox is unchecked, closes
+     * the attachment screen if it's open.
      */
-    protected void fromTRF() {
+    protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
 
-        if ( !fromTRF.isChecked()) {
+        if ( !addWithTRF.isChecked()) {
             /*
              * the user unchecked the checkbox for showing Attachment screen, so
              * try to close that screen if it's open, but recheck the checkbox
              * to make sure that if the screen can't be closed due to some
              * record locked on it, the checkbox doesn't stay unchecked
              */
-            fromTRF.setCheck(true);
+            addWithTRF.setCheck(true);
             if (trfAttachmentScreen != null)
                 trfAttachmentScreen.getWindow().close();
             return;
@@ -2887,32 +2880,21 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             if (trfAttachmentScreen == null) {
                 trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public void search() {
-                        QueryData field;
-
-                        /*
-                         * query for the TRFs for this domain
-                         */
-                        query = new Query();
-                        field = new QueryData();
-                        field.setQuery(attachmentPatternVariable.getValue());
-                        query.setFields(field);
-                        managers = null;
-
-                        executeQuery(query);
+                    public String getDescription() {
+                        return attachmentPatternVariable.getValue();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().trfAttachment_trfAttachment());
+            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
             window.setSize("610px", "520px");
             trfAttachmentScreen.setWindow(window);
             window.setContent(trfAttachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "trfAttachment");
+            OpenELIS.getBrowser().addWindow(window, "clinTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.search();
+            trfAttachmentScreen.search(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -2924,7 +2906,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          */
                         screen.window.close();
                     else
-                        fromTRF.setCheck(false);
+                        addWithTRF.setCheck(false);
                 }
             });
         } catch (Throwable e) {

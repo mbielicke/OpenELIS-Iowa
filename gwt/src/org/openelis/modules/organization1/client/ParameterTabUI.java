@@ -187,7 +187,6 @@ public class ParameterTabUI extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("parameter_type");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());

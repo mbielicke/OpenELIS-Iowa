@@ -35,7 +35,6 @@ import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
 /**
  * ScreenServiceIntAsync is the Asynchronous version of the ScreenServiceInt
  * interface.
@@ -43,17 +42,22 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface AttachmentServiceIntAsync {
 
     public void get(Integer id, AsyncCallback<ReportStatus> callback);
-    
+
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                      AsyncCallback<ArrayList<AttachmentManager>> callback);
-    
+                             AsyncCallback<ArrayList<AttachmentManager>> callback);
+
+    public void fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max,
+                                       AsyncCallback<ArrayList<AttachmentManager>> callback);
+
     public void fetchUnattachedByDescription(String description, int first, int max,
-                                      AsyncCallback<ArrayList<AttachmentManager>> callback);
+                                             AsyncCallback<ArrayList<AttachmentManager>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
+    public void fetchForReserve(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
+
     public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
-    
+
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
 
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);

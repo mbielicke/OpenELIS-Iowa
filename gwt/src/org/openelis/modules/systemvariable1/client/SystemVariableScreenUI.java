@@ -262,11 +262,12 @@ public class SystemVariableScreenUI extends Screen {
             public void onValueChange(ValueChangeEvent<String> event) {
                 String text;
 
+                description.clearExceptions();
                 text = event.getValue();
                 if (text.length() > 256) {
                     // TODO what do we want to do if there are too many
                     // characters
-                    description.addException(new Exception("The maximum length of the Description field is 256 characters"));
+                    description.addException(new Exception(Messages.get().gen_textTooLong(256)));
                 } else {
                     // data.setDescription(description);
                 }
@@ -290,7 +291,15 @@ public class SystemVariableScreenUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setValue(event.getValue());
+                String text;
+
+                value.clearExceptions();
+                text = event.getValue();
+                if (text.length() > 256) {
+                    value.addException(new Exception(Messages.get().gen_textTooLong(256)));
+                } else {
+                    data.setValue(event.getValue());
+                }
             }
 
             public void onStateChange(StateChangeEvent event) {

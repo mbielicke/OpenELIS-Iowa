@@ -48,9 +48,13 @@ public interface AttachmentServiceInt extends XsrfProtectedService {
 
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception;
 
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception;
+    
+    public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception;
     
     public ArrayList<AttachmentDO> query(Query query) throws Exception;
 

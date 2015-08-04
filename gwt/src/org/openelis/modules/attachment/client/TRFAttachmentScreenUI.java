@@ -38,6 +38,9 @@ import org.openelis.domain.AttachmentDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
@@ -49,8 +52,6 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -85,8 +86,6 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
     protected TRFAttachmentScreenUI                         screen;
 
-    protected Query                                         query;
-
     protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall;
 
     protected AsyncCallbackUI<AttachmentManager>            fetchForUpdateCall, updateCall,
@@ -95,7 +94,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     protected boolean                                       closeHandlerAdded;
 
     protected static int                                    MAX_ATTACHMENTS = 1000;
-
+    
     public TRFAttachmentScreenUI() throws Exception {
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -103,7 +102,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         setState(QUERY);
         loadTable(null);
 
-        logger.fine("TRF Attachment Screen Opened");
+        logger.fine("Data Entry TRF Attachment Screen Opened");
     }
 
     protected void initialize() {
@@ -131,7 +130,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
                 displayAttachment(table.getRowAt(event.getSelectedItem()),
-                                  Messages.get().trfAttachment_trfAttachment());
+                                  Messages.get().trfAttachment_dataEntryTRFAttachment());
             }
         });
 
@@ -147,6 +146,9 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
+                Integer id;
+                String status;
+                AttachmentManager am;
                 Object val;
 
                 r = event.getRow();
@@ -161,18 +163,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                     event.cancel();
                     return;
                 }
-            }
-        });
-
-        table.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Integer id;
-                String status;
-                AttachmentManager am;
                 
-                r = event.getRow();
-                c = event.getCol();
                 id = table.getRowAt(r).getData();
                 /*
                  * this attachment is currently not reserved and the user is
@@ -182,7 +173,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                  * "Status"
                  */
                 try {
-                    am = AttachmentService.get().fetchForUpdate(id);
+                    am = AttachmentService.get().fetchForReserve(id);
                     managers.put(id, am);
                     if (am.item.count() > 0)
                         status = Messages.get().trfAttachment_attached();
@@ -190,18 +181,16 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                         status = Messages.get()
                                         .trfAttachment_lockedBy(UserCache.getPermission()
                                                                   .getLoginName());
+                    table.setValueAt(r, 1, status);
                 } catch (EntityLockedException e) {
-                    status = Messages.get()
-                                    .trfAttachment_lockedBy("another user");
-                    table.setValueAt(r, 0, "N");
+                    table.setValueAt(r, 1, Messages.get()
+                                    .trfAttachment_lockedBy(e.getUserName()));
+                    event.cancel();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
-                    table.setValueAt(r, 0, "N");
-                    return;
+                    event.cancel();
                 }
-                
-                table.setValueAt(r, 1, status);
             }
         });
 
@@ -226,11 +215,28 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         });
     }
 
+    public abstract String getDescription();
+    
     /**
      * Creates and executes a query to fetch the attachments to be shown on the
      * screen
      */
-    public abstract void search();
+    public void search(String description) {
+        Query query;
+        QueryData field;
+
+        /*
+         * query for the TRFs for this domain
+         */
+        query = new Query();
+        field = new QueryData();
+        field.setQuery(description);
+        query.setFields(field);
+        query.setRowsPerPage(MAX_ATTACHMENTS);
+        managers = null;
+
+        executeQuery(query);
+    }
 
     public void setWindow(WindowInt window) {
         super.setWindow(window);
@@ -242,6 +248,15 @@ public abstract class TRFAttachmentScreenUI extends Screen {
          * added to the new window
          */
         closeHandlerAdded = false;
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
+                if (attachmentsReserved()) {
+                    event.cancel();
+                    Window.alert(Messages.get().trfAttachment_firstUnlockAll());
+                }
+            }
+        });
     }
 
     /**
@@ -298,7 +313,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                     clearStatus();
                     table.selectRowAt(0);
                     displayAttachment(table.getRowAt(0), Messages.get()
-                                                                 .trfAttachment_trfAttachment());
+                                                                 .trfAttachment_dataEntryTRFAttachment());
                 }
 
                 public void notFound() {
@@ -321,7 +336,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 }
 
                 public void failure(Throwable e) {
-                    Window.alert("Error: TRF Attachment call query failed; " + e.getMessage());
+                    Window.alert("Error: Data Entry TRF Attachment call query failed; " + e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                     setError(Messages.get().gen_queryFailed());
                 }
@@ -354,7 +369,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     @UiHandler("unlockAllButton")
-    protected void unlock(ClickEvent event) {        
+    protected void unlockAll(ClickEvent event) {        
         Row row;
         Integer id;
         AttachmentManager am;
@@ -383,6 +398,13 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     @UiHandler("refreshButton")
     protected void refresh(ClickEvent event) {
+        if (attachmentsReserved())
+            Window.alert(Messages.get().trfAttachment_firstUnlockAll());
+        else
+            search(getDescription());
+    }
+
+    private boolean attachmentsReserved() {
         boolean reserved;
         Row row;
 
@@ -394,11 +416,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 break;
             }
         }
-
-        if (reserved)
-            Window.alert(Messages.get().trfAttachment_unlockAllBeforeRefresh());
-        else
-            search();
+        return reserved;
     }
 
     /**
@@ -411,6 +429,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     private void loadTable(ArrayList<AttachmentManager> ams) {
         Row row;
+        AttachmentDO data;
 
         if (ams == null) {
             table.setModel(null);
@@ -424,26 +443,16 @@ public abstract class TRFAttachmentScreenUI extends Screen {
          */
         for (AttachmentManager am : ams) {
             row = new Row(6);
-            loadAttachment(row, am);
+            data = am.getAttachment();
+            /*
+             * the node for the attachment
+             */
+            row.setCell(0, "N");
+            row.setCell(2, data.getDescription());
+            row.setCell(3, data.getCreatedDate());
+            row.setCell(4, data.getId());
+            row.setData(data.getId());
             table.addRow(row);
         }
-    }
-
-    /**
-     * Creates a subtree loaded from the passed manager. Makes passed node the
-     * attachment node and also the root of the subtree.
-     */
-    private void loadAttachment(Row row, AttachmentManager am) {
-        AttachmentDO data;
-
-        data = am.getAttachment();
-        /*
-         * the node for the attachment
-         */
-        row.setCell(0, "N");
-        row.setCell(2, data.getDescription());
-        row.setCell(3, data.getCreatedDate());
-        row.setCell(4, data.getId());
-        row.setData(data.getId());
     }
 }

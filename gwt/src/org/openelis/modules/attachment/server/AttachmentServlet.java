@@ -61,6 +61,15 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
             throw serializeForGWT(anyE);
         }
     }
+    
+    @Override
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        try {
+            return attachmentManager.fetchByQueryDescending(fields, first, max);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     @Override
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception {
@@ -75,6 +84,15 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception {
         try {
             return attachmentManager.fetchForUpdate(attachmentId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    @Override
+    public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception {
+        try {
+            return attachmentManager.fetchForReserve(attachmentId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
