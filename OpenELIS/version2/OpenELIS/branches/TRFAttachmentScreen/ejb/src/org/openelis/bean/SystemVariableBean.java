@@ -46,6 +46,7 @@ import org.openelis.meta.SystemVariableMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -244,25 +245,29 @@ public class SystemVariableBean {
     }
 
     public void validate(SystemVariableDO data) throws Exception {
+        Integer svid;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
 
+        svid = data.getId();
+        if (svid == null)
+            svid = 0;
+
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             SystemVariableMeta.getName()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .systemVariable_nameRequiredException(svid)));
         } else {
             ArrayList<SystemVariableDO> dups;
 
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
-                                                 SystemVariableMeta.getName()));
+                list.add(new FormErrorException(Messages.get().systemVariable_uniqueException(svid)));
         }
 
         if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             SystemVariableMeta.getValue()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .systemVariable_valueRequiredException(svid)));
 
         if (list.size() > 0)
             throw list;

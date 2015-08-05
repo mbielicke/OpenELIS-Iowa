@@ -5938,6 +5938,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String eorderImport_missingPath();
 
   /**
+   * Translated "No Order-In Profile preference found for organization id {0,number,#0}.".
+   * 
+   * @return translated "No Order-In Profile preference found for organization id {0,number,#0}."
+   */
+  @DefaultMessage("No Order-In Profile preference found for organization id {0,number,#0}.")
+  @Key("eorderImport.missingProfilePreferenceParameter")
+  String eorderImport_missingProfilePreferenceParameter(Integer arg0);
+
+  /**
    * Translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.".
    * 
    * @return translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient."

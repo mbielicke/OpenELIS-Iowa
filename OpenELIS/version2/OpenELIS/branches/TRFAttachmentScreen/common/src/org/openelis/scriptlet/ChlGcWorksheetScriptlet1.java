@@ -222,7 +222,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         }
         for (IdNameVO col : worksheetColumns) {
             if ("final_value".equals(col.getName())) {
-                resultColumn = col.getId() - 10;
+                resultColumn = col.getId();
                 break;
             }
         }

@@ -128,9 +128,10 @@ public class ClientNotificationReceivedReportBean {
                             continue;
                         break;
                     case "P:":
-                        // TODO add provider to data object
-                        if (DataBaseUtil.isEmpty(data.getProviderLastName()) ||
-                            !data.getProviderLastName().contains(filterValue))
+                        // for clinical domain samples, reference field 1 should
+                        // be provider last name
+                        if (DataBaseUtil.isEmpty(data.getReferenceField1()) ||
+                            !data.getReferenceField1().contains(filterValue))
                             continue;
                         break;
                     default:
@@ -179,6 +180,7 @@ public class ClientNotificationReceivedReportBean {
                 qaOverride = null;
 
                 accessionNumbers.add(accession);
+                lastAccession = accession;
             }
             if (data.getSampleQaeventId() != null || data.getAnalysisQaeventId() != null)
                 qaOverride = "YES";
