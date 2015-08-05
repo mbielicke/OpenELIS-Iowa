@@ -385,11 +385,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_filterValue();
 
   /**
-   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter.".
+   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter. This allows the user to only receive email notifications for samples that she collects, where she is the medical provider, or that have a specific Client Reference.".
    * 
-   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter."
+   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter. This allows the user to only receive email notifications for samples that she collects, where she is the medical provider, or that have a specific Client Reference."
    */
-  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter.")
+  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both types of events. You can also add a filter so that you will only receive email notifications from SHL that match that filter. This allows the user to only receive email notifications for samples that she collects, where she is the medical provider, or that have a specific Client Reference.")
   @Key("emailNotification.help.description")
   String emailNotification_help_description();
 
