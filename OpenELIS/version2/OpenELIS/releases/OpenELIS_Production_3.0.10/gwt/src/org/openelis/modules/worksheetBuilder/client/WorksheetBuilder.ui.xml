@@ -1,0 +1,263 @@
+<!--
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+-->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:ws="urn:import:org.openelis.modules.worksheet1.client"
+             xmlns:wb="urn:import:org.openelis.modules.worksheetBuilder.client">
+
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+
+  <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:west size="250">
+      <w:TabLayoutPanel barHeight="25" barUnit="PX">
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.gen_worksheet}"/>
+          </w:customHeader>
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" right="0px">
+              <g:LayoutPanel>
+                <g:layer top="0px" bottom="26px">
+                  <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
+                           header="true" styleName="{res.table.ScreenTableWithSides}">
+                    <t:Column width="50" label="{msg.gen_id}">
+                      <t:LabelCell/>
+                    </t:Column>
+                    <t:Column width="150" label="{msg.gen_description}">
+                      <t:LabelCell/>
+                    </t:Column>
+                  </t:Table>
+                </g:layer>
+                <g:layer bottom="0px" height="26px">
+                  <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+                    <g:HorizontalPanel>
+                      <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
+                      <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
+                    </g:HorizontalPanel>
+                  </g:HorizontalPanel>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.gen_analytes}"/>
+          </w:customHeader>
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" right="0px">
+              <g:LayoutPanel>
+                <g:layer top="0px" bottom="28px">
+                  <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
+                           verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
+                    <t:Column width="20">
+                      <t:CheckBoxCell/>
+                    </t:Column>
+                    <t:Column width="150" label="{msg.gen_analytes}">
+                      <t:LabelCell/>
+                    </t:Column>
+                  </t:Table>
+                </g:layer>
+                <g:layer bottom="0px" height="28px">
+                  <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+                    <g:HorizontalPanel>
+                      <w:Button ui:field="checkAllAnalytes" leftIcon="{uiRes.checkbox.Checked}"
+                                text="{msg.gen_checkAll}" enabled="false" css="{res.atozButton}"/>
+                      <w:Button ui:field="uncheckAllAnalytes" leftIcon="{uiRes.checkbox.Unchecked}"
+                                text="{msg.gen_uncheckAll}" enabled="false" css="{res.atozButton}"/>
+                    </g:HorizontalPanel>
+                  </g:HorizontalPanel>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+      </w:TabLayoutPanel>
+    </g:west>
+    <g:center>
+      <g:LayoutPanel>
+        <g:layer top="0px" height="30px">
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
+                           width="100%">
+            <g:HorizontalPanel>
+              <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
+                        text="{msg.gen_query}" toggles="true"/>
+              <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}"
+                        text="{msg.gen_previous}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}"
+                        text="{msg.gen_next}"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
+                        text="{msg.gen_add}" toggles="true"/>
+              <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
+                        text="{msg.gen_update}" toggles="true"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+                        text="{msg.gen_commit}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
+                        text="{msg.gen_abort}"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Menu ui:field="optionsMenu" selfShow="true">
+                <w:display>
+                  <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                            rightIcon="{res.icon.OptionsButtonImage}"/>
+                </w:display>
+                <w:MenuItem ui:field="worksheetHistory" description="" enabled="false"
+                            icon="{res.icon.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
+              </w:Menu>
+            </g:HorizontalPanel>
+          </g:AbsolutePanel>
+        </g:layer>
+        <g:layer top="30px" height="80px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_worksheetNumber}:"/>
+                </td>
+                <td>
+                  <w:TextBox ui:field="worksheetId" width="75px" field="Integer"/>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_status}:"/>
+                </td>
+                <td>
+                  <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_username}:"/>
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="systemUserId" width="165px" dropHeight="201px" case="LOWER">
+                    <w:popup>
+                      <t:Table>
+                        <t:Column>
+                          <t:LabelCell/>
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_format}:"/>
+                </td>
+                <td>
+                  <w:Dropdown ui:field="formatId" width="140px" dropWidth="150px" case="MIXED" field="Integer"/>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_relatedWorksheetNumber}:"/>
+                </td>
+                <td>
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="relatedWorksheetId" width="72px" field="Integer"/>
+                    <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
+                  </g:HorizontalPanel>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_instrumentName}:"/>
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="instrumentName" width="165px" dropWidth="765px" case="LOWER">
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="150" label="{msg.gen_name}">
+                          <t:LabelCell/>
+                        </t:Column>
+                        <t:Column width="200" label="{msg.gen_description}">
+                          <t:LabelCell/>
+                        </t:Column>
+                        <t:Column width="200" label="{msg.gen_type}">
+                          <t:LabelCell/>
+                        </t:Column>
+                        <t:Column width="200" label="{msg.gen_location}">
+                          <t:LabelCell/>
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_createdDate}:"/>
+                </td>
+                <td>
+                  <c:Calendar ui:field="createdDate" width="135px" begin="0" end="4"/>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_description}:"/>
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="description" width="410px" case="LOWER" maxLength="60" field="String"/>
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="102px" bottom="0px">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="25" barUnit="PX">
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_worksheet}"/>
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <wb:WorksheetItemTabUI ui:field="worksheetItemTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.worksheet_reagentsMedia}"/>
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <ws:WorksheetReagentTabUI ui:field="reagentTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_note}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <ws:WorksheetNotesTabUI ui:field="notesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+          </w:TabLayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:center>
+  </g:SplitLayoutPanel>
+</ui:UiBinder>
