@@ -969,7 +969,7 @@ public class WorksheetManager1Bean {
         testAnalyteIdMap = new HashMap<Integer, ArrayList<Integer>>();
         wResultHash = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
         for (IdNameVO column : getColumnNames(wm.getWorksheet().getFormatId()))
-            formatColumnMap.put(column.getName(), column.getId() - 10);
+            formatColumnMap.put(column.getName(), column.getId());
         if (getResults(wm) != null) {
             for (WorksheetResultViewDO res : getResults(wm)) {
                 wResults = wResultHash.get(res.getWorksheetAnalysisId());
@@ -1959,11 +1959,11 @@ public class WorksheetManager1Bean {
                         toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 10);
+                                fromName = fromColumnMap.get(i);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWrVDO.setValueAt(toIndex.intValue() - 10, fromWrVDO.getValueAt(i));
+                                        toWrVDO.setValueAt(toIndex.intValue(), fromWrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -1989,11 +1989,11 @@ public class WorksheetManager1Bean {
                         toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 10);
+                                fromName = fromColumnMap.get(i);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWqrVDO.setValueAt(toIndex.intValue() - 10, fromWqrVDO.getValueAt(i));
+                                        toWqrVDO.setValueAt(toIndex.intValue(), fromWqrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -2089,7 +2089,7 @@ public class WorksheetManager1Bean {
         for (i = 0; i < columnDOs.size(); i++) {
             columnDO = columnDOs.get(i);
             columnName = columnDO.getSystemName().substring(formatDO.getSystemName().length() + 1);
-            columnNames.add(new IdNameVO(10 + i, columnName));
+            columnNames.add(new IdNameVO(i, columnName));
         }
 
         return columnNames;
@@ -2135,7 +2135,7 @@ public class WorksheetManager1Bean {
         formatColumnMap = new HashMap<String, Integer>();
         formatColumns = getColumnNames(manager.getWorksheet().getFormatId());
         for (IdNameVO column : formatColumns)
-            formatColumnMap.put(column.getName(), column.getId() - 10);
+            formatColumnMap.put(column.getName(), column.getId());
         
         wrVDOsByWorksheetAnalysisId = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
         for (WorksheetResultViewDO wrVDO : getResults(manager)) {

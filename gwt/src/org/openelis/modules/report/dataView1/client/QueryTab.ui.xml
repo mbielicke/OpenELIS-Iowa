@@ -179,7 +179,7 @@
                   <ui:text from="{msg.gen_status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="analysisStatusId" field="Integer" width="125px" />
+                  <w:MultiDropdown ui:field="analysisStatusId" field="Integer" width="125px" />
                 </td>
               </tr>
               <tr>

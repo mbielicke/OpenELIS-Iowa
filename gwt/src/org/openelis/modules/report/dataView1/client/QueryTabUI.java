@@ -86,10 +86,7 @@ public class QueryTabUI extends Screen {
                     analysisMethodName;
 
     @UiField
-    protected Dropdown<Integer>       analysisStatusId;
-
-    @UiField
-    protected MultiDropdown<Integer>  projectId;
+    protected MultiDropdown<Integer>  projectId, analysisStatusId;
 
     @UiField
     protected Dropdown<String>        domain, analysisIsReportable, result, auxData;
@@ -648,7 +645,7 @@ public class QueryTabUI extends Screen {
                 fieldValues.put(f.getKey(), f.getQuery());
         }
     }
-    
+
     public void setState(State state) {
         super.setState(state);
         /*
@@ -695,7 +692,7 @@ public class QueryTabUI extends Screen {
                      SampleWebMeta.getEnteredDate(),
                      QueryData.Type.DATE,
                      fields);
-        
+
         addQueryData(releasedDateFrom,
                      releasedDateTo,
                      SampleWebMeta.getReleasedDate(),
@@ -809,17 +806,16 @@ public class QueryTabUI extends Screen {
         } else {
             pairsFilled-- ;
         }
-        
+
         fromEmpty = releasedDateFrom.getValue() == null;
         toEmpty = releasedDateTo.getValue() == null;
         if ( !fromEmpty) {
             if (toEmpty) {
                 releasedDateTo.addException(new Exception(Messages.get()
-                                                                          .gen_fieldRequiredException()));
+                                                                  .gen_fieldRequiredException()));
             }
         } else if ( !toEmpty) {
-            releasedDateFrom.addException(new Exception(Messages.get()
-                                                                        .gen_fieldRequiredException()));
+            releasedDateFrom.addException(new Exception(Messages.get().gen_fieldRequiredException()));
         } else {
             pairsFilled-- ;
         }
@@ -899,7 +895,7 @@ public class QueryTabUI extends Screen {
     private Datetime getEnteredDateTo() {
         return getDatetime(SampleWebMeta.getEnteredDateTo(), enteredDateTo);
     }
-    
+
     private Datetime getReleasedDateFrom() {
         return getDatetime(SampleWebMeta.getReleasedDateFrom(), releasedDateFrom);
     }
@@ -913,22 +909,7 @@ public class QueryTabUI extends Screen {
     }
 
     private ArrayList<Integer> getProjectId() {
-        String value, projs[];
-        ArrayList<Integer> ids;
-
-        value = fieldValues.get(SampleWebMeta.getProjectId());
-        ids = null;
-        if (DataBaseUtil.isEmpty(value))
-            return ids;
-
-        projs = value.split("\\|");
-        if (projs.length > 0) {
-            ids = new ArrayList<Integer>();
-            for (String p : projs)
-                ids.add(Integer.valueOf(p.trim()));
-        }
-
-        return ids;
+        return getSelectedIds(SampleWebMeta.getProjectId());
     }
 
     private String getSampleOrgOrganizationName() {
@@ -951,8 +932,8 @@ public class QueryTabUI extends Screen {
         return fieldValues.get(SampleWebMeta.getAnalysisIsReportable());
     }
 
-    private Integer getAnalysisStatusId() {
-        return getInteger(SampleWebMeta.getAnalysisStatusId());
+    private ArrayList<Integer> getAnalysisStatusId() {
+        return getSelectedIds(SampleWebMeta.getAnalysisStatusId());
     }
 
     private Datetime getAnalysisCompletedDateFrom() {
@@ -1051,6 +1032,28 @@ public class QueryTabUI extends Screen {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the list of selected ids for a multi-dropdown like project
+     */
+    private ArrayList<Integer> getSelectedIds(String key) {
+        String value, sels[];
+        ArrayList<Integer> ids;
+
+        value = fieldValues.get(key);
+        ids = null;
+        if (DataBaseUtil.isEmpty(value))
+            return ids;
+
+        sels = value.split("\\|");
+        if (sels.length > 0) {
+            ids = new ArrayList<Integer>();
+            for (String s : sels)
+                ids.add(Integer.valueOf(s.trim()));
+        }
+
+        return ids;
     }
 
     /**
