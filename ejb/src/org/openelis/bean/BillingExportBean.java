@@ -352,19 +352,21 @@ public class BillingExportBean {
                 hdr.collector = getSamplePrivateWell(sm).getCollector();
                 hdr.location = getSamplePrivateWell(sm).getLocation();
 
-                for (SampleOrganizationViewDO o : getOrganizations(sm)) {
-                    /*
-                     * use bill-to if present
-                     */
-                    if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId())) {
-                        hdr.organizationId = o.getOrganizationId();
-                        hdr.organizationName = o.getOrganizationName();
-                        hdr.streetAddress = o.getOrganizationStreetAddress();
-                        hdr.multipleUnit = o.getOrganizationMultipleUnit();
-                        hdr.city = o.getOrganizationCity();
-                        hdr.state = o.getOrganizationState();
-                        hdr.zipCode = o.getOrganizationZipCode();
-                        break;
+                if (getOrganizations(sm) != null) {
+                    for (SampleOrganizationViewDO o : getOrganizations(sm)) {
+                        /*
+                         * use bill-to if present
+                         */
+                        if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId())) {
+                            hdr.organizationId = o.getOrganizationId();
+                            hdr.organizationName = o.getOrganizationName();
+                            hdr.streetAddress = o.getOrganizationStreetAddress();
+                            hdr.multipleUnit = o.getOrganizationMultipleUnit();
+                            hdr.city = o.getOrganizationCity();
+                            hdr.state = o.getOrganizationState();
+                            hdr.zipCode = o.getOrganizationZipCode();
+                            break;
+                        }
                     }
                 }
             } else {
