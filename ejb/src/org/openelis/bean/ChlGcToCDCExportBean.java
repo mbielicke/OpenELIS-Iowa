@@ -246,6 +246,7 @@ public class ChlGcToCDCExportBean {
                                              SampleManager1.Load.QA,
                                              SampleManager1.Load.RESULT);
 
+            log.info("Considering " + sms.size() + " cases to run");
             status.setMessage("Building dataset").setPercentComplete(50);
             session.setAttribute("ChlGcToCDCExport", status);
 
