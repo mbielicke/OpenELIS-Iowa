@@ -16,4 +16,6 @@ public interface ChlGcToCDCExportServiceInt extends XsrfProtectedService {
 
     ReportStatus runReport(Query query) throws Exception;
 
+    ReportStatus getStatus() throws Exception;
+
 }

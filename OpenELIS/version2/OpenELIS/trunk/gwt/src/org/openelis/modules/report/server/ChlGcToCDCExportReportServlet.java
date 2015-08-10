@@ -31,6 +31,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.ChlGcToCDCExportBean;
+import org.openelis.bean.SessionCacheBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
@@ -43,7 +44,10 @@ public class ChlGcToCDCExportReportServlet extends RemoteServlet implements ChlG
     private static final long serialVersionUID = 1L;
     
     @EJB
-    ChlGcToCDCExportBean chlGcToCDCExport;
+    private SessionCacheBean session;
+
+    @EJB
+    ChlGcToCDCExportBean     chlGcToCDCExport;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
         try {        
@@ -66,5 +70,9 @@ public class ChlGcToCDCExportReportServlet extends RemoteServlet implements ChlG
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
+    }
+
+    public ReportStatus getStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("ChlGcToCDCExport");
     }
 }

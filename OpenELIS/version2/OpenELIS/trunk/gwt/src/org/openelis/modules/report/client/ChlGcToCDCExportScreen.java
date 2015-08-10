@@ -34,6 +34,7 @@ import org.openelis.ui.widget.WindowInt;
 import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -55,6 +56,32 @@ public class ChlGcToCDCExportScreen extends ReportScreen<Query> {
 
     @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        Timer exportTimer;
+        
         ChlGcToCDCExportService.get().runReport(query, callback);
+        /*
+         * refresh the status of the report every second, until the process successfully
+         * completes or is aborted because of an error
+         */
+        exportTimer = new Timer() {
+            public void run() {
+                ReportStatus status;
+                try {
+                    status = ChlGcToCDCExportService.get().getStatus();
+                    /*
+                     * the status only needs to be refreshed while the status
+                     * panel is showing because once the job is finished, the
+                     * panel is closed
+                     */
+                    if (window.asWidget().isAttached() && !ReportStatus.Status.RUNNING.equals(status.getStatus())) {
+                        window.setStatus(status.getMessage(), "");
+                        this.schedule(1000);
+                    }
+                } catch (Exception e) {
+                    window.setStatus(e.getMessage(), "");
+                }
+            }
+        };
+        exportTimer.schedule(1000);
     }
 }
