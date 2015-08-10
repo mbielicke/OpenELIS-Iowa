@@ -177,6 +177,7 @@ public class ChlGcToCDCExportBean {
          */
         try {
             status.setMessage("Initializing report");
+            session.setAttribute("ChlGcToCDCExport", status);
 
             fields = new ArrayList<QueryData>();
 
@@ -235,6 +236,7 @@ public class ChlGcToCDCExportBean {
             fields.add(field);
 
             status.setMessage("Fetching records").setPercentComplete(20);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             sms = new ArrayList<SampleManager1>();
             sms = sampleManager.fetchByQuery(fields,
@@ -245,18 +247,21 @@ public class ChlGcToCDCExportBean {
                                              SampleManager1.Load.RESULT);
 
             status.setMessage("Building dataset").setPercentComplete(50);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             con = ReportUtil.getConnection(ctx);
             rows = new ArrayList<HashMap<String, Object>>();
             summary = buildDataSet(sms, rows, con);
 
             status.setMessage("Outputing report").setPercentComplete(75);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             export(rows, exportDirectory);
 
-            status.setPercentComplete(100);
-
-            status.setMessage(summary).setStatus(ReportStatus.Status.PRINTED);
+            status.setPercentComplete(100)
+                  .setMessage(summary)
+                  .setStatus(ReportStatus.Status.PRINTED);
+            session.setAttribute("ChlGcToCDCExport", status);
         } catch (NotFoundException nfE) {
             log.log(Level.INFO, "No samples found for ChlGCToCDC Export");
         } catch (Exception e) {
