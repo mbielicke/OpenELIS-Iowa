@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hivHepCTransfer" pageWidth="1025" pageHeight="12" orientation="Landscape" columnWidth="1025" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="com.jasperassistant.designer.Rulers" value="true"/>
+	<property name="com.jasperassistant.designer.GridHeight" value="20"/>
+	<property name="com.jasperassistant.designer.GridWidth" value="2"/>
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
+	<property name="com.jasperassistant.designer.Margins" value="true"/>
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="com.jasperassistant.designer.Grid" value="false"/>
+	<property name="com.jasperassistant.designer.SnapToGuides" value="true"/>
+	<import value="org.openelis.report.hivHepCTransfer.QAEventDataSource"/>
+	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="FROM_DATE" class="java.lang.String">
+		<parameterDescription><![CDATA[Beginning Specimen Collected Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO_DATE" class="java.lang.String">
+		<parameterDescription><![CDATA[Ending Specimen Collected Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ANALYTE_IDS" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select s.id as s_id, s.accession_number, s.released_date, s.client_reference,
+       t.name as test_name, dr.entry as result, a.id as a_id, o.id as o_id
+  from sample s
+       join sample_organization so on so.sample_id = s.id and
+                                      so.type_id = (select id from dictionary where system_name = 'org_report_to')
+       join organization o on so.organization_id = o.id
+       left join organization_parameter op on op.organization_id = o.id and
+                                              op.type_id = (select id from dictionary where system_name = 'org_type') and
+                                              op.value = 'HIV_HEPC_TRANSFER'
+       join sample_item si on si.sample_id = s.id
+       join analysis a on a.sample_item_id = si.id and
+                          a.is_reportable = 'Y' and
+                          a.status_id = (select id from dictionary where system_name = 'analysis_released')
+       join test t on a.test_id = t.id and
+                      (t.name matches 'hep c*' or t.name matches 'hiv*')
+       join result r on r.analysis_id = a.id and
+                        r.is_column = 'N'$P!{ANALYTE_IDS}
+       left join dictionary dr on r.value = dr.id and
+                                  r.type_id = (select id from dictionary where system_name = 'test_res_type_dictionary')
+where s.released_date between $P{FROM_DATE} and $P{TO_DATE}
+order by s.accession_number]]>
+	</queryString>
+	<field name="s_id" class="java.lang.Integer"/>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="released_date" class="java.sql.Timestamp"/>
+	<field name="client_reference" class="java.lang.String"/>
+	<field name="test_name" class="java.lang.String"/>
+	<field name="result" class="java.lang.String"/>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="o_id" class="java.lang.Integer"/>
+	<variable name="QAEVENT_DATASOURCE" class="org.openelis.report.hivHepCTransfer.QAEventDataSource" resetType="Page" calculation="System">
+		<variableExpression><![CDATA[$V{QAEVENT_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[QAEventDataSource.getInstance($F{s_id},$F{a_id})]]></initialValueExpression>
+	</variable>
+	<detail>
+		<band height="12">
+			<textField isBlankWhenNull="true">
+				<reportElement key="orgId" positionType="Float" x="0" y="0" width="45" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{o_id}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="accessionNumber" positionType="Float" x="45" y="0" width="55" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd hh:mm" isBlankWhenNull="true">
+				<reportElement key="releasedDate" positionType="Float" x="100" y="0" width="55" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{released_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="clientReference" positionType="Float" x="155" y="0" width="120" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="testName" positionType="Float" x="275" y="0" width="100" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{test_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="result" positionType="Float" x="375" y="0" width="100" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{QAEVENT_DATASOURCE}.hasSampleOverride() || $V{QAEVENT_DATASOURCE}.hasAnalysisOverride() ? "" : $F{result}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="475" y="0" width="550" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$V{QAEVENT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "qaevent.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

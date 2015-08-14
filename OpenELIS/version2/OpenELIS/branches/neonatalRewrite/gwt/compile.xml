@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="OpenELIS" default="javac" basedir=".">
+
+	<property name="gwt.sdk" location="/usr/local/java/gwt-2.7.0" />
+	
+	<taskdef resource="org/apache/ivy/ant/antlib.xml"
+		         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
+	
+	<ivy:configure file="ivysettings.xml"/>
+	<ivy:retrieve pattern="ivylib/[artifact]-[type]-[revision].[ext]"/>
+	<ivy:resolve file="../OpenELIS-EJB/ivy.xml"/>
+	<ivy:retrieve file="../OpenELIS-EJB/ivy.xml" pattern="ivylib/[artifact]-[type]-[revision].[ext]"/>
+	
+	<path id="ivy.lib">
+	   <fileset dir="ivylib" includes="*.jar"/>
+    </path>
+
+	<path id="gwt.jars">
+		<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+    </path>
+	
+	<path id="lib.class.path">
+		<path refid="gwt.jars"/>
+    	<path refid="ivy.lib"/>
+    	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
+		<pathelement location="../OpenELIS-UI/ui.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
+	</path>
+		
+	<path id="ejb.class.path">
+		<path refid="ivy.lib"/>
+		<path refid="gwt.jars"/>
+		<pathelement location="../OpenELIS-Lib/bin"/>
+		<pathelement location="../OpenELIS-UI/ui.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
+	</path>
+	
+	<path id="gwt.class.path">
+		<path refid="gwt.jars"/>
+    	<pathelement location="../OpenELIS-Common/bin"/>
+    	<pathelement location="../OpenELIS-EJB/bin"/>
+    	<pathelement location="../OpenELIS-Lib/bin"/>
+		<pathelement location="../OpenELIS-UI/openelis-apt.jar"/>
+		<path refid="ivy.lib"/>
+    	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<pathelement location="../OpenELIS-UI/ui.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
+	</path>
+	
+	<path id="common.class.path">
+		<path refid="gwt.jars"/>
+    	<pathelement location="../OpenELIS-EJB/bin"/>
+		<path refid="ivy.lib"/>
+    	<fileset dir="lib" includes="*.jar"/>
+		<pathelement location="../OpenELIS-UI/ui.jar"/>
+	</path>	
+	
+	<path id="web.class.path">
+		<path refid="gwt.jars"/>
+    	<pathelement location="../OpenELIS-Common/bin"/>
+    	<pathelement location="../OpenELIS-EJB/bin"/>
+    	<pathelement location="../OpenELIS-Lib/bin"/>
+    	<pathelement location="bin"/>
+		<path refid="ivy.lib"/>
+    	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
+	</path>
+	
+	<path id="gwt.gwtc.path">
+		<path refid="gwt.jars"/>
+		<pathelement location="src" />
+		<pathelement location=".apt_generated"/>
+		<pathelement location="war/WEB-INF/classes"/>
+		<pathelement location="../OpenELIS-Common/src" />
+		<pathelement location="../OpenELIS-Common/bin"/>
+		<pathelement location="../OpenELIS-Lib/src"/>
+		<pathelement location="../OpenELIS-Lib/bin"/>
+		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
+		<fileset dir="lib" includes="*.jar"/>
+    </path>
+		
+	<path id="web.gwtc.path">
+		<path refid="gwt.jars"/>
+		<pathelement location="../OpenELIS-Web/src"/>
+		<pathelement location="../OpenELIS-Web/war/WEB-INF/classes"/>
+		<pathelement location="src" />
+		<pathelement location="../OpenELIS-Common/src" />
+		<pathelement location="../OpenELIS-Common/bin"/>
+		<pathelement location="../OpenELIS-Lib/src"/>
+		<pathelement location="../OpenELIS-Lib/bin"/>
+		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
+		<fileset dir="lib" includes="*.jar"/>
+    </path>
+
+	<target name="javac" depends="clean" description="Compile java source to bytecode">
+		<mkdir dir="../OpenELIS-Lib/bin"/>
+		<mkdir dir="../Security/bin"/>
+		<mkdir dir="../OpenELIS-Common/bin"/>
+		<mkdir dir="war/WEB-INF/classes"/>
+		<mkdir dir="../OpenELIS-EJB/bin"/>
+		<mkdir dir="../OpenELIS-Web/war/WEB-INF/classes"/>
+		<mkdir dir=".apt_generated"/>
+		
+		<!-- Projects need to be compiled in the order that they are in until we can remove the manager circular references -->
+		
+		<!-- Compile of OpenELIS-UI project 
+		<javac includeantruntime="false" srcdir="../OpenELIS-UI/src" includes="**" encoding="utf-8" destdir="../OpenELIS-UI/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+            <classpath refid="ui.class.path"/>
+	    </javac>
+	    -->
+		
+		<!-- Compile of OpenELIS-Lib project -->
+		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-Lib/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Lib/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		    <classpath refid="lib.class.path"/>
+	    </javac>
+		
+		<!-- Compile of Security project 
+		<javac includeantruntime="false" srcdir="../Security/shared:../Security/ejb" includes="**" encoding="utf-8" destdir="../Security/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		    <classpath refid="security.class.path"/>
+	    </javac>
+	    -->
+		
+		<!-- Compile of OpenELIS-EJB -->
+		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-EJB/src:../OpenELIS-Common/src/org/openelis/domain:../OpenELIS-Common/src/org/openelis/constants:../OpenELIS-Common/src/org/openelis/manager:../OpenELIS-Common/src/org/openelis/utilcommon:../OpenELIS-Common/src/org/openelis/meta:../OpenELIS-Common/src/org/openelis/exception:../OpenELIS-Common/src/org/openelis/scriptlet:../OpenELIS-GWT/src/org/openelis/cache:" includes="**" encoding="utf-8" destdir="../OpenELIS-EJB/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+			<exclude name="org/openelis/stfu/**/*"/>
+            <classpath refid="ejb.class.path"/>
+	    </javac>
+		
+		<!-- Compile of OpenELIS-Common -->
+		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir=":../OpenELIS-Common/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Common/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+            <classpath refid="common.class.path"/>
+	    </javac>
+		
+		<!-- Compile of OpenELIS-GWT project -->
+		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="src" includes="**" encoding="utf-8" destdir="war/WEB-INF/classes" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+            <compilerarg line="-s .apt_generated"/>
+			<classpath refid="gwt.class.path"/> 
+	    </javac>
+		
+		<!-- Compile of OpenELIS-Web project 
+		<javac includeantruntime="false" srcdir="../OpenELIS-Web/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Web/war/WEB-INF/classes" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+            <classpath refid="web.class.path"/>
+	    </javac>
+	    -->
+		
+		<delete dir="ivylib"/>
+	</target>
+	
+	<target name="gwtc.dev" description="GWT compile to JavaScript">
+		<!-- GWT compile of OpenELIS-GWT project -->
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath refid="gwt.gwtc.path"/>
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<jvmarg value="-DOPENELIS=../OpenELIS-GWT/src"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<arg line="-optimize"/>
+			<arg value="0"/>
+			<arg value="org.openelis.Development" />
+		</java>
+
+		<!-- GWT Compile of OpenELIS-Web project -->
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath refid="web.gwtc.path"/>
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<arg line="-optimize"/>
+			<arg value="0"/>
+			<arg value="org.openelis.web.Development"/>
+		</java>
+	</target>
+	
+	<target name="gwtc.prod" description="GWT compile to JavaScript">
+		<!-- GWT compile of OpenELIS-GWT project -->
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath refid="gwt.gwtc.path"/>
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<jvmarg value="-DOPENELIS=../OpenELIS-GWT/src"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<arg value="org.openelis.OpenELIS" />
+		</java>
+
+		<!-- GWT Compile of OpenELIS-Web project -->
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath refid="web.gwtc.path"/>
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<arg value="org.openelis.web.OpenELISWeb"/>
+		</java>
+	</target>
+
+	<target name="clean" description="Cleans this project">
+		<delete dir="../OpenELIS-Lib/bin" failonerror="false"/>
+		<delete dir="../OpenELIS-Common/bin" failonerror="false"/>
+		<delete dir="../OpenELIS-EJB/bin" failonerror="false"/>
+		<delete dir="war/WEB-INF/classes" failonerror="false" />
+		<delete dir="../OpenELIS-Web/war/WEB-INF/classes" failonerror="false"/>
+		<delete dir=".apt_generated" failonerror="fasle"/>
+	</target>
+
+</project>
