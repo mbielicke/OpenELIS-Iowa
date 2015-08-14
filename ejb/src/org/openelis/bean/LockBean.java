@@ -70,14 +70,32 @@ public class LockBean {
      * any of the ids, a EntityLockedException is thrown.
      */
     public void lock(int tableId, List<Integer> ids, long lockTimeMillis) throws Exception {
+        int i;
         long expires;
+        Integer id;
         String user, session;
 
         expires = System.currentTimeMillis() + lockTimeMillis;
         user = User.getName(ctx);
         session = User.getSessionId(ctx);
-        for (Integer id : ids)
-            lock(tableId, id, expires, user, session);
+        for (i = 0 ; i < ids.size(); i++) {
+            id = ids.get(i);
+            try {
+                lock(tableId, id, expires, user, session);
+            } catch (Exception e) {
+                //
+                // We need to unlock any locks we may have acquired up to this point.
+                //
+                if (i > 0) {
+                    do {
+                        i--;
+                        id = ids.get(i);
+                        unlock(tableId, id, user, session);
+                    } while (i > 0) ;
+                }
+                throw e;
+            }
+        }
     }
 
     /**
