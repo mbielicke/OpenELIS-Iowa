@@ -55,8 +55,6 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -131,14 +129,6 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             public void onSelection(SelectionEvent<Integer> event) {
                 displayAttachment(table.getRowAt(event.getSelectedItem()),
                                   Messages.get().trfAttachment_dataEntryTRFAttachment());
-            }
-        });
-
-        table.addDoubleClickHandler(new DoubleClickHandler() {
-            @Override
-            public void onDoubleClick(DoubleClickEvent event) {
-                if ( !isState(UPDATE))
-                    displayAttachment(table.getRowAt(table.getSelectedRow()), null);
             }
         });
 

@@ -1827,6 +1827,7 @@ public class SampleManager1Bean {
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
+        ArrayList<AttachmentItemViewDO> atts, qatts;
 
         data = getSample(sm);
         qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
@@ -1852,6 +1853,24 @@ public class SampleManager1Bean {
         setSampleNeonatal(qsm, getSampleNeonatal(sm));
         setSampleClinical(qsm, getSampleClinical(sm));
         setSamplePT(qsm, getSamplePT(sm));
+
+        /*
+         * copy the attachments added on the screen to the fetched manager; this
+         * makes sure that if the user is doing data entry from attachments, the
+         * attachment added on the screen isn't lost when the fetched manager is
+         * returned
+         */
+        atts = getAttachments(sm);
+        if (atts != null) {
+            qatts = getAttachments(qsm);
+            if (qatts == null) {
+                qatts = new ArrayList<AttachmentItemViewDO>();
+                setAttachments(qsm, qatts);
+            }
+
+            for (AttachmentItemViewDO a : atts)
+                qatts.add(a);
+        }
 
         return qsm;
     }
@@ -3361,7 +3380,7 @@ public class SampleManager1Bean {
     private void updateStatus(ReportStatus status, int increment) {
         if (status == null)
             return;
-        
+
         if (ReportStatus.Status.CANCEL.equals(status.getStatus()))
             status.setMessage(Messages.get().dataView_pleaseWait());
         else
