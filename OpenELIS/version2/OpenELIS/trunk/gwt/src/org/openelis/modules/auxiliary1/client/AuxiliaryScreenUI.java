@@ -586,11 +586,10 @@ public class AuxiliaryScreenUI extends Screen {
 
         addScreenHandler(valueTable, "valueTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                if ( !isState(QUERY)) {
-                    if (fieldTable.getSelectedRow() != -1)
-                        valueTable.setModel(getAuxFieldValueModel(manager.field.get(fieldTable.getSelectedRow())));
-                    else
-                        valueTable.setModel(null);
+                if ( !isState(QUERY) && fieldTable.getSelectedRow() != -1) {
+                    valueTable.setModel(getAuxFieldValueModel(manager.field.get(fieldTable.getSelectedRow())));
+                } else {
+                    valueTable.setModel(null);
                 }
             }
 
