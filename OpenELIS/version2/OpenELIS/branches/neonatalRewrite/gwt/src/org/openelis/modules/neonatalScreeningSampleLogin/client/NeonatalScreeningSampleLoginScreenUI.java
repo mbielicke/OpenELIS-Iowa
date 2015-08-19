@@ -2966,11 +2966,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         feeding.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        row = new Item<Integer>(0, "Y");
+        row = new Item<Integer>(0, "Yes");
         model.add(row);
-        row = new Item<Integer>(0, "N");
+        row = new Item<Integer>(0, "No");
         model.add(row);
-        row = new Item<Integer>(0, "U");
+        row = new Item<Integer>(0, "Unknown");
         model.add(row);
         transfused.setModel(model);
     }
