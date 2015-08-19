@@ -175,6 +175,7 @@ public class BillingExportBean {
                                          100000,
                                          SampleManager1.Load.ORGANIZATION,
                                          SampleManager1.Load.PROJECT,
+                                         SampleManager1.Load.PROVIDER,
                                          SampleManager1.Load.QA,
                                          SampleManager1.Load.AUXDATA,
                                          SampleManager1.Load.RESULT);
