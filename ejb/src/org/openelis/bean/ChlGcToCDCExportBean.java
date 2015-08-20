@@ -311,7 +311,7 @@ public class ChlGcToCDCExportBean {
             rs = ccS.executeQuery();
             cityCountyMap = new HashMap<String, Integer>();
             while (rs.next())
-                cityCountyMap.put(rs.getString(1), rs.getInt(2));
+                cityCountyMap.put(rs.getString(1).trim(), rs.getInt(2));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error preparing statetment for county lookup.", e);
             throw new Exception("Error preparing statetment for county lookup.");
@@ -406,7 +406,8 @@ public class ChlGcToCDCExportBean {
                                             row.put("state_fips", getStateFIPS(adrDO.getState()));
                                         if ("IA".equals(adrDO.getState()) && adrDO.getCity() != null) {
                                             countyNumber = cityCountyMap.get(adrDO.getCity()
-                                                                                  .toLowerCase());
+                                                                                  .toLowerCase()
+                                                                                  .trim());
                                             if (countyNumber != null) {
                                                 countyNumber = countyNumber * 2 - 1;
                                                 countyFips = countyNumber.toString();
