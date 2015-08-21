@@ -29,7 +29,7 @@ public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().sampleTracking_tracking());
-                    window.setSize("1074px", "435px");
+                    window.setSize("1074px", "465px");
                     window.setContent(new SampleTrackingScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "tracking");
                 } catch (Throwable e) {

@@ -468,7 +468,7 @@
                       </td>
                       <td>
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="providerLastName" width="93px"
+                          <w:AutoComplete ui:field="providerLastName" width="97px"
                             dropWidth="520px" dropHeight="400px" case="UPPER"
                           >
                             <w:popup>
@@ -486,14 +486,14 @@
                             </w:popup>
                           </w:AutoComplete>
                           <g:HorizontalPanel width="4px" />
-                          <w:TextBox ui:field="providerFirstName" width="87px" maxLength="20" />
+                          <w:TextBox ui:field="providerFirstName" width="93px" maxLength="20" />
                         </g:HorizontalPanel>
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.address_phone}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="provider1Phone" width="90px" maxLength="20" />
+                        <w:TextBox ui:field="provider1Phone" width="80px" maxLength="12" />
                       </td>
                     </tr>
                     <tr>
@@ -502,7 +502,7 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="birthHospitalName" width="188px"
+                          <w:AutoComplete ui:field="birthHospitalName" width="198px"
                             dropWidth="565px" case="UPPER"
                           >
                             <w:popup>
@@ -536,7 +536,7 @@
                       <td class="{res.style.Prompt}">PCP (L,F):</td>
                       <td>
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="provider1LastName" width="93px"
+                          <w:AutoComplete ui:field="provider1LastName" width="97px"
                             dropWidth="520px" dropHeight="400px" case="UPPER"
                           >
                             <w:popup>
@@ -554,14 +554,14 @@
                             </w:popup>
                           </w:AutoComplete>
                           <g:HorizontalPanel width="4px" />
-                          <w:TextBox ui:field="provider1FirstName" width="87px" maxLength="20" />
+                          <w:TextBox ui:field="provider1FirstName" width="93px" maxLength="20" />
                         </g:HorizontalPanel>
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.address_phone}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="provider2Phone" width="90px" maxLength="20" />
+                        <w:TextBox ui:field="provider2Phone" width="80px" maxLength="12" />
                       </td>
                     </tr>
                     <tr>
@@ -570,7 +570,7 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="reportToName" width="188px" case="UPPER"
+                          <w:AutoComplete ui:field="reportToName" width="198px" case="UPPER"
                             dropWidth="565px"
                           >
                             <w:popup>
@@ -605,7 +605,7 @@
                         <ui:text from="{msg.gen_barcode}:" />
                       </td>
                       <td colspan="3">
-                        <w:TextBox field="String" ui:field="formNumber" width="188px" />
+                        <w:TextBox field="String" ui:field="formNumber" width="198px" />
                       </td>
                     </tr>
                     <tr>
@@ -614,7 +614,7 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="projectName" width="188px" case="LOWER"
+                          <w:AutoComplete ui:field="projectName" width="198px" case="LOWER"
                             dropWidth="440px"
                           >
                             <w:popup>

@@ -28,7 +28,7 @@ public class CompleteReleaseEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().reviewAndRelease());
-                    window.setSize("750px", "618px");
+                    window.setSize("750px", "708px");
                     window.setContent(new CompleteReleaseScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "reviewAndRelease");
                 } catch (Throwable e) {
