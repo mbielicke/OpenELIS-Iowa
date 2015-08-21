@@ -68,7 +68,7 @@
         </g:HorizontalPanel>
       </g:AbsolutePanel>
     </g:layer>
-    <g:layer top="25px" bottom="254px">
+    <g:layer top="25px" bottom="344px">
       <g:LayoutPanel>
         <g:layer right="0px" left="0px">
           <g:LayoutPanel>
@@ -105,7 +105,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer height="284px" bottom="0px">
+    <g:layer height="374px" bottom="0px">
       <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
         <w:tab>
           <w:customHeader>
