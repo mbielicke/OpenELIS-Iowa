@@ -58,7 +58,7 @@
             
       <dependency org="org.jboss.as" name="jboss-as-embedded" rev="7.1.1.Final" conf="testing->default"/>
       <!-- <dependency org="org.openelis" name="ui" rev="latest.integration" conf="compile->default;deploy->default"/> -->
-      <dependency org="org.openelis" name="security" rev="latest.integration" conf="compile->default;deploy->default"/>
+      <!-- <dependency org="org.openelis" name="security" rev="latest.integration" conf="compile->default;deploy->default"/> -->
      
     </dependencies>        
 </ivy-module>
