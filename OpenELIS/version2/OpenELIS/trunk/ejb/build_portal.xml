@@ -87,6 +87,7 @@
     
 	<copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./deploylib" overwrite="true" />
 	<copy file="../OpenELIS-GWT/war/WEB-INF/lib/gwt-servlet.jar" todir="./deploylib" overwrite="true" />
+	<copy file="../Security/security-client.jar" todir="./deploylib" overwrite="true"/>
 	<copy file="../OpenELIS-UI/ui.jar" todir="./deploylib" overwrite="true" failonerror="false"/>
 	<delete file="build/openelis.ear" />
 	<ear destfile="build/openelis.ear" appxml="src/resources/META-INF/application_portal.xml">
