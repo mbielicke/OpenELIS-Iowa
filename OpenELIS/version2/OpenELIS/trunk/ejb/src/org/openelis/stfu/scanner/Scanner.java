@@ -26,9 +26,6 @@ public class Scanner {
 	@EJB
 	protected SampleManager1Bean sampleManagerBean;
 	
-	@EJB
-	protected ProcessorFactory processor;
-	
 
 	public void scan() throws Exception {
 		
@@ -76,11 +73,7 @@ public class Scanner {
 	}
 	
 	protected void process(List<SampleManager1> sms) throws Exception {		
-		for(SampleManager1 sm : sms) {
-			for(AnalysisViewDO analysis : SampleManager1Accessor.getAnalyses(sm)) {
-				processor.process(sm, analysis);
-			}
-		}
+
 	}
 	
 }
