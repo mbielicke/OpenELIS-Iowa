@@ -1,0 +1,18 @@
+package org.openelis.stfu.rules;
+
+import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1Accessor;
+import org.openelis.domain.SampleNeonatalViewDO;
+import org.openelis.stfu.manager.CaseManagerAccessor;
+import org.openelis.stfu.manager.CaseManager;
+import org.openelis.stfu.scanner.CaseFactory;
+import java.util.ArrayList;
+
+global ArrayList<CaseManager> cases;
+
+rule "transfused"
+    when 
+        $sample : SampleManager1( SampleManager1Accessor.getSampleNeonatal($sample).getIsTransfused() == "Y")
+    then 
+    	cases.add(CaseFactory.create($sample,1));
+end

@@ -19,8 +19,8 @@
 		<exclude name="WEB-INF/classes/org/openelis/manager/*"/>
 	</war>
 	
-	<delete file="build/portal.war"/>
-	<war destFile="build/portal.war" baseDir="../OpenELIS-Portal/war">
+	<delete file="build/openelisweb.war"/>
+	<war destFile="build/openelisweb.war" baseDir="../OpenELIS-Portal/war">
 	    <exclude name="WEB-INF/lib/gwt-servlet.jar" />
 	    <exclude name="WEB-INF/classes/org/openelis/manager/*"/>
     </war>
@@ -100,7 +100,7 @@
 			<include name="openelis.war" />
 		</fileset>
 		<fileset dir="build">
-			<include name="portal.war" />
+			<include name="openelisweb.war" />
 	    </fileset>
 		<fileset dir="build">
 			<include name="openelis-portal.jar"/>
@@ -111,7 +111,7 @@
 		<zipfileset dir="deploylib" prefix="lib" includes="*.jar"/>
 	</ear>
 	
-	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
+	<copy file="build/openelis.ear" todir="../deployments"/>
 	
 	<delete dir="deploylib"/>
 
