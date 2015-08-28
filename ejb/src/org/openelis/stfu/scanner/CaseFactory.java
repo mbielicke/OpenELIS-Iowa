@@ -2,7 +2,12 @@ package org.openelis.stfu.scanner;
 
 
 
+import java.util.HashMap;
+
+import org.openelis.ui.common.Datetime;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1Accessor;
+import org.openelis.stfu.domain.CaseDO;
 import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.stfu.manager.CaseManagerAccessor;
@@ -14,12 +19,36 @@ public class CaseFactory {
 	CaseManager cm;
 	Integer condition;
 	
-	public static CaseManager create(SampleManager1 sm, Integer tag) {
-		CaseManager _case = new CaseManager();
+	public static CaseManager createCase(SampleManager1 sm, HashMap<Integer,CaseManager> cases) {
+		CaseManager cm;
+		Integer patientId;
+		patientId = SampleManager1Accessor.getSampleNeonatal(sm).getPatientId();
+		cm = cases.get(patientId);
+		if (cm == null) {
+			cm = create(sm);
+		}
+		return cm;
+	}
+	
+	public static CaseManager create(SampleManager1 sm) {
+		CaseManager cm = new CaseManager();
+        accessor.setCase(cm, createCase(sm));
+		return cm;
+	}
+	
+	public static CaseDO createCase(SampleManager1 sm) {
+		CaseDO caseDO = new CaseDO();
+		caseDO.setPatientId(sm.getSampleNeonatal().getPatientId());
+		caseDO.setNextkinId(sm.getSampleNeonatal().getNextOfKinId());
+		caseDO.setOrganizationId(SampleManager1Accessor.getOrganizations(sm).get(0).getOrganizationId());
+		caseDO.setCreated(Datetime.getInstance(Datetime.YEAR,Datetime.DAY));
+		return caseDO;
+	}
+	
+	public static CaseTagDO createCaseTag(Integer typeId) {
 		CaseTagDO caseTag = new CaseTagDO();
-		caseTag.setTypeId(tag);
-		accessor.addTag(_case,caseTag);
-		return _case;
+		caseTag.setTypeId(typeId);
+		return caseTag;
 	}
 	
 //	public CaseFactory(Integer condition) {
