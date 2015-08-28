@@ -126,7 +126,7 @@
 	    -->
 		
 		<!-- Compile of OpenELIS-EJB -->
-		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-EJB/src:../OpenELIS-Common/src/org/openelis/domain:../OpenELIS-Common/src/org/openelis/constants:../OpenELIS-Common/src/org/openelis/manager:../OpenELIS-Common/src/org/openelis/utilcommon:../OpenELIS-Common/src/org/openelis/meta:../OpenELIS-Common/src/org/openelis/exception:../OpenELIS-Common/src/org/openelis/scriptlet:../OpenELIS-GWT/src/org/openelis/cache:" includes="**" encoding="utf-8" destdir="../OpenELIS-EJB/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-EJB/src:../OpenELIS-Common/src/org/openelis/domain:../OpenELIS-Common/src/org/openelis/constants:../OpenELIS-Common/src/org/openelis/manager:../OpenELIS-Common/src/org/openelis/stfu/manager:../OpenELIS-Common/src/org/openelis/stfu/domain:../OpenELIS-Common/src/org/openelis/utilcommon:../OpenELIS-Common/src/org/openelis/meta:../OpenELIS-Common/src/org/openelis/exception:../OpenELIS-Common/src/org/openelis/scriptlet:../OpenELIS-GWT/src/org/openelis/cache:" includes="**" encoding="utf-8" destdir="../OpenELIS-EJB/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
             <classpath refid="ejb.class.path"/>
 	    </javac>
 		
