@@ -1,6 +1,7 @@
 package org.openelis.stfu.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.ejb.Stateless;
 
@@ -17,7 +18,7 @@ import org.openelis.stfu.manager.CaseManager;
 @Stateless
 public class ScannerBean {
 
-	public ArrayList<CaseManager> scan() throws Exception {
+	public HashMap<Integer,CaseManager> scan() throws Exception {
 		try {
 			KieServices ks = KieServices.Factory.get();
 		    KieContainer kContainer = ks.getKieClasspathContainer();
@@ -26,7 +27,7 @@ public class ScannerBean {
 			KieCommands kCommands = ks.getCommands();
 	    	ArrayList<Command<SampleManager1>> commands = new ArrayList<>();
 
-	    	ArrayList<CaseManager> cases = new ArrayList<CaseManager>();
+	    	HashMap<Integer,CaseManager> cases = new HashMap<Integer,CaseManager>();
 	    	kSession.setGlobal("cases", cases);
 	    	
 	    	SampleManager1 sm = new SampleManager1();
