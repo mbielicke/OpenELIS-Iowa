@@ -84,6 +84,8 @@
 			<batchtest todir="reports/junit">
 				<fileset dir="../OpenELIS-EJB/test">
 				    <include name="**/Test*.java"/>
+					<exclude name="org/openelis/bean/TestMethodBeanArq.java"/>
+					<exclude name="org/openelis/stfu/bean/TestScannerBean.java"/>
 			    </fileset>
 				<fileset dir="test">
 					<include name="org/openelis/modules/**/Test*.java" />
