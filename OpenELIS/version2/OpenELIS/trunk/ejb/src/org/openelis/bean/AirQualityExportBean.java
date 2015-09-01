@@ -938,9 +938,13 @@ public class AirQualityExportBean {
                     sulfateAlternateMethodDetectableLimit = sulfateParameter.getP1().toString();
                     sulfateMethodCd = sulfateParameter.getP2().intValue();
                     sulfateDurationCd = sulfateParameter.getP3().intValue();
-                    if (DataBaseUtil.isEmpty(nullDataCd))
-                        sulfateValue = twoDecimals.format(Double.parseDouble(data.getValue()) /
-                                                          Double.parseDouble(volume));
+                    if (DataBaseUtil.isEmpty(nullDataCd)) {
+                        if (data.getValue().contains("<"))
+                            sulfateValue = "0";
+                        else
+                            sulfateValue = twoDecimals.format(Double.parseDouble(data.getValue()) /
+                                                              Double.parseDouble(volume));
+                    }
                     sulfateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -955,9 +959,13 @@ public class AirQualityExportBean {
                     nitrateAlternateMethodDetectableLimit = nitrateParameter.getP1().toString();
                     nitrateMethodCd = nitrateParameter.getP2().intValue();
                     nitrateDurationCd = nitrateParameter.getP3().intValue();
-                    if (DataBaseUtil.isEmpty(nullDataCd))
-                        nitrateValue = twoDecimals.format( (Double.parseDouble(data.getValue()) * nitrateConstant) /
-                                                          Double.parseDouble(volume));
+                    if (DataBaseUtil.isEmpty(nullDataCd)) {
+                        if (data.getValue().contains("<"))
+                            nitrateValue = "0";
+                        else
+                            nitrateValue = twoDecimals.format( (Double.parseDouble(data.getValue()) * nitrateConstant) /
+                                                              Double.parseDouble(volume));
+                    }
                     nitrateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
