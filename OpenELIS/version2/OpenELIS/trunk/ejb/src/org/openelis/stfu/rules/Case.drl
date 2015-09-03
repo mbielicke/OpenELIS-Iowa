@@ -1,5 +1,6 @@
 package org.openelis.stfu.rules;
 
+import org.openelis.stfu.scanner.ScannerRecord;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.domain.SampleNeonatalViewDO;
@@ -7,14 +8,152 @@ import org.openelis.stfu.manager.CaseManagerAccessor;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.stfu.scanner.CaseFactory;
 import java.util.ArrayList;
+import java.util.HashMap;
+import org.openelis.domain.TestDO;
+import org.openelis.domain.DictionaryDO;
 
 global HashMap<Integer,CaseManager> cases;
 
 rule "transfused"
+salience 1
     when 
-        $sample : SampleManager1( SampleManager1Accessor.getSampleNeonatal($sample).getIsTransfused() == "Y")
+        $sr : ScannerRecord (isTransfused(getInterpratation()))
     then 
-		CaseManager cm = CaseFactory.createCase($sample,cases);
-		CaseManagerAccessor.addTag(cm,CaseFactory.createTag(1));
+		createTag($sr.getSampleManager(),1,cases);
+		retract($sr);
 end
 
+rule "early collection"
+salience 1
+	when 
+		$sr : ScannerRecord (isEarlyCollection(getInterpratation()))
+	then 
+		createTag($sr.getSampleManager(),10,cases);
+		retract($sr);
+end
+
+rule "poor quality"
+salience 1
+	when 
+		$sr : ScannerRecord (isPoorQuality(getInterpratation()))
+	then 
+		createTag($sr.getSampleManager(),11,cases);
+		retract($sr);
+end
+		
+rule "cah"
+	when 
+	    $sr : ScannerRecord (isCah(getTest()), isPositive(getInterpratation()))
+	then
+		createTag($sr.getSampleManager(),2,cases);
+		retract($sr);
+end
+
+rule "bt"
+	when 
+		$sr : ScannerRecord (isBt(getTest()), isPositive(getInterpratation()))
+	then 
+		createTag($sr.getSampleManager(),3,cases);
+		retract($sr);
+end
+
+rule "hb"
+	when 
+		$sr : ScannerRecord (isHb(getTest()), isPositive(getInterpratation()))
+	then 
+		createTag($sr.getSampleManager(),4,cases);
+		retract($sr);
+end
+
+rule "cftr"
+	when 
+		$sr : ScannerRecord (isCFTR(getTest()), isPositive(getInterpratation()))
+	then 
+	 	createTag($sr.getSampleManager(),5,cases);
+	 	retract($sr);
+end
+	
+rule "galt"
+	when 
+		$sr : ScannerRecord (isGalt(getTest()), isPositive(getInterpratation()))
+	then 
+	 	createTag($sr.getSampleManager(),6,cases);
+	 	retract($sr);
+end
+
+rule "tsh"
+	when 
+		$sr : ScannerRecord(isTsh(getTest()), isPositive(getInterpratation()))
+	then
+		createTag($sr.getSampleManager(),7,cases);
+		retract($sr);
+end
+
+rule "tms"
+	when 
+		$sr : ScannerRecord (isTms(getTest()), isPositive(getInterpratation()))
+	then
+		createTag($sr.getSampleManager(),8,cases);
+		retract($sr);
+end
+
+rule "irt"
+	when 
+		$sr : ScannerRecord (isIrt(getTest()), isPositive(getInterpratation()))
+	then
+		createTag($sr.getSampleManager(),9,cases);
+		retract($sr);
+end
+
+function void createTag(SampleManager1 sm, Integer tag,HashMap cases) {
+	CaseManager cm = CaseFactory.createCase(sm,cases);
+	CaseManagerAccessor.addTag(cm,CaseFactory.createCaseTag(tag));
+}
+
+function boolean isCah(TestDO test) {
+	return test.getName().equals("nbs cah");
+}
+
+function boolean isBt(TestDO test) {
+	return test.getName().equals("nbs bt");
+}
+	
+function boolean isHb(TestDO test) {
+	return test.getName().equals("nbs hb");
+}
+
+function boolean isCFTR(TestDO test) {
+	return test.getName().equals("nbs cftr");
+}
+
+function boolean isGalt(TestDO test) {
+	return test.getName().equals("nbs galt");
+}
+
+function boolean isTsh(TestDO test) {
+	return test.getName().equals("nbs tsh");
+}
+
+function boolean isTms(TestDO test) {
+	return test.getName().equals("nbs tms");
+}
+
+function boolean isIrt(TestDO test) {
+	return test.getName().equals("nbs irt");
+}
+
+function boolean isTransfused(DictionaryDO interpratation) {
+	return interpratation.getSystemName().equals("newborn_inter_tran");
+}
+
+function boolean isPositive(DictionaryDO interpratation) {
+	return interpratation.getSystemName().equals("newborn_inter_pp_nr");
+}
+
+function boolean isPoorQuality(DictionaryDO interpratation) {
+	return interpratation.getSystemName().equals("newborn_inter_pq");
+}
+
+function boolean isEarlyCollection(DictionaryDO interpratation) {
+	return interpratation.getSystemName().equals("newborn_inter_ec");
+}
