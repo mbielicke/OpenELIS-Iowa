@@ -15,6 +15,8 @@ import org.jboss.util.file.JarArchiveBrowser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openelis.deployment.Deployments;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.TestDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.stfu.domain.CaseAnalysisDO;
@@ -27,6 +29,7 @@ import org.openelis.stfu.domain.CaseUserDO;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.stfu.manager.CaseManagerAccessor;
 import org.openelis.stfu.scanner.CaseFactory;
+import org.openelis.stfu.scanner.ScannerRecord;
 
 @RunWith(Arquillian.class)
 public class TestScannerBean {
@@ -38,7 +41,7 @@ public class TestScannerBean {
 	public static WebArchive deployment() {
 		WebArchive arch =  Deployments.createBase()
 				.addClasses(ScannerBean.class,SampleManager1.class,SampleManager1Accessor.class,CaseManager.class,CaseManagerAccessor.class,CaseAnalysisDO.class,CaseDO.class,
-						    CasePatientDO.class,CaseTagDO.class,CaseResultDO.class,CaseUserDO.class,CaseProviderDO.class,CaseFactory.class)
+						    CasePatientDO.class,CaseTagDO.class,CaseResultDO.class,CaseUserDO.class,CaseProviderDO.class,CaseFactory.class,ScannerRecord.class,TestDO.class,DictionaryDO.class)
 			    .addAsDirectories("org.openelis.stfu.rules")
 				.addAsResource(new File("src/org/openelis/stfu/rules/Case.drl"),"/org/openelis/stfu/rules/Case.drl")
 				.addAsResource(new File("src/resources/META-INF/kmodule.xml"),"META-INF/kmodule.xml")
@@ -52,7 +55,7 @@ public class TestScannerBean {
 	
 	@Test
 	public void runScanner() throws Exception {
-		assertEquals(1,scanner.scan().size());
+		assertEquals(2,scanner.scan().size());
 	}
 
 }

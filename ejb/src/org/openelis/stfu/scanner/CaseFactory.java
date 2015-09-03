@@ -26,6 +26,7 @@ public class CaseFactory {
 		cm = cases.get(patientId);
 		if (cm == null) {
 			cm = create(sm);
+			cases.put(patientId,cm);
 		}
 		return cm;
 	}
@@ -40,7 +41,7 @@ public class CaseFactory {
 		CaseDO caseDO = new CaseDO();
 		caseDO.setPatientId(sm.getSampleNeonatal().getPatientId());
 		caseDO.setNextkinId(sm.getSampleNeonatal().getNextOfKinId());
-		caseDO.setOrganizationId(SampleManager1Accessor.getOrganizations(sm).get(0).getOrganizationId());
+		//caseDO.setOrganizationId(SampleManager1Accessor.getOrganizations(sm).get(0).getOrganizationId());
 		caseDO.setCreated(Datetime.getInstance(Datetime.YEAR,Datetime.DAY));
 		return caseDO;
 	}
