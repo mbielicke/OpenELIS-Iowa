@@ -45,7 +45,10 @@ public interface AttachmentServiceIntAsync {
 
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              AsyncCallback<ArrayList<AttachmentManager>> callback);
-
+    
+    public void fetchByQueryUnattached(ArrayList<QueryData> fields, int first, int max,
+                                         AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
     public void fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max,
                                        AsyncCallback<ArrayList<AttachmentManager>> callback);
 

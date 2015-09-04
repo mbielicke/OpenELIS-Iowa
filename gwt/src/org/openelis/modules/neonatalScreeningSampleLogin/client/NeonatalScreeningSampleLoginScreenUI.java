@@ -73,7 +73,6 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
@@ -3664,7 +3663,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             if (trfAttachmentScreen == null) {
                 trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public String getDescription() {
+                    public String getPattern() {
                         return attachmentPatternVariable.getValue();
                     }
                 };
@@ -3672,13 +3671,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             window = new org.openelis.ui.widget.Window();
             window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
-            window.setSize("610px", "520px");
+            window.setSize("670px", "520px");
             trfAttachmentScreen.setWindow(window);
             window.setContent(trfAttachmentScreen);
             OpenELIS.getBrowser().addWindow(window, "neoTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.search(attachmentPatternVariable.getValue());
+            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -4613,22 +4612,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             atti.setAttachmentDescription(att.getDescription());
             atti.setAttachmentCreatedDate(att.getCreatedDate());
             atti.setAttachmentSectionId(att.getSectionId());
-        }
-    }
-
-    /**
-     * If the screen is in Add state then gets the next attachment reserved for
-     * the current user on Attachment screen, if any, and adds it to the sample.
-     */
-    private void attachmentSearchSuccessful() {
-        if (isState(ADD)) {
-            /*
-             * if the screen is already in Add state then reserve an attachment,
-             * add it to the sample and notify the tab
-             */
-            addReservedAttachment();
-            setData();
-            bus.fireEvent(new AttachmentAddedEvent());
         }
     }
 

@@ -63,6 +63,16 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
     
     @Override
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        try {
+            return attachmentManager.fetchByQueryUnattached(fields, first, max);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    @Override
     public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max) throws Exception {
         try {
             return attachmentManager.fetchByQueryDescending(fields, first, max);

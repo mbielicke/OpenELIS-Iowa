@@ -2149,11 +2149,29 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_autoSelectNext();
 
   /**
-   * Translated "Attachment ''{0}'': Description is required ".
+   * Translated "Attachment ''{0}'': The section can''t be change from ''system'' to something else".
    * 
-   * @return translated "Attachment ''{0}'': Description is required "
+   * @return translated "Attachment ''{0}'': The section can''t be change from ''system'' to something else"
    */
-  @DefaultMessage("Attachment ''{0}'': Description is required ")
+  @DefaultMessage("Attachment ''{0}'': The section can''t be change from ''system'' to something else")
+  @Key("attachment.cantChangeFromSystemException")
+  String attachment_cantChangeFromSystemException(String arg0);
+
+  /**
+   * Translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else  ".
+   * 
+   * @return translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else  "
+   */
+  @DefaultMessage("Attachment ''{0}'': The section can''t be change to ''system'' from something else  ")
+  @Key("attachment.cantChangeToSystemException")
+  String attachment_cantChangeToSystemException(String arg0);
+
+  /**
+   * Translated "Attachment ''{0}'': Description is required".
+   * 
+   * @return translated "Attachment ''{0}'': Description is required"
+   */
+  @DefaultMessage("Attachment ''{0}'': Description is required")
   @Key("attachment.descRequiredException")
   String attachment_descRequiredException(String arg0);
 
@@ -20788,6 +20806,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_firstUnlockAll();
 
   /**
+   * Translated "Lock".
+   * 
+   * @return translated "Lock"
+   */
+  @DefaultMessage("Lock")
+  @Key("trfAttachment.lock")
+  String trfAttachment_lock();
+
+  /**
+   * Translated "Lock Status".
+   * 
+   * @return translated "Lock Status"
+   */
+  @DefaultMessage("Lock Status")
+  @Key("trfAttachment.lockStatus")
+  String trfAttachment_lockStatus();
+
+  /**
    * Translated "Locked by {0}".
    * 
    * @return translated "Locked by {0}"
@@ -20797,13 +20833,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_lockedBy(String arg0);
 
   /**
-   * Translated "Reserve".
+   * Translated "Not Attached".
    * 
-   * @return translated "Reserve"
+   * @return translated "Not Attached"
    */
-  @DefaultMessage("Reserve")
-  @Key("trfAttachment.reserve")
-  String trfAttachment_reserve();
+  @DefaultMessage("Not Attached")
+  @Key("trfAttachment.notAttached")
+  String trfAttachment_notAttached();
 
   /**
    * Translated "Unlock All".

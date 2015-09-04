@@ -79,6 +79,22 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        Callback<ArrayList<AttachmentManager>> callback;
+
+        callback = new Callback<ArrayList<AttachmentManager>>();
+        service.fetchByQueryUnattached(fields, first, max, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchByQueryUnattached(ArrayList<QueryData> fields, int first, int max,
+                                       AsyncCallback<ArrayList<AttachmentManager>> callback) {
+        service.fetchByQueryUnattached(fields, first, max, callback);
+    }
+    
+    @Override
     public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
                                                                int first, int max) throws Exception {
         Callback<ArrayList<AttachmentManager>> callback;
