@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.environmentalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -73,10 +69,9 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.attachment.client.AttachmentAddedEvent;
-import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -2709,7 +2704,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             if (trfAttachmentScreen == null) {
                 trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public String getDescription() {
+                    public String getPattern() {
                         return attachmentPatternVariable.getValue();
                     }
                 };
@@ -2717,13 +2712,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
             window = new org.openelis.ui.widget.Window();
             window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
-            window.setSize("610px", "520px");
+            window.setSize("670px", "520px");
             trfAttachmentScreen.setWindow(window);
             window.setContent(trfAttachmentScreen);
             OpenELIS.getBrowser().addWindow(window, "envTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.search(attachmentPatternVariable.getValue());
+            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -3311,46 +3306,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     }
 
     /**
-     * Gets the next attachment reserved for the current user on Attachment
-     * screen, if any, and adds it to the sample
-     */
-    private void addReservedAttachment() {
-        AttachmentManager am;
-        AttachmentDO att;
-        AttachmentItemViewDO atti;
-
-        am = trfAttachmentScreen.getReserved();
-        /*
-         * add an attachment item for the record selected on the attachment
-         * screen
-         */
-        if (am != null) {
-            att = am.getAttachment();
-            atti = manager.attachment.add();
-            atti.setAttachmentId(att.getId());
-            atti.setAttachmentDescription(att.getDescription());
-            atti.setAttachmentCreatedDate(att.getCreatedDate());
-            atti.setAttachmentSectionId(att.getSectionId());
-        }
-    }
-
-    /**
-     * If the screen is in Add state then gets the next attachment reserved for
-     * the current user on Attachment screen, if any, and adds it to the sample.
-     */
-    private void attachmentSearchSuccessful() {
-        if (isState(ADD)) {
-            /*
-             * if the screen is already in Add state then reserve an attachment,
-             * add it to the sample and notify the tab
-             */
-            addReservedAttachment();
-            setData();
-            bus.fireEvent(new AttachmentAddedEvent());
-        }
-    }
-
-    /**
      * Adds scriptlets for analyses and results, to the scriptlet runner
      */
     private void addTestScriptlets() throws Exception {
@@ -3496,6 +3451,30 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
+    }
+    
+    /**
+     * Gets the next attachment reserved for the current user on Attachment
+     * screen, if any, and adds it to the sample
+     */
+    private void addReservedAttachment() {
+        AttachmentManager am;
+        AttachmentDO att;
+        AttachmentItemViewDO atti;
+
+        am = trfAttachmentScreen.getReserved();
+        /*
+         * add an attachment item for the record selected on the attachment
+         * screen
+         */
+        if (am != null) {
+            att = am.getAttachment();
+            atti = manager.attachment.add();
+            atti.setAttachmentId(att.getId());
+            atti.setAttachmentDescription(att.getDescription());
+            atti.setAttachmentCreatedDate(att.getCreatedDate());
+            atti.setAttachmentSectionId(att.getSectionId());
+        }
     }
 
     /*

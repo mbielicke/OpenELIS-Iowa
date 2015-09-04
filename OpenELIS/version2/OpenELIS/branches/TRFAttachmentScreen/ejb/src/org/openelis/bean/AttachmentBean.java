@@ -227,7 +227,7 @@ public class AttachmentBean {
      * @throws Exception
      */
     public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        return query(fields, first, max, false);
+        return query(fields, first, max, false, false);
     }
 
     /**
@@ -247,7 +247,7 @@ public class AttachmentBean {
      */
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max,
-                                         boolean isDescending) throws Exception {
+                                         boolean isUnattached, boolean isDescending) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -260,6 +260,10 @@ public class AttachmentBean {
                           AttachmentMeta.getDescription() + ", " +
                           AttachmentMeta.getStorageReference() + ") ");
         builder.constructWhere(fields);
+        if (isUnattached)
+            builder.addWhere(AttachmentMeta.getId() +
+                             " not in (select i.attachmentId from AttachmentItem i where i.attachmentId = " +
+                             AttachmentMeta.getId() + ")");
         if (isDescending)
             builder.setOrderBy(AttachmentMeta.getId() + " DESC");
         else
@@ -375,13 +379,23 @@ public class AttachmentBean {
     }
 
     /**
-     * Validates "data"
+     * Validates "data"; validation includes checking whether description is
+     * empty; it also includes checking if either the section for this record in
+     * the database is "system" and is being changed to something else or if
+     * it's something else in the database, it's being changed to "system"
      * 
      * @param data
-     *        the DO for the attachment record to be validated
+     *        the DO for the attachment record to be validated; the data in it
+     *        has not been committed to the database yet
+     * @param dbData
+     *        the DO containing the data from the database for the attachment
+     *        record with the same id as "data"; this will be null if a record
+     *        doesn't exist for "data" yet, i.e. if "data" has a null id
+     * @param systemId
+     *        the id of the "system" section
      * @throws Exception
      */
-    public void validate(AttachmentDO data) throws Exception {
+    public void validate(AttachmentDO data, AttachmentDO dbData, Integer systemId) throws Exception {
         ValidationErrorsList e;
 
         e = new ValidationErrorsList();
@@ -389,6 +403,18 @@ public class AttachmentBean {
         if (DataBaseUtil.isEmpty(data.getDescription()))
             e.add(new FormErrorException(Messages.get()
                                                  .attachment_descRequiredException(data.getStorageReference())));
+
+        /*
+         * validate the section if the two DOs have different sections
+         */
+        if (dbData != null && DataBaseUtil.isDifferent(data.getSectionId(), dbData.getSectionId())) {
+            if (systemId.equals(dbData.getSectionId()))
+                e.add(new FormErrorException(Messages.get()
+                                                     .attachment_cantChangeFromSystemException(data.getStorageReference())));
+            else if (systemId.equals(data.getSectionId()))
+                e.add(new FormErrorException(Messages.get()
+                                                     .attachment_cantChangeToSystemException(data.getStorageReference())));
+        }
 
         if (e.size() > 0)
             throw e;

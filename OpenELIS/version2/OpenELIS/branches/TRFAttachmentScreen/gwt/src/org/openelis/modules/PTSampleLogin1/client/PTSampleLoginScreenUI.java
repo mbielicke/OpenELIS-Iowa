@@ -2359,7 +2359,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             if (trfAttachmentScreen == null) {
                 trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public String getDescription() {
+                    public String getPattern() {
                         return attachmentPatternVariable.getValue();
                     }
                 };
@@ -2367,13 +2367,13 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
             window = new org.openelis.ui.widget.Window();
             window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
-            window.setSize("610px", "520px");
+            window.setSize("670px", "520px");
             trfAttachmentScreen.setWindow(window);
             window.setContent(trfAttachmentScreen);
             OpenELIS.getBrowser().addWindow(window, "ptTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.search(attachmentPatternVariable.getValue());
+            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
