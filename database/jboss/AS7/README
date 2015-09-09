@@ -1,0 +1,232 @@
+1. install JBOSS verion jboss-as-7.1.1.Final
+
+2. use standalone.xml.POSTGRES as the basis for your JBOSS
+   standalone/configuration/standalone.xml file. Here are couple of
+   things you need to consider:
+
+   a. the file is set for active directory authentication (or ldap with some
+      minor modifications). You will need to change this to your environment -
+      look at "<authentication>" block; there are two of them, one for
+      security application, and one for openelis. JBOSS docs have a good
+      description of all the fields and options.
+
+      There are 3 tags that are unique to openelis ldap login module:
+
+      - loginNameRetryCount specifies the maximum attempts for a single username
+                            before the user is locked out for a period of time.
+                            The default value 4 would allow a username to be tried
+                            4 times before being locked out.
+      - loginIPRetryCount   specifies the maximum attempts from a single IP address
+                            before that IP address is locked out for a period of time.
+                            The default value of 7 would allow an IP to attempt various
+                            usernames a maximum of 7 times.
+      - loginLockoutTime    specifies the duration of lock out in milliseconds. The login
+                            modules will extend the lock out time if the user continues
+                            to attempt login within the lock out period (lockout will
+                            never expire).
+                            
+      This feature can be disabled by setting either loginNameRetryCount or loginIPRetryCount
+      to -1. This is useful when your LDAP/AD is already providing this lockout feature.
+
+      Note that you are setting the security for two different applications: Security 
+      and OpenELIS.
+
+        <subsystem xmlns="urn:jboss:domain:security:1.1">
+            <security-domains>
+                <security-domain name="client-login" cache-type="default">
+                    <authentication>
+                        <login-module code="org.jboss.security.ClientLoginModule" flag="required">
+                            <module-option name="restore-login-identity" value="true"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="security" cache-type="default">
+                    <authentication>
+                        <login-module code="org.openelis.login.OpenELISLDAPModule" flag="required">
+                            <module-option name="java.naming.factory.initial" value="com.sun.jndi.ldap.LdapCtxFactory"/>
+                            <module-option name="java.naming.provider.url" value="ldap://<YOUR-DC-URL>:3268/"/>
+                            <module-option name="baseCtxDN" value="dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/>
+                            <module-option name="baseFilter" value="(userPrincipalName={0})"/>
+                            <module-option name="bindDN" value="cn=readOnly,cn=Users,dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/> 
+                            <module-option name="bindCredential" value="<YOUR BIND PASSWORD>"/>
+                            <module-option name="rolesCtxDN" value="dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/>
+                            <module-option name="roleFilter" value="(member={0})"/>
+                            <module-option name="roleAttributeIsDN" value="true"/>
+                            <module-option name="roleAttributeID" value="GroupMembership"/>
+                            <module-option name="roleNameAttributeID" value="cn"/>
+                            <module-option name="allowEmptyPasswords" value="false"/>
+                            <module-option name="searchScope" value="SUBTREE_SCOPE"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="loginLockoutTime" value="600000"/>
+                            <module-option name="loginIPRetryCount" value="7"/>
+                            <module-option name="loginNameRetryCount" value="4"/>
+                        </login-module>
+                        <login-module code="org.openelis.login.OpenELISRolesModule" flag="required">
+                            <module-option name="dsJndiName" value="java:/SecurityDS"/>
+                            <module-option name="rolesQuery" value="select * from ejb_roles(?,'security')"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="openelis" cache-type="default">
+                    <authentication>
+                        <login-module code="org.openelis.login.OpenELISLDAPModule" flag="required">
+                            <module-option name="java.naming.factory.initial" value="com.sun.jndi.ldap.LdapCtxFactory"/>
+                            <module-option name="java.naming.provider.url" value="ldap://<YOUR-DC-URL>:3268/"/>
+                            <module-option name="baseCtxDN" value="dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/>
+                            <module-option name="baseFilter" value="(userPrincipalName={0})"/>
+                            <module-option name="bindDN" value="cn=readOnly,cn=Users,dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/> 
+                            <module-option name="bindCredential" value="<YOUR BIND PASSWORD>"/>
+                            <module-option name="rolesCtxDN" value="dc=<YOUR-DEPARTMENT>,dc=<YOUR-ORG>,dc=<ETC.>"/>
+                            <module-option name="roleFilter" value="(member={0})"/>
+                            <module-option name="roleAttributeIsDN" value="true"/>
+                            <module-option name="roleAttributeID" value="GroupMembership"/>
+                            <module-option name="roleNameAttributeID" value="cn"/>
+                            <module-option name="allowEmptyPasswords" value="false"/>
+                            <module-option name="searchScope" value="SUBTREE_SCOPE"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="loginLockoutTime" value="600000"/>
+                            <module-option name="loginIPRetryCount" value="7"/>
+                            <module-option name="loginNameRetryCount" value="4"/>
+                        </login-module>
+                        <login-module code="org.openelis.login.OpenELISRolesModule" flag="required">
+                            <module-option name="dsJndiName" value="java:/SecurityDS"/>
+                            <module-option name="rolesQuery" value="select * from ejb_roles(?,'openelis')"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="jboss-web-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+                <security-domain name="jboss-ejb-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+            </security-domains>
+        </subsystem>
+
+
+   b. the jdbc connection is set for postgres. You will have to change the
+      user id, password, server name, .... Look in "<datasources>" - our database
+      connection user is "jboss_dev" for development and "jboss" for production.
+      Our pattern for database names are xxxxxx_test for test database, xxxxxx_dev
+      for development database, and just xxxxx for production database.
+
+        <subsystem xmlns="urn:jboss:domain:datasources:1.0">
+            <datasources>
+                <datasource jndi-name="java:/SecurityDS" pool-name="SecurityDS" enabled="true" use-java-context="true">
+                    <connection-url>jdbc:postgresql://<YOUR-SERVER>:5432/security_test</connection-url>
+                    <driver>psql</driver>
+                    <security>
+                        <user-name>jboss_dev</user-name>
+                        <password>hello</password>
+                    </security>
+                    <validation>
+                        <check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+                    </validation>
+                </datasource>
+                <datasource jndi-name="java:/OpenELISDS" pool-name="OpenELISDS" enabled="true" use-java-context="true">
+                    <connection-url>jdbc:postgresql://<YOUR-SERVER>:5432/openelis_test</connection-url>
+                    <driver>psql</driver>
+                    <security>
+                        <user-name>jboss_dev</user-name>
+                        <password>hello</password>
+                    </security>
+                </datasource>
+                <drivers>
+                    <driver name="psql" module="org.postgresql">
+                        <driver-class>org.postgresql.Driver</driver-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>
+
+3. additional files in JBOSS
+
+   a. copy the two files (module.xml and openelis-login.jar) under modules to your
+      jboss install directory under modules/org/openelis/login/main/. You will have
+      to create openelis/login/main/ subdirectories before you can copy it.
+
+   b. you might also need to copy JDBC driver (e.g., postgresql-x.y-z.jar) that came
+      with your postgres server under modules/org/postgresql/main/. You might have
+      to create postgresql/main/ subdirectories before you can copy it. Beside the
+      postresql jar file, you will also need a module.xml in the same directory you
+      instaled the jar file. Modify the openelis/jboss/modules/postgres/module.xml
+
+      <resource-root path="postgresql-9.2-1003.jdbc4.jar"/>
+
+      replacing the "postgresql-9.2-1003.jdbc4.jar" with jar file you copied
+      from your postgres server. Copy the file to the same modules/org/postgresql/main/
+      directory.
+   
+   c. JBOSS version jboss-as-7.1.1.Final has a issue with the print service. Use
+      the example files in openelis/jboss/modules/print-service and perform the
+      following steps:
+
+      under jboss install directory, cd to modules/sun/jdk/main and modify module.xml:
+      add <path name="sun/print"/> before </paths>. see print-service/module.xml
+
+      from current directory, cd service-loader-resources/META-INF/services
+      copy print-service/javax.print.PrintServiceLookup to this directory.
+
+4. copy security.ear and openelis.ear from deployments to your JBOSS
+   standalone/deployments directory.
+
+5. start the JBOSS server (or restart if already up)
+
+6. check standalone/log/server.log for any errors.
+
+7. directories
+   OpenELIS uses several directories to transfer files to/from
+   users, instruments, reports, billing, scanning, etc. Many of
+   these directories must be available to JBOSS server and users
+   through windows shares. Generally, this is accomplished using
+   a windows share that is mounted by both the JBOSS server and
+   users. All directories are configurable using System Variable
+   screen; following is the default structure (case matters):
+
+   a. create a windows share and mount it on JBOSS server at
+      /OpenELIS using SAMBA (or NFS). Please note that the
+      unix user id that is running the JBOSS server must have
+      read/write permission to these directories. Additionally,
+      lab users will need to have write permission to the same
+      directories from the windows client.
+
+   b. before running the script that creates the directory structure,
+      you will need:
+
+      1. the user name that is running the jboss server. The usual
+         group is "jboss". All subdirectries are owned by this user.
+
+      2. the group that all lab users belong to. The usual group is
+         "users" or another group that is cross mapped in unix and
+         windows clients. Subdirectories with this group permission
+         are used by lab users to exchange files with OpenELIS application
+         running on JBOSS.
+   
+      3. define a new group in ldap/active directory for LIMS
+         administator such as limsadmin or ladm ... These subdirectories
+         are used by OpenELIS running on JBOSS and LIMS administrator to
+         setup documentation, exchange billing files, etc.
+         
+   c. run the script in super-user mode since it needs to set directory
+      ownership to jboss and group ownership to users and limsadmin.
+
+      cd /
+      bash /path-to/directory_script.sh
+      when prompted, specify the user name and group names. The script
+      will take several minutes to run when it creates attachment sub
+      directories.
+
+   d. if you want to experiment with worksheet excel templates with
+      custom macros/formulas:
+
+      cp worksheet_templates/* /OpenELIS/wstemplate
