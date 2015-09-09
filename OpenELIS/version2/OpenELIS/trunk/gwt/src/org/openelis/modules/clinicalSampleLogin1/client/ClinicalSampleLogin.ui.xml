@@ -84,7 +84,7 @@
                 </td>
                 <td>
                   <g:HorizontalPanel>
-                    <w:TextBox ui:field="orderId" width="103px" case = "UPPER" field="String"/>
+                    <w:TextBox ui:field="orderId" width="103px" case="UPPER" field="String" />
                     <g:AbsolutePanel>
                       <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                         text="" css="{res.FormFieldButton}" />
@@ -233,7 +233,7 @@
                       </td>
                       <td>
                         <w:TextBox ui:field="patientAddrHomePhone" field="String" width="80px"
-                        maxLength="12" mask="{msg.gen_phonePattern}" />
+                          maxLength="12" mask="{msg.gen_phonePattern}" />
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_gender}:" />
@@ -318,33 +318,6 @@
                     </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.project_project}:" />
-                      </td>
-                      <td colspan="3">
-                        <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="projectName" width="165px" case="LOWER"
-                            dropWidth="440px"
-                          >
-                            <w:popup>
-                              <t:Table visibleRows="10" header="true">
-                                <t:Column width="150" label="{msg.gen_name}">
-                                  <t:LabelCell />
-                                </t:Column>
-                                <t:Column width="275" label="{msg.gen_description}">
-                                  <t:LabelCell />
-                                </t:Column>
-                              </t:Table>
-                            </w:popup>
-                          </w:AutoComplete>
-                          <g:AbsolutePanel>
-                            <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}"
-                              text="" css="{res.FormFieldButton}" />
-                          </g:AbsolutePanel>
-                        </g:HorizontalPanel>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="{res.style.Prompt}">
                         <ui:text from="{msg.sampleOrganization_reportTo}:" />
                       </td>
                       <td colspan="3">
@@ -410,6 +383,33 @@
                           </w:AutoComplete>
                           <g:AbsolutePanel>
                             <w:Button ui:field="billToButton" leftIcon="{res.icon.fieldLookupIcon}"
+                              text="" css="{res.FormFieldButton}" />
+                          </g:AbsolutePanel>
+                        </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.project_project}:" />
+                      </td>
+                      <td colspan="3">
+                        <g:HorizontalPanel>
+                          <w:AutoComplete ui:field="projectName" width="165px" case="LOWER"
+                            dropWidth="440px"
+                          >
+                            <w:popup>
+                              <t:Table visibleRows="10" header="true">
+                                <t:Column width="150" label="{msg.gen_name}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="275" label="{msg.gen_description}">
+                                  <t:LabelCell />
+                                </t:Column>
+                              </t:Table>
+                            </w:popup>
+                          </w:AutoComplete>
+                          <g:AbsolutePanel>
+                            <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}"
                               text="" css="{res.FormFieldButton}" />
                           </g:AbsolutePanel>
                         </g:HorizontalPanel>

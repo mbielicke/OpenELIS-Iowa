@@ -219,12 +219,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected Button                                    pwsLookupButton;
 
     @UiField
-    protected AutoComplete                              projectName, reportToName, billToName;
+    protected AutoComplete                              reportToName, billToName, projectName;
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, projectButton, reportToButton,
-                    billToButton;
+                    abort, optionsButton, orderLookupButton, reportToButton,
+                    billToButton, projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -754,7 +754,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : billToName;
+                                 return forward ? orderId : projectName;
                              }
                          });
 
@@ -1322,7 +1322,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? projectName : sdwisPriority;
+                                 return forward ? reportToName : sdwisPriority;
                              }
                          });
 
@@ -1339,80 +1339,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     event.preventDefault();
                     event.stopPropagation();
                 }
-            }
-        });
-
-        addScreenHandler(projectName,
-                         SampleMeta.getProjectName(),
-                         new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 setProject(getFirstProject(manager));
-                             }
-
-                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                 ProjectDO data;
-
-                                 data = null;
-                                 if (event.getValue() != null)
-                                     data = (ProjectDO)event.getValue().getData();
-                                 changeProject(data);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 projectName.setEnabled(isState(QUERY) ||
-                                                        (canEdit && isState(ADD, UPDATE)));
-                                 projectName.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? reportToName : sdwisCollector;
-                             }
-                         });
-
-        projectName.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    setProject(getFirstProject(previousManager));
-                    screen.focusNextWidget((Focusable)projectName, true);
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            }
-        });
-
-        projectName.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                Item<Integer> row;
-                ArrayList<ProjectDO> list;
-                ArrayList<Item<Integer>> model;
-
-                setBusy();
-                try {
-                    list = ProjectService.get()
-                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-                    for (ProjectDO p : list) {
-                        row = new Item<Integer>(4);
-
-                        row.setKey(p.getId());
-                        row.setCell(0, p.getName());
-                        row.setCell(1, p.getDescription());
-                        row.setData(p);
-                        model.add(row);
-                    }
-                    projectName.showAutoMatches(model);
-                } catch (Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                clearStatus();
-            }
-        });
-
-        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
-            public void onStateChange(StateChangeEvent event) {
-                projectButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -1436,7 +1362,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? billToName : projectName;
+                return forward ? billToName : sdwisCollector;
             }
         });
 
@@ -1513,7 +1439,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? accessionNumber : reportToName;
+                return forward ? projectName : reportToName;
             }
         });
 
@@ -1567,6 +1493,80 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(billToButton, "billToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 billToButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+            }
+        });
+
+        addScreenHandler(projectName,
+                         SampleMeta.getProjectName(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 setProject(getFirstProject(manager));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 ProjectDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (ProjectDO)event.getValue().getData();
+                                 changeProject(data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 projectName.setEnabled(isState(QUERY) ||
+                                                        (canEdit && isState(ADD, UPDATE)));
+                                 projectName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : billToName;
+                             }
+                         });
+
+        projectName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setProject(getFirstProject(previousManager));
+                    screen.focusNextWidget((Focusable)projectName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        projectName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                Item<Integer> row;
+                ArrayList<ProjectDO> list;
+                ArrayList<Item<Integer>> model;
+
+                setBusy();
+                try {
+                    list = ProjectService.get()
+                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (ProjectDO p : list) {
+                        row = new Item<Integer>(4);
+
+                        row.setKey(p.getId());
+                        row.setCell(0, p.getName());
+                        row.setCell(1, p.getDescription());
+                        row.setData(p);
+                        model.add(row);
+                    }
+                    projectName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                projectButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
