@@ -78,7 +78,7 @@
       <g:SplitLayoutPanel>
         <g:west size="305">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="37px">
+            <g:layer top="0px" bottom="26px">
               <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
                 <r:Column width="280" label="{msg.sample_sample}" />
                 <r:Leaf key="sample">
@@ -135,11 +135,18 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:LayoutPanel>
+                <g:layer bottom="0px" top="0px" left="0px" width="50%">
+                  <g:HorizontalPanel>
+                    <g:HorizontalPanel>
+                      <w:Label ui:field="countLabel" styleName="{res.style.WarningLabel}" />
+                    </g:HorizontalPanel>
+                  </g:HorizontalPanel>
+                </g:layer>
                 <g:layer bottom="0px" top="0px" left="0px" right="0px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="nextPageButton" image="{res.nextPage}" disabledImage="{res.nextPageDisabled}"
-                        enabled="false" css="{res.atozButton}" />
+                      <w:Button ui:field="nextPageButton" image="{res.nextPage}"
+                        disabledImage="{res.nextPageDisabled}" enabled="false" css="{res.atozButton}" />
                     </g:HorizontalPanel>
                   </g:HorizontalPanel>
                 </g:layer>

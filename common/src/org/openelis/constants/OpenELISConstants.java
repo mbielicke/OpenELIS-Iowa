@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -17926,11 +17926,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sampleStatus();
 
   /**
-   * Translated "A sample''s domain can only be changed once during an update ".
+   * Translated "A sample''s domain can only be changed once during an update".
    * 
-   * @return translated "A sample''s domain can only be changed once during an update "
+   * @return translated "A sample''s domain can only be changed once during an update"
    */
-  @DefaultMessage("A sample''s domain can only be changed once during an update ")
+  @DefaultMessage("A sample''s domain can only be changed once during an update")
   @Key("sampleTracking.canChangeDomainOnlyOnce")
   String sampleTracking_canChangeDomainOnlyOnce();
 
@@ -17969,6 +17969,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Please query for only one domain at a time.")
   @Key("sampleTracking.queryDomainException")
   String sampleTracking_queryDomainException();
+
+  /**
+   * Translated "Showing {0,number,#0}".
+   * 
+   * @return translated "Showing {0,number,#0}"
+   */
+  @DefaultMessage("Showing {0,number,#0}")
+  @Key("sampleTracking.recordsShown")
+  String sampleTracking_recordsShown(Integer arg0);
 
   /**
    * Translated "Tracking".
