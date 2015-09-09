@@ -309,7 +309,7 @@ create view test_analyte_view (id, test_id, test_name, method_id, method_name,
                          where ta.test_id = t.id and ta.row_group = ca.row_group and
                                ta.is_column = 'N' and ta.sort_order <= ca.sort_order)
  order by t.name, m.name, ra.sort_order, ca.sort_order
-);
+;
 
 create view todo_sample_view (sample_id, domain, accession_number, received_date,
                               collection_date, collection_time, primary_organization_name,
