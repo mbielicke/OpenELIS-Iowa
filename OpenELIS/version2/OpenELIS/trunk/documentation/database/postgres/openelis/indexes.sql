@@ -357,8 +357,113 @@ create        index worksheet_result_2_idx on worksheet_result(worksheet_analysi
 -------------------------------------------------------------------------------
 
 alter table address add primary key(id);
-
 alter table analysis add primary key(id);
+alter table analysis_qaevent add primary key(id);
+alter table analysis_user add primary key(id);
+alter table analyte add primary key(id);
+alter table analyte_parameter add primary key(id);
+alter table attachment add primary key(id);
+alter table attachment_item add primary key(id);
+alter table aux_data add primary key(id);
+alter table aux_field add primary key(id);
+alter table aux_field_group add primary key(id);
+alter table aux_field_value add primary key(id);
+alter table category add primary key(id);
+alter table cron add primary key(id);
+alter table dictionary add primary key(id);
+alter table eorder add primary key(id);
+alter table eorder_body add primary key(id);
+alter table eorder_link add primary key(id);
+alter table event_log add primary key(id);
+alter table exchange_criteria add primary key(id);
+alter table exchange_external_term add primary key(id);
+alter table exchange_local_term add primary key(id);
+alter table exchange_profile add primary key(id);
+alter table history add primary key(id);
+alter table instrument add primary key(id);
+alter table instrument_log add primary key(id);
+alter table inventory_adjustment add primary key(id);
+alter table inventory_component add primary key(id);
+alter table inventory_item add primary key(id);
+alter table inventory_location add primary key(id);
+alter table inventory_receipt add primary key(id);
+alter table inventory_receipt_iorder_item add primary key(id);
+alter table inventory_x_adjust add primary key(id);
+alter table inventory_x_put add primary key(id);
+alter table inventory_x_use add primary key(id);
+alter table label add primary key(id);
+alter table lock add primary key(reference_id, reference_table_id);
+alter table method add primary key(id);
+alter table note add primary key(id);
+alter table iorder add primary key(id);
+alter table iorder_container add primary key(id);
+alter table iorder_item add primary key(id);
+alter table iorder_organization add primary key(id);
+alter table iorder_recurrence add primary key(id);
+alter table iorder_test add primary key(id);
+alter table iorder_test_analyte add primary key(id);
+alter table organization add primary key(id);
+alter table organization_contact add primary key(id);
+alter table organization_parameter add primary key(id);
+alter table panel add primary key(id);
+alter table panel_item add primary key(id);
+alter table patient add primary key(id);
+alter table patient_relation add primary key(id);
+alter table project add primary key(id);
+alter table project_parameter add primary key(id);
+alter table provider add primary key(id);
+alter table provider_location add primary key(id);
+alter table pws add primary key(id);
+alter table pws_address add primary key(tinwslec_is_number, tinlgent_is_number);
+alter table pws_facility add primary key(tinwsf_is_number, tsasmppt_is_number);
+alter table pws_monitor add primary key(tiamrtask_is_number);
+alter table pws_violation add primary key(id);
+alter table qaevent add primary key(id);
+alter table qc add primary key(id);
+alter table qc_analyte add primary key(id);
+alter table qc_lot add primary key(id);
+alter table result add primary key(id);
+alter table sample add primary key(id);
+alter table sample_animal add primary key(id);
+alter table sample_clinical add primary key(id);
+alter table sample_environmental add primary key(id);
+alter table sample_item add primary key(id);
+alter table sample_neonatal add primary key(id);
+alter table sample_organization add primary key(id);
+alter table sample_private_well add primary key(id);
+alter table sample_project add primary key(id);
+alter table sample_pt add primary key(id);
+alter table sample_qaevent add primary key(id);
+alter table sample_sdwis add primary key(id);
+alter table scriptlet add primary key(id);
+alter table section add primary key(id);
+alter table section_parameter add primary key(id);
+alter table shipping add primary key(id);
+alter table shipping_item add primary key(id);
+alter table shipping_tracking add primary key(id);
+alter table standard_note add primary key(id);
+alter table storage add primary key(id);
+alter table storage_location add primary key(id);
+alter table storage_unit add primary key(id);
+alter table system_variable add primary key(id);
+alter table test add primary key(id);
+alter table test_analyte add primary key(id);
+alter table test_prep add primary key(id);
+alter table test_reflex add primary key(id);
+alter table test_result add primary key(id);
+alter table test_section add primary key(id);
+alter table test_trailer add primary key(id);
+alter table test_type_of_sample add primary key(id);
+alter table test_worksheet add primary key(id);
+alter table test_worksheet_analyte add primary key(id);
+alter table test_worksheet_item add primary key(id);
+alter table worksheet add primary key(id);
+alter table worksheet_analysis add primary key(id);
+alter table worksheet_item add primary key(id);
+alter table worksheet_qc_result add primary key(id);
+alter table worksheet_reagent add primary key(id);
+alter table worksheet_result add primary key(id);
+
 alter table analysis add foreign key(sample_item_id) references sample_item(id);
 alter table analysis add foreign key(test_id) references test(id);
 alter table analysis add foreign key(section_id) references section(id);
@@ -370,277 +475,190 @@ alter table analysis add foreign key(type_id) references dictionary(id);
 alter table analysis add foreign key(unit_of_measure_id) references dictionary(id);
 alter table analysis add foreign key(status_id) references dictionary(id);
 
-alter table analysis_qaevent add primary key(id);
 alter table analysis_qaevent add foreign key(analysis_id) references analysis(id);
 alter table analysis_qaevent add foreign key(qaevent_id) references qaevent(id);
 alter table analysis_qaevent add foreign key(type_id) references dictionary(id);
 
 alter table analysis_report_flags add foreign key(analysis_id) references analysis(id);
 
-alter table analysis_user add primary key(id);
 alter table analysis_user add foreign key(analysis_id) references analysis(id);
 alter table analysis_user add foreign key(action_id) references dictionary(id);
 
-alter table analyte add primary key(id);
 alter table analyte add foreign key(parent_analyte_id) references analyte(id);
 
-alter table analyte_parameter add primary key(id);
 alter table analyte_parameter add foreign key(analyte_id) references analyte(id);
 alter table analyte_parameter add foreign key(type_of_sample_id) references dictionary(id);
 alter table analyte_parameter add foreign key(unit_of_measure_id) references dictionary(id);
 
-alter table attachment add primary key(id);
 alter table attachment add foreign key(type_id) references dictionary(id);
 alter table attachment add foreign key(section_id) references section(id);
 
-alter table attachment_item add primary key(id);
 alter table attachment_item add foreign key(attachment_id) references attachment(id);
 
-alter table aux_data add primary key(id);
 alter table aux_data add foreign key(aux_field_id) references aux_field(id);
 alter table aux_data add foreign key(type_id) references dictionary(id);
 
-alter table aux_field add primary key(id);
 alter table aux_field add foreign key(aux_field_group_id) references aux_field_group(id);
 alter table aux_field add foreign key(analyte_id) references analyte(id);
 alter table aux_field add foreign key(method_id) references method(id);
 alter table aux_field add foreign key(unit_of_measure_id) references dictionary(id);
 alter table aux_field add foreign key(scriptlet_id) references dictionary(id);
 
-alter table aux_field_group add primary key(id);
-
-alter table aux_field_value add primary key(id);
 alter table aux_field_value add foreign key(aux_field_id) references aux_field(id);
 alter table aux_field_value add foreign key(type_id) references dictionary(id);
 
-alter table category add primary key(id);
 alter table category add foreign key(section_id) references section(id);
 
-alter table cron add primary key(id);
-
-alter table dictionary add primary key(id);
 alter table dictionary add foreign key(category_id) references category(id);
 alter table dictionary add foreign key(related_entry_id) references dictionary(id);
 
-alter table eorder add primary key(id);
-
-alter table eorder_body add primary key(id);
 alter table eorder_body add foreign key(eorder_id) references eorder(id);
 
-alter table eorder_link add primary key(id);
 alter table eorder_link add foreign key(eorder_id) references eorder(id);
 
-alter table event_log add primary key(id);
 alter table event_log add foreign key(type_id) references dictionary(id);
 alter table event_log add foreign key(level_id) references dictionary(id);
 
-alter table exchange_criteria add primary key(id);
 alter table exchange_criteria add foreign key(environment_id) references dictionary(id);
 
-alter table exchange_external_term add primary key(id);
 alter table exchange_external_term add foreign key(exchange_local_term_id) references exchange_local_term(id);
 alter table exchange_external_term add foreign key(profile_id) references dictionary(id);
 
-alter table exchange_local_term add primary key(id);
-
-alter table exchange_profile add primary key(id);
 alter table exchange_profile add foreign key(exchange_criteria_id) references exchange_criteria(id);
 alter table exchange_profile add foreign key(profile_id) references dictionary(id);
 
-alter table history add primary key(id);
 alter table history add foreign key(activity_id) references dictionary(id);
 
-alter table instrument add primary key(id);
 alter table instrument add foreign key(type_id) references dictionary(id);
 alter table instrument add foreign key(scriptlet_id) references dictionary(id);
 
-alter table instrument_log add primary key(id);
 alter table instrument_log add foreign key(instrument_id) references instrument(id);
 alter table instrument_log add foreign key(type_id) references dictionary(id);
 alter table instrument_log add foreign key(worksheet_id) references worksheet(id);
 
-alter table inventory_adjustment add primary key(id);
-
-alter table inventory_component add primary key(id);
 alter table inventory_component add foreign key(inventory_item_id) references inventory_item(id);
 alter table inventory_component add foreign key(component_id) references inventory_item(id);
 
-alter table inventory_item add primary key(id);
 alter table inventory_item add foreign key(category_id) references dictionary(id);
 alter table inventory_item add foreign key(store_id) references dictionary(id);
 alter table inventory_item add foreign key(dispensed_units_id) references dictionary(id);
 alter table inventory_item add foreign key(parent_inventory_item_id) references inventory_item(id);
 
-alter table inventory_location add primary key(id);
 alter table inventory_location add foreign key(inventory_item_id) references inventory_item(id);
 alter table inventory_location add foreign key(storage_location_id) references storage_location(id);
 
-alter table inventory_receipt add primary key(id);
 alter table inventory_receipt add foreign key(inventory_item_id) references inventory_item(id);
 alter table inventory_receipt add foreign key(iorder_item_id) references iorder_item(id);
 alter table inventory_receipt add foreign key(organization_id) references organization(id);
 
-alter table inventory_receipt_iorder_item add primary key(id);
 alter table inventory_receipt_iorder_item add foreign key(inventory_receipt_id) references inventory_receipt(id);
 alter table inventory_receipt_iorder_item add foreign key(iorder_item_id) references iorder_item(id);
 
-alter table inventory_x_adjust add primary key(id);
 alter table inventory_x_adjust add foreign key(inventory_adjustment_id) references inventory_adjustment(id);
 alter table inventory_x_adjust add foreign key(inventory_location_id) references inventory_location(id);
 
-alter table inventory_x_put add primary key(id);
 alter table inventory_x_put add foreign key(inventory_receipt_id) references inventory_receipt(id);
 alter table inventory_x_put add foreign key(inventory_location_id) references inventory_location(id);
 
-alter table inventory_x_use add primary key(id);
 alter table inventory_x_use add foreign key(inventory_location_id) references inventory_location(id);
 alter table inventory_x_use add foreign key(iorder_item_id) references iorder_item(id);
 
-alter table label add primary key(id);
 alter table label add foreign key(printer_type_id) references dictionary(id);
 alter table label add foreign key(scriptlet_id) references dictionary(id);
 
-alter table lock add primary key(reference_id, reference_table_id);
-
-alter table method add primary key(id);
-
-alter table note add primary key(id);
-
-alter table iorder add primary key(id);
 alter table iorder add foreign key(parent_iorder_id) references iorder(id);
 alter table iorder add foreign key(status_id) references dictionary(id);
 alter table iorder add foreign key(cost_center_id) references dictionary(id);
 alter table iorder add foreign key(organization_id) references organization(id);
 alter table iorder add foreign key(ship_from_id) references dictionary(id);
 
-alter table iorder_container add primary key(id);
 alter table iorder_container add foreign key(iorder_id) references iorder(id);
 alter table iorder_container add foreign key(container_id) references dictionary(id);
 alter table iorder_container add foreign key(type_of_sample_id) references dictionary(id);
 
-alter table iorder_item add primary key(id);
 alter table iorder_item add foreign key(iorder_id) references iorder(id);
 alter table iorder_item add foreign key(inventory_item_id) references inventory_item(id);
 
-alter table iorder_organization add primary key(id);
 alter table iorder_organization add foreign key(iorder_id) references iorder(id);
 alter table iorder_organization add foreign key(organization_id) references organization(id);
 alter table iorder_organization add foreign key(type_id) references dictionary(id);
 
-alter table iorder_recurrence add primary key(id);
 alter table iorder_recurrence add foreign key(iorder_id) references iorder(id);
 alter table iorder_recurrence add foreign key(unit_id) references dictionary(id);
 
-alter table iorder_test add primary key(id);
 alter table iorder_test add foreign key(iorder_id) references iorder(id);
 alter table iorder_test add foreign key(test_id) references test(id);
 
-alter table iorder_test_analyte add primary key(id);
 alter table iorder_test_analyte add foreign key(iorder_test_id) references iorder_test(id);
 alter table iorder_test_analyte add foreign key(analyte_id) references analyte(id);
 
-alter table organization add primary key(id);
 alter table organization add foreign key(parent_organization_id) references organization(id);
 alter table organization add foreign key(address_id) references address(id);
 
-alter table organization_contact add primary key(id);
 alter table organization_contact add foreign key(organization_id) references organization(id);
 alter table organization_contact add foreign key(contact_type_id) references dictionary(id);
 alter table organization_contact add foreign key(address_id) references address(id);
 
-alter table organization_parameter add primary key(id);
 alter table organization_parameter add foreign key(organization_id) references organization(id);
 alter table organization_parameter add foreign key(type_id) references dictionary(id);
 
-alter table panel add primary key(id);
-
-alter table panel_item add primary key(id);
 alter table panel_item add foreign key(panel_id) references panel(id);
 
-alter table patient add primary key(id);
 alter table patient add foreign key(address_id) references address(id);
 alter table patient add foreign key(gender_id) references dictionary(id);
 alter table patient add foreign key(race_id) references dictionary(id);
 alter table patient add foreign key(ethnicity_id) references dictionary(id);
 
-alter table patient_relation add primary key(id);
 alter table patient_relation add foreign key(relation_id) references dictionary(id);
 alter table patient_relation add foreign key(patient_id) references patient(id);
 alter table patient_relation add foreign key(related_patient_id) references patient(id);
 
-alter table project add primary key(id);
 alter table project add foreign key(scriptlet_id) references dictionary(id);
 
-alter table project_parameter add primary key(id);
 alter table project_parameter add foreign key(project_id) references project(id);
 alter table project_parameter add foreign key(operation_id) references dictionary(id);
 
-alter table provider add primary key(id);
 alter table provider add foreign key(type_id) references dictionary(id);
 
-alter table provider_location add primary key(id);
 alter table provider_location add foreign key(provider_id) references provider(id);
 alter table provider_location add foreign key(address_id) references address(id);
 
-alter table pws add primary key(id);
-
-alter table pws_address add primary key(tinwslec_is_number, tinlgent_is_number);
-alter table pws_address add foreign key(tinwsys_is_number) references pws(tinwsys_is_number);
-
-alter table pws_facility add primary key(tinwsf_is_number, tsasmppt_is_number);
-alter table pws_facility add foreign key(tinwsys_is_number) references pws(tinwsys_is_number);
-
-alter table pws_monitor add primary key(tiamrtask_is_number);
-alter table pws_monitor add foreign key(tinwsys_is_number) references pws(tinwsys_is_number);
-
-alter table pws_violation add primary key(id);
-alter table pws_violation add foreign key(tinwsys_is_number) references pws(tinwsys_is_number);
 alter table pws_violation add foreign key(sample_id) references sample(id);
 
-alter table qaevent add primary key(id);
 alter table qaevent add foreign key(test_id) references test(id);
 alter table qaevent add foreign key(type_id) references dictionary(id);
 
-alter table qc add primary key(id);
 alter table qc add foreign key(type_id) references dictionary(id);
 alter table qc add foreign key(inventory_item_id) references inventory_item(id);
 
-alter table qc_analyte add primary key(id);
 alter table qc_analyte add foreign key(qc_id) references qc(id);
 alter table qc_analyte add foreign key(analyte_id) references analyte(id);
 alter table qc_analyte add foreign key(type_id) references dictionary(id);
 
-alter table qc_lot add primary key(id);
 alter table qc_lot add foreign key(qc_id) references qc(id);
 alter table qc_lot add foreign key(location_id) references dictionary(id);
 alter table qc_lot add foreign key(prepared_unit_id) references dictionary(id);
 
-alter table result add primary key(id);
 alter table result add foreign key(analysis_id) references analysis(id);
 alter table result add foreign key(test_analyte_id) references test_analyte(id);
 alter table result add foreign key(test_result_id) references test_result(id);
 alter table result add foreign key(analyte_id) references analyte(id);
 alter table result add foreign key(type_id) references dictionary(id);
 
-alter table sample add primary key(id);
 alter table sample add foreign key(status_id) references dictionary(id);
 
-alter table sample_animal add primary key(id);
 alter table sample_animal add foreign key(sample_id) references sample(id);
 alter table sample_animal add foreign key(animal_common_name_id) references dictionary(id);
 alter table sample_animal add foreign key(animal_scientific_name_id) references dictionary(id);
 alter table sample_animal add foreign key(address_id) references address(id);
 
-alter table sample_clinical add primary key(id);
 alter table sample_clinical add foreign key(sample_id) references sample(id);
 alter table sample_clinical add foreign key(patient_id) references patient(id);
 alter table sample_clinical add foreign key(provider_id) references provider(id);
 
-alter table sample_environmental add primary key(id);
 alter table sample_environmental add foreign key(sample_id) references sample(id);
 alter table sample_environmental add foreign key(location_address_id) references address(id);
 
-alter table sample_item add primary key(id);
 alter table sample_item add foreign key(sample_id) references sample(id);
 alter table sample_item add foreign key(sample_item_id) references sample_item(id);
 alter table sample_item add foreign key(type_of_sample_id) references dictionary(id);
@@ -648,80 +666,59 @@ alter table sample_item add foreign key(source_of_sample_id) references dictiona
 alter table sample_item add foreign key(container_id) references dictionary(id);
 alter table sample_item add foreign key(unit_of_measure_id) references dictionary(id);
 
-alter table sample_neonatal add primary key(id);
 alter table sample_neonatal add foreign key(sample_id) references sample(id);
 alter table sample_neonatal add foreign key(patient_id) references patient(id);
 alter table sample_neonatal add foreign key(next_of_kin_id) references patient(id);
 alter table sample_neonatal add foreign key(next_of_kin_relation_id) references dictionary(id);
 alter table sample_neonatal add foreign key(provider_id) references provider(id);
 
-alter table sample_organization add primary key(id);
 alter table sample_organization add foreign key(sample_id) references sample(id);
 alter table sample_organization add foreign key(organization_id) references organization(id);
 alter table sample_organization add foreign key(type_id) references dictionary(id);
 
-alter table sample_private_well add primary key(id);
 alter table sample_private_well add foreign key(sample_id) references sample(id);
 alter table sample_private_well add foreign key(report_to_address_id) references address(id);
 alter table sample_private_well add foreign key(location_address_id) references address(id);
 
-alter table sample_project add primary key(id);
 alter table sample_project add foreign key(sample_id) references sample(id);
 alter table sample_project add foreign key(project_id) references project(id);
 
-alter table sample_pt add primary key(id);
 alter table sample_pt add foreign key(sample_id) references sample(id);
 alter table sample_pt add foreign key(pt_provider_id) references dictionary(id);
 
-alter table sample_qaevent add primary key(id);
 alter table sample_qaevent add foreign key(sample_id) references sample(id);
 alter table sample_qaevent add foreign key(qaevent_id) references qaevent(id);
 alter table sample_qaevent add foreign key(type_id) references dictionary(id);
 
-alter table sample_sdwis add primary key(id);
 alter table sample_sdwis add foreign key(sample_id) references sample(id);
 alter table sample_sdwis add foreign key(pws_id) references pws(id);
 alter table sample_sdwis add foreign key(sample_type_id) references dictionary(id);
 alter table sample_sdwis add foreign key(sample_category_id) references dictionary(id);
 
-alter table scriptlet add primary key(id);
-
-alter table section add primary key(id);
 alter table section add foreign key(parent_section_id) references section(id);
 alter table section add foreign key(organization_id) references organization(id);
 
-alter table section_parameter add primary key(id);
 alter table section_parameter add foreign key(section_id) references section(id);
 alter table section_parameter add foreign key(type_id) references dictionary(id);
 
-alter table shipping add primary key(id);
 alter table shipping add foreign key(status_id) references dictionary(id);
 alter table shipping add foreign key(shipped_from_id) references dictionary(id);
 alter table shipping add foreign key(shipped_to_id) references organization(id);
 alter table shipping add foreign key(shipped_method_id) references dictionary(id);
 
-alter table shipping_item add primary key(id);
 alter table shipping_item add foreign key(shipping_id) references shipping(id);
 
-alter table shipping_tracking add primary key(id);
 alter table shipping_tracking add foreign key(shipping_id) references shipping(id);
 
-alter table standard_note add primary key(id);
 alter table standard_note add foreign key(type_id) references dictionary(id);
 
-alter table storage add primary key(id);
 alter table storage add foreign key(storage_location_id) references storage_location(id);
 
-alter table storage_location add primary key(id);
 alter table storage_location add foreign key(parent_storage_location_id) references storage_location(id);
 alter table storage_location add foreign key(storage_unit_id) references storage_unit(id);
 
-alter table storage_unit add primary key(id);
 alter table storage_unit add foreign key(category_id) references dictionary(id);
 
-alter table system_variable add primary key(id);
-
-alter table test add primary key(id);
 alter table test add foreign key(method_id) references method(id);
 alter table test add foreign key(label_id) references label(id);
 alter table test add foreign key(test_trailer_id) references test_trailer(id);
@@ -731,81 +728,64 @@ alter table test add foreign key(revision_method_id) references dictionary(id);
 alter table test add foreign key(reporting_method_id) references dictionary(id);
 alter table test add foreign key(sorting_method_id) references dictionary(id);
 
-alter table test_analyte add primary key(id);
 alter table test_analyte add foreign key(test_id) references test(id);
 alter table test_analyte add foreign key(analyte_id) references analyte(id);
 alter table test_analyte add foreign key(type_id) references dictionary(id);
 alter table test_analyte add foreign key(scriptlet_id) references dictionary(id);
 
-alter table test_prep add primary key(id);
 alter table test_prep add foreign key(test_id) references test(id);
 alter table test_prep add foreign key(prep_test_id) references test(id);
 
-alter table test_reflex add primary key(id);
 alter table test_reflex add foreign key(test_id) references test(id);
 alter table test_reflex add foreign key(test_analyte_id) references test_analyte(id);
 alter table test_reflex add foreign key(test_result_id) references test_result(id);
 alter table test_reflex add foreign key(flags_id) references dictionary(id);
 alter table test_reflex add foreign key(add_test_id) references test(id);
 
-alter table test_result add primary key(id);
 alter table test_result add foreign key(test_id) references test(id);
 alter table test_result add foreign key(unit_of_measure_id) references dictionary(id);
 alter table test_result add foreign key(type_id) references dictionary(id);
 alter table test_result add foreign key(rounding_method_id) references dictionary(id);
 alter table test_result add foreign key(flags_id) references dictionary(id);
 
-alter table test_section add primary key(id);
 alter table test_section add foreign key(test_id) references test(id);
 alter table test_section add foreign key(section_id) references section(id);
 alter table test_section add foreign key(flag_id) references dictionary(id);
 
-alter table test_trailer add primary key(id);
-
-alter table test_type_of_sample add primary key(id);
 alter table test_type_of_sample add foreign key(test_id) references test(id);
 alter table test_type_of_sample add foreign key(type_of_sample_id) references dictionary(id);
 alter table test_type_of_sample add foreign key(unit_of_measure_id) references dictionary(id);
 
-alter table test_worksheet add primary key(id);
 alter table test_worksheet add foreign key(test_id) references test(id);
 alter table test_worksheet add foreign key(format_id) references dictionary(id);
 alter table test_worksheet add foreign key(scriptlet_id) references dictionary(id);
 
-alter table test_worksheet_analyte add primary key(id);
 alter table test_worksheet_analyte add foreign key(test_id) references test(id);
 alter table test_worksheet_analyte add foreign key(test_analyte_id) references test_analyte(id);
 alter table test_worksheet_analyte add foreign key(flag_id) references dictionary(id);
 
-alter table test_worksheet_item add primary key(id);
 alter table test_worksheet_item add foreign key(test_worksheet_id) references test_worksheet(id);
 alter table test_worksheet_item add foreign key(type_id) references dictionary(id);
 
-alter table worksheet add primary key(id);
 alter table worksheet add foreign key(status_id) references dictionary(id);
 alter table worksheet add foreign key(format_id) references dictionary(id);
 alter table worksheet add foreign key(related_worksheet_id) references worksheet(id);
 alter table worksheet add foreign key(instrument_id) references instrument(id);
 
-alter table worksheet_analysis add primary key(id);
 alter table worksheet_analysis add foreign key(worksheet_item_id) references worksheet_item(id);
 alter table worksheet_analysis add foreign key(analysis_id) references analysis(id);
 alter table worksheet_analysis add foreign key(qc_lot_id) references qc_lot(id);
 alter table worksheet_analysis add foreign key(worksheet_analysis_id) references worksheet_analysis(id);
 alter table worksheet_analysis add foreign key(change_flags_id) references dictionary(id);
 
-alter table worksheet_item add primary key(id);
 alter table worksheet_item add foreign key(worksheet_id) references worksheet(id);
 
-alter table worksheet_qc_result add primary key(id);
 alter table worksheet_qc_result add foreign key(worksheet_analysis_id) references worksheet_analysis(id);
 alter table worksheet_qc_result add foreign key(qc_analyte_id) references qc_analyte(id);
 
-alter table worksheet_reagent add primary key(id);
 alter table worksheet_reagent add foreign key(worksheet_id) references worksheet(id);
 alter table worksheet_reagent add foreign key(qc_lot_id) references qc_lot(id);
 
-alter table worksheet_result add primary key(id);
 alter table worksheet_result add foreign key(worksheet_analysis_id) references worksheet_analysis(id);
 alter table worksheet_result add foreign key(test_analyte_id) references test_analyte(id);
 alter table worksheet_result add foreign key(analyte_id) references analyte(id);

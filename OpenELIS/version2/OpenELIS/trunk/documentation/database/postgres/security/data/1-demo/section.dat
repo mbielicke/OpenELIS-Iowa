@@ -1,0 +1,60 @@
+1|2|airquality-ic|Air quality Iowa City
+2|2|asbestos-ic|Asbestos Iowa City
+3|2|bacteriology-ank|Bacteriology Ankeny
+4|2|bacteriology-ic|Bacteriology Iowa City
+5|2|bioassay-ank|Bioassay Ankeny
+6|2|biomonitoring-ank|Biomonitoring Ankeny
+7|2|biomonitoring-ic|Biomonitoring Iowa City
+8|2|blood_lead-ank|Blood Lead Ankeny
+9|2|cdc_atlanta|Centers for Disease Control and Prevention - Atlanta
+10|2|cdc_fort_collins|Centers for Disease Control and Prevention - Fort Collins
+11|2|chlamydia_gc-ic|Chlamydia Gonorrhoea Iowa City
+12|2|client_services-ic|Client Services IC
+13|2|cystic_fibrosis-ank|Cystic Fibrosis Ankeny
+14|2|enviro_lead-ank|Environmental lead Ankeny
+15|2|enviro_micro-ank|Environmental Microbiology Ankeny
+16|2|enviro_micro-ic|Environmental Microbiology Iowa City
+17|2|enviro_micro-lk|Environmental Microbiology Lakeside
+18|2|florida_dph|Florida Dept of Public Health - FL Bureau of Laboratories
+19|2|formulation-ic|Pesticide Formulation Iowa City
+20|2|industrial_hyg-ank|Industrial hygiene Ankeny
+21|2|industrial_hyg-ic|Industrial hygiene Iowa City
+22|2|inorg_auto-ank|Inorganic Automated Ankeny
+23|2|inorg_auto-ic|Inorganic Automated Iowa City
+24|2|inorg_auto-lk|Inorganic Automated Lakeside
+25|2|inorg_manual-ank|Inorganic Manual Ankeny
+26|2|inorg_manual-ic|Inorganic Manual Iowa City
+27|2|inorg_manual-lk|Inorganic Manual Lakeside
+28|2|isu_vet_diag_lab|Iowa State Veterinary Diagnostic Laboratory - ISU
+29|2|limnology-ank|Limnology Ankeny
+30|2|limnology-ic|Limnology Iowa City
+31|2|limnology-lk|Limnology Lakeside
+32|2|liquidchrom-ic|High Performance Liquid Chromatography Analysis Iowa City
+33|2|maternal_screen-ic|Maternal Screening Iowa City
+34|2|metals-ank|Metals Ankeny
+35|2|michigan_dch|Michigan Department of Community Health - TB Laboratory
+36|2|minnesota_dph|Minnesota Department of Health - Public Health Laboratory
+37|2|molecular-ank|Molecular Ankeny
+38|2|molecular-ic|Molecular Iowa City
+39|2|mycobacti-ank|Mycobacteriology Ankeny
+40|2|mycobacti-ic|Mycobacteriology Iowa City
+41|2|nat_jewish_med_ctr|National Jewish Medical and Research Center - Myco Lab
+42|2|newborn_screen-ank|Newborn Screening Ankeny
+43|2|organic-ic|General Organic Analysis Iowa City
+44|2|parasitology-ic|Parasitology Iowa City
+45|2|pesticide-ic|Gas Chromatography Pesticide Analysis Iowa City
+46|2|rabies-ic|Rabies Iowa City
+47|2|radchem-ic|Radiochemistry Iowa City
+48|2|sample_prep-ank|Sample Preparation Ankeny
+49|2|sample_prep-ic|Sample Preparation Iowa City
+50|2|sample_prep-lk|Sample Preparation Lakeside
+51|2|semivolatile-ic|Gas Chromatography Semivolatile Analysis Iowa City
+52|2|serology-ank|Serology Ankeny
+53|2|serology-ic|Serology Iowa City
+54|2|system|System processes
+55|2|utexas_san_antonio|University of Texas Health Science Center at San Antonio
+56|2|utexas_tyler|University of Texas Health Science Center at Tyler
+57|2|virology-ic|Virology Iowa City
+58|2|volatile-ic|Gas Chromatography Volatile Analysis Iowa City
+59|2|wslh|Wisconsin State Laboratory of Hygiene
+60|2|wsu_waddl|Washington State University - WADDL

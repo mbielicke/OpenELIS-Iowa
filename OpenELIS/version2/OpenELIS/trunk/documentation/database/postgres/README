@@ -31,14 +31,21 @@ system:
     a. createdb -O dba security_test 'Security test database'
     b. createdb -O dba openelis_test 'OpenELIS test database'
 
-6. Create the tables in security database; you can use the pgAdminIII or
-   use command line psql -- following is the instructions for for psql
-
+6. Create the tables in security database. The load step creates all
+   the necessary module entries for Security and OpenELIS databases.
+   It also adds 2 users: "system" and "admin". User "system" is required
+   for OpenELIS background system processes; it is not an interactive
+   account and does not need authentication records in LDAP or AD.
+   User "admin" is used to add users to Security and perform system
+   setup on OpenELIS. It does require a matching LDAP/AD authenticated user
+   however, "admin" can be changed to another name to match an existing user.  
+ 
     a. cd openelis/postgres/security
     b. psql security_test
     c. at 'security_test=#' type the following one at a time
        \i tables.sql
        \i indexes.sql
+       \i procedures.sql
        \i permissions.sql
        \q
 
@@ -48,18 +55,23 @@ system:
     g. at 'security_test=#' type the following
        \i load.sql
        \q
+	
+	h. OPTIONAL: if you want to change "admin" to another user
+	   psql security_test
+	   update system_user set login_name = '<YOUR LDAP USER NAME>' where login_name = 'admin';
+	   \q
 
-    h. create a user called 'demo' with all the permissions. On production database,
-       you will need to rename this user to 'admin' or something more suitable;
-       cd to 1-demo-user and re-do steps f-g
+    i. OPTIONAL: The following step will provide you with example
+       data for test environment. SKIP THIS STEP FOR PRODUCTION
+       cd to 1-demo and re-do steps f-g
 
-7. Create the tables in openelis database; you can use the pgAdminIII or
-   use command line psql -- following is the instructions for for psql
+7. Create the tables in openelis database
 
     a. cd openelis/postgres/openelis
     b. psql openelis_test
     c. at 'openelis_test=#' type the following one at a time
        \i tables.sql
+       \i views.sql
        \q
 
     d. cd data
@@ -69,7 +81,7 @@ system:
        \i load.sql
        \q
 
-8. The following steps are optional and provide you with example
+8. OPTIONAL: following steps will provide you with example
    data for test environment. 
    
     a. if you want to load a list of our analytes, cd to
@@ -78,6 +90,7 @@ system:
     b. if you want to load a list of our tests, sections, etc., cd to
        2-demo and re-do steps f-g
 
+9. Create indices and apply permission
     c. cd openelis/postgres/openelis
     d. psql openelis_test
     e. at 'openelis_test=#' type the following one at a time
@@ -85,4 +98,4 @@ system:
        \i permissions.sql
        \q
 
-9. At this point all your databases are created and loaded
+At this point all your databases are created and loaded

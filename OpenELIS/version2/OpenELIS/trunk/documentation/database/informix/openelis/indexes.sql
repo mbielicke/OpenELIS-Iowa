@@ -4,7 +4,7 @@
 --
 -------------------------------------------------------------------------------
 
-create unique index address_1_idx on address(id)
+create unique index address_1_idx on address(id);
 
 create unique index analysis_1_idx on analysis(id);
 create        index analysis_2_idx on analysis(sample_item_id);
@@ -357,8 +357,111 @@ create        index worksheet_result_2_idx on worksheet_result(worksheet_analysi
 -------------------------------------------------------------------------------
 
 alter table address add constraint primary key(id) constraint address_pk;
-
 alter table analysis add constraint primary key(id) constraint analysis_pk;
+alter table analysis_qaevent add constraint primary key(id) constraint analysis_qaevent_pk;
+alter table analysis_user add constraint primary key(id) constraint analysis_user_pk;
+alter table analyte add constraint primary key(id) constraint analyte_pk;
+alter table analyte_parameter add constraint primary key(id) constraint analyte_parameter_pk;
+alter table attachment add constraint primary key(id) constraint attachment_pk;
+alter table attachment_item add constraint primary key(id) constraint attachment_item_pk;
+alter table aux_data add constraint primary key(id) constraint aux_data_pk;
+alter table aux_field add constraint primary key(id) constraint aux_field_pk;
+alter table aux_field_group add constraint primary key(id) constraint aux_field_group_pk;
+alter table aux_field_value add constraint primary key(id) constraint aux_field_value_pk;
+alter table category add constraint primary key(id) constraint category_pk;
+alter table cron add constraint primary key(id) constraint cron_pk;
+alter table dictionary add constraint primary key(id) constraint dictionary_pk;
+alter table eorder add constraint primary key(id) constraint eorder_pk;
+alter table eorder_body add constraint primary key(id) constraint eorder_body_pk;
+alter table eorder_link add constraint primary key(id) constraint eorder_link_pk;
+alter table event_log add constraint primary key(id) constraint event_log_pk;
+alter table exchange_criteria add constraint primary key(id) constraint exchange_criteria_pk;
+alter table exchange_external_term add constraint primary key(id) constraint exchange_external_term_pk;
+alter table exchange_local_term add constraint primary key(id) constraint exchange_local_term_pk;
+alter table exchange_profile add constraint primary key(id) constraint exchange_profile_pk;
+alter table history add constraint primary key(id) constraint history_pk;
+alter table instrument add constraint primary key(id) constraint instrument_pk;
+alter table instrument_log add constraint primary key(id) constraint instrument_log_pk;
+alter table inventory_adjustment add constraint primary key(id) constraint inventory_adjustment_pk;
+alter table inventory_component add constraint primary key(id) constraint inventory_component_pk;
+alter table inventory_item add constraint primary key(id) constraint inventory_item_pk;
+alter table inventory_location add constraint primary key(id) constraint inventory_location_pk;
+alter table inventory_receipt add constraint primary key(id) constraint inventory_receipt_pk;
+alter table inventory_receipt_iorder_item add constraint primary key(id) constraint inventory_receipt_iorder_item_pk;
+alter table inventory_x_adjust add constraint primary key(id) constraint inventory_x_adjust_pk;
+alter table inventory_x_put add constraint primary key(id) constraint inventory_x_put_pk;
+alter table inventory_x_use add constraint primary key(id) constraint inventory_x_use_pk;
+alter table label add constraint primary key(id) constraint label_pk;
+alter table lock add constraint primary key(reference_id, reference_table_id) constraint lock_pk;
+alter table method add constraint primary key(id) constraint method_pk;
+alter table note add constraint primary key(id) constraint note_pk;
+alter table iorder add constraint primary key(id) constraint iorder_pk;
+alter table iorder_container add constraint primary key(id) constraint iorder_container_pk;
+alter table iorder_item add constraint primary key(id) constraint iorder_item_pk;
+alter table iorder_organization add constraint primary key(id) constraint iorder_organization_pk;
+alter table iorder_recurrence add constraint primary key(id) constraint iorder_recurrence_pk;
+alter table iorder_test add constraint primary key(id) constraint iorder_test_pk;
+alter table iorder_test_analyte add constraint primary key(id) constraint iorder_test_analyte_pk;
+alter table organization add constraint primary key(id) constraint organization_pk;
+alter table organization_contact add constraint primary key(id) constraint organization_contact_pk;
+alter table organization_parameter add constraint primary key(id) constraint organization_parameter_pk;
+alter table panel add constraint primary key(id) constraint panel_pk;
+alter table panel_item add constraint primary key(id) constraint panel_item_pk;
+alter table patient add constraint primary key(id) constraint patient_pk;
+alter table patient_relation add constraint primary key(id) constraint patient_relation_pk;
+alter table project add constraint primary key(id) constraint project_pk;
+alter table project_parameter add constraint primary key(id) constraint project_parameter_pk;
+alter table provider add constraint primary key(id) constraint provider_pk;
+alter table provider_location add constraint primary key(id) constraint provider_location_pk;
+alter table pws add constraint primary key(id) constraint pws_pk;
+alter table pws_address add constraint primary key(tinwslec_is_number, tinlgent_is_number) constraint pws_address_pk;
+alter table pws_facility add constraint primary key(tinwsf_is_number, tsasmppt_is_number) constraint pws_facility_pk;
+alter table pws_monitor add constraint primary key(tiamrtask_is_number) constraint pws_monitor_pk;
+alter table pws_violation add constraint primary key(id) constraint pws_violation_pk;
+alter table qaevent add constraint primary key(id) constraint qaevent_pk;
+alter table qc add constraint primary key(id) constraint qc_pk;
+alter table qc_analyte add constraint primary key(id) constraint qc_analyte_pk;
+alter table qc_lot add constraint primary key(id) constraint qc_lot_pk;
+alter table result add constraint primary key(id) constraint result_pk;
+alter table sample add constraint primary key(id) constraint sample_pk;
+alter table sample_animal add constraint primary key(id) constraint sample_animal_pk;
+alter table sample_clinical add constraint primary key(id) constraint sample_clinical_pk;
+alter table sample_environmental add constraint primary key(id) constraint sample_environmental_pk;
+alter table sample_item add constraint primary key(id) constraint sample_item_pk;
+alter table sample_neonatal add constraint primary key(id) constraint sample_neonatal_pk;
+alter table sample_organization add constraint primary key(id) constraint sample_organization_pk;
+alter table sample_private_well add constraint primary key(id) constraint sample_private_well_pk;
+alter table sample_project add constraint primary key(id) constraint sample_project_pk;
+alter table sample_qaevent add constraint primary key(id) constraint sample_qaevent_pk;
+alter table sample_sdwis add constraint primary key(id) constraint sample_sdwis_pk;
+alter table section add constraint primary key(id) constraint section_pk;
+alter table section_parameter add constraint primary key(id) constraint section_parameter_pk;
+alter table shipping add constraint primary key(id) constraint shipping_pk;
+alter table shipping_item add constraint primary key(id) constraint shipping_item_pk;
+alter table shipping_tracking add constraint primary key(id) constraint shipping_tracking_pk;
+alter table standard_note add constraint primary key(id) constraint standard_note_pk;
+alter table storage add constraint primary key(id) constraint storage_pk;
+alter table storage_location add constraint primary key(id) constraint storage_location_pk;
+alter table storage_unit add constraint primary key(id) constraint storage_unit_pk;
+alter table system_variable add constraint primary key(id) constraint system_variable_pk;
+alter table test add constraint primary key(id) constraint test_pk;
+alter table test_analyte add constraint primary key(id) constraint test_analyte_pk;
+alter table test_prep add constraint primary key(id) constraint test_prep_pk;
+alter table test_reflex add constraint primary key(id) constraint test_reflex_pk;
+alter table test_result add constraint primary key(id) constraint test_result_pk;
+alter table test_section add constraint primary key(id) constraint test_section_pk;
+alter table test_trailer add constraint primary key(id) constraint test_trailer_pk;
+alter table test_type_of_sample add constraint primary key(id) constraint test_type_of_sample_pk;
+alter table test_worksheet add constraint primary key(id) constraint test_worksheet_pk;
+alter table test_worksheet_analyte add constraint primary key(id) constraint test_worksheet_analyte_pk;
+alter table test_worksheet_item add constraint primary key(id) constraint test_worksheet_item_pk;
+alter table worksheet add constraint primary key(id) constraint worksheet_pk;
+alter table worksheet_analysis add constraint primary key(id) constraint worksheet_analysis_pk;
+alter table worksheet_item add constraint primary key(id) constraint worksheet_item_pk;
+alter table worksheet_qc_result add constraint primary key(id) constraint worksheet_qc_result_pk;
+alter table worksheet_reagent add constraint primary key(id) constraint worksheet_reagent_pk;
+alter table worksheet_result add constraint primary key(id) constraint worksheet_result_pk;
+
 alter table analysis add constraint foreign key(sample_item_id) references sample_item(id) constraint analysis_1_fk;
 alter table analysis add constraint foreign key(test_id) references test(id) constraint analysis_2_fk;
 alter table analysis add constraint foreign key(section_id) references section(id) constraint analysis_3_fk;
@@ -370,277 +473,190 @@ alter table analysis add constraint foreign key(type_id) references dictionary(i
 alter table analysis add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint analysis_9_fk;
 alter table analysis add constraint foreign key(status_id) references dictionary(id) constraint analysis_10_fk;
 
-alter table analysis_qaevent add constraint primary key(id) constraint analysis_qaevent_pk;
 alter table analysis_qaevent add constraint foreign key(analysis_id) references analysis(id) constraint analysis_qaevent_1_fk;
 alter table analysis_qaevent add constraint foreign key(qaevent_id) references qaevent(id) constraint analysis_qaevent_2_fk;
 alter table analysis_qaevent add constraint foreign key(type_id) references dictionary(id) constraint analysis_qaevent_3_fk;
 
 alter table analysis_report_flags add constraint foreign key(analysis_id) references analysis(id) constraint analysis_report_flags_1_fk;
 
-alter table analysis_user add constraint primary key(id) constraint analysis_user_pk;
 alter table analysis_user add constraint foreign key(analysis_id) references analysis(id) constraint analysis_user_1_fk;
 alter table analysis_user add constraint foreign key(action_id) references dictionary(id) constraint analysis_user_2_fk;
 
-alter table analyte add constraint primary key(id) constraint analyte_pk;
 alter table analyte add constraint foreign key(parent_analyte_id) references analyte(id) constraint analyte_1_fk;
 
-alter table analyte_parameter add constraint primary key(id) constraint analyte_parameter_pk;
 alter table analyte_parameter add constraint foreign key(analyte_id) references analyte(id) constraint analyte_parameter_1_fk;
 alter table analyte_parameter add constraint foreign key(type_of_sample_id) references dictionary(id) constraint analyte_parameter_2_fk;
 alter table analyte_parameter add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint analyte_parameter_3_fk;
 
-alter table attachment add constraint primary key(id) constraint attachment_pk;
 alter table attachment add constraint foreign key(type_id) references dictionary(id) constraint attachment_1_fk;
 alter table attachment add constraint foreign key(section_id) references section(id) constraint attachment_2_fk;
 
-alter table attachment_item add constraint primary key(id) constraint attachment_item_pk;
 alter table attachment_item add constraint foreign key(attachment_id) references attachment(id) constraint attachment_item_1_fk;
 
-alter table aux_data add constraint primary key(id) constraint aux_data_pk;
 alter table aux_data add constraint foreign key(aux_field_id) references aux_field(id) constraint aux_data_1_fk;
 alter table aux_data add constraint foreign key(type_id) references dictionary(id) constraint aux_data_2_fk;
 
-alter table aux_field add constraint primary key(id) constraint aux_field_pk;
 alter table aux_field add constraint foreign key(aux_field_group_id) references aux_field_group(id) constraint aux_field_1_fk;
 alter table aux_field add constraint foreign key(analyte_id) references analyte(id) constraint aux_field_2_fk;
 alter table aux_field add constraint foreign key(method_id) references method(id) constraint aux_field_3_fk;
 alter table aux_field add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint aux_field_4_fk;
 alter table aux_field add constraint foreign key(scriptlet_id) references dictionary(id) constraint aux_field_5_fk;
 
-alter table aux_field_group add constraint primary key(id) constraint aux_field_group_pk;
-
-alter table aux_field_value add constraint primary key(id) constraint aux_field_value_pk;
 alter table aux_field_value add constraint foreign key(aux_field_id) references aux_field(id) constraint aux_field_value_1_fk;
 alter table aux_field_value add constraint foreign key(type_id) references dictionary(id) constraint aux_field_value_2_fk;
 
-alter table category add constraint primary key(id) constraint category_pk;
 alter table category add constraint foreign key(section_id) references section(id) constraint category_1_fk;
 
-alter table cron add constraint primary key(id) constraint cron_pk;
-
-alter table dictionary add constraint primary key(id) constraint dictionary_pk;
 alter table dictionary add constraint foreign key(category_id) references category(id) constraint dictionary_1_fk;
 alter table dictionary add constraint foreign key(related_entry_id) references dictionary(id) constraint dictionary_2_fk;
 
-alter table eorder add constraint primary key(id) constraint eorder_pk;
-
-alter table eorder_body add constraint primary key(id) constraint eorder_body_pk;
 alter table eorder_body add constraint foreign key(eorder_id) references eorder(id) constraint eorder_body_1_fk;
 
-alter table eorder_link add constraint primary key(id) constraint eorder_link_pk;
 alter table eorder_link add constraint foreign key(eorder_id) references eorder(id) constraint eorder_link_1_fk;
 
-alter table event_log add constraint primary key(id) constraint event_log_pk;
 alter table event_log add constraint foreign key(type_id) references dictionary(id) constraint event_log_1_fk;
 alter table event_log add constraint foreign key(level_id) references dictionary(id) constraint event_log_2_fk;
 
-alter table exchange_criteria add constraint primary key(id) constraint exchange_criteria_pk;
-alter table exchange_criteria add constraint foreign key environment_id) references dictionary(id) constraint exchange_criteria_1_fk;
+alter table exchange_criteria add constraint foreign key(environment_id) references dictionary(id) constraint exchange_criteria_1_fk;
 
-alter table exchange_external_term add constraint primary key(id) constraint exchange_external_term_pk;
 alter table exchange_external_term add constraint foreign key(exchange_local_term_id) references exchange_local_term(id) constraint exchange_external_term_1_fk;
 alter table exchange_external_term add constraint foreign key(profile_id) references dictionary(id) constraint exchange_external_term_2_fk;
 
-alter table exchange_local_term add constraint primary key(id) constraint exchange_local_term_pk;
-
-alter table exchange_profile add constraint primary key(id) constraint exchange_profile_pk;
 alter table exchange_profile add constraint foreign key(exchange_criteria_id) references exchange_criteria(id) constraint exchange_profile_1_fk;
 alter table exchange_profile add constraint foreign key(profile_id) references dictionary(id) constraint exchange_profile_2_fk;
 
-alter table history add constraint primary key(id) constraint history_pk;
 alter table history add constraint foreign key(activity_id) references dictionary(id) constraint history_1_fk;
 
-alter table instrument add constraint primary key(id) constraint instrument_pk;
 alter table instrument add constraint foreign key(type_id) references dictionary(id) constraint instrument_1_fk;
 alter table instrument add constraint foreign key(scriptlet_id) references dictionary(id) constraint instrument_2_fk;
 
-alter table instrument_log add constraint primary key(id) constraint instrument_log_pk;
 alter table instrument_log add constraint foreign key(instrument_id) references instrument(id) constraint instrument_log_1_fk;
 alter table instrument_log add constraint foreign key(type_id) references dictionary(id) constraint instrument_log_2_fk;
 alter table instrument_log add constraint foreign key(worksheet_id) references worksheet(id) constraint instrument_log_3_fk;
 
-alter table inventory_adjustment add constraint primary key(id) constraint inventory_adjustment_pk;
-
-alter table inventory_component add constraint primary key(id) constraint inventory_component_pk;
 alter table inventory_component add constraint foreign key(inventory_item_id) references inventory_item(id) constraint inventory_component_1_fk;
 alter table inventory_component add constraint foreign key(component_id) references inventory_item(id) constraint inventory_component_2_fk;
 
-alter table inventory_item add constraint primary key(id) constraint inventory_item_pk;
 alter table inventory_item add constraint foreign key(category_id) references dictionary(id) constraint inventory_item_1_fk;
 alter table inventory_item add constraint foreign key(store_id) references dictionary(id) constraint inventory_item_2_fk;
 alter table inventory_item add constraint foreign key(dispensed_units_id) references dictionary(id) constraint inventory_item_3_fk;
 alter table inventory_item add constraint foreign key(parent_inventory_item_id) references inventory_item(id) constraint inventory_item_4_fk;
 
-alter table inventory_location add constraint primary key(id) constraint inventory_location_pk;
 alter table inventory_location add constraint foreign key(inventory_item_id) references inventory_item(id) constraint inventory_location_1_fk;
 alter table inventory_location add constraint foreign key(storage_location_id) references storage_location(id) constraint inventory_location_2_fk;
 
-alter table inventory_receipt add constraint primary key(id) constraint inventory_receipt_pk;
 alter table inventory_receipt add constraint foreign key(inventory_item_id) references inventory_item(id) constraint inventory_receipt_1_fk;
 alter table inventory_receipt add constraint foreign key(iorder_item_id) references iorder_item(id) constraint inventory_receipt_2_fk;
 alter table inventory_receipt add constraint foreign key(organization_id) references organization(id) constraint inventory_receipt_3_fk;
 
-alter table inventory_receipt_iorder_item add constraint primary key(id) constraint inventory_receipt_iorder_item_pk;
 alter table inventory_receipt_iorder_item add constraint foreign key(inventory_receipt_id) references inventory_receipt(id) constraint inventory_receipt_iorder_item_1_fk;
 alter table inventory_receipt_iorder_item add constraint foreign key(iorder_item_id) references iorder_item(id) constraint inventory_receipt_iorder_item_2_fk;
 
-alter table inventory_x_adjust add constraint primary key(id) constraint inventory_x_adjust_pk;
 alter table inventory_x_adjust add constraint foreign key(inventory_adjustment_id) references inventory_adjustment(id) constraint inventory_x_adjust_1_fk;
 alter table inventory_x_adjust add constraint foreign key(inventory_location_id) references inventory_location(id) constraint inventory_x_adjust_2_fk;
 
-alter table inventory_x_put add constraint primary key(id) constraint inventory_x_put_pk;
 alter table inventory_x_put add constraint foreign key(inventory_receipt_id) references inventory_receipt(id) constraint inventory_x_put_1_fk;
 alter table inventory_x_put add constraint foreign key(inventory_location_id) references inventory_location(id) constraint inventory_x_put_2_fk;
 
-alter table inventory_x_use add constraint primary key(id) constraint inventory_x_use_pk;
 alter table inventory_x_use add constraint foreign key(inventory_location_id) references inventory_location(id) constraint inventory_x_use_1_fk;
 alter table inventory_x_use add constraint foreign key(iorder_item_id) references iorder_item(id) constraint inventory_x_use_2_fk;
 
-alter table label add constraint primary key(id) constraint label_pk;
 alter table label add constraint foreign key(printer_type_id) references dictionary(id) constraint label_1_fk;
 alter table label add constraint foreign key(scriptlet_id) references dictionary(id) constraint label_2_fk;
 
-alter table lock add constraint primary key(reference_id, reference_table_id) constraint lock_pk;
-
-alter table method add constraint primary key(id) constraint method_pk;
-
-alter table note add constraint primary key(id) constraint note_pk;
-
-alter table iorder add constraint primary key(id) constraint iorder_pk;
 alter table iorder add constraint foreign key(parent_iorder_id) references iorder(id) constraint iorder_1_fk;
 alter table iorder add constraint foreign key(status_id) references dictionary(id) constraint iorder_2_fk;
 alter table iorder add constraint foreign key(cost_center_id) references dictionary(id) constraint iorder_3_fk;
 alter table iorder add constraint foreign key(organization_id) references organization(id) constraint iorder_4_fk;
 alter table iorder add constraint foreign key(ship_from_id) references dictionary(id) constraint iorder_5_fk;
 
-alter table iorder_container add constraint primary key(id) constraint iorder_container_pk;
 alter table iorder_container add constraint foreign key(iorder_id) references iorder(id) constraint iorder_container_1_fk;
 alter table iorder_container add constraint foreign key(container_id) references dictionary(id) constraint iorder_container_2_fk;
 alter table iorder_container add constraint foreign key(type_of_sample_id) references dictionary(id) constraint iorder_container_3_fk;
 
-alter table iorder_item add constraint primary key(id) constraint iorder_item_pk;
 alter table iorder_item add constraint foreign key(iorder_id) references iorder(id) constraint iorder_item_1_fk;
 alter table iorder_item add constraint foreign key(inventory_item_id) references inventory_item(id) constraint iorder_item_2_fk;
 
-alter table iorder_organization add constraint primary key(id) constraint iorder_organization_pk;
 alter table iorder_organization add constraint foreign key(iorder_id) references iorder(id) constraint iorder_organization_1_fk;
 alter table iorder_organization add constraint foreign key(organization_id) references organization(id) constraint iorder_organization_2_fk;
 alter table iorder_organization add constraint foreign key(type_id) references dictionary(id) constraint iorder_organization_3_fk;
 
-alter table iorder_recurrence add constraint primary key(id) constraint iorder_recurrence_pk;
 alter table iorder_recurrence add constraint foreign key(iorder_id) references iorder(id) constraint iorder_recurrence_1_fk;
 alter table iorder_recurrence add constraint foreign key(unit_id) references dictionary(id) constraint iorder_recurrence_2_fk;
 
-alter table iorder_test add constraint primary key(id) constraint iorder_test_pk;
 alter table iorder_test add constraint foreign key(iorder_id) references iorder(id) constraint iorder_test_1_fk;
 alter table iorder_test add constraint foreign key(test_id) references test(id) constraint iorder_test_2_fk;
 
-alter table iorder_test_analyte add constraint primary key(id) constraint iorder_test_analyte_pk;
 alter table iorder_test_analyte add constraint foreign key(iorder_test_id) references iorder_test(id) constraint iorder_test_analyte_1_fk;
 alter table iorder_test_analyte add constraint foreign key(analyte_id) references analyte(id) constraint iorder_test_analyte_2_fk;
 
-alter table organization add constraint primary key(id) constraint organization_pk;
 alter table organization add constraint foreign key(parent_organization_id) references organization(id) constraint organization_1_fk;
 alter table organization add constraint foreign key(address_id) references address(id) constraint organization_2_fk;
 
-alter table organization_contact add constraint primary key(id) constraint organization_contact_pk;
 alter table organization_contact add constraint foreign key(organization_id) references organization(id) constraint organization_contact_1_fk;
 alter table organization_contact add constraint foreign key(contact_type_id) references dictionary(id) constraint organization_contact_2_fk;
 alter table organization_contact add constraint foreign key(address_id) references address(id) constraint organization_contact_3_fk;
 
-alter table organization_parameter add constraint primary key(id) constraint organization_parameter_pk;
 alter table organization_parameter add constraint foreign key(organization_id) references organization(id) constraint organization_parameter_1_fk;
 alter table organization_parameter add constraint foreign key(type_id) references dictionary(id) constraint organization_parameter_2_fk;
 
-alter table panel add constraint primary key(id) constraint panel_pk;
-
-alter table panel_item add constraint primary key(id) constraint panel_item_pk;
 alter table panel_item add constraint foreign key(panel_id) references panel(id) constraint panel_item_1_fk;
 
-alter table patient add constraint primary key(id) constraint patient_pk;
 alter table patient add constraint foreign key(address_id) references address(id) constraint patient_1_fk;
 alter table patient add constraint foreign key(gender_id) references dictionary(id) constraint patient_2_fk;
 alter table patient add constraint foreign key(race_id) references dictionary(id) constraint patient_3_fk;
 alter table patient add constraint foreign key(ethnicity_id) references dictionary(id) constraint patient_4_fk;
 
-alter table patient_relation add constraint primary key(id) constraint patient_relation_pk;
 alter table patient_relation add constraint foreign key(relation_id) references dictionary(id) constraint patient_relation_1_fk;
 alter table patient_relation add constraint foreign key(patient_id) references patient(id) constraint patient_relation_2_fk;
 alter table patient_relation add constraint foreign key(related_patient_id) references patient(id) constraint patient_relation_3_fk;
 
-alter table project add constraint primary key(id) constraint project_pk;
 alter table project add constraint foreign key(scriptlet_id) references dictionary(id) constraint project_1_fk;
 
-alter table project_parameter add constraint primary key(id) constraint project_parameter_pk;
 alter table project_parameter add constraint foreign key(project_id) references project(id) constraint project_parameter_1_fk;
 alter table project_parameter add constraint foreign key(operation_id) references dictionary(id) constraint project_parameter_2_fk;
 
-alter table provider add constraint primary key(id) constraint provider_pk;
 alter table provider add constraint foreign key(type_id) references dictionary(id) constraint provider_1_fk;
 
-alter table provider_location add constraint primary key(id) constraint provider_location_pk;
 alter table provider_location add constraint foreign key(provider_id) references provider(id) constraint provider_location_1_fk;
 alter table provider_location add constraint foreign key(address_id) references address(id) constraint provider_location_2_fk;
 
-alter table pws add constraint primary key(id) constraint pws_pk;
-
-alter table pws_address add constraint primary key(tinwslec_is_number, tinlgent_is_number) constraint pws_address_pk;
-alter table pws_address add constraint foreign key(tinwsys_is_number) references pws(tinwsys_is_number) constraint pws_address_1_fk;
-
-alter table pws_facility add constraint primary key(tinwsf_is_number, tsasmppt_is_number) constraint pws_facility_pk;
-alter table pws_facility add constraint foreign key(tinwsys_is_number) references pws(tinwsys_is_number) constraint pws_facility_1_fk;
-
-alter table pws_monitor add constraint primary key(tiamrtask_is_number) constraint pws_monitor_pk;
-alter table pws_monitor add constraint foreign key(tinwsys_is_number) references pws(tinwsys_is_number) constraint pws_monitor_1_fk;
-
-alter table pws_violation add constraint primary key(id) constraint pws_violation_pk;
-alter table pws_violation add constraint foreign key(tinwsys_is_number) references pws(tinwsys_is_number) constraint pws_violation_1_fk;
 alter table pws_violation add constraint foreign key(sample_id) references sample(id) constraint pws_violation_2_fk;
 
-alter table qaevent add constraint primary key(id) constraint qaevent_pk;
 alter table qaevent add constraint foreign key(test_id) references test(id) constraint qaevent_1_fk;
 alter table qaevent add constraint foreign key(type_id) references dictionary(id) constraint qaevent_2_fk;
 
-alter table qc add constraint primary key(id) constraint qc_pk;
 alter table qc add constraint foreign key(type_id) references dictionary(id) constraint qc_1_fk;
 alter table qc add constraint foreign key(inventory_item_id) references inventory_item(id) constraint qc_2_fk;
 
-alter table qc_analyte add constraint primary key(id) constraint qc_analyte_pk;
 alter table qc_analyte add constraint foreign key(qc_id) references qc(id) constraint qc_analyte_1_fk;
 alter table qc_analyte add constraint foreign key(analyte_id) references analyte(id) constraint qc_analyte_2_fk;
 alter table qc_analyte add constraint foreign key(type_id) references dictionary(id) constraint qc_analyte_3_fk;
 
-alter table qc_lot add constraint primary key(id) constraint qc_lot_pk;
 alter table qc_lot add constraint foreign key(qc_id) references qc(id) constraint qc_lot_1_fk;
 alter table qc_lot add constraint foreign key(location_id) references dictionary(id) constraint qc_lot_2_fk;
 alter table qc_lot add constraint foreign key(prepared_unit_id) references dictionary(id) constraint qc_lot_3_fk;
 
-alter table result add constraint primary key(id) constraint result_pk;
 alter table result add constraint foreign key(analysis_id) references analysis(id) constraint result_1_fk;
 alter table result add constraint foreign key(test_analyte_id) references test_analyte(id) constraint result_2_fk;
 alter table result add constraint foreign key(test_result_id) references test_result(id) constraint result_3_fk;
 alter table result add constraint foreign key(analyte_id) references analyte(id) constraint result_4_fk;
 alter table result add constraint foreign key(type_id) references dictionary(id) constraint result_5_fk;
 
-alter table sample add constraint primary key(id) constraint sample_pk;
 alter table sample add constraint foreign key(status_id) references dictionary(id) constraint sample_1_fk;
 
-alter table sample_animal add constraint primary key(id) constraint sample_animal_pk;
 alter table sample_animal add constraint foreign key(sample_id) references sample(id) constraint sample_animal_1_fk;
 alter table sample_animal add constraint foreign key(animal_common_name_id) references dictionary(id) constraint sample_animal_2_fk;
 alter table sample_animal add constraint foreign key(animal_scientific_name_id) references dictionary(id) constraint sample_animal_3_fk;
 alter table sample_animal add constraint foreign key(address_id) references address(id) constraint sample_animal_4_fk;
 
-alter table sample_clinical add constraint primary key(id) constraint sample_clinical_pk;
 alter table sample_clinical add constraint foreign key(sample_id) references sample(id) constraint sample_clinical_1_fk;
 alter table sample_clinical add constraint foreign key(patient_id) references patient(id) constraint sample_clinical_2_fk;
 alter table sample_clinical add constraint foreign key(provider_id) references provider(id) constraint sample_clinical_3_fk;
 
-alter table sample_environmental add constraint primary key(id) constraint sample_environmental_pk;
 alter table sample_environmental add constraint foreign key(sample_id) references sample(id) constraint sample_environmental_1_fk;
 alter table sample_environmental add constraint foreign key(location_address_id) references address(id) constraint sample_environmental_2_fk;
 
-alter table sample_item add constraint primary key(id) constraint sample_item_pk;
 alter table sample_item add constraint foreign key(sample_id) references sample(id) constraint sample_item_1_fk;
 alter table sample_item add constraint foreign key(sample_item_id) references sample_item(id) constraint sample_item_2_fk;
 alter table sample_item add constraint foreign key(type_of_sample_id) references dictionary(id) constraint sample_item_3_fk;
@@ -648,74 +664,56 @@ alter table sample_item add constraint foreign key(source_of_sample_id) referenc
 alter table sample_item add constraint foreign key(container_id) references dictionary(id) constraint sample_item_5_fk;
 alter table sample_item add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint sample_item_6_fk;
 
-alter table sample_neonatal add constraint primary key(id) constraint sample_neonatal_pk;
 alter table sample_neonatal add constraint foreign key(sample_id) references sample(id) constraint sample_neonatal_1_fk;
 alter table sample_neonatal add constraint foreign key(patient_id) references patient(id) constraint sample_neonatal_2_fk;
 alter table sample_neonatal add constraint foreign key(next_of_kin_id) references patient(id) constraint sample_neonatal_3_fk;
 alter table sample_neonatal add constraint foreign key(next_of_kin_relation_id) references dictionary(id) constraint sample_neonatal_4_fk;
 alter table sample_neonatal add constraint foreign key(provider_id) references provider(id) constraint sample_neonatal_5_fk;
 
-alter table sample_organization add constraint primary key(id) constraint sample_organization_pk;
 alter table sample_organization add constraint foreign key(sample_id) references sample(id) constraint sample_organization_1_fk;
 alter table sample_organization add constraint foreign key(organization_id) references organization(id) constraint sample_organization_2_fk;
 alter table sample_organization add constraint foreign key(type_id) references dictionary(id) constraint sample_organization_3_fk;
 
-alter table sample_private_well add constraint primary key(id) constraint sample_private_well_pk;
 alter table sample_private_well add constraint foreign key(sample_id) references sample(id) constraint sample_private_well_1_fk;
 alter table sample_private_well add constraint foreign key(report_to_address_id) references address(id) constraint sample_private_well_2_fk;
 alter table sample_private_well add constraint foreign key(location_address_id) references address(id) constraint sample_private_well_3_fk;
 
-alter table sample_project add constraint primary key(id) constraint sample_project_pk;
 alter table sample_project add constraint foreign key(sample_id) references sample(id) constraint sample_project_1_fk;
 alter table sample_project add constraint foreign key(project_id) references project(id) constraint sample_project_2_fk;
 
-alter table sample_qaevent add constraint primary key(id) constraint sample_qaevent_pk;
 alter table sample_qaevent add constraint foreign key(sample_id) references sample(id) constraint sample_qaevent_1_fk;
 alter table sample_qaevent add constraint foreign key(qaevent_id) references qaevent(id) constraint sample_qaevent_2_fk;
 alter table sample_qaevent add constraint foreign key(type_id) references dictionary(id) constraint sample_qaevent_3_fk;
 
-alter table sample_sdwis add constraint primary key(id) constraint sample_sdwis_pk;
 alter table sample_sdwis add constraint foreign key(sample_id) references sample(id) constraint sample_sdwis_1_fk;
 alter table sample_sdwis add constraint foreign key(pws_id) references pws(id) constraint sample_sdwis_2_fk;
 alter table sample_sdwis add constraint foreign key(sample_type_id) references dictionary(id) constraint sample_sdwis_3_fk;
 alter table sample_sdwis add constraint foreign key(sample_category_id) references dictionary(id) constraint sample_sdwis_4_fk;
 
-alter table section add constraint primary key(id) constraint section_pk;
 alter table section add constraint foreign key(parent_section_id) references section(id) constraint section_1_fk;
 alter table section add constraint foreign key(organization_id) references organization(id) constraint section_2_fk;
 
-alter table section_parameter add constraint primary key(id) constraint section_parameter_pk;
 alter table section_parameter add constraint foreign key(section_id) references section(id) constraint section_parameter_1_fk;
 alter table section_parameter add constraint foreign key(type_id) references dictionary(id) constraint section_parameter_2_fk;
 
-alter table shipping add constraint primary key(id) constraint shipping_pk;
 alter table shipping add constraint foreign key(status_id) references dictionary(id) constraint shipping_1_fk;
 alter table shipping add constraint foreign key(shipped_from_id) references dictionary(id) constraint shipping_2_fk;
 alter table shipping add constraint foreign key(shipped_to_id) references organization(id) constraint shipping_3_fk;
 alter table shipping add constraint foreign key(shipped_method_id) references dictionary(id) constraint shipping_4_fk;
 
-alter table shipping_item add constraint primary key(id) constraint shipping_item_pk;
 alter table shipping_item add constraint foreign key(shipping_id) references shipping(id) constraint shipping_item_1_fk;
 
-alter table shipping_tracking add constraint primary key(id) constraint shipping_tracking_pk;
 alter table shipping_tracking add constraint foreign key(shipping_id) references shipping(id) constraint shipping_tracking_1_fk;
 
-alter table standard_note add constraint primary key(id) constraint standard_note_pk;
 alter table standard_note add constraint foreign key(type_id) references dictionary(id) constraint standard_note_1_fk;
 
-alter table storage add constraint primary key(id) constraint storage_pk;
 alter table storage add constraint foreign key(storage_location_id) references storage_location(id) constraint storage_1_fk;
 
-alter table storage_location add constraint primary key(id) constraint storage_location_pk;
 alter table storage_location add constraint foreign key(parent_storage_location_id) references storage_location(id) constraint storage_location_1_fk;
 alter table storage_location add constraint foreign key(storage_unit_id) references storage_unit(id) constraint storage_location_2_fk;
 
-alter table storage_unit add constraint primary key(id) constraint storage_unit_pk;
 alter table storage_unit add constraint foreign key(category_id) references dictionary(id) constraint storage_unit_1_fk;
 
-alter table system_variable add constraint primary key(id) constraint system_variable_pk;
-
-alter table test add constraint primary key(id) constraint test_pk;
 alter table test add constraint foreign key(method_id) references method(id) constraint test_1_fk;
 alter table test add constraint foreign key(label_id) references label(id) constraint test_2_fk;
 alter table test add constraint foreign key(test_trailer_id) references test_trailer(id) constraint test_3_fk;
@@ -725,81 +723,64 @@ alter table test add constraint foreign key(revision_method_id) references dicti
 alter table test add constraint foreign key(reporting_method_id) references dictionary(id) constraint test_7_fk;
 alter table test add constraint foreign key(sorting_method_id) references dictionary(id) constraint test_8_fk;
 
-alter table test_analyte add constraint primary key(id) constraint test_analyte_pk;
 alter table test_analyte add constraint foreign key(test_id) references test(id) constraint test_analyte_1_fk;
 alter table test_analyte add constraint foreign key(analyte_id) references analyte(id) constraint test_analyte_2_fk;
 alter table test_analyte add constraint foreign key(type_id) references dictionary(id) constraint test_analyte_3_fk;
 alter table test_analyte add constraint foreign key(scriptlet_id) references dictionary(id) constraint test_analyte_4_fk;
 
-alter table test_prep add constraint primary key(id) constraint test_prep_pk;
 alter table test_prep add constraint foreign key(test_id) references test(id) constraint test_prep_1_fk;
 alter table test_prep add constraint foreign key(prep_test_id) references test(id) constraint test_prep_2_fk;
 
-alter table test_reflex add constraint primary key(id) constraint test_reflex_pk;
 alter table test_reflex add constraint foreign key(test_id) references test(id) constraint test_reflex_1_fk;
 alter table test_reflex add constraint foreign key(test_analyte_id) references test_analyte(id) constraint test_reflex_2_fk;
 alter table test_reflex add constraint foreign key(test_result_id) references test_result(id) constraint test_reflex_3_fk;
 alter table test_reflex add constraint foreign key(flags_id) references dictionary(id) constraint test_reflex_4_fk;
 alter table test_reflex add constraint foreign key(add_test_id) references test(id) constraint test_reflex_5_fk;
 
-alter table test_result add constraint primary key(id) constraint test_result_pk;
 alter table test_result add constraint foreign key(test_id) references test(id) constraint test_result_1_fk;
 alter table test_result add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint test_result_2_fk;
 alter table test_result add constraint foreign key(type_id) references dictionary(id) constraint test_result_3_fk;
 alter table test_result add constraint foreign key(rounding_method_id) references dictionary(id) constraint test_result_4_fk;
 alter table test_result add constraint foreign key(flags_id) references dictionary(id) constraint test_result_5_fk;
 
-alter table test_section add constraint primary key(id) constraint test_section_pk;
 alter table test_section add constraint foreign key(test_id) references test(id) constraint test_section_1_fk;
 alter table test_section add constraint foreign key(section_id) references section(id) constraint test_section_2_fk;
 alter table test_section add constraint foreign key(flag_id) references dictionary(id) constraint test_section_3_fk;
 
-alter table test_trailer add constraint primary key(id) constraint test_trailer_pk;
-
-alter table test_type_of_sample add constraint primary key(id) constraint test_type_of_sample_pk;
 alter table test_type_of_sample add constraint foreign key(test_id) references test(id) constraint test_type_of_sample_1_fk;
 alter table test_type_of_sample add constraint foreign key(type_of_sample_id) references dictionary(id) constraint test_type_of_sample_2_fk;
 alter table test_type_of_sample add constraint foreign key(unit_of_measure_id) references dictionary(id) constraint test_type_of_sample_3_fk;
 
-alter table test_worksheet add constraint primary key(id) constraint test_worksheet_pk;
 alter table test_worksheet add constraint foreign key(test_id) references test(id) constraint test_worksheet_1_fk;
 alter table test_worksheet add constraint foreign key(format_id) references dictionary(id) constraint test_worksheet_2_fk;
 alter table test_worksheet add constraint foreign key(scriptlet_id) references dictionary(id) constraint test_worksheet_3_fk;
 
-alter table test_worksheet_analyte add constraint primary key(id) constraint test_worksheet_analyte_pk;
 alter table test_worksheet_analyte add constraint foreign key(test_id) references test(id) constraint test_worksheet_analyte_1_fk;
 alter table test_worksheet_analyte add constraint foreign key(test_analyte_id) references test_analyte(id) constraint test_worksheet_analyte_2_fk;
 alter table test_worksheet_analyte add constraint foreign key(flag_id) references dictionary(id) constraint test_worksheet_analyte_3_fk;
 
-alter table test_worksheet_item add constraint primary key(id) constraint test_worksheet_item_pk;
 alter table test_worksheet_item add constraint foreign key(test_worksheet_id) references test_worksheet(id) constraint test_worksheet_item_1_fk;
 alter table test_worksheet_item add constraint foreign key(type_id) references dictionary(id) constraint test_worksheet_item_2_fk;
 
-alter table worksheet add constraint primary key(id) constraint worksheet_pk;
 alter table worksheet add constraint foreign key(status_id) references dictionary(id) constraint worksheet_1_fk;
 alter table worksheet add constraint foreign key(format_id) references dictionary(id) constraint worksheet_2_fk;
 alter table worksheet add constraint foreign key(related_worksheet_id) references worksheet(id) constraint worksheet_3_fk;
 alter table worksheet add constraint foreign key(instrument_id) references instrument(id) constraint worksheet_4_fk;
 
-alter table worksheet_analysis add constraint primary key(id) constraint worksheet_analysis_pk;
 alter table worksheet_analysis add constraint foreign key(worksheet_item_id) references worksheet_item(id) constraint worksheet_analysis_1_fk;
 alter table worksheet_analysis add constraint foreign key(analysis_id) references analysis(id) constraint worksheet_analysis_2_fk;
 alter table worksheet_analysis add constraint foreign key(qc_lot_id) references qc_lot(id) constraint worksheet_analysis_3_fk;
 alter table worksheet_analysis add constraint foreign key(worksheet_analysis_id) references worksheet_analysis(id) constraint worksheet_analysis_4_fk;
 alter table worksheet_analysis add constraint foreign key(change_flags_id) references dictionary(id) constraint worksheet_analysis_5_fk;
 
-alter table worksheet_item add constraint primary key(id) constraint worksheet_item_pk;
 alter table worksheet_item add constraint foreign key(worksheet_id) references worksheet(id) constraint worksheet_item_1_fk;
 
-alter table worksheet_qc_result add constraint primary key(id) constraint worksheet_qc_result_pk;
 alter table worksheet_qc_result add constraint foreign key(worksheet_analysis_id) references worksheet_analysis(id) constraint worksheet_qc_result_1_fk;
 alter table worksheet_qc_result add constraint foreign key(qc_analyte_id) references qc_analyte(id) constraint worksheet_qc_result_2_fk;
 
-alter table worksheet_reagent add constraint primary key(id) constraint worksheet_reagent_pk;
 alter table worksheet_reagent add constraint foreign key(worksheet_id) references worksheet(id) constraint worksheet_reagent_1_fk;
 alter table worksheet_reagent add constraint foreign key(qc_lot_id) references qc_lot(id) constraint worksheet_reagent_2_fk;
 
-alter table worksheet_result add constraint primary key(id) constraint worksheet_result_pk;
 alter table worksheet_result add constraint foreign key(worksheet_analysis_id) references worksheet_analysis(id) constraint worksheet_result_1_fk;
 alter table worksheet_result add constraint foreign key(test_analyte_id) references test_analyte(id) constraint worksheet_result_2_fk;
 alter table worksheet_result add constraint foreign key(analyte_id) references analyte(id) constraint worksheet_result_3_fk;
