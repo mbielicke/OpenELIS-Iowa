@@ -1,0 +1,33 @@
+1. Installing ECLIPSE:
+
+   a. Download the most recent version of “Eclipse IDE for Java EE Developers”
+      from http://www.eclipse.org/downloads/
+
+   b. Install
+
+   c. Open eclipse and add the following modules using Eclipse Marketplace under
+      menu Help-> Eclipse Marketplace (you can use find to locate the package quickly)
+
+      i. Subversive – SVN Team Provider
+         After restart, open the SVN perspective and select the “SVNKit 1.8.10” for connector.
+         If you misses the previous step, you can also install the connector by using Eclipse
+         Install New software under Help-> Install New Software. Type following in “Work with:”
+         http://community.polarion.com/projects/subversive/download/eclipse/5.0/update-site/
+
+      ii.Modify eclipse.ini and add
+         -Djsse.enableSNIExtension=false
+
+   d. Jaspersoft Studio
+
+   e. Apache IvyDE
+
+   f. Add the Google Plugin using menu Help-> Install New Software. In “Work with:”, type
+      the following and click Add.
+      http://storage.googleapis.com/gwt-eclipse-plugin/release
+      You will only need to check the “Google Plugin for Eclipse 4.3” module.
+
+2. Installing additional packages:
+
+   a. sudo apt-get install ant
+
+   b. sudo apt-get install ivy
