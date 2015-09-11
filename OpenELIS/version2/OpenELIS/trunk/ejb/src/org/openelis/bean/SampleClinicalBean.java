@@ -39,6 +39,23 @@ public class SampleClinicalBean {
         return DataBaseUtil.toArrayList(c);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<SampleClinicalViewDO> fetchByPatientIds(ArrayList<Integer> patientIds) {
+        Query query;
+        List<SampleClinicalViewDO> c;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("SampleClinical.FetchByPatientIds");
+        c = new ArrayList<SampleClinicalViewDO>();         
+        r = DataBaseUtil.createSubsetRange(patientIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", patientIds.subList(r.get(i), r.get(i + 1)));
+            c.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(c);
+    }
+
     public SampleClinicalDO add(SampleClinicalDO data) throws Exception {
         SampleClinical entity;
 

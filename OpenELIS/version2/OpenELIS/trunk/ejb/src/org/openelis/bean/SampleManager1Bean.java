@@ -1855,7 +1855,7 @@ public class SampleManager1Bean {
 
         return qsm;
     }
-
+    
     /**
      * Loads the data from send-out order or electronic order, depending on
      * domain, into the SampleManager. This method returns both the loaded

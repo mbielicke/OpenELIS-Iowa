@@ -238,11 +238,40 @@ public class PatientBean {
         }
     }
 
+    public ArrayList<PatientDO> fetchForUpdate(ArrayList<Integer> ids) throws Exception {
+        try {
+            lock.lock(Constants.table().PATIENT, ids);
+            return fetchByIds(ids);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     public PatientDO abortUpdate(Integer id) throws Exception {
         lock.unlock(Constants.table().PATIENT, id);
         return fetchById(id);
     }
     
+    public void delete(PatientDO data) throws Exception {
+        Integer addressId;
+        Patient entity;
+
+        checkSecurity(ModuleFlags.DELETE);
+
+        lock.validateLock(Constants.table().PATIENT, data.getId());
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(Patient.class, data.getId());
+        if (entity != null) {
+            addressId = entity.getAddressId();
+            manager.remove(entity);
+            if (addressId != null)
+                address.delete(addressId);
+        }
+
+        lock.unlock(Constants.table().PATIENT, data.getId());
+    }
+
     public void validate(PatientDO data) throws Exception {
         Datetime bd, now;
         ValidationErrorsList e;
