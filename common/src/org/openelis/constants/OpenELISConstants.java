@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -7540,6 +7540,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_frequency();
 
   /**
+   * Translated "From".
+   * 
+   * @return translated "From"
+   */
+  @DefaultMessage("From")
+  @Key("gen.from")
+  String gen_from();
+
+  /**
    * Translated "Generating Report...".
    * 
    * @return translated "Generating Report..."
@@ -7682,6 +7691,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Maiden Name")
   @Key("gen.maidenName")
   String gen_maidenName();
+
+  /**
+   * Translated "Merge".
+   * 
+   * @return translated "Merge"
+   */
+  @DefaultMessage("Merge")
+  @Key("gen.merge")
+  String gen_merge();
+
+  /**
+   * Translated "Merging...".
+   * 
+   * @return translated "Merging..."
+   */
+  @DefaultMessage("Merging...")
+  @Key("gen.merging")
+  String gen_merging();
+
+  /**
+   * Translated "Merging...Complete".
+   * 
+   * @return translated "Merging...Complete"
+   */
+  @DefaultMessage("Merging...Complete")
+  @Key("gen.mergingComplete")
+  String gen_mergingComplete();
+
+  /**
+   * Translated "Merging Failed.".
+   * 
+   * @return translated "Merging Failed."
+   */
+  @DefaultMessage("Merging Failed.")
+  @Key("gen.mergingFailed")
+  String gen_mergingFailed();
 
   /**
    * Translated "Method".
@@ -13802,6 +13847,60 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient Lookup")
   @Key("patientLookup.patientLookup")
   String patientLookup_patientLookup();
+
+  /**
+   * Translated "Patient Merge".
+   * 
+   * @return translated "Patient Merge"
+   */
+  @DefaultMessage("Patient Merge")
+  @Key("patientMerge")
+  String patientMerge();
+
+  /**
+   * Translated "You may not select the same patient for both a From and a To.".
+   * 
+   * @return translated "You may not select the same patient for both a From and a To."
+   */
+  @DefaultMessage("You may not select the same patient for both a From and a To.")
+  @Key("patientMerge.duplicateFromTo")
+  String patientMerge_duplicateFromTo();
+
+  /**
+   * Translated "Both From and To patients must be specified.".
+   * 
+   * @return translated "Both From and To patients must be specified."
+   */
+  @DefaultMessage("Both From and To patients must be specified.")
+  @Key("patientMerge.missingPatient")
+  String patientMerge_missingPatient();
+
+  /**
+   * Translated "Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}".
+   * 
+   * @return translated "Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}"
+   */
+  @DefaultMessage("Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}")
+  @Key("patientMerge.nextOfKinNote")
+  String patientMerge_nextOfKinNote(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ".
+   * 
+   * @return translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} "
+   */
+  @DefaultMessage("Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ")
+  @Key("patientMerge.patientNote")
+  String patientMerge_patientNote(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Move samples from one or more patient(s) to another deleting the 'From' patient(s).".
+   * 
+   * @return translated "Move samples from one or more patient(s) to another deleting the 'From' patient(s)."
+   */
+  @DefaultMessage("Move samples from one or more patient(s) to another deleting the 'From' patient(s).")
+  @Key("patientMergeDescription")
+  String patientMergeDescription();
 
   /**
    * Translated "Period ".

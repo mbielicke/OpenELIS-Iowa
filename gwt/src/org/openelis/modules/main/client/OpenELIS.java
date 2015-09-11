@@ -85,7 +85,7 @@ public class OpenELIS extends Screen {
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
                     instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport,
-                    chlGcToCDCExport, abnormalsReport;
+                    chlGcToCDCExport, abnormalsReport, patientMerge;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -626,6 +626,12 @@ public class OpenELIS extends Screen {
         addCommand(abnormalsReport, "sampletracking", new Command() {
             public void execute() {
                 showScreen(ABNORMALS_REPORT);
+            }
+        });
+
+        addCommand(patientMerge, "patientmerge", new Command() {
+            public void execute() {
+                showScreen(PATIENT_MERGE);
             }
         });
     }

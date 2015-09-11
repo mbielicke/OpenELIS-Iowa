@@ -53,7 +53,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "SampleClinical.FetchBySampleIds",
                 query = "select distinct new org.openelis.domain.SampleClinicalViewDO(s.id, s.sampleId, s.patientId,"
                       + "s.providerId, s.providerPhone)"
-                      + " from SampleClinical s where s.sampleId in (:ids)")})
+                      + " from SampleClinical s where s.sampleId in (:ids)"),
+    @NamedQuery( name = "SampleClinical.FetchByPatientIds",
+                query = "select distinct new org.openelis.domain.SampleClinicalViewDO(s.id, s.sampleId, s.patientId,"
+                      + "s.providerId, s.providerPhone)"
+                      + " from SampleClinical s where s.patientId in (:ids)")})
 @Entity
 @Table(name = "sample_clinical")
 @EntityListeners({AuditUtil.class})

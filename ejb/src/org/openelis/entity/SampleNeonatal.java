@@ -53,12 +53,24 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "SampleNeonatal.FetchBySampleIds",
-                           query = "select distinct new org.openelis.domain.SampleNeonatalViewDO(s.id, s.sampleId, s.patientId,"
-                                   + "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId,"
-                                   + "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused,"
-                                   + "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
-                                   + " from SampleNeonatal s where s.sampleId in (:ids)")})
+    @NamedQuery( name = "SampleNeonatal.FetchBySampleIds",
+                query = "select distinct new org.openelis.domain.SampleNeonatalViewDO(s.id, s.sampleId, s.patientId,"
+                        + "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId,"
+                        + "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused,"
+                        + "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
+                        + " from SampleNeonatal s where s.sampleId in (:ids)"),
+    @NamedQuery( name = "SampleNeonatal.FetchByPatientIds",
+                query = "select distinct new org.openelis.domain.SampleNeonatalViewDO(s.id, s.sampleId, s.patientId,"
+                        + "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId,"
+                        + "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused,"
+                        + "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
+                        + " from SampleNeonatal s where s.patientId in (:ids)"),
+    @NamedQuery( name = "SampleNeonatal.FetchByNextOfKinIds",
+                query = "select distinct new org.openelis.domain.SampleNeonatalViewDO(s.id, s.sampleId, s.patientId,"
+                        + "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId,"
+                        + "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused,"
+                        + "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
+                        + " from SampleNeonatal s where s.nextOfKinId in (:ids)")})
 @Entity
 @Table(name = "sample_neonatal")
 @EntityListeners({AuditUtil.class})

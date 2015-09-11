@@ -77,6 +77,8 @@
                   ui:field="organization" display="{msg.organization}" />
                 <w:MenuItem description="{msg.attachment_description}" enabled="false" 
                   ui:field="attachment" display="{msg.attachment_attachment}" />
+                <w:MenuItem description="{msg.patientMergeDescription}" enabled="false" 
+                  ui:field="patientMerge" display="{msg.patientMerge}" />
               </w:Menu>
               <w:Menu label="{msg.analysis}" ui:field="analysisMenu">
                 <w:MenuItem description="{msg.worksheetBuilderDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" ui:field="worksheetBuilder"
