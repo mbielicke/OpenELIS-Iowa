@@ -31,6 +31,7 @@ create unique index on system_user_section(system_user_id,section_id);
 alter table application add primary key(id);
 
 alter table lock add primary key(reference_table_id, reference_id);
+alter table lock add foreign key(system_user_id) references system_user(id);
 
 alter table section add primary key(id);
 alter table section add foreign key(application_id) references application(id);

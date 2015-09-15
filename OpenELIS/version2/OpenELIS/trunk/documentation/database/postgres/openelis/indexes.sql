@@ -4,7 +4,7 @@
 --
 -------------------------------------------------------------------------------
 
-create unique index address_1_idx on address(id)
+create unique index address_1_idx on address(id);
 
 create unique index analysis_1_idx on analysis(id);
 create        index analysis_2_idx on analysis(sample_item_id);
@@ -108,23 +108,12 @@ create        index inventory_x_adjust_2_idx on inventory_x_adjust(inventory_adj
 create        index inventory_x_adjust_3_idx on inventory_x_adjust(inventory_location_id);
 
 create unique index inventory_x_put_1_idx on inventory_x_put(id);
-create        index inventory_x_put_2_idx on inventory_x_put(inventory_location_id);
-create        index inventory_x_put_3_idx on inventory_x_put(inventory_receipt_id);
+create        index inventory_x_put_2_idx on inventory_x_put(inventory_receipt_id);
+create        index inventory_x_put_3_idx on inventory_x_put(inventory_location_id);
 
 create unique index inventory_x_use_1_idx on inventory_x_use(id);
 create        index inventory_x_use_2_idx on inventory_x_use(inventory_location_id);
 create        index inventory_x_use_3_idx on inventory_x_use(iorder_item_id);
-
-create unique index label_1_idx on label(id);
-create unique index label_2_idx on label(name);
-
-create unique index lock_1_idx on lock(reference_table_id, reference_id);
-
-create unique index method_1_idx on method(id);
-create        index method_2_idx on method(name);
-
-create unique index note_1_idx on note(id);
-create        index note_2_idx on note(reference_id, reference_table_id);
 
 create unique index iorder_1_idx on iorder(id);
 create        index iorder_2_idx on iorder(organization_id);
@@ -146,6 +135,17 @@ create        index iorder_test_2_idx on iorder_test(iorder_id);
 
 create unique index iorder_test_analyte_1_idx on iorder_test_analyte(id);
 create        index iorder_test_analyte_2_idx on iorder_test_analyte(iorder_test_id);
+
+create unique index label_1_idx on label(id);
+create unique index label_2_idx on label(name);
+
+create unique index lock_1_idx on lock(reference_table_id, reference_id);
+
+create unique index method_1_idx on method(id);
+create        index method_2_idx on method(name);
+
+create unique index note_1_idx on note(id);
+create        index note_2_idx on note(reference_id, reference_table_id);
 
 create unique index organization_1_idx on organization(id);
 create        index organization_2_idx on organization(name);
@@ -317,7 +317,7 @@ create unique index test_trailer_1_idx on test_trailer(id);
 create unique index test_trailer_2_idx on test_trailer(name);
 
 create unique index test_type_of_sample_1_idx on test_type_of_sample(id);
-create        index test_type_of_sample_2_id_idx on test_type_of_sample(test_id);
+create        index test_type_of_sample_2_idx on test_type_of_sample(test_id);
 
 create unique index test_worksheet_1_idx on test_worksheet(id);
 create unique index test_worksheet_2_idx on test_worksheet(test_id);
@@ -391,10 +391,6 @@ alter table inventory_receipt_iorder_item add primary key(id);
 alter table inventory_x_adjust add primary key(id);
 alter table inventory_x_put add primary key(id);
 alter table inventory_x_use add primary key(id);
-alter table label add primary key(id);
-alter table lock add primary key(reference_id, reference_table_id);
-alter table method add primary key(id);
-alter table note add primary key(id);
 alter table iorder add primary key(id);
 alter table iorder_container add primary key(id);
 alter table iorder_item add primary key(id);
@@ -402,6 +398,10 @@ alter table iorder_organization add primary key(id);
 alter table iorder_recurrence add primary key(id);
 alter table iorder_test add primary key(id);
 alter table iorder_test_analyte add primary key(id);
+alter table label add primary key(id);
+alter table lock add primary key(reference_id, reference_table_id);
+alter table method add primary key(id);
+alter table note add primary key(id);
 alter table organization add primary key(id);
 alter table organization_contact add primary key(id);
 alter table organization_parameter add primary key(id);

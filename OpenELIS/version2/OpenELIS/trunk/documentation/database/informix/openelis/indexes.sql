@@ -391,10 +391,6 @@ alter table inventory_receipt_iorder_item add constraint primary key(id) constra
 alter table inventory_x_adjust add constraint primary key(id) constraint inventory_x_adjust_pk;
 alter table inventory_x_put add constraint primary key(id) constraint inventory_x_put_pk;
 alter table inventory_x_use add constraint primary key(id) constraint inventory_x_use_pk;
-alter table label add constraint primary key(id) constraint label_pk;
-alter table lock add constraint primary key(reference_id, reference_table_id) constraint lock_pk;
-alter table method add constraint primary key(id) constraint method_pk;
-alter table note add constraint primary key(id) constraint note_pk;
 alter table iorder add constraint primary key(id) constraint iorder_pk;
 alter table iorder_container add constraint primary key(id) constraint iorder_container_pk;
 alter table iorder_item add constraint primary key(id) constraint iorder_item_pk;
@@ -402,6 +398,10 @@ alter table iorder_organization add constraint primary key(id) constraint iorder
 alter table iorder_recurrence add constraint primary key(id) constraint iorder_recurrence_pk;
 alter table iorder_test add constraint primary key(id) constraint iorder_test_pk;
 alter table iorder_test_analyte add constraint primary key(id) constraint iorder_test_analyte_pk;
+alter table label add constraint primary key(id) constraint label_pk;
+alter table lock add constraint primary key(reference_id, reference_table_id) constraint lock_pk;
+alter table method add constraint primary key(id) constraint method_pk;
+alter table note add constraint primary key(id) constraint note_pk;
 alter table organization add constraint primary key(id) constraint organization_pk;
 alter table organization_contact add constraint primary key(id) constraint organization_contact_pk;
 alter table organization_parameter add constraint primary key(id) constraint organization_parameter_pk;
@@ -432,8 +432,10 @@ alter table sample_neonatal add constraint primary key(id) constraint sample_neo
 alter table sample_organization add constraint primary key(id) constraint sample_organization_pk;
 alter table sample_private_well add constraint primary key(id) constraint sample_private_well_pk;
 alter table sample_project add constraint primary key(id) constraint sample_project_pk;
+alter table sample_pt add constraint primary key(id) constraint sample_pt_pk;
 alter table sample_qaevent add constraint primary key(id) constraint sample_qaevent_pk;
 alter table sample_sdwis add constraint primary key(id) constraint sample_sdwis_pk;
+alter table scriptlet add constraint primary key(id) constraint scriptlet_pk;
 alter table section add constraint primary key(id) constraint section_pk;
 alter table section_parameter add constraint primary key(id) constraint section_parameter_pk;
 alter table shipping add constraint primary key(id) constraint shipping_pk;
@@ -680,6 +682,9 @@ alter table sample_private_well add constraint foreign key(location_address_id) 
 
 alter table sample_project add constraint foreign key(sample_id) references sample(id) constraint sample_project_1_fk;
 alter table sample_project add constraint foreign key(project_id) references project(id) constraint sample_project_2_fk;
+
+alter table sample_pt add constraint foreign key(sample_id) references sample(id) constraint sample_pt_1_fk;
+alter table sample_pt add constraint foreign key(pt_provider_id) references dictionary(id) constraint sample_pt_2_fk;
 
 alter table sample_qaevent add constraint foreign key(sample_id) references sample(id) constraint sample_qaevent_1_fk;
 alter table sample_qaevent add constraint foreign key(qaevent_id) references qaevent(id) constraint sample_qaevent_2_fk;
