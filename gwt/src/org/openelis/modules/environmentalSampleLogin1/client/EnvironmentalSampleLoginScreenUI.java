@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.environmentalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -211,12 +215,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     locationAddressCountry;
 
     @UiField
-    protected AutoComplete                              projectName, reportToName, billToName;
+    protected AutoComplete                              reportToName, billToName, projectName;
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, projectButton, reportToButton,
-                    billToButton;
+                    abort, optionsButton, orderLookupButton, reportToButton,
+                    billToButton, projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -742,7 +746,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : billToName;
+                                 return forward ? orderId : projectName;
                              }
                          });
 
@@ -1412,7 +1416,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? projectName : locationAddressZipCode;
+                                 return forward ? reportToName : locationAddressZipCode;
                              }
                          });
 
@@ -1429,80 +1433,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     event.preventDefault();
                     event.stopPropagation();
                 }
-            }
-        });
-
-        addScreenHandler(projectName,
-                         SampleMeta.getProjectName(),
-                         new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 setProject(getFirstProject(manager));
-                             }
-
-                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                 ProjectDO data;
-
-                                 data = null;
-                                 if (event.getValue() != null)
-                                     data = (ProjectDO)event.getValue().getData();
-                                 changeProject(data);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 projectName.setEnabled(isState(QUERY) ||
-                                                        (canEdit && isState(ADD, UPDATE)));
-                                 projectName.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? reportToName : locationAddressCountry;
-                             }
-                         });
-
-        projectName.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    setProject(getFirstProject(previousManager));
-                    screen.focusNextWidget((Focusable)projectName, true);
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            }
-        });
-
-        projectName.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                Item<Integer> row;
-                ArrayList<ProjectDO> list;
-                ArrayList<Item<Integer>> model;
-
-                setBusy();
-                try {
-                    list = ProjectService.get()
-                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-                    for (ProjectDO p : list) {
-                        row = new Item<Integer>(4);
-
-                        row.setKey(p.getId());
-                        row.setCell(0, p.getName());
-                        row.setCell(1, p.getDescription());
-                        row.setData(p);
-                        model.add(row);
-                    }
-                    projectName.showAutoMatches(model);
-                } catch (Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                clearStatus();
-            }
-        });
-
-        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
-            public void onStateChange(StateChangeEvent event) {
-                projectButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -1526,7 +1456,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? billToName : projectName;
+                return forward ? billToName : locationAddressCountry;
             }
         });
 
@@ -1603,7 +1533,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? accessionNumber : reportToName;
+                return forward ? projectName : reportToName;
             }
         });
 
@@ -1657,6 +1587,80 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(billToButton, "billToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 billToButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+            }
+        });
+        
+        addScreenHandler(projectName,
+                         SampleMeta.getProjectName(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 setProject(getFirstProject(manager));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 ProjectDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (ProjectDO)event.getValue().getData();
+                                 changeProject(data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 projectName.setEnabled(isState(QUERY) ||
+                                                        (canEdit && isState(ADD, UPDATE)));
+                                 projectName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : billToName;
+                             }
+                         });
+
+        projectName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setProject(getFirstProject(previousManager));
+                    screen.focusNextWidget((Focusable)projectName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        projectName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                Item<Integer> row;
+                ArrayList<ProjectDO> list;
+                ArrayList<Item<Integer>> model;
+
+                setBusy();
+                try {
+                    list = ProjectService.get()
+                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (ProjectDO p : list) {
+                        row = new Item<Integer>(4);
+
+                        row.setKey(p.getId());
+                        row.setCell(0, p.getName());
+                        row.setCell(1, p.getDescription());
+                        row.setData(p);
+                        model.add(row);
+                    }
+                    projectName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                projectButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -3462,7 +3466,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = trfAttachmentScreen.getReserved();
+        am = trfAttachmentScreen.getSelected();
         /*
          * add an attachment item for the record selected on the attachment
          * screen
@@ -4375,7 +4379,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method
+             * show any validation errors encountered while changing the method             
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4389,8 +4393,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the
-                 * tests added
+                 * show the pop up for selecting the prep/reflex tests for the tests
+                 * added
                  */
                 showTests(ret);
         } catch (Exception e) {

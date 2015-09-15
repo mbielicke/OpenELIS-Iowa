@@ -14,4 +14,6 @@ public interface ChlGcToCDCExportServiceIntAsync {
 
     void runReport(Query query, AsyncCallback<ReportStatus> callback);
 
+    void getStatus(AsyncCallback<ReportStatus> callback);
+
 }

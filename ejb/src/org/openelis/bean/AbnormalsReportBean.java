@@ -151,7 +151,7 @@ public class AbnormalsReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String printer, printstat, section, test, userName;
+        String dir, printer, printstat, section, test, userName;
         Timestamp fromDate, toDate;
 
         /*
@@ -190,6 +190,7 @@ public class AbnormalsReportBean {
 
             con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/abnormals/main.jasper");
+            dir = ReportUtil.getResourcePath(url);
 
             userName = User.getName(ctx);
 
@@ -199,6 +200,7 @@ public class AbnormalsReportBean {
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
             jparam.put("USER_NAME", userName);
+            jparam.put("SUBREPORT_DIR", dir);
 
             status.setMessage("Outputing report").setPercentComplete(20);
 

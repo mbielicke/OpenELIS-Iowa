@@ -5,7 +5,6 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="org.openelis.domain.ReferenceTable"/>
 	<parameter name="SHIPPING_ID" class="java.lang.Integer"/>
 	<parameter name="IORDER_SHIPPING_NOTE_REFERENCE_TABLE_ID" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[66]]></defaultValueExpression>

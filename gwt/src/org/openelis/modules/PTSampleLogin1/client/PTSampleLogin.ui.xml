@@ -139,16 +139,17 @@
                         <ui:text from="{msg.provider_provider}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="ptPTProvider" field="Integer" width="280px" required = "true"/>
+                        <w:Dropdown ui:field="ptPTProvider" field="Integer" width="280px"
+                          required="true" />
                       </td>
                     </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.gen_series}:" />
                       </td>
-                      <td colspan = "2">
+                      <td colspan="2">
                         <w:TextBox ui:field="ptSeries" field="String" width="330px" case="UPPER"
-                          maxLength="50" required = "true"/>
+                          maxLength="50" required="true" />
                       </td>
                     </tr>
                     <tr>
@@ -204,33 +205,6 @@
               <w:TitledPanel title="{msg.sample_organizationInfo}">
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
-                    <tr>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.project_project}:" />
-                      </td>
-                      <td colspan="3">
-                        <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="projectName" width="180px" case="LOWER"
-                            dropWidth="440px"
-                          >
-                            <w:popup>
-                              <t:Table visibleRows="10" header="true">
-                                <t:Column width="150" label="{msg.gen_name}">
-                                  <t:LabelCell />
-                                </t:Column>
-                                <t:Column width="275" label="{msg.gen_description}">
-                                  <t:LabelCell />
-                                </t:Column>
-                              </t:Table>
-                            </w:popup>
-                          </w:AutoComplete>
-                          <g:AbsolutePanel>
-                            <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}"
-                              text="" css="{res.FormFieldButton}" />
-                          </g:AbsolutePanel>
-                        </g:HorizontalPanel>
-                      </td>
-                    </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.sampleOrganization_reportTo}:" />
@@ -298,6 +272,33 @@
                           </w:AutoComplete>
                           <g:AbsolutePanel>
                             <w:Button ui:field="billToButton" leftIcon="{res.icon.fieldLookupIcon}"
+                              text="" css="{res.FormFieldButton}" />
+                          </g:AbsolutePanel>
+                        </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.project_project}:" />
+                      </td>
+                      <td colspan="3">
+                        <g:HorizontalPanel>
+                          <w:AutoComplete ui:field="projectName" width="180px" case="LOWER"
+                            dropWidth="440px"
+                          >
+                            <w:popup>
+                              <t:Table visibleRows="10" header="true">
+                                <t:Column width="150" label="{msg.gen_name}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="275" label="{msg.gen_description}">
+                                  <t:LabelCell />
+                                </t:Column>
+                              </t:Table>
+                            </w:popup>
+                          </w:AutoComplete>
+                          <g:AbsolutePanel>
+                            <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}"
                               text="" css="{res.FormFieldButton}" />
                           </g:AbsolutePanel>
                         </g:HorizontalPanel>

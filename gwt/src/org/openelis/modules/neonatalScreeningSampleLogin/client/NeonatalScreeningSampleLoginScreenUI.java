@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.neonatalScreeningSampleLogin.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -229,8 +233,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     isCollectionValid;
 
     @UiField
-    protected AutoComplete                              providerLastName, projectName,
-                    reportToName, birthHospitalName;
+    protected AutoComplete                              projectName, reportToName,
+                    birthHospitalName, providerLastName;
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
@@ -803,7 +807,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : formNumber;
+                                 return forward ? orderId : projectName;
                              }
                          });
 
@@ -2180,84 +2184,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? projectName : providerLastName;
+                                 return forward ? reportToName : providerLastName;
                              }
                          });
-
-        addScreenHandler(projectName,
-                         SampleMeta.getProjectName(),
-                         new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 setProject(getFirstProject(manager));
-                             }
-
-                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                 ProjectDO data;
-
-                                 data = null;
-                                 if (event.getValue() != null)
-                                     data = (ProjectDO)event.getValue().getData();
-                                 changeProject(data);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 projectName.setEnabled(isState(QUERY) ||
-                                                        (canEditSample && isState(ADD, UPDATE)));
-                                 projectName.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? reportToName : providerFirstName;
-                             }
-                         });
-
-        projectName.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    setProject(getFirstProject(previousManager));
-                    screen.focusNextWidget((Focusable)projectName, true);
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            }
-        });
-
-        projectName.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                Item<Integer> row;
-                ArrayList<ProjectDO> list;
-                ArrayList<Item<Integer>> model;
-
-                setBusy();
-                try {
-                    list = ProjectService.get()
-                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-                    for (ProjectDO p : list) {
-                        row = new Item<Integer>(4);
-
-                        row.setKey(p.getId());
-                        row.setCell(0, p.getName());
-                        row.setCell(1, p.getDescription());
-                        row.setData(p);
-                        model.add(row);
-                    }
-                    projectName.showAutoMatches(model);
-                } catch (Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                clearStatus();
-            }
-        });
-
-        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
-            public void onStateChange(StateChangeEvent event) {
-                projectButton.setEnabled(isState(DISPLAY) ||
-                                         (canEditSample && isState(ADD, UPDATE)));
-            }
-        });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
@@ -2279,7 +2208,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? birthHospitalName : projectName;
+                return forward ? birthHospitalName : providerFirstName;
             }
         });
 
@@ -2438,9 +2367,84 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : birthHospitalName;
+                                 return forward ? projectName : birthHospitalName;
                              }
                          });
+
+        addScreenHandler(projectName,
+                         SampleMeta.getProjectName(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 setProject(getFirstProject(manager));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 ProjectDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (ProjectDO)event.getValue().getData();
+                                 changeProject(data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 projectName.setEnabled(isState(QUERY) ||
+                                                        (canEditSample && isState(ADD, UPDATE)));
+                                 projectName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : formNumber;
+                             }
+                         });
+
+        projectName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setProject(getFirstProject(previousManager));
+                    screen.focusNextWidget((Focusable)projectName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        projectName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                Item<Integer> row;
+                ArrayList<ProjectDO> list;
+                ArrayList<Item<Integer>> model;
+
+                setBusy();
+                try {
+                    list = ProjectService.get()
+                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (ProjectDO p : list) {
+                        row = new Item<Integer>(4);
+
+                        row.setKey(p.getId());
+                        row.setCell(0, p.getName());
+                        row.setCell(1, p.getDescription());
+                        row.setData(p);
+                        model.add(row);
+                    }
+                    projectName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                projectButton.setEnabled(isState(DISPLAY) ||
+                                         (canEditSample && isState(ADD, UPDATE)));
+            }
+        });
 
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
@@ -4600,7 +4604,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = trfAttachmentScreen.getReserved();
+        am = trfAttachmentScreen.getSelected();
         /*
          * add an attachment item for the record selected on the attachment
          * screen

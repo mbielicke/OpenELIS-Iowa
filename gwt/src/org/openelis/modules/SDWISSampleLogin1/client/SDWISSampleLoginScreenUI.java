@@ -3413,7 +3413,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = trfAttachmentScreen.getReserved();
+        am = trfAttachmentScreen.getSelected();
         /*
          * add an attachment item for the record selected on the attachment
          * screen

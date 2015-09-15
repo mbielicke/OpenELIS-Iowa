@@ -122,6 +122,7 @@ import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Confirm;
+import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
@@ -171,6 +172,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected Tree                                       tree;
+
+    @UiField
+    protected Label<String>                              countLabel;
 
     @UiField
     protected TabLayoutPanel                             tabPanel;
@@ -262,7 +266,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected Query                                      query;
 
-    protected static int                                 ROWS_PER_PAGE = 15, DEEPEST_LEVEL = 3;
+    protected static int                                 ROWS_PER_PAGE = 16, DEEPEST_LEVEL = 3;
 
     protected ScriptletRunner<SampleSO>                  scriptletRunner;
 
@@ -871,6 +875,15 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 refreshTabs(node);
                 enablePatientHistory();
                 enablePatientRelationHistory();
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                if (managers != null)
+                    countLabel.setText(Messages.get().sampleTracking_recordsShown(managers.size()));
+                else
+                    countLabel.setText(null);
             }
         });
 

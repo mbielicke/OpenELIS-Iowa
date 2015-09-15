@@ -5,7 +5,7 @@
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=OpenELIS-Common&amp;ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=%24%7Bworkspace_loc%3AOpenELIS-Common%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
+	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes" sourcepath="/OpenELIS-GWT/src"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

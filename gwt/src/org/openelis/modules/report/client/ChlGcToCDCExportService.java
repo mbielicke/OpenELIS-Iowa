@@ -57,4 +57,18 @@ public class ChlGcToCDCExportService implements ChlGcToCDCExportServiceInt, ChlG
         service.runReport(query, callback);
         return callback.getResult();
     }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getStatus(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void getStatus(AsyncCallback<ReportStatus> callback) {
+        service.getStatus(callback);
+    }
 }

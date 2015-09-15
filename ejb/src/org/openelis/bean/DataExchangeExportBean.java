@@ -501,7 +501,7 @@ public class DataExchangeExportBean {
                 builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
                                  Constants.dictionary().ORG_REPORT_TO);
                 i++ ;
-            } else if (SampleMeta.getReleasedDate().equals(field.getKey())) {
+            } else if (SampleMeta.getAnalysisReleasedDate().equals(field.getKey())) {
                 qf = new QueryFieldUtil();
                 qf.parse(field.getQuery());
                 range = qf.getParameter();

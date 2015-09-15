@@ -87,7 +87,8 @@ public class ScreenBus extends SimpleEventBus {
                     PRIVATE_WELL_ATTACHMENT = new ShowScreenType("PrivateWellAttachment"),
                     TUBE_LABEL_REPORT = new ShowScreenType("Tube Labels"),
                     CHL_GC_TO_CDC_EXPORT = new ShowScreenType("Chl-Gc to CDC Export"),
-                    ABNORMALS_REPORT = new ShowScreenType("Abnormals Report");
+                    ABNORMALS_REPORT = new ShowScreenType("Abnormals Report"),
+                    SECOND_DATA_ENTRY = new ShowScreenType("Second Data Entry");
 
     public static ScreenBus get() {
         if (instance == null)

@@ -30,12 +30,9 @@ import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AuxDataDataViewVO;
-import org.openelis.domain.DataViewAnalyteVO;
 import org.openelis.domain.DataView1VO;
-import org.openelis.domain.DataViewValueVO;
-import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.DataViewAnalyteVO;
+import org.openelis.domain.DataViewValueVO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -77,8 +74,8 @@ public abstract class FilterScreenUI extends Screen {
     @UiField
     protected Button                    selectAllTestAnalyteButton, unselectAllTestAnalyteButton,
                     selectAllResultButton, unselectAllResultButton, selectAllAuxFieldButton,
-                    unselectAllAuxFieldButton, runReportButton, selectAllValueButton,
-                    unselectAllValueButton, cancelButton;
+                    unselectAllAuxFieldButton, selectAllValueButton, unselectAllValueButton,
+                    runReportButton, cancelButton;
 
     public FilterScreenUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -186,12 +183,12 @@ public abstract class FilterScreenUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 String val;
-                ResultDataViewVO data;
+                DataViewValueVO data;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = resultTable.getValueAt(r, c);
-                data = (ResultDataViewVO)resultTable.getRowAt(r).getData();
+                data = (DataViewValueVO)resultTable.getRowAt(r).getData();
                 switch (c) {
                     case 0:
                         data.setIsIncluded(val);
@@ -320,12 +317,12 @@ public abstract class FilterScreenUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 String val;
-                AuxDataDataViewVO data;
+                DataViewValueVO data;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = auxDataTable.getValueAt(r, c);
-                data = (AuxDataDataViewVO)auxDataTable.getRowAt(r).getData();
+                data = (DataViewValueVO)auxDataTable.getRowAt(r).getData();
                 switch (c) {
                     case 0:
                         data.setIsIncluded(val);
@@ -413,6 +410,16 @@ public abstract class FilterScreenUI extends Screen {
         updateAllTestAnalyte("N");
     }
 
+    @UiHandler("selectAllResultButton")
+    protected void selectAllResult(ClickEvent event) {
+        updateAllResult("Y");
+    }
+
+    @UiHandler("unselectAllResultButton")
+    protected void unselectAllResult(ClickEvent event) {
+        updateAllResult("N");
+    }
+
     @UiHandler("selectAllAuxFieldButton")
     protected void selectAllAuxField(ClickEvent event) {
         updateAllAuxField("Y");
@@ -421,6 +428,16 @@ public abstract class FilterScreenUI extends Screen {
     @UiHandler("unselectAllAuxFieldButton")
     protected void unselectAllAuxField(ClickEvent event) {
         updateAllAuxField("N");
+    }
+
+    @UiHandler("selectAllValueButton")
+    protected void selectAllValue(ClickEvent event) {
+        updateAllValue("Y");
+    }
+
+    @UiHandler("unselectAllValueButton")
+    protected void unselectAllValue(ClickEvent event) {
+        updateAllValue("N");
     }
 
     private ArrayList<Row> getTestAnalyteTableModel() {
@@ -567,6 +584,27 @@ public abstract class FilterScreenUI extends Screen {
             res.setIsIncluded(val);
         }
     }
+    
+    /**
+     * Sets the passed value as the "include" flag for all result values
+     */
+    private void updateAllResult(String newVal) {
+        DataViewValueVO data;
+        Object val;
+        Row row;
+        ArrayList<Row> model;
+
+        model = resultTable.getModel();
+        for (int i = 0; i < model.size(); i++ ) {
+            val = (String)resultTable.getValueAt(i, 0);
+            if ( !DataBaseUtil.isSame(newVal, val)) {
+                row = model.get(i);
+                data = (DataViewValueVO)row.getData();
+                data.setIsIncluded(newVal);
+                resultTable.setValueAt(i, 0, newVal);
+            }
+        }
+    }
 
     /**
      * Sets the passed value as the "include" flag for all aux fields and their
@@ -618,6 +656,27 @@ public abstract class FilterScreenUI extends Screen {
             if (data == sel)
                 auxDataTable.setValueAt(i, 0, val);
             aux.setIsIncluded(val);
+        }
+    }
+    
+    /**
+     * Sets the passed value as the "include" flag for all aux data values
+     */
+    private void updateAllValue(String newVal) {
+        DataViewValueVO data;
+        Object val;
+        Row row;
+        ArrayList<Row> model;
+
+        model = auxDataTable.getModel();
+        for (int i = 0; i < model.size(); i++ ) {
+            val = (String)auxDataTable.getValueAt(i, 0);
+            if ( !DataBaseUtil.isSame(newVal, val)) {
+                row = model.get(i);
+                data = (DataViewValueVO)row.getData();
+                data.setIsIncluded(newVal);
+                auxDataTable.setValueAt(i, 0, newVal);
+            }
         }
     }
 }

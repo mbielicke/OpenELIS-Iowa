@@ -67,10 +67,10 @@ public class OpenELIS extends Screen {
 
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
-                    sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
+                    sampleLoginLabelAdditionalReport, quickEntry, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
-                    ptSampleLogin, project, provider, organization,
+                    ptSampleLogin, secondDataEntry, project, provider, organization,
                     worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
                     secondaryLabelReport, storage, QC, analyteParameter, internalOrder, vendorOrder,
                     sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
@@ -153,9 +153,9 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(verification, "verification", new Command() {
+        addCommand(secondDataEntry, "verification", new Command() {
             public void execute() {
-                showScreen(VERIFICATION);
+                showScreen(SECOND_DATA_ENTRY);
             }
         });
 
@@ -186,6 +186,12 @@ public class OpenELIS extends Screen {
         addCommand(animalSampleLogin, "sampleanimal", new Command() {
             public void execute() {
                 showScreen(SAMPLE_ANIMAL);
+            }
+        });
+
+        addCommand(ptSampleLogin, "samplept", new Command() {
+            public void execute() {
+                showScreen(SAMPLE_PT);
             }
         });
 
