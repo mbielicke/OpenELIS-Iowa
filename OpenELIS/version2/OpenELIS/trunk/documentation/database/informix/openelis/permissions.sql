@@ -350,4 +350,4 @@ grant select on todo_sample_view to "public";
 grant select on worksheet_analysis_view to "public";
 grant select on worksheet_qc_result_view to "public";
 
-
+grant execute on function instrument_get_analytes(integer,integer) to "public";

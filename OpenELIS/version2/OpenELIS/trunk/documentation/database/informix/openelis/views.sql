@@ -32,21 +32,21 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.owner is not null then '[own]' || spw.owner
+                   when spw.owner is not null then '[own]' || trim(spw.owner)
                    else null
                end
            when s.domain = 'S' then
                case
-                   when pws.name is not null then '[pws]' || pws.name || ' '
+                   when pws.name is not null then '[pws]' || trim(pws.name) || ' '
                    else ''
                end ||
                case
-                   when ssd.facility_id is not null then '[fac]' || ssd.facility_id || ' '
+                   when ssd.facility_id is not null then '[fac]' || trim(ssd.facility_id) || ' '
                    else ''
                end ||
                case
@@ -55,28 +55,28 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then trim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then trim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then trim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            else null
@@ -84,51 +84,51 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
        case
            when s.domain = 'E' then
                case
-                   when sen.location is not null then '[loc]' || sen.location || ' '
+                   when sen.location is not null then '[loc]' || trim(sen.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || trim(o.name)
                    else ''
                end
            when s.domain = 'S' then
                case
-                   when ssd.location is not null then '[loc]' || ssd.location || ' '
+                   when ssd.location is not null then '[loc]' || trim(ssd.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || trim(o.name)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.location is not null then '[loc]' || spw.location
+                   when spw.location is not null then '[loc]' || trim(spw.location)
                    else null
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then trim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then trim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then trim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            else null
@@ -248,11 +248,11 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        case
            when s.domain = 'C' then
                case
-                   when pv.last_name is not null then pv.last_name || ', '
+                   when pv.last_name is not null then trim(pv.last_name) || ', '
                    else ''
                end ||
                case
-                   when pv.first_name is not null then pv.first_name
+                   when pv.first_name is not null then trim(pv.first_name)
                    else ''
                end
            else null
@@ -333,21 +333,21 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.owner is not null then '[own]' || spw.owner
+                   when spw.owner is not null then '[own]' || trim(spw.owner)
                    else null
                end
            when s.domain = 'S' then
                case
-                   when pws.name is not null then '[pws]' || pws.name || ' '
+                   when pws.name is not null then '[pws]' || trim(pws.name) || ' '
                    else ''
                end ||
                case
-                   when ssd.facility_id is not null then '[fac]' || ssd.facility_id || ' '
+                   when ssd.facility_id is not null then '[fac]' || trim(ssd.facility_id) || ' '
                    else ''
                end ||
                case
@@ -356,28 +356,28 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then trim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then trim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then trim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
            else null
@@ -421,7 +421,7 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
        left join qaevent sq on sqa.qaevent_id = sq.id
 );
 
-create view worksheet_analysis_view (id, worksheet_item_id, postition, worksheet_id,
+create view worksheet_analysis_view (id, worksheet_item_id, position, worksheet_id,
                                      format_id, worksheet_description, accession_number,
                                      analysis_id, qc_lot_id, qc_id, worksheet_analysis_id,
                                      system_users, started_date, completed_date,
@@ -429,8 +429,8 @@ create view worksheet_analysis_view (id, worksheet_item_id, postition, worksheet
                                      test_id, test_name, method_name, time_ta_average,
                                      time_holding, section_name, unit_of_measure_id,
                                      unit_of_measure, analysis_status_id, analysis_status,
-                                     collection_date, collection_time, received_date,
-                                     priority) as (
+                                     analysis_type_id, collection_date, collection_time,
+                                     received_date, priority) as (
 
    select wa.id, wi.id, wi.position, w.id,
        w.format_id, w.description,
@@ -450,55 +450,55 @@ create view worksheet_analysis_view (id, worksheet_item_id, postition, worksheet
                case
                    when s.domain = 'E' then
                        case
-                           when sen.location is not null then '[loc]' || sen.location || ' '
+                           when sen.location is not null then '[loc]' || trim(sen.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'S' then
                        case
-                           when ssd.location is not null then '[loc]' || ssd.location || ' '
+                           when ssd.location is not null then '[loc]' || trim(ssd.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'W' then
                        case
-                           when spw.location is not null then '[loc]' || spw.location || ' '
+                           when spw.location is not null then '[loc]' || trim(spw.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
                    when s.domain = 'C' then
                        case
-                           when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                           when pat.last_name is not null then trim(pat.last_name) || ', '
                            else ''
                        end ||
                        case
-                           when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                           when pat.first_name is not null then trim(pat.first_name) || ', '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then trim(si.container_reference)
                            else ''
                        end
                    when s.domain = 'P' then
                        case
-                           when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                           when ptp.entry is not null then '[ptp]' || trim(ptp.entry) || ' '
                            else ''
                        end ||
                        case
-                           when spt.series is not null then '[ser]' || spt.series || ' '
+                           when spt.series is not null then '[ser]' || trim(spt.series) || ' '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                            else ''
                        end
                    else null
@@ -508,7 +508,7 @@ create view worksheet_analysis_view (id, worksheet_item_id, postition, worksheet
        end,
        t.id, t.name, m.name, t.time_ta_average, t.time_holding,
        sec.name, a.unit_of_measure_id, uom.entry,
-       a.status_id, ans.entry, s.collection_date,
+       a.status_id, ans.entry, a.type_id, s.collection_date,
        s.collection_time, s.received_date,
        case
            when s.domain = 'E' then sen.priority
