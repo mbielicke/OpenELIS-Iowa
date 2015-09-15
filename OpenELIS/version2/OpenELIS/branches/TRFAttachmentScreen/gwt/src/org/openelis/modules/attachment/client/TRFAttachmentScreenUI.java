@@ -44,9 +44,9 @@ import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -56,7 +56,6 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
@@ -199,7 +198,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? table : description;
+                return forward ? unattached : description;
             }
         });
 
@@ -223,7 +222,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? refreshButton : unlockAllButton;
+                return forward ? refreshButton : unattached;
             }
         });
 
@@ -267,7 +266,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
                 if (c == 0) {
                     val = table.getValueAt(r, c);
-                    if ( ( !isState(DISPLAY) || "Y".equals(val)) || !reserve(r))
+                    if ( ( !isState(DISPLAY) || "Y".equals(val)) || !lock(r))
                         event.cancel();
                     return;
                 }
@@ -275,7 +274,10 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 /*
                  * this makes sure that the attachment for a row is not shown
                  * more than once if different cells of the row are clicked one
-                 * after the other
+                 * after the other; displayAttachment is called from here
+                 * instead of from SelectionHandler because, the attachment is
+                 * not shown if the user clicks in the first column and the
+                 * column can't be known in SelectionHandler
                  */
                 if (attachmentShownRow != r) {
                     displayAttachment(table.getRowAt(r),
@@ -291,7 +293,8 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                     if (sectId != null) {
                         /*
                          * allow changing any field of the attachment only if
-                         * the user has assign permission to the current section
+                         * the user has assign permission to the attachment's
+                         * section
                          */
                         name = SectionCache.getById(sectId).getName();
                         if ( !perm.has(name, SectionFlags.ASSIGN)) {
@@ -339,7 +342,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 val = table.getValueAt(r, c);
                 id = table.getRowAt(r).getData();
                 data = managers.get(id).getAttachment();
-                
+
                 switch (c) {
                     case 2:
                         data.setDescription((String)val);
@@ -370,7 +373,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? table : refreshButton;
+                return forward ? description : refreshButton;
             }
         });
 
@@ -394,26 +397,30 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         section.setModel(model);
     }
 
+    /**
+     * Overridden to specify the pattern for the TRFs of a particular domain
+     */
     public abstract String getPattern();
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
+    /**
+     * Sets the screen's window and adds a BeforeCloseHandler to the window; the
+     * handler is added here and not in initialize because the window is a new
+     * one every time the screen is brought up and the window won't be available
+     * in initialize, the first time the screen is brought up
+     */
     public void setWindow(WindowInt window) {
         super.setWindow(window);
         /*
          * this flag needs to be reset every time the screen's window changes,
          * which can happen when the screen is brought up in a modal window and
-         * in that case the handler for BeforeCloseHandler will be needed to be
+         * in that case, the handler for BeforeCloseHandler will be needed to be
          * added to the new window
          */
         closeHandlerAdded = false;
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                if (attachmentsReserved()) {
+                if (attachmentsLocked()) {
                     event.cancel();
                     setError(Messages.get().trfAttachment_firstUnlockAll());
                 } else if (isState(UPDATE)) {
@@ -424,6 +431,12 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         });
     }
 
+    /**
+     * Returns a list of fields that will be used in the query for fetching
+     * attachments; it's overridden because the widgets used in the query are
+     * not put in query mode; that's because they lose their previous values in
+     * query mode and that's not the desired behavior here
+     */
     public ArrayList<QueryData> getQueryFields() {
         QueryData field;
         ArrayList<QueryData> fields;
@@ -444,15 +457,12 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * Creates and executes a query to fetch the attachments to be shown on the
-     * screen
+     * Executes a query to fetch unattached attachments for a particular domain;
+     * the domain is specified by the passed pattern
      */
     public void fetchUnattached(String pattern) {
         Query query;
 
-        /*
-         * query for the TRFs for this domain
-         */
         description.setValue(pattern);
         queryType.setValue(null);
         unattached.setValue("Y");
@@ -466,7 +476,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * Opens the file linked to the attachment showing on the passed node. If
+     * Opens the file linked to the attachment showing on the passed row; if
      * "name" is null or if it's different from the previous time this method
      * was called then the file is opened in a new window, otherwise it's opened
      * in the same window as before.
@@ -490,11 +500,9 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * If "auto select next" is checked then reserves the next attachment that
-     * can be reserved and returns its manager. Otherwise, reserves the
-     * currently selected attachment and returns its manager.
+     * If a row is selected returns its manager; otherwise, returns null
      */
-    public AttachmentManager getReserved() {
+    public AttachmentManager getSelected() {
         Row row;
 
         row = table.getRowAt(table.getSelectedRow());
@@ -505,11 +513,11 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * puts the screen in query state
+     * Puts the screen in query state; if no attachments are locked
      */
     @UiHandler("queryButton")
     protected void query(ClickEvent event) {
-        if (attachmentsReserved()) {
+        if (attachmentsLocked()) {
             setError(Messages.get().trfAttachment_firstUnlockAll());
         } else {
             description.setFocus(true);
@@ -519,7 +527,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * puts the screen in update state and locks the selected attachment
+     * Puts the screen in update state and locks the selected attachment
      */
     @UiHandler("updateButton")
     protected void update(ClickEvent event) {
@@ -541,11 +549,11 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                     lock = row.getCell(0);
                     st = row.getCell(1);
                     /*
-                     * if the attachment was not reserved, it could mean that it
-                     * may have been locked by some other user; so the status
-                     * may be "Locked by xyz", where "xyz" is the other user's
-                     * name; if the attachment can be locked now, but is not
-                     * reserved i.e. the checkbox is not checked, no status
+                     * if the attachment was not locked before, it could mean
+                     * that it may have been locked by some other user; so the
+                     * status may be "Locked by xyz", where "xyz" is the other
+                     * user's name; if the attachment can be locked now, but is
+                     * not reserved i.e. the checkbox is not checked, no status
                      * should be shown
                      */
                     if ("N".equals(lock))
@@ -607,13 +615,12 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         }
     }
 
+    /**
+     * Creates query fields from the data on the screen and executes a query to
+     * return a list of attachments
+     */
     protected void commitQuery() {
         Query query;
-
-        if (attachmentsReserved()) {
-            setError(Messages.get().trfAttachment_firstUnlockAll());
-            return;
-        }
 
         query = new Query();
         query.setFields(getQueryFields());
@@ -623,6 +630,13 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         executeQuery(query);
     }
 
+    /**
+     * Commits the data on the screen to the database; shows any errors/warnings
+     * encountered during the commit, otherwise loads the screen with the
+     * committed data; if the checkbox for the attachment was checked i.e. it
+     * was locked by this user before Update was clicked, tries to lock it
+     * again, because update removes the lock in the back-end
+     */
     protected void commitUpdate() {
         Row row;
 
@@ -638,7 +652,8 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         if (updateCall == null) {
             updateCall = new AsyncCallbackUI<AttachmentManager>() {
                 public void success(AttachmentManager result) {
-                    reserveAndRefreshRow(result);
+                    managers.put(result.getAttachment().getId(), result);
+                    refreshSelectedRow();
                     clearStatus();
                 }
 
@@ -660,8 +675,9 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
     /**
      * Reverts any changes made to the data on the screen and disables editing
-     * of the widgets. If the attachment was locked, calls the service method to
-     * unlock it and loads the screen with that data.
+     * of the widgets; if the checkbox for the attachment was checked i.e. it
+     * was locked by this user before Update was clicked, tries to lock it
+     * again, because the unlock removes the lock in the back-end
      */
     @UiHandler("abortButton")
     protected void abort(ClickEvent event) {
@@ -683,7 +699,8 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<AttachmentManager>() {
                     public void success(AttachmentManager result) {
-                        reserveAndRefreshRow(result);
+                        managers.put(result.getAttachment().getId(), result);
+                        refreshSelectedRow();
                         setDone(Messages.get().gen_updateAborted());
                     }
 
@@ -702,18 +719,22 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * Executes the query for the latest unattached attachments and reloads the
-     * table with the returns data; doesn't execute the query if any attachment
-     * currently in the table is locked
+     * Executes the query for the latest unattached attachments for a particular
+     * domain and reloads the table with the returns data; doesn't execute the
+     * query if any attachment currently in the table is locked
      */
     @UiHandler("refreshButton")
     protected void refresh(ClickEvent event) {
-        if (attachmentsReserved())
+        if (attachmentsLocked())
             setError(Messages.get().trfAttachment_firstUnlockAll());
         else
             fetchUnattached(getPattern());
     }
 
+    /**
+     * Unlocks all the locked attachments i.e. the ones whose checkbox is
+     * checked and refreshes the rows with the latest data
+     */
     @UiHandler("unlockAllButton")
     protected void unlockAll(ClickEvent event) {
         Row row;
@@ -740,9 +761,9 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
     /**
      * Uses the passed query to fetch attachments and refreshes the screen with
-     * the returned data. If "fetchUnattached" is true then only unattached
-     * attachments matching the query are fetched otherwise all matching
-     * attachments are fetched.
+     * the returned data; if the checkbox "unattached" is checkec, fetches only
+     * unattached attachments; otherwise fetches all possible attachments
+     * complying with the query
      */
     private void executeQuery(final Query query) {
         attachmentShownRow = -1;
@@ -816,23 +837,27 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                                                  queryCall);
     }
 
-    public boolean reserve(int r) {
+    /**
+     * Locks the attachment showing on the row at the passed index; the
+     * attachment is locked for a longer duration than the one for update
+     */
+    private boolean lock(int index) {
         Integer id;
         AttachmentManager am;
 
-        id = table.getRowAt(r).getData();
+        id = table.getRowAt(index).getData();
         /*
-         * this attachment is currently not reserved and the user is trying to
-         * reserve it; try to lock the attachment; show the name of the user who
-         * has it locked under "Status"; if the attachment has already been
-         * attached, show "Attached" under "Status"
+         * this attachment is currently not locked and the user is trying to
+         * lock it; show "Locked by xyz" under status, where "xyz" is the name
+         * of the user who has it locked under "Status"; if the attachment has
+         * already been attached, show "Attached; Locked by xyz" under "Status"
          */
         try {
             am = AttachmentService.get().fetchForReserve(id);
             managers.put(id, am);
-            table.setValueAt(r, 1, getStatus(UserCache.getPermission().getLoginName(), am));
+            table.setValueAt(index, 1, getStatus(UserCache.getPermission().getLoginName(), am));
         } catch (EntityLockedException e) {
-            table.setValueAt(r, 1, getStatus(e.getUserName(), null));
+            table.setValueAt(index, 1, getStatus(e.getUserName(), null));
             return false;
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -842,6 +867,13 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         return true;
     }
 
+    /**
+     * Creates and returns the message to be shown under "Status"; if the passed
+     * manager has any attachment items, the message is
+     * "Attached: Locked by xyz" where "xyz" is the passed username; otherwise
+     * the message is "Locked by xyz"
+     * 
+     */
     private String getStatus(String userName, AttachmentManager am) {
         String attached;
 
@@ -854,7 +886,11 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                                                 attached);
     }
 
-    private boolean attachmentsReserved() {
+    /**
+     * Returns true if the checkbox under "Lock" is checked for any attachment
+     * in the table; false otherwise
+     */
+    private boolean attachmentsLocked() {
         boolean reserved;
         Row row;
 
@@ -870,12 +906,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * Loads the tree with the data in the passed managers. If "reloadTree" is
-     * true then loads the tree from scratch, otherwise only adds new nodes; if
-     * "addAfter" is true then adds the new nodes after the current nodes,
-     * otherwise adds them at the beginning. If "isLoadedFromQuery" and
-     * "reloadTree" are both true then adds the node for "Click For More...",
-     * because the tree is getting loaded from the results of a fresh query.
+     * Loads the table with data in the passed managers
      */
     private void loadTable(ArrayList<AttachmentManager> ams) {
         Row row;
@@ -899,6 +930,12 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         }
     }
 
+    /**
+     * Refreshes the row at the passed index with passed arguments; the values
+     * in the first two columns are set to "lock" and "status" respectively; the
+     * values in the other columns are set as the corresponding fields in the
+     * passed manager
+     */
     private void refreshRow(int index, String lock, String status, AttachmentManager am) {
         Row row;
         AttachmentDO data;
@@ -914,7 +951,16 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         row.setData(data.getId());
     }
 
-    private void reserveAndRefreshRow(AttachmentManager am) {
+    /**
+     * This method is called when commit or abort is called for an attachment
+     * that was locked for update; both of these operations release the lock in
+     * the back-end; so if the attachment was locked by checking the checkbox
+     * before clicking "Update", this method tries to obtain the lock again, so
+     * that the user can keep the record locked until it's explicitly unlocked
+     * by clicking "Unlock All"; refreshes the row with the latest data
+     * regardless of whether the attachment could be locked
+     */
+    private void refreshSelectedRow() {
         int r;
         Row row;
         String lock;
@@ -924,15 +970,13 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         lock = "N";
         if ("Y".equals(row.getCell(0))) {
             /*
-             * if the updated attachment was reserved before updating, try to
-             * lock it, because update in the back-end unlocks the record
+             * if the updated attachment was locked before updating, try to lock
+             * it, because update in the back-end unlocks the record
              */
-            if (reserve(r))
+            if (lock(r))
                 lock = "Y";
-        } else {
-            managers.put(am.getAttachment().getId(), am);
         }
-        refreshRow(r, lock, (String)row.getCell(1), am);
+        refreshRow(r, lock, (String)row.getCell(1), managers.get(row.getData()));
         setState(DISPLAY);
     }
 }

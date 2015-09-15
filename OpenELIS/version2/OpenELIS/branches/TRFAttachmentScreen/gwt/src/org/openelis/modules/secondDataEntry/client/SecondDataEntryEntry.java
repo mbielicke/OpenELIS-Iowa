@@ -1,4 +1,4 @@
-package org.openelis.modules.sampleTracking1.client;
+package org.openelis.modules.secondDataEntry.client;
 
 import static org.openelis.modules.main.client.Logger.remote;
 
@@ -14,12 +14,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
-
-public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
-
+public class SecondDataEntryEntry implements EntryPoint, ShowScreenHandler {
+    
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.SAMPLE_TRACKING, this);
+        ScreenBus.get().addHandler(ScreenBus.SECOND_DATA_ENTRY, this);        
     }
     
     @Override
@@ -28,10 +27,10 @@ public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
             public void onSuccess() {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().sampleTracking_tracking());
-                    window.setSize("1074px", "444px");
-                    window.setContent(new SampleTrackingScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "tracking");
+                    window.setName(Messages.get().secondDataEntry_secondDataEntry());
+                    window.setSize("940px", "550px");
+                    window.setContent(new SecondDataEntryScreenUI(window));
+                    OpenELIS.getBrowser().addWindow(window, "secondDataEntry");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -43,7 +42,7 @@ public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
+        
     }
-    
 
 }

@@ -175,6 +175,7 @@ public class BillingExportBean {
                                          100000,
                                          SampleManager1.Load.ORGANIZATION,
                                          SampleManager1.Load.PROJECT,
+                                         SampleManager1.Load.PROVIDER,
                                          SampleManager1.Load.QA,
                                          SampleManager1.Load.AUXDATA,
                                          SampleManager1.Load.RESULT);
@@ -352,19 +353,21 @@ public class BillingExportBean {
                 hdr.collector = getSamplePrivateWell(sm).getCollector();
                 hdr.location = getSamplePrivateWell(sm).getLocation();
 
-                for (SampleOrganizationViewDO o : getOrganizations(sm)) {
-                    /*
-                     * use bill-to if present
-                     */
-                    if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId())) {
-                        hdr.organizationId = o.getOrganizationId();
-                        hdr.organizationName = o.getOrganizationName();
-                        hdr.streetAddress = o.getOrganizationStreetAddress();
-                        hdr.multipleUnit = o.getOrganizationMultipleUnit();
-                        hdr.city = o.getOrganizationCity();
-                        hdr.state = o.getOrganizationState();
-                        hdr.zipCode = o.getOrganizationZipCode();
-                        break;
+                if (getOrganizations(sm) != null) {
+                    for (SampleOrganizationViewDO o : getOrganizations(sm)) {
+                        /*
+                         * use bill-to if present
+                         */
+                        if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId())) {
+                            hdr.organizationId = o.getOrganizationId();
+                            hdr.organizationName = o.getOrganizationName();
+                            hdr.streetAddress = o.getOrganizationStreetAddress();
+                            hdr.multipleUnit = o.getOrganizationMultipleUnit();
+                            hdr.city = o.getOrganizationCity();
+                            hdr.state = o.getOrganizationState();
+                            hdr.zipCode = o.getOrganizationZipCode();
+                            break;
+                        }
                     }
                 }
             } else {

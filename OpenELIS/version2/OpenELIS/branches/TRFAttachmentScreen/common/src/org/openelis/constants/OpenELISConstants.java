@@ -17944,11 +17944,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sampleStatus();
 
   /**
-   * Translated "A sample''s domain can only be changed once during an update ".
+   * Translated "A sample''s domain can only be changed once during an update".
    * 
-   * @return translated "A sample''s domain can only be changed once during an update "
+   * @return translated "A sample''s domain can only be changed once during an update"
    */
-  @DefaultMessage("A sample''s domain can only be changed once during an update ")
+  @DefaultMessage("A sample''s domain can only be changed once during an update")
   @Key("sampleTracking.canChangeDomainOnlyOnce")
   String sampleTracking_canChangeDomainOnlyOnce();
 
@@ -17987,6 +17987,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Please query for only one domain at a time.")
   @Key("sampleTracking.queryDomainException")
   String sampleTracking_queryDomainException();
+
+  /**
+   * Translated "Showing {0,number,#0}".
+   * 
+   * @return translated "Showing {0,number,#0}"
+   */
+  @DefaultMessage("Showing {0,number,#0}")
+  @Key("sampleTracking.recordsShown")
+  String sampleTracking_recordsShown(Integer arg0);
 
   /**
    * Translated "Tracking".
@@ -18257,6 +18266,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Search")
   @Key("search")
   String search();
+
+  /**
+   * Translated "Second Data Entry ".
+   * 
+   * @return translated "Second Data Entry "
+   */
+  @DefaultMessage("Second Data Entry ")
+  @Key("secondDataEntry.secondDataEntry")
+  String secondDataEntry_secondDataEntry();
 
   /**
    * Translated "Second Entry".

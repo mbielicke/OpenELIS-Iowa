@@ -177,6 +177,7 @@ public class ChlGcToCDCExportBean {
          */
         try {
             status.setMessage("Initializing report");
+            session.setAttribute("ChlGcToCDCExport", status);
 
             fields = new ArrayList<QueryData>();
 
@@ -235,6 +236,7 @@ public class ChlGcToCDCExportBean {
             fields.add(field);
 
             status.setMessage("Fetching records").setPercentComplete(20);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             sms = new ArrayList<SampleManager1>();
             sms = sampleManager.fetchByQuery(fields,
@@ -244,19 +246,23 @@ public class ChlGcToCDCExportBean {
                                              SampleManager1.Load.QA,
                                              SampleManager1.Load.RESULT);
 
+            log.info("Considering " + sms.size() + " cases to run");
             status.setMessage("Building dataset").setPercentComplete(50);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             con = ReportUtil.getConnection(ctx);
             rows = new ArrayList<HashMap<String, Object>>();
             summary = buildDataSet(sms, rows, con);
 
             status.setMessage("Outputing report").setPercentComplete(75);
+            session.setAttribute("ChlGcToCDCExport", status);
 
             export(rows, exportDirectory);
 
-            status.setPercentComplete(100);
-
-            status.setMessage(summary).setStatus(ReportStatus.Status.PRINTED);
+            status.setPercentComplete(100)
+                  .setMessage(summary)
+                  .setStatus(ReportStatus.Status.PRINTED);
+            session.setAttribute("ChlGcToCDCExport", status);
         } catch (NotFoundException nfE) {
             log.log(Level.INFO, "No samples found for ChlGCToCDC Export");
         } catch (Exception e) {
@@ -305,7 +311,7 @@ public class ChlGcToCDCExportBean {
             rs = ccS.executeQuery();
             cityCountyMap = new HashMap<String, Integer>();
             while (rs.next())
-                cityCountyMap.put(rs.getString(1), rs.getInt(2));
+                cityCountyMap.put(rs.getString(1).trim(), rs.getInt(2));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error preparing statetment for county lookup.", e);
             throw new Exception("Error preparing statetment for county lookup.");
@@ -400,7 +406,8 @@ public class ChlGcToCDCExportBean {
                                             row.put("state_fips", getStateFIPS(adrDO.getState()));
                                         if ("IA".equals(adrDO.getState()) && adrDO.getCity() != null) {
                                             countyNumber = cityCountyMap.get(adrDO.getCity()
-                                                                                  .toLowerCase());
+                                                                                  .toLowerCase()
+                                                                                  .trim());
                                             if (countyNumber != null) {
                                                 countyNumber = countyNumber * 2 - 1;
                                                 countyFips = countyNumber.toString();

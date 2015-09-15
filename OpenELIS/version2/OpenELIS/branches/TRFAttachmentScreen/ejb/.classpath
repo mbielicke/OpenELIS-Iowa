@@ -10,6 +10,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" output=".testbin" path="test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

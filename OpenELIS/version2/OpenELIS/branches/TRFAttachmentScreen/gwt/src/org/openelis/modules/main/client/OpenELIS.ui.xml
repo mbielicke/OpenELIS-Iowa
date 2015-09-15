@@ -46,8 +46,6 @@
               <w:Menu label="{msg.sample}" ui:field="sampleMenu">
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"
                   display="{msg.quickEntry}" />
-                <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
-                  display="{msg.verification_verification}" />
                 <w:MenuItem description="{msg.sampleTracking_description}" enabled="false" icon="{res.icon.trackingIcon}" ui:field="tracking"
                   display="{msg.sampleTracking_tracking}" />
                 <g:HTML>
@@ -69,6 +67,8 @@
                 <g:HTML>
                   <hr />
                 </g:HTML>
+                <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="secondDataEntry"
+                  display="{msg.secondDataEntry_secondDataEntry}" />
                 <w:MenuItem description="{msg.projectDescription}" enabled="false" icon="{res.icon.projectIcon}" ui:field="project"
                   display="{msg.project}" />
                 <w:MenuItem description="{msg.providerDescription}" enabled="false" icon="{res.icon.providerIcon}" ui:field="provider"

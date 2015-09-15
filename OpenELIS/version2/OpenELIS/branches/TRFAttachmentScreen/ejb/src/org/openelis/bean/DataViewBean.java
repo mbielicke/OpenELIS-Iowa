@@ -75,6 +75,8 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
+import org.openelis.domain.PatientDO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleClinicalViewDO;
@@ -154,6 +156,12 @@ public class DataViewBean {
 
     @EJB
     private PWSBean                         pws;
+    
+    @EJB
+    private PatientBean                     patient;
+    
+    @EJB
+    private ProviderBean                    provider;
 
     @EJB
     private DictionaryCacheBean             dictionaryCache;
@@ -1014,12 +1022,16 @@ public class DataViewBean {
         SamplePrivateWellViewDO well;
         SampleSDWISViewDO sdwis;
         SampleClinicalViewDO clinical;
+        PatientDO patientDO;
+        ProviderDO providerDO;
         SampleItemViewDO item;
         AnalysisViewDO ana;
         AnalysisQaEventViewDO aqe;
         AnalysisUserViewDO anaUser;
         ReportStatus status;
         HashMap<Integer, PWSDO> pwsMap;
+        HashMap<Integer, PatientDO> patientMap;
+        HashMap<Integer, ProviderDO> providerMap;
         HashMap<Integer, ArrayList<ResultViewDO>> groupResMap;
         HashMap<String, Integer> colIndexAnaMap;
         ArrayList<Integer> sampleIds;
@@ -1070,6 +1082,8 @@ public class DataViewBean {
         clinical = null;
         item = null;
         pwsMap = null;
+        patientMap = new HashMap<Integer, PatientDO>();
+        providerMap = new HashMap<Integer, ProviderDO>();
         addResultRow = false;
         addAuxDataRow = false;
         addNoResAuxRow = false;
@@ -1600,6 +1614,22 @@ public class DataViewBean {
                     sampleIds = new ArrayList<Integer>();
                     sampleIds.add(sampleId);
                     clinical = sampleClinical.fetchBySampleIds(sampleIds).get(0);
+                    if (clinical.getPatientId() != null) {
+                        patientDO = patientMap.get(clinical.getPatientId());
+                        if (patientDO == null) {
+                            patientDO = patient.fetchById(clinical.getPatientId());
+                            patientMap.put(clinical.getPatientId(), patientDO);
+                        }
+                        clinical.setPatient(patientDO);
+                    }
+                    if (clinical.getProviderId() != null) {
+                        providerDO = providerMap.get(clinical.getProviderId());
+                        if (providerDO == null) {
+                            providerDO = provider.fetchById(clinical.getProviderId());
+                            providerMap.put(clinical.getProviderId(), providerDO);
+                        }
+                        clinical.setProvider(providerDO);
+                    }
                 }
                 if (addResultRow)
                     addClinicalCells(resRow, resRow.getPhysicalNumberOfCells(), data, clinical);

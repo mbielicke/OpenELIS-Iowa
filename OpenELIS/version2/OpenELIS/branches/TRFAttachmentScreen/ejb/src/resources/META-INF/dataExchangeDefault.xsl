@@ -13,8 +13,7 @@
 	in which case the provisions of a UIRF Software License are applicable instead 
 	of those above. -->
 <xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	exclude-result-prefixes="xsi">
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:output method="xml" indent="yes" />
 
 	<!-- ****** message is root ****** -->

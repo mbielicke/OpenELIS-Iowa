@@ -796,7 +796,7 @@ public class OrganizationScreenUI extends Screen {
         setBusy();
 
         manager = new OrganizationManager1();
-        manager.getOrganization().setIsActive("N");
+        manager.getOrganization().setIsActive("Y");
 
         setData();
         setState(ADD);
