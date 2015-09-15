@@ -35,20 +35,20 @@ FROM   sample s
        JOIN sample_organization so ON so.sample_id = s.id AND
                                       so.type_id = (SELECT dictionary.id
                                                     FROM   dictionary
-                                                    WHERE  dictionary.system_name = "org_report_to")
+                                                    WHERE  dictionary.system_name = 'org_report_to')
        JOIN organization o ON o.id = so.organization_id
        JOIN address adr ON adr.id = o.address_id
        JOIN sample_item si ON si.sample_id = s.id
        JOIN analysis a ON a.sample_item_id = si.id AND
                           a.status_id = (SELECT dictionary.id
                                          FROM   dictionary
-                                         WHERE  dictionary.system_name = "analysis_released") AND
+                                         WHERE  dictionary.system_name = 'analysis_released') AND
                           a.id not in (SELECT analysis_qaevent.analysis_id
                                        FROM   analysis_qaevent
                                        WHERE  analysis_qaevent.analysis_id = a.id AND
                                               analysis_qaevent.type_id = (SELECT dictionary.id
                                                                           FROM   dictionary
-                                                                          WHERE  dictionary.system_name = "qaevent_override"))
+                                                                          WHERE  dictionary.system_name = 'qaevent_override'))
        JOIN test t ON t.id = a.test_id
        JOIN method m ON m.id = t.method_id
 WHERE  s.entered_date BETWEEN $P{FROM_DATE} AND $P{TO_DATE} AND
@@ -57,7 +57,7 @@ WHERE  s.entered_date BETWEEN $P{FROM_DATE} AND $P{TO_DATE} AND
                     WHERE  sample_qaevent.sample_id = s.id AND
                            sample_qaevent.type_id = (SELECT dictionary.id
                                                      FROM   dictionary
-                                                     WHERE  dictionary.system_name = "qaevent_override"))
+                                                     WHERE  dictionary.system_name = 'qaevent_override'))
        $P!{TEST} $P!{SECTION}
 ORDER BY city, o_name, t_name, m_name, a_id]]>
 	</queryString>
