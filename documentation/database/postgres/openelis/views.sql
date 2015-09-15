@@ -24,21 +24,21 @@ create view analysis_view as
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || btrim(sen.location)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.owner is not null then '[own]' || spw.owner
+                   when spw.owner is not null then '[own]' || btrim(spw.owner)
                    else null
                end
            when s.domain = 'S' then
                case
-                   when pws.name is not null then '[pws]' || pws.name || ' '
+                   when pws.name is not null then '[pws]' || btrim(pws.name) || ' '
                    else ''
                end ||
                case
-                   when ssd.facility_id is not null then '[fac]' || ssd.facility_id || ' '
+                   when ssd.facility_id is not null then '[fac]' || btrim(ssd.facility_id) || ' '
                    else ''
                end ||
                case
@@ -47,28 +47,28 @@ create view analysis_view as
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then btrim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then btrim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then btrim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || btrim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || btrim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
            else null
@@ -76,51 +76,51 @@ create view analysis_view as
        case
            when s.domain = 'E' then
                case
-                   when sen.location is not null then '[loc]' || sen.location || ' '
+                   when sen.location is not null then '[loc]' || btrim(sen.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || btrim(o.name)
                    else ''
                end
            when s.domain = 'S' then
                case
-                   when ssd.location is not null then '[loc]' || ssd.location || ' '
+                   when ssd.location is not null then '[loc]' || btrim(ssd.location) || ' '
                    else ''
                end ||
                case
-                   when o.name is not null then '[rpt]' || o.name
+                   when o.name is not null then '[rpt]' || btrim(o.name)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.location is not null then '[loc]' || spw.location
+                   when spw.location is not null then '[loc]' || btrim(spw.location)
                    else null
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then btrim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then btrim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then btrim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || btrim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || btrim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
            else null
@@ -233,11 +233,11 @@ create or replace view sample_view as
        case
            when s.domain = 'C' then
                case
-                   when pv.last_name is not null then pv.last_name || ', '
+                   when pv.last_name is not null then btrim(pv.last_name) || ', '
                    else ''
                end ||
                case
-                   when pv.first_name is not null then pv.first_name
+                   when pv.first_name is not null then btrim(pv.first_name)
                    else ''
                end
            else null
@@ -313,21 +313,21 @@ create or replace view todo_sample_view as
                    else ''
                end ||
                case
-                   when sen.location is not null then '[loc]' || sen.location
+                   when sen.location is not null then '[loc]' || btrim(sen.location)
                    else ''
                end
            when s.domain = 'W' then
                case
-                   when spw.owner is not null then '[own]' || spw.owner
+                   when spw.owner is not null then '[own]' || btrim(spw.owner)
                    else null
                end
            when s.domain = 'S' then
                case
-                   when pws.name is not null then '[pws]' || pws.name || ' '
+                   when pws.name is not null then '[pws]' || btrim(pws.name) || ' '
                    else ''
                end ||
                case
-                   when ssd.facility_id is not null then '[fac]' || ssd.facility_id || ' '
+                   when ssd.facility_id is not null then '[fac]' || btrim(ssd.facility_id) || ' '
                    else ''
                end ||
                case
@@ -336,28 +336,28 @@ create or replace view todo_sample_view as
                end
            when s.domain = 'C' then
                case
-                   when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                   when pat.last_name is not null then btrim(pat.last_name) || ', '
                    else ''
                end ||
                case
-                   when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                   when pat.first_name is not null then btrim(pat.first_name) || ', '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then btrim(si.container_reference)
                    else ''
                end
            when s.domain = 'P' then
                case
-                   when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                   when ptp.entry is not null then '[ptp]' || btrim(ptp.entry) || ' '
                    else ''
                end ||
                case
-                   when spt.series is not null then '[ser]' || spt.series || ' '
+                   when spt.series is not null then '[ser]' || btrim(spt.series) || ' '
                    else ''
                end ||
                case
-                   when si.container_reference is not null then '[cnt]' || si.container_reference
+                   when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
            else null
@@ -421,55 +421,55 @@ create or replace view worksheet_analysis_view as
                case
                    when s.domain = 'E' then
                        case
-                           when sen.location is not null then '[loc]' || sen.location || ' '
+                           when sen.location is not null then '[loc]' || btrim(sen.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || btrim(o.name)
                            else ''
                        end
                    when s.domain = 'S' then
                        case
-                           when ssd.location is not null then '[loc]' || ssd.location || ' '
+                           when ssd.location is not null then '[loc]' || btrim(ssd.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || btrim(o.name)
                            else ''
                        end
                    when s.domain = 'W' then
                        case
-                           when spw.location is not null then '[loc]' || spw.location || ' '
+                           when spw.location is not null then '[loc]' || btrim(spw.location) || ' '
                            else ''
                        end ||
                        case
-                           when o.name is not null then '[rpt]' || o.name
+                           when o.name is not null then '[rpt]' || btrim(o.name)
                            else ''
                        end
                    when s.domain = 'C' then
                        case
-                           when pat.last_name is not null then '[lst]' || pat.last_name || ' '
+                           when pat.last_name is not null then btrim(pat.last_name) || ', '
                            else ''
                        end ||
                        case
-                           when pat.first_name is not null then '[fst]' || pat.first_name || ' '
+                           when pat.first_name is not null then btrim(pat.first_name) || ', '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then btrim(si.container_reference)
                            else ''
                        end
                    when s.domain = 'P' then
                        case
-                           when ptp.entry is not null then '[ptp]' || ptp.entry || ' '
+                           when ptp.entry is not null then '[ptp]' || btrim(ptp.entry) || ' '
                            else ''
                        end ||
                        case
-                           when spt.series is not null then '[ser]' || spt.series || ' '
+                           when spt.series is not null then '[ser]' || btrim(spt.series) || ' '
                            else ''
                        end ||
                        case
-                           when si.container_reference is not null then '[cnt]' || si.container_reference
+                           when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                            else ''
                        end
                    else null
@@ -479,8 +479,8 @@ create or replace view worksheet_analysis_view as
        end as description,
        t.id as test_id, t.name as test_name, m.name as method_name, t.time_ta_average, t.time_holding,
        sec.name as section_name, a.unit_of_measure_id, uom.entry as unit_of_measure,
-       a.status_id as analysis_status_id, ans.entry as analysis_status, s.collection_date,
-       s.collection_time, s.received_date,
+       a.status_id as analysis_status_id, ans.entry as analysis_status, a.type_id as analysis_type_id,
+       s.collection_date, s.collection_time, s.received_date,
        case
            when s.domain = 'E' then sen.priority
            when s.domain = 'S' then ssd.priority

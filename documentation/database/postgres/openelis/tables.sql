@@ -194,7 +194,7 @@ create table eorder
 (
     id                             serial not null,
     entered_date                   timestamp not null,
-    paper_order_validator          varchar(40),
+    paper_order_validator          varchar(40) not null,
     description                    varchar(60)
 );
 
