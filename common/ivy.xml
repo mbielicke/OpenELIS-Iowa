@@ -19,20 +19,22 @@
 -->
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-    <info
-        organisation="org.openelis"
-        module="OpenELIS-Common"
-        status="integration">
+    <info organisation="org.openelis" module="OpenELIS-Common" satus="integration">
 	</info>
+	
+	<configurations>
+      <conf name="jboss7"/>
+      <conf name="wildfly9"/>
+    </configurations>
+	
     <dependencies>
       <dependency org="xalan" name="xalan" rev="2.7.1"/>  
 	  <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
 
-      <!-- JBoss 7.1.1 EE 6.0 --> 	  
-      <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final"/>
-	  
-	  <!-- Wildfly 9.0 EE 7.0 
-	  <dependency org="org.jboss.spec" name="jboss-javaee-7.0" rev="1.0.3.Final"/>
-      -->
+      <!-- JBoss 7.1.1 EE 6.0 -->
+      <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final" conf="jboss7->default"/>
+
+      <!-- Wildfly 9.0.1 EE 7.0 --> 
+      <dependency org="org.jboss.spec" name="jboss-javaee-7.0" rev="1.0.3.Final" conf="wildfly9->default"/>
     </dependencies>
 </ivy-module>
