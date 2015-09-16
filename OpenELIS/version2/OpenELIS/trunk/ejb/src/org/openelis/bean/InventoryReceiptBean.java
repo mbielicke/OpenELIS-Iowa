@@ -158,9 +158,6 @@ public class InventoryReceiptBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
-        if (list == null)
-            throw new LastPageException();
-
         try {
             return getManagers((ArrayList<InventoryReceiptViewDO>)list);
         } catch (NoResultException e) {
