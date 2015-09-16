@@ -1,0 +1,85 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0" bottom="25">
+      <g:LayoutPanel>
+        <g:layer top="0px" bottom="0px" left="0px" width="58%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.provider_provider}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="ptProvider" field="Integer" width="280px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_series}:" />
+                </td>
+                <td colspan="2">
+                  <w:TextBox ui:field="series" field="String" width="330px" case="UPPER"
+                    maxLength="50" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_due}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="dueDate" width="125px" begin="0" end="4" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="0px" bottom="0px" right="0px" width="42%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr colspan="3">
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.samplePT_additionalDomain}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="additionalDomain" width="110px" field="Integer" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_receivedBy}:" />
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="receivedByName"  width="140px" case="LOWER">
+                    <w:popup>
+                      <t:Table visibleRows="10" header="false">
+                        <t:Column width="110">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
