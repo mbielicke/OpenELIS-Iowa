@@ -311,6 +311,9 @@ public class DataExchangeExportBean {
                 }
                 messageOutput(sm, cm, null, null, eo, eols);
             }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to generate xml", e);
+            throw e;
         } finally {
             messageEnd();
         }
