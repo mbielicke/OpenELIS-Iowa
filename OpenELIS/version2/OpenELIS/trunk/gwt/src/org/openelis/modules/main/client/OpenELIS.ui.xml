@@ -130,14 +130,12 @@
               <w:Menu label="{msg.report}" ui:field="reportMenu">
                 <w:Menu display="{msg.login}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="verificationReport" display="{msg.verificationReport}" />
-                  <w:MenuItem enabled="false" ui:field="testRequestFormReport" display="{msg.TRFReport}" />
                   <w:MenuItem enabled="false" ui:field="orderRequestForm" display="{msg.orderRequestForm}" />
                   <w:MenuItem enabled="false" ui:field="holdRefuseOrganization" display="{msg.holdRefuseOrganization}" />
                 </w:Menu>
                 <w:Menu display="{msg.reference}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="testReport" display="{msg.testReport}" />
                   <w:MenuItem enabled="false" ui:field="instrumentBarcodeReport" display="{msg.instrumentBarcode_instrumentBarcodeReport}" />
-                  <w:MenuItem enabled="false" ui:field="billingReport" display="{msg.billingReport}" />
                 </w:Menu>
                 <w:Menu display="{msg.summary}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="sampleInhouseReport" display="{msg.sampleInhouseReport}" />
@@ -150,9 +148,6 @@
                   <w:MenuItem enabled="false" ui:field="turnaround" display="{msg.turnaround}" />
                   <w:MenuItem enabled="false" ui:field="turnAroundStatisticReport" display="{msg.turnAroundStatisticReport}" />
                   <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTracking_kitTrackingReport}" />
-                  <w:MenuItem enabled="false" ui:field="airQualityExport" display="{msg.airQuality_airQualityExport}" />
-                  <w:MenuItem enabled="false" ui:field="sdwisUnloadReport" display="{msg.sdwisUnloadReport}" />
-                  <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
                   <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
@@ -160,8 +155,11 @@
                   <w:MenuItem enabled="false" ui:field="privateWellAttachment" display="{msg.report_privateWellAttachment}" />
                 </w:Menu>
                 <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
-                  <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />
+                  <w:MenuItem enabled="false" ui:field="airQualityExport" display="{msg.airQuality_airQualityExport}" />
                   <w:MenuItem enabled="false" ui:field="chlGcToCDCExport" display="CHL-GC to CDC Export" />
+                  <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
+                  <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />
+                  <w:MenuItem enabled="false" ui:field="sdwisUnloadReport" display="{msg.sdwisUnloadReport}" />
                 </w:Menu>
               </w:Menu>
               <w:Menu label="{msg.maintenance}" ui:field="maintenanceMenu">
