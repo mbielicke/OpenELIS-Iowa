@@ -4,7 +4,7 @@
 --
 -------------------------------------------------------------------------------
 
-create view analysis_view as
+create or replace view analysis_view as
 
    select s.id as sample_id, s.domain, s.accession_number, s.received_date, s.collection_date,
        s.collection_time, s.entered_date,

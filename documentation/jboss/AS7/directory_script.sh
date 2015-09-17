@@ -29,18 +29,19 @@ if [ -z $LIMS_ADMIN_GROUP ]; then
     exit 1
 fi
 
+mkdir upload
 mkdir worksheets
 mkdir wstemplate
 mkdir inventory
 mkdir billing
 mkdir SDWIS
-mkdir attachment
 mkdir scan
 mkdir scan/attachment
 mkdir scan/system
 mkdir instrument
 mkdir docs
 mkdir eorders
+mkdir attachment
 #
 # created nested subdirectories to break up # files/directory
 #
@@ -77,6 +78,6 @@ chown $JBOSS_USER:$USER_GROUP worksheets SDWIS scan/attachment instrument
 
 # open to JBOSS and LIMS administrator group
 
-chmod 770 wstemplate inventory billing SDWIS attachment scan scan/system docs eorders
-chown $JBOSS_USER:$LIMS_ADMIN_GROUP wstemplate inventory billing SDWIS attachment scan scan/system docs eorders
+chmod 770 upload wstemplate inventory billing SDWIS attachment scan scan/system docs eorders
+chown $JBOSS_USER:$LIMS_ADMIN_GROUP upload wstemplate inventory billing SDWIS attachment scan scan/system docs eorders
 
