@@ -82,7 +82,7 @@ public class LockCacheBean {
         getSync().add(lock.key);
 
         maxLocks = Math.max(maxLocks, locks.size());
-        log.info("Added - "+lock.toString());
+        log.fine("Added - "+lock.toString());
     }
     
     /**

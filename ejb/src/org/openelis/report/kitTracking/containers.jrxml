@@ -25,7 +25,7 @@ order by 2]]>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{oc_count},"-",$F{containername})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{oc_count}," / ",$F{containername})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

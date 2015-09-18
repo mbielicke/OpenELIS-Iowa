@@ -30,10 +30,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -104,7 +104,7 @@ public class KitTrackingReportBean {
                                                                .setRequired(true)
                                                                .setDefaultValue(null));
 
-            p.add(new Prompt("TO_DATE", Prompt.Type.DATETIME).setPrompt("Ending Sent Date:")
+            p.add(new Prompt("TO_DATE", Prompt.Type.DATETIME).setPrompt("Ending Ordered Date:")
                                                              .setWidth(150)
                                                              .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                              .setDatetimeEndCode(Prompt.Datetime.DAY)
@@ -139,14 +139,14 @@ public class KitTrackingReportBean {
                                                                         .setMultiSelect(false));
 
             orderBy = new ArrayList<OptionListItem>();
-            orderBy.add(0, new OptionListItem("o_id", "Order#"));
-            orderBy.add(1, new OptionListItem("status", "Order status"));
-            orderBy.add(2, new OptionListItem("o.ordered_date", "Order date"));
-            orderBy.add(3, new OptionListItem("ship_from_name", "Ship from"));
-            orderBy.add(4, new OptionListItem("ship_to_name", "Ship to"));
-            orderBy.add(5, new OptionListItem("report_to_name", "Report to"));
-            orderBy.add(6, new OptionListItem("requested_by", "Requested by"));
-            orderBy.add(7, new OptionListItem("cost_center", "Cost center"));
+            orderBy.add(0, new OptionListItem("o_id", "Order #"));
+            orderBy.add(1, new OptionListItem("status", "Order Status"));
+            orderBy.add(2, new OptionListItem("o.ordered_date", "Order Date"));
+            orderBy.add(3, new OptionListItem("ship_from_name", "Ship From"));
+            orderBy.add(4, new OptionListItem("ship_to_name", "Ship To"));
+            orderBy.add(5, new OptionListItem("report_to_name", "Report To"));
+            orderBy.add(6, new OptionListItem("requested_by", "Requested By"));
+            orderBy.add(7, new OptionListItem("cost_center", "Cost Center"));
 
             p.add(new Prompt("SORT_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                           .setWidth(150)
@@ -154,7 +154,7 @@ public class KitTrackingReportBean {
                                                           .setMultiSelect(false));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error in generating the prompts", e);
             throw e;
         }
     }
@@ -341,7 +341,7 @@ public class KitTrackingReportBean {
             for (DictionaryDO data : d)
                 l.add(new OptionListItem(data.getId().toString(), data.getEntry()));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error in dictionary lookup", e);
         }
 
         return l;
