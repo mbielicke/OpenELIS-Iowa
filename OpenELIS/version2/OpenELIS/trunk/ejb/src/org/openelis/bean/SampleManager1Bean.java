@@ -285,7 +285,7 @@ public class SampleManager1Bean {
         HashMap<Integer, ProviderDO> map5;
         EnumSet<SampleManager1.Load> el;
 
-        log.log(Level.FINE, "In fetchByIds");
+        log.finer("In fetchByIds");
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
@@ -308,7 +308,7 @@ public class SampleManager1Bean {
         ids5 = new ArrayList<Integer>();
         map5 = new HashMap<Integer, ProviderDO>();
 
-        log.log(Level.INFO, "Fetching samples");
+        log.finer("Fetching samples");
         for (SampleDO data : sample.fetchByIds(sampleIds)) {
             sm = new SampleManager1();
             setSample(sm, data);
@@ -322,7 +322,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.INFO, "Fetching domains");
+        log.finer("Fetching domains");
         /*
          * additional domains for each sample
          */
@@ -369,7 +369,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching eorders, patients and providers");
+        log.finer("Fetching eorders, patients and providers");
         /*
          * fetch e-orders, patients and providers and set them for clinical and
          * neonatal samples
@@ -417,7 +417,7 @@ public class SampleManager1Bean {
         map4 = null;
         map5 = null;
 
-        log.log(Level.FINE, "Fetching orgs, projects, sample qas, notes, aux, attachments");
+        log.finer("Fetching orgs, projects, sample qas, notes, aux, attachments");
         /*
          * various lists for each sample
          */
@@ -473,7 +473,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching sample items");
+        log.finer("Fetching sample items");
         /*
          * build level 2, everything is based on item ids
          */
@@ -495,7 +495,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching analyses");
+        log.finer("Fetching analyses");
         /*
          * build level 3, everything is based on analysis ids
          */
@@ -512,7 +512,7 @@ public class SampleManager1Bean {
         ids2 = null;
         map2 = null;
 
-        log.log(Level.INFO, "Fetching analysis notes, qas, storages, users, results, worksheets");
+        log.finer("Fetching analysis notes, qas, storages, users, results, worksheets");
         /*
          * it is possible for a sample to have no analyses before it's verified
          */
