@@ -61,7 +61,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "IOrderRecurrence.FetchActiveList",
                 query = "select new org.openelis.domain.IOrderRecurrenceDO(r.id, r.iorderId,r.isActive," +
                         "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
-                      + " from IOrderRecurrence r where r.isActive = 'Y' and r.activeEnd >= TODAY")})
+                      + " from IOrderRecurrence r where r.isActive = 'Y' and r.activeEnd >= :today")})
         
 @Entity
 @Table(name = "iorder_recurrence")

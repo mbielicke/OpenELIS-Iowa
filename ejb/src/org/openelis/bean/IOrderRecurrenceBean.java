@@ -86,6 +86,7 @@ public class IOrderRecurrenceBean {
         List list;
 
         query = manager.createNamedQuery("IOrderRecurrence.FetchActiveList");
+        query.setParameter("today", new Date());
         list = query.getResultList();
 
         if (list.isEmpty())
