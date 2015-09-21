@@ -111,7 +111,7 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 					<reportElement key="addToReportTotal" isPrintRepeatedValues="false" mode="Opaque" x="470" y="12" width="253" height="0" backcolor="#CCCCCC">
-						<printWhenExpression><![CDATA[$V{ABNORMAL_TOTAL}.add($V{ABNORMAL_TEST})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[$V{ABNORMAL_TOTAL}.add($V{ABNORMAL_CITY})]]></printWhenExpression>
 					</reportElement>
 					<textElement>
 						<font reportFont="times" size="8"/>
