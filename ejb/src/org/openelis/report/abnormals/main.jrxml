@@ -129,18 +129,18 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 		<groupFooter>
 			<band height="12">
 				<textField pattern="">
-					<reportElement key="city" isPrintRepeatedValues="false" x="0" y="0" width="97" height="12"/>
+					<reportElement key="city" isPrintRepeatedValues="false" x="0" y="0" width="97" height="12" printWhenGroupChanges="city"/>
 					<textElement>
 						<font reportFont="times" size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}.trim()]]></textFieldExpression>
 				</textField>
 				<textField pattern="">
-					<reportElement key="orgName" isPrintRepeatedValues="false" x="98" y="0" width="193" height="12"/>
+					<reportElement key="orgName" isPrintRepeatedValues="false" x="98" y="0" width="193" height="12" printWhenGroupChanges="organization"/>
 					<textElement>
 						<font reportFont="times" size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}.trim()]]></textFieldExpression>
 				</textField>
 				<textField pattern="">
 					<reportElement key="testName" x="292" y="0" width="88" height="12" printWhenGroupChanges="testmethod"/>
