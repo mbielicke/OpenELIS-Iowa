@@ -143,8 +143,8 @@ public class PatientMergeUI extends Screen {
         //
         addScreenHandler(patientId, PatientMeta.getId(), new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
-                lastName.setEnabled(isState(QUERY));
-                lastName.setQueryMode(isState(QUERY));
+                patientId.setEnabled(isState(QUERY));
+                patientId.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -188,6 +188,7 @@ public class PatientMergeUI extends Screen {
         addScreenHandler(nationalId, PatientMeta.getNationalId(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
                 nationalId.setEnabled(isState(QUERY));
+                nationalId.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
