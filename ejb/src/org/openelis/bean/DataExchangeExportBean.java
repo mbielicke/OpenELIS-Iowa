@@ -124,6 +124,8 @@ public class DataExchangeExportBean {
 
     private ByteArrayOutputStream     transformerStream;
 
+    private Date                      releaseStart, releaseEnd;
+
     private static final Logger       log = Logger.getLogger("openelis");
 
     /**
@@ -139,7 +141,7 @@ public class DataExchangeExportBean {
         int accession;
         EOrderDO eo;
         Calendar cal;
-        Date now, releaseStart, releaseEnd;
+        Date now;
         StringBuilder sb;
         ArrayList<Integer> ids;
         ArrayList<EOrderLinkDO> eols;
@@ -188,10 +190,7 @@ public class DataExchangeExportBean {
          * all the samples with everything loaded.
          */
         try {
-            ids = getSamples(SampleMeta.getId(),
-                             cm.getExchangeCriteria().getFields(),
-                             releaseStart,
-                             releaseEnd);
+            ids = getSamples(SampleMeta.getId(), cm.getExchangeCriteria().getFields());
             sms = sampleManager.fetchByIds(ids,
                                            SampleManager1.Load.ORGANIZATION,
                                            SampleManager1.Load.PROJECT,
@@ -226,7 +225,7 @@ public class DataExchangeExportBean {
                     }
                 }
                 try {
-                    messageOutput(sm, cm, releaseStart, releaseEnd, eo, eols);
+                    messageOutput(sm, cm, eo, eols);
                 } catch (Exception e) {
                     accession = -accession;
                 }
@@ -249,6 +248,8 @@ public class DataExchangeExportBean {
             log.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             messageEnd();
+            releaseStart = null;
+            releaseEnd = null;
         }
     }
 
@@ -292,6 +293,8 @@ public class DataExchangeExportBean {
                                        SampleManager1.Load.PROVIDER);
 
         try {
+            releaseStart = null;
+            releaseEnd = null;
             messageStart();
             status.setMessage(Messages.get().gen_generatingReport());
             for (SampleManager1 sm : sms) {
@@ -309,7 +312,7 @@ public class DataExchangeExportBean {
                                           getSample(sm).getAccessionNumber());
                     }
                 }
-                messageOutput(sm, cm, null, null, eo, eols);
+                messageOutput(sm, cm, eo, eols);
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to generate xml", e);
@@ -443,8 +446,10 @@ public class DataExchangeExportBean {
         }
 
         try {
+            releaseStart = null;
+            releaseEnd = null;
             messageStart();
-            messageOutput(sm, cm, null, null, eo, eols, sqc);
+            messageOutput(sm, cm, eo, eols, sqc);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to generate xml for accession number:  " +
                                   getSample(sm).getAccessionNumber(), e);
@@ -464,10 +469,7 @@ public class DataExchangeExportBean {
      * list of accession numbers that match the query.
      */
     public ArrayList<Integer> getSamples(ExchangeCriteriaManager cm) throws Exception {
-        return getSamples(SampleMeta.getAccessionNumber(),
-                          cm.getExchangeCriteria().getFields(),
-                          null,
-                          null);
+        return getSamples(SampleMeta.getAccessionNumber(), cm.getExchangeCriteria().getFields());
     }
 
     /**
@@ -475,8 +477,7 @@ public class DataExchangeExportBean {
      * match the query. The start and end dates are added to the query if the
      * The query does not have a date released.
      */
-    private ArrayList<Integer> getSamples(String select, ArrayList<QueryData> fields, Date start,
-                                          Date end) throws Exception {
+    private ArrayList<Integer> getSamples(String select, ArrayList<QueryData> fields) throws Exception {
         int i;
         Query query;
         String dates[];
@@ -512,14 +513,14 @@ public class DataExchangeExportBean {
                     dates = range.get(0).split("\\.\\.");
                     if (dates.length > 0) {
                         dt = ReportUtil.getDatetime(dates[0]);
-                        start = dt != null ? dt.getDate() : null;
+                        releaseStart = dt != null ? dt.getDate() : null;
                     }
                     if (dates.length > 1) {
                         dt = ReportUtil.getDatetime(dates[1]);
-                        end = dt != null ? dt.getDate() : null;
+                        releaseEnd = dt != null ? dt.getDate() : null;
                     }
-                    if (end == null)
-                        end = new Date();
+                    if (releaseEnd == null)
+                        releaseEnd = new Date();
                 }
                 fields.remove(i);
             } else {
@@ -532,15 +533,21 @@ public class DataExchangeExportBean {
          * search for any sample OR any analysis released between the specified
          * dates
          */
-        if (start != null && end != null) {
-            builder.addWhere("(" + SampleMeta.getReleasedDate() + " between '" +
-                             ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
+        if (releaseStart != null && releaseEnd != null) {
+            builder.addWhere("(" +
+                             SampleMeta.getReleasedDate() +
+                             " between '" +
+                             ReportUtil.toString(releaseStart, Messages.get()
+                                                                       .dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) +
-                             "' or " + SampleMeta.getAnalysisReleasedDate() + " between '" +
-                             ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
+                             ReportUtil.toString(releaseEnd, Messages.get().dateTimeSecondPattern()) +
+                             "' or " +
+                             SampleMeta.getAnalysisReleasedDate() +
+                             " between '" +
+                             ReportUtil.toString(releaseStart, Messages.get()
+                                                                       .dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) +
+                             ReportUtil.toString(releaseEnd, Messages.get().dateTimeSecondPattern()) +
                              "')");
         }
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
@@ -600,8 +607,7 @@ public class DataExchangeExportBean {
     /**
      * The method exports a sample using the criteria manager's information.
      */
-    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Date releaseStart,
-                               Date releaseEnd, Object... optional) throws Exception {
+    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
         Integer accession;
         URI uri;
         Document doc;
