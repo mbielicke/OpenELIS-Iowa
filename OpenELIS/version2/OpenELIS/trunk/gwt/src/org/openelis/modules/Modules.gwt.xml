@@ -102,8 +102,8 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="org.openelis.modules.systemvariable1.SystemVariable1" />
 	<inherits name="org.openelis.modules.testTrailer.TestTrailer" />
 	<inherits name="org.openelis.modules.test.Test" />
-	<inherits name="org.openelis.modules.todo.ToDo" />
-	<!-- <inherits name="org.openelis.modules.todo1.ToDo1" /> -->
+	<!-- <inherits name="org.openelis.modules.todo.ToDo" /> -->
+	<inherits name="org.openelis.modules.todo1.ToDo1" /> 
 	<inherits name="org.openelis.modules.verification1.Verification1" />
 	<inherits name="org.openelis.modules.worksheet.Worksheet" />
 	<inherits name="org.openelis.modules.worksheet1.Worksheet1" />
