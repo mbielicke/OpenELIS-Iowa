@@ -1,0 +1,18 @@
+<module>
+
+	<replace-with
+		class="org.openelis.portal.modules.emailNotification.client.EmailNotificationUIMobileImpl">
+		<when-type-assignable
+			class="org.openelis.portal.modules.emailNotification.client.EmailNotificationUI" />
+		<when-property-is name="platform" value="phone" />
+	</replace-with>
+
+	<replace-with
+		class="org.openelis.portal.modules.emailNotification.client.EmailNotificationUITabletImpl">
+		<when-type-assignable
+			class="org.openelis.portal.modules.emailNotification.client.EmailNotificationUI" />
+		<when-property-is name="platform" value="tablet" />
+	</replace-with>
+
+
+</module>
