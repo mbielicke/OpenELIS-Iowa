@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.ejb.DuplicateKeyException;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.transaction.Status;
@@ -78,6 +79,9 @@ public class LockCacheBean {
      */
     @javax.ejb.Lock(LockType.WRITE)
     public void add(Lock lock) throws Exception {
+        if (locks.containsKey(lock.key))
+            throw new DuplicateKeyException();
+
         locks.put(lock.key, lock);
         getSync().add(lock.key);
 

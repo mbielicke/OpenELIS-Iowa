@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.ejb.DuplicateKeyException;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -120,12 +121,27 @@ public class LockBean {
 
     private void lock(int tableId, Integer id, long expires, String user, String session) throws Exception {
         Lock lock;
-
+        String msg, userStr, expireStr;
+        
         lock = lockCache.get(new Lock.Key(tableId, id));
         if (lock == null) {
             lock = new Lock(tableId, id, user, expires, session);
-            lockCache.add(lock);
-            return;
+            try {
+                lockCache.add(lock);
+                return;
+            } catch (DuplicateKeyException e) {
+                lock = lockCache.get(new Lock.Key(tableId, id));
+                if (lock != null) {
+                    userStr = lock.username;
+                    expireStr = new Date(lock.expires).toString();
+                } else {
+                    userStr = "unknown";
+                    expireStr = "unknown";
+                }
+                log.warning("Duplicate lock detected");
+                msg = Messages.get().entityLockException(userStr, expireStr);
+                throw new EntityLockedException(msg);
+            }
         }
 
         checkIfLockedByOther(lock, user, session);
