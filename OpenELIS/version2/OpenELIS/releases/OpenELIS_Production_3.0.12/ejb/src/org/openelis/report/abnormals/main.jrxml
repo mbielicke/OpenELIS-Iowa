@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="791" pageHeight="612" orientation="Landscape" columnWidth="725" leftMargin="18" rightMargin="18" topMargin="36" bottomMargin="36">
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="java.text.SimpleDateFormat"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<import value="org.openelis.utils.Counter"/>
+	<reportFont name="times" isDefault="false" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FROM_DATE" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO_DATE" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEST" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SECTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT o.id AS o_id, o.name AS o_name, adr.city, s.id AS s_id, a.id AS a_id, t.id AS t_id,
+       t.name AS t_name, m.name AS m_name
+FROM   sample s
+       JOIN sample_organization so ON so.sample_id = s.id AND
+                                      so.type_id = (SELECT dictionary.id
+                                                    FROM   dictionary
+                                                    WHERE  dictionary.system_name = 'org_report_to')
+       JOIN organization o ON o.id = so.organization_id
+       JOIN address adr ON adr.id = o.address_id
+       JOIN sample_item si ON si.sample_id = s.id
+       JOIN analysis a ON a.sample_item_id = si.id AND
+                          a.status_id = (SELECT dictionary.id
+                                         FROM   dictionary
+                                         WHERE  dictionary.system_name = 'analysis_released') AND
+                          a.id not in (SELECT analysis_qaevent.analysis_id
+                                       FROM   analysis_qaevent
+                                       WHERE  analysis_qaevent.analysis_id = a.id AND
+                                              analysis_qaevent.type_id = (SELECT dictionary.id
+                                                                          FROM   dictionary
+                                                                          WHERE  dictionary.system_name = 'qaevent_override'))
+       JOIN test t ON t.id = a.test_id
+       JOIN method m ON m.id = t.method_id
+WHERE  s.entered_date BETWEEN $P{FROM_DATE} AND $P{TO_DATE} AND
+       s.id not in (SELECT sample_qaevent.sample_id
+                    FROM   sample_qaevent
+                    WHERE  sample_qaevent.sample_id = s.id AND
+                           sample_qaevent.type_id = (SELECT dictionary.id
+                                                     FROM   dictionary
+                                                     WHERE  dictionary.system_name = 'qaevent_override'))
+       $P!{TEST} $P!{SECTION}
+ORDER BY city, o_name, t_name, m_name, a_id]]>
+	</queryString>
+	<field name="o_id" class="java.lang.Integer"/>
+	<field name="o_name" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="s_id" class="java.lang.Integer"/>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="t_id" class="java.lang.Integer"/>
+	<field name="t_name" class="java.lang.String"/>
+	<field name="m_name" class="java.lang.String"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="ABNORMAL_TEST" class="org.openelis.utils.Counter" resetType="Group" resetGroup="testmethod" calculation="System">
+		<variableExpression><![CDATA[$V{ABNORMAL_TEST}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="ABNORMAL_CITY" class="org.openelis.utils.Counter" resetType="Group" resetGroup="city">
+		<variableExpression><![CDATA[$V{ABNORMAL_CITY}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="ABNORMAL_TOTAL" class="org.openelis.utils.Counter">
+		<variableExpression><![CDATA[$V{ABNORMAL_TOTAL}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Counter()]]></initialValueExpression>
+	</variable>
+	<group name="city">
+		<groupExpression><![CDATA[$F{city}.trim()]]></groupExpression>
+		<groupFooter>
+			<band height="12">
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="cityAbnormalTotals.label" mode="Opaque" x="292" y="0" width="177" height="12" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font reportFont="times" size="8" isItalic="true" pdfFontName="Times-Italic"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}.trim()+" Totals:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="cityAbnormalTotals" mode="Opaque" x="470" y="0" width="253" height="12" backcolor="#CCCCCC"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{ABNORMAL_CITY}.toString()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="cityTotals" mode="Opaque" x="724" y="0" width="31" height="12" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{city_COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="addToReportTotal" isPrintRepeatedValues="false" mode="Opaque" x="470" y="12" width="253" height="0" backcolor="#CCCCCC">
+						<printWhenExpression><![CDATA[$V{ABNORMAL_TOTAL}.add($V{ABNORMAL_TEST})]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="organization">
+		<groupExpression><![CDATA[$F{o_name}.trim()]]></groupExpression>
+	</group>
+	<group name="testmethod">
+		<groupExpression><![CDATA[DataBaseUtil.concatWithSeparator($F{t_name}, ", ", $F{m_name})]]></groupExpression>
+		<groupFooter>
+			<band height="12">
+				<textField pattern="">
+					<reportElement key="city" isPrintRepeatedValues="false" x="0" y="0" width="97" height="12"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="orgName" isPrintRepeatedValues="false" x="98" y="0" width="193" height="12"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="testName" x="292" y="0" width="88" height="12" printWhenGroupChanges="testmethod"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_name}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="methodName" x="381" y="0" width="88" height="12" printWhenGroupChanges="testmethod"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="analyteResultAbnormalTotal" x="470" y="0" width="253" height="12" printWhenGroupChanges="testmethod"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{ABNORMAL_TEST}.toString()]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="testTotals" x="724" y="0" width="31" height="12"/>
+					<textElement textAlignment="Right">
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{testmethod_COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="addToOrganizationTotal" isPrintRepeatedValues="false" mode="Opaque" x="470" y="0" width="253" height="0" backcolor="#CCCCCC">
+						<printWhenExpression><![CDATA[$V{ABNORMAL_CITY}.add($V{ABNORMAL_TEST})]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="36">
+			<textField pattern="MMM dd, yyyy">
+				<reportElement key="headerDate" x="0" y="0" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="title" x="265" y="0" width="227" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Test Abnormal/Total Summary Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement key="pageCount" x="618" y="0" width="116" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
+				<reportElement key="pageTotal" x="736" y="0" width="19" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement key="headerTime" x="0" y="13" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="dateRange" x="200" y="13" width="350" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Samples entered from " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{FROM_DATE}) + " to " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{TO_DATE})]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="username" x="662" y="13" width="93" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement key="city.header" mode="Opaque" x="0" y="0" width="97" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[City]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="orgName.header" mode="Opaque" x="98" y="0" width="193" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Organization Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="testName.header" mode="Opaque" x="292" y="0" width="88" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Test name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="methodName.header" mode="Opaque" x="381" y="0" width="88" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Method name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="abnormal.header" mode="Opaque" x="470" y="0" width="253" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Abnormal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="total.header" mode="Opaque" x="724" y="0" width="31" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band>
+			<subreport>
+				<reportElement key="result" isPrintRepeatedValues="false" x="470" y="0" width="253" height="0"/>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABNORMAL_TEST">
+					<subreportParameterExpression><![CDATA[$V{ABNORMAL_TEST}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"result.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="24">
+			<line>
+				<reportElement key="summaryHorzSeparator" x="294" y="5" width="461" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="reportAbnormalTotals.label" isPrintRepeatedValues="false" mode="Opaque" x="292" y="10" width="177" height="12" backcolor="#999999"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times" size="8" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Report Totals:"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="reportPosTotals" isPrintRepeatedValues="false" mode="Opaque" x="470" y="10" width="253" height="12" backcolor="#999999"/>
+				<textElement>
+					<font reportFont="times" size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{ABNORMAL_TOTAL}.toString()]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="reportTotals" isPrintRepeatedValues="false" mode="Opaque" x="724" y="10" width="31" height="12" backcolor="#999999"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times" size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
