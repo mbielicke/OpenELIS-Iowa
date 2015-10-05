@@ -92,10 +92,8 @@ public class PatientMergeUI extends Screen {
     protected Calendar                                      birthDate;
 
     @UiField
-    protected Dropdown<Integer>                             gender, patientRelation;
-
-    @UiField
-    protected Dropdown<String>                              patientState;
+    protected Dropdown<Integer>                             gender, patientRelation,
+                                                            patientState;
 
     @UiField
     protected Table                                         patientTable, sampleTable,
@@ -136,7 +134,6 @@ public class PatientMergeUI extends Screen {
     public void initialize() {
         ArrayList<DictionaryDO> list;
         ArrayList<Item<Integer>> model;
-        ArrayList<Item<String>> smodel;
 
         //
         // screen fields and buttons
@@ -366,10 +363,10 @@ public class PatientMergeUI extends Screen {
         // load state dropdown model
         //
         list = CategoryCache.getBySystemName("state");
-        smodel = new ArrayList<Item<String>>();
+        model = new ArrayList<Item<Integer>>();
         for (DictionaryDO resultDO : list)
             model.add(new Item<Integer>(resultDO.getId(), resultDO.getEntry()));
-        patientState.setModel(smodel);
+        patientState.setModel(model);
     }
 
     public void setWindow(WindowInt window) {
