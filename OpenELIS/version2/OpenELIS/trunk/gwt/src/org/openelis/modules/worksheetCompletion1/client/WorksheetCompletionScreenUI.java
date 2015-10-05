@@ -148,6 +148,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     private static WorksheetCompletionUiBinder            uiBinder   = GWT.create(WorksheetCompletionUiBinder.class);
 
     private boolean                                       updateTransferMode;
+    private HashMap<Integer, SampleManager1>              sMansById;
     private Integer                                       origStatusId;
     private ModulePermission                              userPermission;
     private ScreenNavigator<IdNameVO>                     nav;
@@ -295,6 +296,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         updateTransferMode = false;
         auxManagers = new HashMap<Integer, AuxFieldGroupManager>();
         testManagers = new HashMap<Integer, TestManager>();
+        sMansById = new HashMap<Integer, SampleManager1>();
     }
 
     /**
@@ -986,11 +988,11 @@ public class WorksheetCompletionScreenUI extends Screen {
         waVDOs = worksheetItemTab.getTransferSelection();
         if (transferCall == null) {
             transferCall = new AsyncCallbackUI<WorksheetResultsTransferVO>() {
-                public void success(final WorksheetResultsTransferVO result) {
+                public void success(WorksheetResultsTransferVO result) {
                     ArrayList<SampleTestRequestVO> tests;
-
+                    
+                    sMansById.clear();
                     if (result.getSampleManagers() != null && result.getSampleManagers().size() > 0) {
-                        final HashMap<Integer, SampleManager1> sMansById = new HashMap<Integer, SampleManager1>();
                         for (SampleManager1 sMan : result.getSampleManagers())
                             sMansById.put(sMan.getSample().getId(), sMan);
                         
@@ -1006,7 +1008,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                             tests = testReflexUtility.getReflexTests(result.getSampleManagers(),
                                                                      result.getReflexResultsList());
                             if (tests != null && tests.size() > 0) {
-                                showPrepAndReflexTests(sMansById, tests);
+                                showPrepAndReflexTests(tests);
                             } else {
                                 try {
                                     SampleService1.get().update(result.getSampleManagers(), true);
@@ -1235,7 +1237,6 @@ public class WorksheetCompletionScreenUI extends Screen {
                                   hist);
     }
 
-    @SuppressWarnings("unchecked")
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
         ArrayList<SystemUserVO> userList;
@@ -1670,8 +1671,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     /*
      * show the popup for selecting the reflex test
      */
-    private void showPrepAndReflexTests(final HashMap<Integer, SampleManager1> sMansById,
-                                        ArrayList<SampleTestRequestVO> reqTests) {
+    private void showPrepAndReflexTests(ArrayList<SampleTestRequestVO> reqTests) {
         ModalWindow modal;
 
         if (testSelectionLookup == null) {
@@ -1738,7 +1738,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                     }
                     
                     if (prepTests.size() > 0) {
-                        showPrepAndReflexTests(sMansById, prepTests);
+                        showPrepAndReflexTests(prepTests);
                     } else {
                         try {
                             SampleService1.get().update(new ArrayList<SampleManager1>(sMansById.values()), true);

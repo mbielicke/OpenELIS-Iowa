@@ -219,11 +219,11 @@ public class LabelReportBean {
     }
     
     /*
-     * Print a worksheet analysis label
+     * Print a small worksheet analysis label
      */
     public void worksheetAnalysisSmallLabel(PrintStream f, String accession, String worksheetPosition,
                                             String name1, String name2, String started,
-                                            String users) {
+                                            String users, String qcLink) {
         f.print("^XA");
         f.print("^LH0,0");
         f.print("^FO60,30^AQ^FD"+accession+"  ("+worksheetPosition+")^FS");
@@ -231,7 +231,25 @@ public class LabelReportBean {
         f.print("^FO60,80^AP^FD"+name2+"^FS");
         f.print("^FO60,100^AP^FD"+started+"^FS");
         f.print("^FO60,120^AP^FD"+users+"^FS");
+        f.print("^FO140,115^AQ^FDq:"+qcLink+"^FS");
         f.print("^PQ1,,1,^XZ");
-
+    }
+    
+    /*
+     * Print a large worksheet analysis label
+     */
+    public void worksheetAnalysisDilutionLabel(PrintStream f, String accession,
+                                               String worksheetPosition, String dilution,
+                                               String name1, String name2) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO30,35^AT^BCN,50,Y,N,N^FD"+accession+"^FS");                                 // barcoded accession
+        if (dilution.length() > 0)
+            f.print("^FO30,140^AT^FDWS: "+worksheetPosition+" Dilution: "+dilution+"^FS");      // readable worksheet position and dilution
+        else
+            f.print("^FO30,140^AT^FDWS: "+worksheetPosition+"^FS");                             // readable worksheet position
+        f.print("^FO30,190^AT^FD"+name1+"^FS");                                                 // readable test name or qc name
+        f.print("^FO30,240^AT^FD"+name2+"^FS");                                                 // readable method name or qc lot number
+        f.print("^PQ1,,1,^XZ");
     }
 }
