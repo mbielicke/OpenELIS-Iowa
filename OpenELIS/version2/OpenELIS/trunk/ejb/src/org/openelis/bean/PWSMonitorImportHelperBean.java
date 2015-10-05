@@ -28,25 +28,21 @@ package org.openelis.bean;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.sql.DataSource;
-import javax.transaction.UserTransaction;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PWSMonitorDO;
 import org.openelis.exception.ParseException;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.utils.ParseUtil;
 
 /**
  * Reads data from a PWS Monitor file and updates the pws_monitor table in the
@@ -55,21 +51,17 @@ import org.openelis.ui.common.ReportStatus;
  */
 @Stateless
 @SecurityDomain("openelis")
-@TransactionManagement(TransactionManagementType.BEAN)
-@Resource(name = "jdbc/OpenELISDB",
-          type = DataSource.class,
-          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
-          mappedName = "java:/OpenELISDS")
+
 public class PWSMonitorImportHelperBean {
+
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager       manager;
 
     @EJB
     private SessionCacheBean    session;
 
     @EJB
     private SystemVariableBean  systemVariable;
-
-    @Resource
-    private SessionContext      ctx;
 
     @EJB
     private PWSMonitorBean      pwsMonitor;
@@ -85,113 +77,103 @@ public class PWSMonitorImportHelperBean {
      * for data that does not yet exist there, update records that are
      * different, and remove records that are not present in the file.
      */
+    @RolesAllowed("pws-add")
     public void load(ReportStatus status) throws Exception {
-        boolean toCommit;
-        int i, onePercent;
-        Integer tiamrtaskIsNumber;
-        UserTransaction ut;
-        PWSMonitorDO pm;
-        HashMap<Integer, PWSMonitorDO> pmm;
-        ArrayList<Integer> deleteList;
+        int i, r, onePercent;
+        PWSMonitorDO p;
         ArrayList<PWSMonitorDO> records;
+        HashMap<Integer, PWSMonitorDO> pmm;
+        ArrayList<PWSMonitorDO> deleteList;
 
-        ut = null;
-        try {
-            deleteList = new ArrayList<Integer>();
-            status.setMessage("Reading file 4 of 4: PWS monitor file");
-            status.setPercentComplete(75);
-            session.setAttribute("PWSFileImport", status);
+        status.setMessage("Reading file 4 of 4: PWS monitor file");
+        status.setPercentComplete(75);
+        session.setAttribute("PWSFileImport", status);
+
+        /*
+         * create a hash map from the file and fetch records from table
+         */
+        pmm = parse();
+        records = pwsMonitor.fetchAll();
+
+        /*
+         * calculate the number of records needed to be updated to indicate
+         * one percent of progress towards completion
+         */
+        onePercent = (int)Math.max(records.size() / 12.5, 12);
+        status.setMessage("Loading file 4 of 4: PWS monitor file");
+        session.setAttribute("PWSFileImport", status);
+
+        i = r = 0;
+        deleteList = new ArrayList<PWSMonitorDO>();
+        for (PWSMonitorDO record : records) {
+            i++ ;
+
             /*
-             * create a hash map from the file
+             * the record is not present in the file, so it needs to be
+             * deleted
              */
-            pmm = parse();
-            records = pwsMonitor.fetchAll();
-            /*
-             * calculate the number of records needed to be updated to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (records.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            i = 0;
-            ut = ctx.getUserTransaction();
-            ut.begin();
-            toCommit = false;
-            for (PWSMonitorDO record : records) {
-                tiamrtaskIsNumber = record.getTiamrtaskIsNumber();
-                pm = pmm.get(tiamrtaskIsNumber);
-                /*
-                 * the record is not present in the file, so it needs to be
-                 * deleted
-                 */
-                if (pm == null) {
-                    deleteList.add(record.getTiamrtaskIsNumber());
-                    continue;
-                }
+            p = pmm.get(record.getTiamrtaskIsNumber());
+            if (p == null) {
+                deleteList.add(record);
+            } else {
                 /*
                  * check if the database needs to be updated
                  */
-                if ( !equals(pm, record)) {
-                    i++ ;
-                    pwsMonitor.update(pm);
-                    toCommit = true;
-                    if (i % 1000 == 0) {
-                        ut.commit();
-                        ut.begin();
-                        toCommit = false;
-                    }
-                    if (i % onePercent == 0) {
-                        status.setMessage("Loading file 4 of 4: PWS monitor file");
-                        status.setPercentComplete(50 + i / onePercent);
-                        session.setAttribute("PWSFileImport", status);
-                    }
+                if ( !equals(p, record)) {
+                    pwsMonitor.update(p);
+                    r++ ;
+
+                    /*
+                     * batch update
+                     */
+                    if (r % 200 == 0)
+                        manager.flush();
                 }
-                /*
-                 * this map must only have records that don't exist in the
-                 * database
-                 */
-                pmm.remove(tiamrtaskIsNumber);
+
+                pmm.remove(record.getTiamrtaskIsNumber());
             }
-            /*
-             * delete records from the database that are not present in the file
-             */
-            if (deleteList.size() > 0) {
-                pwsMonitor.deleteList(deleteList);
-                ut.commit();
-                ut.begin();
+
+            if (i % onePercent == 0) {
+                status.setPercentComplete(50 + i / onePercent);
+                session.setAttribute("PWSFileImport", status);
             }
-            i = 0;
-            /*
-             * calculate the number of records needed to be added to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (pmm.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            for (PWSMonitorDO pwsm : pmm.values()) {
-                i++ ;
-                pwsMonitor.add(pwsm);
-                toCommit = true;
-                if (i % 1000 == 0) {
-                    ut.commit();
-                    ut.begin();
-                    toCommit = false;
-                }
-                if (i % onePercent == 0) {
-                    status.setMessage("Loading file 4 of 4: PWS monitor file");
-                    status.setPercentComplete(75 + 13 + i / onePercent);
-                    session.setAttribute("PWSFileImport", status);
-                }
-            }
-            if (toCommit)
-                ut.commit();
-            else
-                ut.rollback();
-        } catch (Exception e) {
-            if (ut != null)
-                ut.rollback();
-            throw e;
         }
+
+        /*
+         * delete records from the database that are not present in the file
+         */
+        if (deleteList.size() > 0) {
+            for (PWSMonitorDO tp : deleteList) {
+                pwsMonitor.delete(tp);
+                r++ ;
+
+                if (r % 200 == 0)
+                    manager.flush();
+            }
+        }
+
+        /*
+         * add the records that were in the file but not in database
+         */
+        onePercent = (int)Math.max(pmm.size() / 12.5, 12);
+
+        i = 0;
+        for (PWSMonitorDO pm : pmm.values()) {
+            i++ ;
+
+            pwsMonitor.add(pm);
+            r++ ;
+
+            if (r % 200 == 0)
+                manager.flush();
+            
+            if (i % onePercent == 0) {
+                status.setPercentComplete(75 + 13 + i / onePercent);
+                session.setAttribute("PWSFileImport", status);
+            }
+        }
+
+        manager.flush();
     }
 
     /**
@@ -203,7 +185,7 @@ public class PWSMonitorImportHelperBean {
         String line, path, buf[];
         PWSMonitorDO data;
         BufferedReader reader;
-        HashMap<Integer, PWSMonitorDO> pwsMonitorMap;
+        HashMap<Integer, PWSMonitorDO> pmm;
 
         try {
             path = systemVariable.fetchByName("pws_path").getValue();
@@ -211,13 +193,15 @@ public class PWSMonitorImportHelperBean {
             log.severe("No 'pws_path' system variable defined");
             throw e;
         }
+
         reader = new BufferedReader(new FileReader(path + PWS_MONITOR_FILE));
         i = 1;
+
         /*
          * map from the pws monitor file, with the tiamrtask_is_number being the
-         * key, and the data from that line in the file being the value
+         * key.
          */
-        pwsMonitorMap = new HashMap<Integer, PWSMonitorDO>();
+        pmm = new HashMap<Integer, PWSMonitorDO>();
 
         try {
             /*
@@ -236,56 +220,43 @@ public class PWSMonitorImportHelperBean {
                     throw new ParseException("Too few columns");
 
                 data = new PWSMonitorDO();
-                data.setTinwsfIsNumber(Integer.parseInt(buf[0]));
-                data.setTiamrtaskIsNumber(Integer.parseInt(buf[1]));
-                data.setTinwsysIsNumber(Integer.parseInt(buf[2]));
-                data.setStAsgnIdentCd(buf[3]);
-                data.setName(buf[4]);
-                if ( !DataBaseUtil.isEmpty(buf[6]))
-                    data.setTiaanlgpTiaanlytName(buf[6]);
-                else
-                    data.setTiaanlgpTiaanlytName(buf[5]);
-                data.setNumberSamples(Integer.parseInt(buf[7]));
-                data.setCompBeginDate(Datetime.getInstance(Datetime.YEAR,
-                                                           Datetime.DAY,
-                                                           new Date(buf[8])));
-                data.setCompEndDate(Datetime.getInstance(Datetime.YEAR,
-                                                         Datetime.DAY,
-                                                         new Date(buf[9])));
-                data.setFrequencyName(buf[10]);
-                data.setPeriodName(buf[11]);
+                data.setTinwsfIsNumber(ParseUtil.parseIntField(buf[0], false, "TINWSF_IS_NUMBER"));
+                data.setTiamrtaskIsNumber(ParseUtil.parseIntField(buf[1], false, "TIAMRTASK_IS_NUMBER"));
+                data.setTinwsysIsNumber(ParseUtil.parseIntField(buf[2], false, "TINWSYS_IS_NUMBER"));
+                data.setStAsgnIdentCd(ParseUtil.parseStrField(buf[3], 12, true, "ST_ASGN_IDENT_CD"));
+                data.setName(ParseUtil.parseStrField(buf[4], 40, true, "TINWSF_NAME"));
+                data.setTiaanlgpTiaanlytName(ParseUtil.parseStrField(buf[6], -64, true, "TSAANLYT_NAME"));
+                if (data.getTiaanlgpTiaanlytName() == null)
+                    data.setTiaanlgpTiaanlytName(ParseUtil.parseStrField(buf[5], -64, true, "TSAANLYT_NAME"));
+                data.setNumberSamples(ParseUtil.parseIntField(buf[7], false, "NUMBER_SAMPLES"));
+                data.setCompBeginDate(ParseUtil.parseDateField(buf[8], false, "COMP_BEGIN_DATE"));
+                data.setCompEndDate(ParseUtil.parseDateField(buf[9], true, "COMP_END_DATE"));
+                data.setFrequencyName(ParseUtil.parseStrField(buf[10], 25, false, "FREQUENCY_NAME"));
+                data.setPeriodName(ParseUtil.parseStrField(buf[11], 20, false, "PERIOD_NAME"));
 
-                pwsMonitorMap.put(data.getTiamrtaskIsNumber(), data);
+                pmm.put(data.getTiamrtaskIsNumber(), data);
             }
         } catch (Exception e) {
-            throw new Exception("Data file for pws_monitor has error at line " + i + ": " +
-                                e.getMessage());
+            throw new Exception(PWS_MONITOR_FILE+" has error in line " + i + ": " + e.getMessage());
         } finally {
             reader.close();
         }
-        return pwsMonitorMap;
+        return pmm;
     }
 
     /**
      * compares the corresponding fields in the two DOs and returns true if they
      * are all the same, false otherwise
      */
-    private boolean equals(PWSMonitorDO pwsMonitor, PWSMonitorDO pwsMonitor2) {
-        return !DataBaseUtil.isDifferent(pwsMonitor.getTinwsysIsNumber(),
-                                         pwsMonitor2.getTinwsysIsNumber()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getStAsgnIdentCd(),
-                                         pwsMonitor2.getStAsgnIdentCd()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getName(), pwsMonitor2.getName()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getTiaanlgpTiaanlytName(),
-                                         pwsMonitor2.getTiaanlgpTiaanlytName()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getNumberSamples(),
-                                         pwsMonitor2.getNumberSamples()) &&
-               !DataBaseUtil.isDifferentDT(pwsMonitor.getCompBeginDate(),
-                                           pwsMonitor2.getCompBeginDate()) &&
-               !DataBaseUtil.isDifferentDT(pwsMonitor.getCompEndDate(),
-                                           pwsMonitor2.getCompEndDate()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getFrequencyName(),
-                                         pwsMonitor2.getFrequencyName()) &&
-               !DataBaseUtil.isDifferent(pwsMonitor.getPeriodName(), pwsMonitor2.getPeriodName());
+    private boolean equals(PWSMonitorDO a, PWSMonitorDO b) {
+        return !DataBaseUtil.isDifferent(a.getTinwsysIsNumber(), b.getTinwsysIsNumber()) &&
+               !DataBaseUtil.isDifferent(a.getStAsgnIdentCd(), b.getStAsgnIdentCd()) &&
+               !DataBaseUtil.isDifferent(a.getName(), b.getName()) &&
+               !DataBaseUtil.isDifferent(a.getTiaanlgpTiaanlytName(), b.getTiaanlgpTiaanlytName()) &&
+               !DataBaseUtil.isDifferent(a.getNumberSamples(), b.getNumberSamples()) &&
+               !DataBaseUtil.isDifferentDT(a.getCompBeginDate(), b.getCompBeginDate()) &&
+               !DataBaseUtil.isDifferentDT(a.getCompEndDate(), b.getCompEndDate()) &&
+               !DataBaseUtil.isDifferent(a.getFrequencyName(), b.getFrequencyName()) &&
+               !DataBaseUtil.isDifferent(a.getPeriodName(), b.getPeriodName());
     }
 }

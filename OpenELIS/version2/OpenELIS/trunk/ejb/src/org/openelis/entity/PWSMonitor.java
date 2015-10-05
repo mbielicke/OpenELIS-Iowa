@@ -30,9 +30,7 @@ import org.openelis.utils.AuditUtil;
                @NamedQuery(name = "PWSMonitor.FetchAll",
                            query = "select new org.openelis.domain.PWSMonitorDO(p.tiamrtaskIsNumber, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name,"
                                    + "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
-                                   + " from PWSMonitor p"),
-               @NamedQuery(name = "PWSMonitor.DeleteList",
-                           query = "delete from PWSMonitor p where p.tiamrtaskIsNumber in ( :deleteList )")})
+                                   + " from PWSMonitor p")})
 @Entity
 @Table(name = "pws_monitor")
 @EntityListeners({AuditUtil.class})

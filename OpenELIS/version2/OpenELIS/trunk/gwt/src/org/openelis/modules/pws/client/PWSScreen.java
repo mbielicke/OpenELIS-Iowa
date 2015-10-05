@@ -211,7 +211,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parse.enable(true);
+                parse.enable(userPermission.hasAddPermission());
             }
         });
 

@@ -124,13 +124,4 @@ public class PWSMonitorBean {
         if (entity != null)
             manager.remove(entity);
     }
-
-    public void deleteList(ArrayList<Integer> deleteList) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("PWSMonitor.DeleteList");
-        query.setParameter("deleteList", deleteList);
-
-        query.executeUpdate();
-    }
 }
