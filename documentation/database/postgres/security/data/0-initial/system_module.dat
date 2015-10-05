@@ -26,7 +26,7 @@
 26|2|patient|module for access to the Patient screen|Y|Y|Y|N|\N
 27|2|project|module for access to the Project screen|Y|Y|Y|N|\N
 28|2|provider|module for access to the Provider screen|Y|Y|Y|N|\N
-29|2|pws|module for access to the PWS Information screen|Y|N|N|N|\N
+29|2|pws|module for access to the PWS Information screen|Y|Y|N|N|\N
 30|2|qaevent|module for access to the QA Event screen|Y|Y|Y|N|\N
 31|2|qc|module for access to the QC screen|Y|Y|Y|N|\N
 32|2|quickentry|module for access to the Quick Entry screen|Y|N|N|N|\N
