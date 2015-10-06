@@ -60,13 +60,13 @@ import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+/*import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
 import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
+import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;*/
 
 public class LoggedInTab extends Screen {
             
@@ -76,8 +76,8 @@ public class LoggedInTab extends Screen {
     private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                table;
     private VerticalPanel              loggedInPanel; 
-    private ColumnChart                chart;
-    private Options                    options;
+    //private ColumnChart                chart;
+    //private Options                    options;
     
     public LoggedInTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -378,7 +378,7 @@ public class LoggedInTab extends Screen {
         int size;
         Integer val;
         String range;
-        DataTable data;
+        /*DataTable data;
 
         data = DataTable.create();
         data.addColumn(ColumnType.STRING);
@@ -403,7 +403,7 @@ public class LoggedInTab extends Screen {
          * because the screen's being dragged caused chart to get detached. 
          * Otherwise, chart can just be redrawn because only the data showing 
          * in it changed.    
-         */
+         /
         if (chart == null) {
             chart = new ColumnChart(data, options);            
             loggedInPanel.add(chart);
@@ -413,10 +413,10 @@ public class LoggedInTab extends Screen {
             loggedInPanel.add(chart);
         } else {
             chart.draw(data, options );
-        }                
+        }*/                
     }
     
-    private Options getOptions() {        
+    /*private Options getOptions() {        
         Options ops;
         AxisOptions aops;
         TextStyle fts;        
@@ -438,5 +438,5 @@ public class LoggedInTab extends Screen {
         ops.setHeight(215);
         ops.setTitle(Messages.get().timeSinceAnalysesLoggedIn());
         return ops;      
-    }    
+    }    */
 }

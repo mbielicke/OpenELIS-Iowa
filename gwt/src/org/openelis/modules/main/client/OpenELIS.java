@@ -49,8 +49,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
+//import com.google.gwt.visualization.client.VisualizationUtils;
+//import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 
 public class OpenELIS extends Screen {
 
@@ -106,10 +106,10 @@ public class OpenELIS extends Screen {
         method.ensureDebugId("openelis.method");
 
         // load the google chart api
-        VisualizationUtils.loadVisualizationApi(new Runnable() {
+        /*VisualizationUtils.loadVisualizationApi(new Runnable() {
             public void run() {
             }
-        }, PieChart.PACKAGE, PieChart.PACKAGE);
+        }, PieChart.PACKAGE, PieChart.PACKAGE);*/
 
         initialize();
 

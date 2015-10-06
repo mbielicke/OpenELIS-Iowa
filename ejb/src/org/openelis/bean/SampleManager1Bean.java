@@ -2740,6 +2740,7 @@ public class SampleManager1Bean {
                     ref = addAnalysisAndPrep(ret, anaByTest, tm, test, null);
                     ref.setParentAnalysisId(test.getAnalysisId());
                     ref.setParentResultId(test.getResultId());
+                    ref.setPanelId(test.getPanelId());
                     anaById.put(ref.getId(), ref);
                 }
             } else {
@@ -3380,7 +3381,7 @@ public class SampleManager1Bean {
     private void updateStatus(ReportStatus status, int increment) {
         if (status == null)
             return;
-
+        
         if (ReportStatus.Status.CANCEL.equals(status.getStatus()))
             status.setMessage(Messages.get().dataView_pleaseWait());
         else

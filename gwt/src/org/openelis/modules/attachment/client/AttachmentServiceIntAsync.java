@@ -28,6 +28,7 @@ package org.openelis.modules.attachment.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
@@ -54,16 +55,28 @@ public interface AttachmentServiceIntAsync {
 
     public void fetchUnattachedByDescription(String description, int first, int max,
                                              AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
+    public void fetchIssues(AsyncCallback<ArrayList<AttachmentIssueViewDO>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
     public void fetchForReserve(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
+    public void fetchIssueForUpdate(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
 
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
 
+    public void addIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback);
+
+    public void updateIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
+    public void unlockIssue(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void put(AsyncCallback<ArrayList<AttachmentManager>> callback);
+
+    public void deleteIssue(AttachmentIssueViewDO data, AsyncCallback<Void> callback);
 }

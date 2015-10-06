@@ -64,6 +64,40 @@ public class SampleNeonatalBean {
         return DataBaseUtil.toArrayList(n);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<SampleNeonatalViewDO> fetchByPatientIds(ArrayList<Integer> patientIds) {
+        Query query;
+        List<SampleNeonatalViewDO> n;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("SampleNeonatal.FetchByPatientIds");
+        n = new ArrayList<SampleNeonatalViewDO>();         
+        r = DataBaseUtil.createSubsetRange(patientIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", patientIds.subList(r.get(i), r.get(i + 1)));
+            n.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(n);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<SampleNeonatalViewDO> fetchByNextOfKinIds(ArrayList<Integer> nextOfKinIds) {
+        Query query;
+        List<SampleNeonatalViewDO> n;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("SampleNeonatal.FetchByNextOfKinIds");
+        n = new ArrayList<SampleNeonatalViewDO>();         
+        r = DataBaseUtil.createSubsetRange(nextOfKinIds.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", nextOfKinIds.subList(r.get(i), r.get(i + 1)));
+            n.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(n);
+    }
+
     public SampleNeonatalDO add(SampleNeonatalDO data) throws Exception {
         SampleNeonatal entity;
 

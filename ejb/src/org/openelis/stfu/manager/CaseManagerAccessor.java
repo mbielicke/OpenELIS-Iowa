@@ -2,10 +2,6 @@ package org.openelis.stfu.manager;
 
 import java.util.ArrayList;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
-
 import org.openelis.domain.DataObject;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PatientDO;
@@ -19,111 +15,108 @@ import org.openelis.stfu.domain.CaseUserDO;
 
 public class CaseManagerAccessor {
 
-	public CaseManagerAccessor() {
-		
-	}
 	
-	public CaseDO getCase(CaseManager cm) {
+	public static CaseDO getCase(CaseManager cm) {
 		return cm.getCase();
 	}
 	
-	public void setCase(CaseManager cm, CaseDO _case) {
+	public static void setCase(CaseManager cm, CaseDO _case) {
 		cm.mycase = _case;
 	}
 	
-	public PatientDO gePatient(CaseManager cm) {
+	public static PatientDO gePatient(CaseManager cm) {
 		return cm.patient;
 	}
 	
-	public void setPatient(CaseManager cm, PatientDO patient) {
+	public static void setPatient(CaseManager cm, PatientDO patient) {
 		cm.patient = patient;
 	}
 	
-	public PatientDO getNextkin(CaseManager cm) {
+	public static PatientDO getNextkin(CaseManager cm) {
 		return cm.patient;
 	}
 	
-	public void setNextkin(CaseManager cm, PatientDO nextkin) {
+	public static void setNextkin(CaseManager cm, PatientDO nextkin) {
 		cm.nextkin = nextkin;
 	}
 	
-	public CasePatientDO getCasePatient(CaseManager cm) {
+	public static CasePatientDO getCasePatient(CaseManager cm) {
 		return cm.casePatient;
 	}
 	
-	public void setPatient(CaseManager cm, CasePatientDO casePatient) {
+	public static void setPatient(CaseManager cm, CasePatientDO casePatient) {
 		cm.casePatient = casePatient;
 	}
 	
-	public CasePatientDO getCaseNextkin(CaseManager cm) {
+	public static CasePatientDO getCaseNextkin(CaseManager cm) {
 		return cm.caseNextkin;
 	}
 	
-	public void setCaseNextkin(CaseManager cm, CasePatientDO caseNextkin) {
+	public static void setCaseNextkin(CaseManager cm, CasePatientDO caseNextkin) {
 		cm.caseNextkin = caseNextkin;
 	}
 	
-	public OrganizationViewDO getOrganization(CaseManager cm) {
+	public static OrganizationViewDO getOrganization(CaseManager cm) {
 		return cm.organization;
 	}
 	
-	public void setOrganization(CaseManager cm, OrganizationViewDO organization) {
+	public static void setOrganization(CaseManager cm, OrganizationViewDO organization) {
 		cm.organization = organization;
 	}
 	
-	public CaseUserDO getCaseUser(CaseManager cm) {
+	public static CaseUserDO getCaseUser(CaseManager cm) {
 		return cm.caseUser;
 	}
 	
-	public void setCaseUser(CaseManager cm, CaseUserDO caseUser) {
+	public static void setCaseUser(CaseManager cm, CaseUserDO caseUser) {
 		cm.caseUser = caseUser;
 	}
 	
-	public CaseProviderDO getCaseProvider(CaseManager cm) {
+	public static CaseProviderDO getCaseProvider(CaseManager cm) {
 		return cm.caseProvider;
 	}
 	
-	public void setCaseProvider(CaseManager cm, CaseProviderDO caseProvider) {
+	public static void setCaseProvider(CaseManager cm, CaseProviderDO caseProvider) {
 		cm.caseProvider = caseProvider;
 	}
 	
-	public ArrayList<CaseAnalysisDO> getCaseAnalyses(CaseManager cm) {
+	public static ArrayList<CaseAnalysisDO> getCaseAnalyses(CaseManager cm) {
 		return cm.caseAnalyses;
 	}
 	
-	public void setCaseAnalyses(CaseManager cm, ArrayList<CaseAnalysisDO> analyses) {
+	public static void setCaseAnalyses(CaseManager cm, ArrayList<CaseAnalysisDO> analyses) {
 		cm.caseAnalyses = analyses;
 	}
 	
-	public void addAnalysis(CaseManager cm, CaseAnalysisDO analysis) {
+	public static void addAnalysis(CaseManager cm, CaseAnalysisDO analysis) {
 		cm.analysis.add(analysis);
 	}
 	
-	public ArrayList<CaseResultDO> getCaseResults(CaseManager cm) {
+	public static ArrayList<CaseResultDO> getCaseResults(CaseManager cm) {
 		return cm.caseResults;
 	}
 	
-	public void setCaseResults(CaseManager cm, ArrayList<CaseResultDO> results) {
+	public static void setCaseResults(CaseManager cm, ArrayList<CaseResultDO> results) {
 		cm.caseResults = results;
 	}
 	
-	public void addResult(CaseManager cm, CaseResultDO result) {
+	public static void addResult(CaseManager cm, CaseResultDO result) {
 		cm.result.add(result);
 	}
 	
-	public ArrayList<CaseTagDO> getCaseTags(CaseManager cm) {
+	public static ArrayList<CaseTagDO> getCaseTags(CaseManager cm) {
 		return cm.caseTags;
 	}
 	
-	public void setCaseTags(CaseManager cm, ArrayList<CaseTagDO> tags) {
+	public static void setCaseTags(CaseManager cm, ArrayList<CaseTagDO> tags) {
 		cm.caseTags = tags;
 	}
 	
-	public void addTag(CaseManager cm, CaseTagDO tag) {
+	public static void addTag(CaseManager cm, CaseTagDO tag) {
 		cm.tag.add(tag);
 	}
 	
-	public ArrayList<DataObject> getRemoved(CaseManager cm) {
+	public static ArrayList<DataObject> getRemoved(CaseManager cm) {
 		return cm.removed;
 	}
 }

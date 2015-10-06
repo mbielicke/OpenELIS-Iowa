@@ -31,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,10 +43,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -67,6 +64,7 @@ import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.utilcommon.ResultFormatter;
@@ -74,9 +72,6 @@ import org.openelis.utilcommon.ResultFormatter;
 @Stateless
 @SecurityDomain("openelis")
 public class InstrumentInterfaceImportBean {
-    @Resource
-    private SessionContext           ctx;
-
     @EJB
     LockBean                         lock;
     @EJB
@@ -371,10 +366,8 @@ public class InstrumentInterfaceImportBean {
                 accessionNumber = data[fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber())];
                 if (accessionNumber != null)
                     accessionNumber = accessionNumber.trim();
-                if (waVDOs.size() == 1 && !waVDO.getAccessionNumber().equals(accessionNumber)) {
-                    ctx.setRollbackOnly();
-                    throw new Exception("Accession Number mismatch: File = '"+accessionNumber+"' Worksheet = '"+waVDO.getAccessionNumber()+"'");
-                }
+                if (waVDOs.size() == 1 && !waVDO.getAccessionNumber().equals(accessionNumber))
+                    throw new DatabaseException("Accession Number mismatch: File = '"+accessionNumber+"' Worksheet = '"+waVDO.getAccessionNumber()+"'");
 
                 if (waVDO.getAnalysisId() != null) {
                     wrMap = wrMapsByAnalysisId.get(waVDO.getId());
@@ -388,11 +381,10 @@ public class InstrumentInterfaceImportBean {
                                     taList = testAnalyte.fetchByTestId(waVDO.getTestId());
                                     testAnalyteMap.put(waVDO.getTestId(), taList);
                                 } catch (Exception anyE) {
-                                    ctx.setRollbackOnly();
-                                    throw new Exception("Error loading analyte list for '" +
-                                                        waVDO.getTestName() + ", " +
-                                                        waVDO.getMethodName() + "' : " +
-                                                        anyE.getMessage());
+                                    throw new DatabaseException("Error loading analyte list for '" +
+                                                                waVDO.getTestName() + ", " +
+                                                                waVDO.getMethodName() + "' : " +
+                                                                anyE.getMessage());
                                 }
                             }
                             if (excludedIds == null) {
@@ -401,11 +393,10 @@ public class InstrumentInterfaceImportBean {
                                     for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(waVDO.getTestId()))
                                         excludedIds.add(twaVDO.getTestAnalyteId());
                                 } catch (Exception anyE) {
-                                    ctx.setRollbackOnly();
-                                    throw new Exception("Error loading excluded analytes for '" +
-                                                        waVDO.getTestName() + ", " +
-                                                        waVDO.getMethodName() + "' : " +
-                                                        anyE.getMessage());
+                                    throw new DatabaseException("Error loading excluded analytes for '" +
+                                                                waVDO.getTestName() + ", " +
+                                                                waVDO.getMethodName() + "' : " +
+                                                                anyE.getMessage());
                                 }
                                 excludedMap.put(waVDO.getTestId(), excludedIds);
                             }
@@ -435,11 +426,10 @@ public class InstrumentInterfaceImportBean {
                                                     rf = tMan.getFormatter();
                                                     rfMap.put(taVDO.getTestId(), rf);
                                                 } catch (Exception anyE) {
-                                                    ctx.setRollbackOnly();
-                                                    throw new Exception("Error loading result formatter for '" +
-                                                                        waVDO.getTestName() + ", " +
-                                                                        waVDO.getMethodName() + "' : " +
-                                                                        anyE.getMessage());
+                                                    throw new DatabaseException("Error loading result formatter for '" +
+                                                                                waVDO.getTestName() + ", " +
+                                                                                waVDO.getMethodName() + "' : " +
+                                                                                anyE.getMessage());
                                                 }
                                             }
                                             wrVDO.setValueAt(colNum, rf.getDefault(taVDO.getResultGroup(), waVDO.getUnitOfMeasureId()));
@@ -511,15 +501,11 @@ public class InstrumentInterfaceImportBean {
                     value = data[fileColumnMap.get(Messages.get().instrumentInterface_instrumentId())];
                     if (!setInstrument && value != null && value.length() > 0) {
                         instruments = instrument.fetchActiveByName(value, 1);
-                        if (instruments.size() != 1)  {
-                            ctx.setRollbackOnly();
-                            throw new Exception(Messages.get().instrumentInterface_invalidInstrumentName(value));
-                        }
+                        if (instruments.size() != 1)
+                            throw new DatabaseException(Messages.get().instrumentInterface_invalidInstrumentName(value));
                         if (manager.getWorksheet().getInstrumentId() != null &&
-                            DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value)) {
-                            ctx.setRollbackOnly();
-                            throw new Exception(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
-                        }
+                            DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value))
+                            throw new DatabaseException(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
                         if (manager.getWorksheet().getInstrumentId() == null) {
                             manager.getWorksheet().setInstrumentId(instruments.get(0).getId());
                             manager.getWorksheet().setInstrumentName(instruments.get(0).getName());
