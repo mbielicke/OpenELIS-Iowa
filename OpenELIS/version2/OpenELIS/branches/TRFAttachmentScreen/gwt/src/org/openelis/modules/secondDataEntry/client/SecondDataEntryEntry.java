@@ -28,7 +28,7 @@ public class SecondDataEntryEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().secondDataEntry_secondDataEntry());
-                    window.setSize("940px", "550px");
+                    window.setSize("1155px", "550px");
                     window.setContent(new SecondDataEntryScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "secondDataEntry");
                 } catch (Throwable e) {
