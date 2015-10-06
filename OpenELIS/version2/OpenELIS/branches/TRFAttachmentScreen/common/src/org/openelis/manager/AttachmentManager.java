@@ -32,9 +32,10 @@ import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 
 /**
- * This class encapsulates an attachment and all its items. Although the class
- * provides some basic functions internally, it is designed to interact with EJB
- * methods to provide majority of the operations needed to manage an attachment.
+ * This class encapsulates an attachment, its items and issue. Although the
+ * class provides some basic functions internally, it is designed to interact
+ * with EJB methods to provide majority of the operations needed to manage an
+ * attachment.
  */
 public class AttachmentManager implements Serializable {
     private static final long                 serialVersionUID = 1L;
@@ -56,7 +57,7 @@ public class AttachmentManager implements Serializable {
     public AttachmentDO getAttachment() {
         return attachment;
     }
-
+    
     /**
      * Class to manage Attachment Item information
      */

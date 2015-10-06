@@ -37,10 +37,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -51,6 +49,7 @@ import org.openelis.domain.EOrderBodyDO;
 import org.openelis.domain.EOrderDO;
 import org.openelis.domain.EOrderLinkDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.util.XMLUtil;
@@ -61,9 +60,6 @@ import org.w3c.dom.NodeList;
 @Stateless
 @SecurityDomain("openelis")
 public class EOrderImportBean {
-    @Resource
-    private SessionContext      ctx;
-
     @EJB
     EOrderBean                  eorder;
     @EJB
@@ -209,9 +205,8 @@ public class EOrderImportBean {
                                     }
                                 }
                             } catch (Exception anyE) {
-                                ctx.setRollbackOnly();
-                                throw new Exception("Error cancelling previous orders for ID " +
-                                                    eorderDO.getId() + ": " + anyE.getMessage());
+                                throw new DatabaseException("Error cancelling previous orders for ID " +
+                                                            eorderDO.getId() + ": " + anyE.getMessage());
                             }
                         }
                     }
@@ -232,8 +227,7 @@ public class EOrderImportBean {
                 eorderLink.add(eorderLinkDO);
             }
         } catch (Exception anyE) {
-            ctx.setRollbackOnly();
-            throw anyE;
+            throw new DatabaseException(anyE);
         }
     }
 

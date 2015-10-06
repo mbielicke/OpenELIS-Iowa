@@ -2730,11 +2730,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     if (closeLoginScreen)
                         /*
                          * the login screen needs to be closed because it is
-                         * waiting for Attachment screen to be closed
+                         * waiting for attachment screen to be closed
                          */
                         screen.window.close();
                     else
                         addWithTRF.setCheck(false);
+                    
+                    /*
+                     * make sure that all detached tabs are closed when the
+                     * attachment screen is closed
+                     */
+                    trfAttachmentScreen.closeTabPanel();
                 }
             });
         } catch (Throwable e) {
@@ -2770,16 +2776,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-    }
-
-    /**
-     * Overridden because the patient fields can be enabled or disabled several
-     * times in Add or Update states, based on factors such as whether the
-     * patient is locked
-     */
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     /**

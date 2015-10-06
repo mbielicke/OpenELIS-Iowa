@@ -7558,6 +7558,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_frequency();
 
   /**
+   * Translated "From".
+   * 
+   * @return translated "From"
+   */
+  @DefaultMessage("From")
+  @Key("gen.from")
+  String gen_from();
+
+  /**
    * Translated "Generating Report...".
    * 
    * @return translated "Generating Report..."
@@ -7700,6 +7709,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Maiden Name")
   @Key("gen.maidenName")
   String gen_maidenName();
+
+  /**
+   * Translated "Merge".
+   * 
+   * @return translated "Merge"
+   */
+  @DefaultMessage("Merge")
+  @Key("gen.merge")
+  String gen_merge();
+
+  /**
+   * Translated "Merging...".
+   * 
+   * @return translated "Merging..."
+   */
+  @DefaultMessage("Merging...")
+  @Key("gen.merging")
+  String gen_merging();
+
+  /**
+   * Translated "Merging...Complete".
+   * 
+   * @return translated "Merging...Complete"
+   */
+  @DefaultMessage("Merging...Complete")
+  @Key("gen.mergingComplete")
+  String gen_mergingComplete();
+
+  /**
+   * Translated "Merging Failed.".
+   * 
+   * @return translated "Merging Failed."
+   */
+  @DefaultMessage("Merging Failed.")
+  @Key("gen.mergingFailed")
+  String gen_mergingFailed();
 
   /**
    * Translated "Method".
@@ -13822,6 +13867,60 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String patientLookup_patientLookup();
 
   /**
+   * Translated "Patient Merge".
+   * 
+   * @return translated "Patient Merge"
+   */
+  @DefaultMessage("Patient Merge")
+  @Key("patientMerge")
+  String patientMerge();
+
+  /**
+   * Translated "You may not select the same patient for both a From and a To.".
+   * 
+   * @return translated "You may not select the same patient for both a From and a To."
+   */
+  @DefaultMessage("You may not select the same patient for both a From and a To.")
+  @Key("patientMerge.duplicateFromTo")
+  String patientMerge_duplicateFromTo();
+
+  /**
+   * Translated "Both From and To patients must be specified.".
+   * 
+   * @return translated "Both From and To patients must be specified."
+   */
+  @DefaultMessage("Both From and To patients must be specified.")
+  @Key("patientMerge.missingPatient")
+  String patientMerge_missingPatient();
+
+  /**
+   * Translated "Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}".
+   * 
+   * @return translated "Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}"
+   */
+  @DefaultMessage("Merged Next of Kin ID# {0,number,#0} into ID# {1,number,#0}")
+  @Key("patientMerge.nextOfKinNote")
+  String patientMerge_nextOfKinNote(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ".
+   * 
+   * @return translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} "
+   */
+  @DefaultMessage("Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ")
+  @Key("patientMerge.patientNote")
+  String patientMerge_patientNote(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Move samples from one or more patient(s) to another deleting the 'From' patient(s).".
+   * 
+   * @return translated "Move samples from one or more patient(s) to another deleting the 'From' patient(s)."
+   */
+  @DefaultMessage("Move samples from one or more patient(s) to another deleting the 'From' patient(s).")
+  @Key("patientMergeDescription")
+  String patientMergeDescription();
+
+  /**
    * Translated "Period ".
    * 
    * @return translated "Period "
@@ -18268,13 +18367,49 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String search();
 
   /**
-   * Translated "Second Data Entry ".
+   * Translated "Accession # / Attachment".
    * 
-   * @return translated "Second Data Entry "
+   * @return translated "Accession # / Attachment"
    */
-  @DefaultMessage("Second Data Entry ")
+  @DefaultMessage("Accession # / Attachment")
+  @Key("secondDataEntry.accessionAttachment")
+  String secondDataEntry_accessionAttachment();
+
+  /**
+   * Translated "First Data Entry (Ctrl+1)".
+   * 
+   * @return translated "First Data Entry (Ctrl+1)"
+   */
+  @DefaultMessage("First Data Entry (Ctrl+1)")
+  @Key("secondDataEntry.firstDataEntryHeading")
+  String secondDataEntry_firstDataEntryHeading();
+
+  /**
+   * Translated "Second Data Entry".
+   * 
+   * @return translated "Second Data Entry"
+   */
+  @DefaultMessage("Second Data Entry")
   @Key("secondDataEntry.secondDataEntry")
   String secondDataEntry_secondDataEntry();
+
+  /**
+   * Translated "Second Data Entry (Ctrl+2)".
+   * 
+   * @return translated "Second Data Entry (Ctrl+2)"
+   */
+  @DefaultMessage("Second Data Entry (Ctrl+2)")
+  @Key("secondDataEntry.secondDataEntryHeading")
+  String secondDataEntry_secondDataEntryHeading();
+
+  /**
+   * Translated "Please select an attachment to view it".
+   * 
+   * @return translated "Please select an attachment to view it"
+   */
+  @DefaultMessage("Please select an attachment to view it")
+  @Key("secondDataEntry.selectAttachmentToView")
+  String secondDataEntry_selectAttachmentToView();
 
   /**
    * Translated "Second Entry".
@@ -20806,6 +20941,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_attached();
 
   /**
+   * Translated "Please first commit or abort on the other tab".
+   * 
+   * @return translated "Please first commit or abort on the other tab"
+   */
+  @DefaultMessage("Please first commit or abort on the other tab")
+  @Key("trfAttachment.commitAbortOnOtherTab")
+  String trfAttachment_commitAbortOnOtherTab();
+
+  /**
    * Translated "Data Entry TRF Attachment".
    * 
    * @return translated "Data Entry TRF Attachment"
@@ -20822,6 +20966,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You must first unlock all attachments")
   @Key("trfAttachment.firstUnlockAll")
   String trfAttachment_firstUnlockAll();
+
+  /**
+   * Translated "Issue".
+   * 
+   * @return translated "Issue"
+   */
+  @DefaultMessage("Issue")
+  @Key("trfAttachment.issue")
+  String trfAttachment_issue();
+
+  /**
+   * Translated "Issue List".
+   * 
+   * @return translated "Issue List"
+   */
+  @DefaultMessage("Issue List")
+  @Key("trfAttachment.issueList")
+  String trfAttachment_issueList();
 
   /**
    * Translated "Lock".
@@ -20858,6 +21020,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Not Attached")
   @Key("trfAttachment.notAttached")
   String trfAttachment_notAttached();
+
+  /**
+   * Translated "TRF".
+   * 
+   * @return translated "TRF"
+   */
+  @DefaultMessage("TRF")
+  @Key("trfAttachment.trf")
+  String trfAttachment_trf();
 
   /**
    * Translated "Unlock All".

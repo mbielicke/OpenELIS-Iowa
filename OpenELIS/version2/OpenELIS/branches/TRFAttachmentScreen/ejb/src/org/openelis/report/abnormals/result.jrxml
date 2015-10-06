@@ -14,7 +14,7 @@ FROM   result r
        JOIN dictionary rt ON rt.id = r.type_id
        LEFT JOIN dictionary rd on rd.id::char(10) = r.value
 WHERE  r.analysis_id = $P{ANALYSIS_ID} AND
-       r.is_column = "N"
+       r.is_column = 'N'
 ORDER BY analyte_name]]>
 	</queryString>
 	<field name="analyte_name" class="java.lang.String"/>

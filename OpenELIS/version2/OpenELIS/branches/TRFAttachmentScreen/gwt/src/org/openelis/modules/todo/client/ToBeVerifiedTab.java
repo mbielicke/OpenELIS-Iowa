@@ -57,13 +57,13 @@ import org.openelis.ui.widget.WindowInt;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+/*import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
 import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
+import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;*/
 
 public class ToBeVerifiedTab extends Screen {
             
@@ -73,8 +73,8 @@ public class ToBeVerifiedTab extends Screen {
     private ArrayList<ToDoSampleViewVO> fullList;
     private TableWidget                 table;
     private VerticalPanel               toBeVerifiedPanel; 
-    private ColumnChart                 chart;
-    private Options                     options;
+    //private ColumnChart                 chart;
+    //private Options                     options;
     
     public ToBeVerifiedTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -338,7 +338,7 @@ public class ToBeVerifiedTab extends Screen {
         int size;
         Integer val;
         String range;
-        DataTable data;
+        /*DataTable data;
 
         data = DataTable.create();
         data.addColumn(ColumnType.STRING);
@@ -363,7 +363,7 @@ public class ToBeVerifiedTab extends Screen {
          * because the screen's being dragged caused chart to get detached. 
          * Otherwise, chart can just be redrawn because only the data showing 
          * in it changed.    
-         */
+         /
         if (chart == null) {
             chart = new ColumnChart(data, options);            
             toBeVerifiedPanel.add(chart);
@@ -373,10 +373,10 @@ public class ToBeVerifiedTab extends Screen {
             toBeVerifiedPanel.add(chart);
         } else {
             chart.draw(data, options );
-        }                
+        }*/
     }
     
-    private Options getOptions() {        
+    /*private Options getOptions() {        
         Options ops;
         AxisOptions aops;
         TextStyle fts;        
@@ -399,5 +399,5 @@ public class ToBeVerifiedTab extends Screen {
         ops.setHeight(215);        
         ops.setTitle(Messages.get().timeSinceSamplesReceived()); 
         return ops;      
-    }
+    }*/
 }

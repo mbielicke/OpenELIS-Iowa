@@ -209,7 +209,7 @@ public class AttachmentManagerBean {
             ids.add(data.getId());
         return fetchByIds(ids);
     }
-
+    
     /**
      * Fetches and locks the attachment whose id is "attachmentId"; also fetches
      * its attachment items; fills a manager from those; the attachment is
@@ -739,7 +739,7 @@ public class AttachmentManagerBean {
                 }
             }
         }
-
+        
         return ams;
     }
 

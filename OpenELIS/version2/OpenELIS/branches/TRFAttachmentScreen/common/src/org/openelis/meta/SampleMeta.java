@@ -36,7 +36,7 @@ import org.openelis.ui.common.Meta;
 import org.openelis.ui.common.MetaMap;
 
 public class SampleMeta implements Meta, MetaMap {
-    private static final String    ID = "_sample.id",
+    public static final String    ID = "_sample.id",
                     NEXT_ITEM_SEQUENCE = "_sample.nextItemSequence",
                     DOMAIN = "_sample.domain",
                     ACCESSION_NUMBER = "_sample.accessionNumber",
