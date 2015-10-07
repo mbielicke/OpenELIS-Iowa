@@ -212,6 +212,9 @@ public class SampleSDWISBean {
         if (data.getSampleCategoryId() == null)
             e.add(new FormErrorException(Messages.get().sampleSDWIS_sampleCatRequiredException(accession)));
         
+        if (data.getFacilityId() == null)
+            e.add(new FormErrorException(Messages.get().sampleSDWIS_sampleFacilityIdRequiredException(accession)));
+        
         if (e.size() > 0)
             throw e;
     }

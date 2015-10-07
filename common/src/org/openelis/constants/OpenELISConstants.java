@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -17942,6 +17942,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Category is required")
   @Key("sampleSDWIS.sampleCatRequiredException")
   String sampleSDWIS_sampleCatRequiredException(Integer arg0);
+
+  /**
+   * Translated "Accession # {0,number,#0}: SDWIS Sample Facility Id is required".
+   * 
+   * @return translated "Accession # {0,number,#0}: SDWIS Sample Facility Id is required"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Facility Id is required")
+  @Key("sampleSDWIS.sampleFacilityIdRequiredException")
+  String sampleSDWIS_sampleFacilityIdRequiredException(Integer arg0);
 
   /**
    * Translated "Sample Pt Id".
