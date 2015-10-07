@@ -10,7 +10,7 @@
 	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<import value="org.openelis.utils.Counter"/>
 	<reportFont name="times" isDefault="false" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
-	<parameter name="LOGNAME" class="java.lang.String">
+	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="FROM_DATE" class="java.sql.Timestamp">
@@ -227,11 +227,11 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 				<textFieldExpression class="java.lang.String"><![CDATA["Samples entered from " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{FROM_DATE}) + " to " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{TO_DATE})]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
-				<reportElement key="logname" x="662" y="13" width="93" height="13"/>
+				<reportElement key="username" x="662" y="13" width="93" height="13"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGNAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
