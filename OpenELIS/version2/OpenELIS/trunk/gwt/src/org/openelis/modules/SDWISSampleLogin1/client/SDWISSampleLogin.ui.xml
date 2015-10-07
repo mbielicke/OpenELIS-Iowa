@@ -167,7 +167,7 @@
                       </td>
                       <td>
                         <w:TextBox ui:field="sdwisFacilityId" width="75px" case="UPPER"
-                          field="String" maxLength="12" />
+                          field="String" maxLength="12" required="true" />
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.gen_sampleType}:" />
