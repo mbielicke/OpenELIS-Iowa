@@ -53,7 +53,7 @@ public class SerogroupResultScriptletProxy1 implements SerogroupResultScriptlet1
 
     @Override
     public ArrayList<DictionaryViewDO> getDictionaryByEntry(String entry) throws Exception {
-        return dictService.fetchByEntry(entry);
+        return dictService.fetchByExactEntry(entry);
     }
 
     @Override
