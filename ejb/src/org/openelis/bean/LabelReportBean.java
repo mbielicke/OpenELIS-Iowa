@@ -231,7 +231,8 @@ public class LabelReportBean {
         f.print("^FO60,80^AP^FD"+name2+"^FS");
         f.print("^FO60,100^AP^FD"+started+"^FS");
         f.print("^FO60,120^AP^FD"+users+"^FS");
-        f.print("^FO140,115^AQ^FDq:"+qcLink+"^FS");
+        if (qcLink != null && qcLink.length() > 0)
+            f.print("^FO140,115^AQ^FDq:"+qcLink+"^FS");
         f.print("^PQ1,,1,^XZ");
     }
     
@@ -244,7 +245,7 @@ public class LabelReportBean {
         f.print("^XA");
         f.print("^LH0,0");
         f.print("^FO30,35^AT^BCN,50,Y,N,N^FD"+accession+"^FS");                                 // barcoded accession
-        if (dilution.length() > 0)
+        if (dilution != null && dilution.length() > 0)
             f.print("^FO30,140^AT^FDWS: "+worksheetPosition+" Dilution: "+dilution+"^FS");      // readable worksheet position and dilution
         else
             f.print("^FO30,140^AT^FDWS: "+worksheetPosition+"^FS");                             // readable worksheet position
