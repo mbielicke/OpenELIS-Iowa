@@ -100,15 +100,17 @@ public abstract class TRFTabUI extends Screen {
 
     protected EventBus                                      parentBus;
 
-    protected HashMap<Integer, AttachmentManager>           managerMap;
-
-    protected HashMap<Integer, AttachmentIssueViewDO>       issueMap;
-
     protected String                                        defaultPattern;
 
     protected int                                           attachmentShownRow;
 
-    protected boolean                                       query, lockForUpdate, refresh;
+    protected boolean                                       query, refresh;
+
+    protected AttachmentDO                                  prevSelected;
+
+    protected HashMap<Integer, AttachmentManager>           managerMap;
+
+    protected HashMap<Integer, AttachmentIssueViewDO>       issueMap;
 
     protected static int                                    MAX_ATTACHMENTS = 1000;
 
@@ -245,8 +247,7 @@ public abstract class TRFTabUI extends Screen {
                  * column can't be known in SelectionHandler
                  */
                 if (attachmentShownRow != r) {
-                    displayAttachment(table.getRowAt(r),
-                                      Messages.get().trfAttachment_dataEntryTRFAttachment());
+                    displayAttachment(table.getRowAt(r));
                     attachmentShownRow = r;
                 }
 
@@ -315,38 +316,47 @@ public abstract class TRFTabUI extends Screen {
                     return;
 
                 issueMap = event.getIssueMap();
-                if (AttachmentIssueEvent.Action.FETCH.equals(event.getAction())) {
-                    if (query) {
-                        description.setFocus(true);
-                        setState(QUERY);
-                        parentScreen.getWindow().setDone(Messages.get().gen_enterFieldsToQuery());
-                    } else if (refresh) {
-                        fetchUnattached(getPattern(), false);
-                    } else {
+                switch (event.getAction()) {
+                    case FETCH:
+                        if (screen1 == event.getOriginalSource()) {
+                            if (query) {
+                                query = false;
+                                description.setFocus(true);
+                                setState(QUERY);
+                                parentScreen.getWindow().setDone(Messages.get()
+                                                                         .gen_enterFieldsToQuery());
+                            } else if (refresh) {
+                                refresh = false;
+                                fetchUnattached(getPattern(), false);
+                            }
+                        } else {
+                            query = false;
+                            refresh = false;
+                            refreshIssues();
+                        }
+                        break;
+                    case ADD:
+                    case UPDATE:
+                    case DELETE:
                         refreshIssues();
-                    }
-                } else if (AttachmentIssueEvent.Action.LOCK.equals(event.getAction())) {
-                    if (screen1 != event.getOriginalSource())
-                        return;
-                    if (lockForUpdate) {
-                        refreshSelectedRow();
-                        setState(UPDATE);
-                        table.startEditing(table.getSelectedRow(), 3);
-                    }
-                } else {
-                    if (AttachmentIssueEvent.Action.ADD.equals(event.getAction()) ||
-                        (AttachmentIssueEvent.Action.DELETE.equals(event.getAction())))
-                        refreshIssues();
-                    else if (AttachmentIssueEvent.Action.UNLOCK.equals(event.getAction()) &&
-                             screen1 != event.getOriginalSource())
-                        return;
-                    else
-                        refreshIssues();
-                    setState(DISPLAY);
-                    if (lockForUpdate)
-                        lockForUpdate = false;
+                        setState(DISPLAY);
+                        break;
+                    case LOCK:
+                        if (screen1 == event.getOriginalSource()) {
+                            refreshSelectedRow();
+                            setState(UPDATE);
+                            table.startEditing(table.getSelectedRow(), 3);
+                        }
+                        break;
+                    case UNLOCK:
+                        if (screen1 == event.getOriginalSource()) {
+                            refreshIssues();
+                            setState(DISPLAY);
+                        }
+                        break;
                 }
             }
+
         });
     }
 
@@ -463,7 +473,6 @@ public abstract class TRFTabUI extends Screen {
         Integer id;
 
         id = table.getRowAt(table.getSelectedRow()).getData();
-        lockForUpdate = true;
         fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, id);
     }
 
@@ -498,13 +507,22 @@ public abstract class TRFTabUI extends Screen {
      */
     protected void commitQuery() {
         Query query;
+        AttachmentManager am;
 
-        fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
+        /*
+         * find out which attachment if any is selected in the table so that,
+         * that attachment can be selected on reloading the table if it's still
+         * there
+         */
+        am = getSelected();
+        prevSelected = am != null ? am.getAttachment() : null;
+        
+        managerMap = null;
+        
         query = new Query();
         query.setFields(getQueryFields());
-
         query.setRowsPerPage(MAX_ATTACHMENTS);
-        managerMap = null;
+
         executeQuery(query);
     }
 
@@ -607,6 +625,7 @@ public abstract class TRFTabUI extends Screen {
 
     private void fetchUnattached(String pattern, boolean fetchIssues) {
         Query q;
+        AttachmentManager am;
 
         description.setValue(pattern);
         unattached.setValue("Y");
@@ -616,10 +635,19 @@ public abstract class TRFTabUI extends Screen {
             query = false;
             fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
         } else {
+            /*
+             * find out which attachment if any is selected in the table so that,
+             * that attachment can be selected on reloading the table if it's still
+             * there
+             */
+            am = getSelected();
+            prevSelected = am != null ? am.getAttachment() : null;
+            
+            managerMap = null;
+            
             q = new Query();
             q.setFields(getQueryFields());
             q.setRowsPerPage(MAX_ATTACHMENTS);
-            managerMap = null;
 
             executeQuery(q);
         }
@@ -639,14 +667,15 @@ public abstract class TRFTabUI extends Screen {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
                 public void success(ArrayList<AttachmentManager> result) {
+                    int i, j;
                     Row row;
+                    AttachmentDO data;
 
                     loadTable(null);
 
                     /*
-                     * this map is used to link a tree node with the manager
-                     * containing the attachment or attachment item that it's
-                     * showing
+                     * this map is used to link a table row with the manager
+                     * containing the attachment that it's showing
                      */
                     if (managerMap == null)
                         managerMap = new HashMap<Integer, AttachmentManager>();
@@ -657,10 +686,26 @@ public abstract class TRFTabUI extends Screen {
                     setState(DISPLAY);
                     loadTable(result);
                     parentScreen.getWindow().clearStatus();
-                    row = table.getRowAt(0);
-                    table.selectRowAt(0);
-                    displayAttachment(row, Messages.get().trfAttachment_dataEntryTRFAttachment());
-                    attachmentShownRow = 0;
+
+                    /*
+                     * if the previously selected attachment is still in the
+                     * table, find its row and select it; otherwise select the
+                     * first row
+                     */
+                    i = 0;
+                    if (prevSelected != null) {
+                        for (j = 0; j < table.getRowCount(); j++ ) {
+                            row = table.getRowAt(j);
+                            data = managerMap.get(row.getData()).getAttachment();
+                            if (prevSelected.getId().equals(data.getId())) {
+                                i = j;
+                                break;
+                            }
+                        }
+                    }
+                    table.selectRowAt(i);
+                    displayAttachment(table.getRowAt(i));
+                    attachmentShownRow = i;
                     refreshIssues();
                 }
 
@@ -839,22 +884,12 @@ public abstract class TRFTabUI extends Screen {
      * was called then the file is opened in a new window, otherwise it's opened
      * in the same window as before.
      */
-    private void displayAttachment(Row row, String name) {
+    private void displayAttachment(Row row) {
         Integer id;
 
         id = (Integer)row.getData();
-        if (id == null)
-            return;
-        try {
-            /*
-             * passing the same name to displayAttachment makes sure that the
-             * files open in the same window
-             */
-            AttachmentUtil.displayAttachment(id, name, parentScreen.getWindow());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        if (id != null)
+            parentBus.fireEventFromSource(new DisplayAttachmentEvent(id, true), screen1);
     }
 
     private void fireAttachmentIssue(Action action, Integer attachmentId) {
@@ -862,6 +897,6 @@ public abstract class TRFTabUI extends Screen {
                                                                attachmentId,
                                                                null,
                                                                issueMap,
-                                                               screen1), this);
+                                                               screen1), screen1);
     }
 }

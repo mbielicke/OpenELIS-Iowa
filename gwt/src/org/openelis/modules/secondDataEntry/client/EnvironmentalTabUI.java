@@ -96,7 +96,7 @@ public class EnvironmentalTabUI extends Screen {
     interface EnvironmentalTabUiBinder extends UiBinder<Widget, EnvironmentalTabUI> {
     };
 
-    private static EnvironmentalTabUiBinder      uiBinder = GWT.create(EnvironmentalTabUiBinder.class);
+    private static EnvironmentalTabUiBinder    uiBinder = GWT.create(EnvironmentalTabUiBinder.class);
 
     @UiField
     protected FlexTable                        widgetTable;
@@ -106,6 +106,10 @@ public class EnvironmentalTabUI extends Screen {
     protected Screen                           parentScreen;
 
     protected EventBus                         parentBus;
+
+    protected EnvironmentalTabUI               screen;
+
+    protected ArrayList<Widget>                editWidgets;
 
     protected HashMap<String, ArrayList<Item>> models;
 
@@ -117,8 +121,10 @@ public class EnvironmentalTabUI extends Screen {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
+
+        screen = this;
     }
-    
+
     public void setData(SampleManager1 manager) {
         this.manager = manager;
     }
@@ -126,10 +132,10 @@ public class EnvironmentalTabUI extends Screen {
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-        
+
         /*
-         * this keeps track of how many times a widget with a given
-         * key was edited
+         * this keeps track of how many times a widget with a given key was
+         * edited
          */
         if (isState(UPDATE))
             numEdits = new HashMap<String, Integer>();
@@ -147,15 +153,25 @@ public class EnvironmentalTabUI extends Screen {
         Document doc;
         Node root, node;
 
+        row = 0;
+        /*
+         * add the labels that inform the user which shortcut can be used to
+         * copy the value from the widget being edited, to the manager
+         */
+        widgetTable.setWidget(row,
+                              1,
+                              getHeadingLabel(Messages.get()
+                                                      .secondDataEntry_secondDataEntryHeading()));
+        widgetTable.setWidget(row,
+                              4,
+                              getHeadingLabel(Messages.get()
+                                                      .secondDataEntry_firstDataEntryHeading()));
+        editWidgets = new ArrayList<Widget>();
         /*
          * parse the xml and add widgets for the fields to the widget table
          */
         doc = XMLParser.parse(xml);
         root = doc.getDocumentElement();
-        
-        row = 0;
-        widgetTable.setWidget(++row, 1, getHeadingLabel(Messages.get().secondDataEntry_secondDataEntryHeading()));
-        widgetTable.setWidget(row, 4, getHeadingLabel(Messages.get().secondDataEntry_firstDataEntryHeading()));
         for (i = 0; i < root.getChildNodes().getLength(); i++ ) {
             node = root.getChildNodes().item(i);
             /*
@@ -237,6 +253,7 @@ public class EnvironmentalTabUI extends Screen {
      * adds the applicable screen handlers to the widgets in the row
      */
     private void addCollectionDate(int row) {
+        final int index;
         Label<String> l1, l2;
         final Calendar c1, c2;
         final Image i;
@@ -253,6 +270,9 @@ public class EnvironmentalTabUI extends Screen {
         i = new Image();
         hp = new HorizontalPanel();
         addWidgetAndImage(hp, c1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(c1);
 
         b = getCopyButton();
         l2 = getPromptLabel(Messages.get().sample_collected());
@@ -296,19 +316,23 @@ public class EnvironmentalTabUI extends Screen {
                         c2.setValue(manager.getSample().getCollectionDate());
                         b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget
+                     */
+                    Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                //Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
                 c1.setEnabled(isState(UPDATE));
             }
+
+            public Widget onTab(boolean forward) {
+                return screen.onTab(index, forward);
+            }
+
         });
 
         /*
@@ -361,6 +385,7 @@ public class EnvironmentalTabUI extends Screen {
      * adds the applicable screen handlers to the widgets in the row
      */
     private void addCollectionTime(int row) {
+        final int index;
         Label<String> l1, l2;
         final Calendar c1, c2;
         final Image i;
@@ -377,6 +402,9 @@ public class EnvironmentalTabUI extends Screen {
         i = new Image();
         hp = new HorizontalPanel();
         addWidgetAndImage(hp, c1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(c1);
 
         b = getCopyButton();
         l2 = getPromptLabel(Messages.get().gen_time());
@@ -420,18 +448,21 @@ public class EnvironmentalTabUI extends Screen {
                         c2.setValue(manager.getSample().getCollectionTime());
                         b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget
+                     */
+                    Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                //Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
                 c1.setEnabled(isState(UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return screen.onTab(index, forward);
             }
         });
 
@@ -484,6 +515,7 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for received date to the row at the passed index
      */
     private void addReceievedDate(int row) {
+        final int index;
         Label<String> l1, l2;
         final Calendar c1, c2;
         final Image i;
@@ -500,6 +532,9 @@ public class EnvironmentalTabUI extends Screen {
         i = new Image();
         h = new HorizontalPanel();
         addWidgetAndImage(h, c1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(c1);
 
         b = getCopyButton();
         l2 = getPromptLabel(Messages.get().sample_received());
@@ -543,18 +578,21 @@ public class EnvironmentalTabUI extends Screen {
                         c2.setValue(manager.getSample().getReceivedDate());
                         b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget
+                     */
+                    Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                //Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
                 c1.setEnabled(isState(UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return screen.onTab(index, forward);
             }
         });
 
@@ -672,7 +710,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1013,7 +1051,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1134,7 +1172,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1255,7 +1293,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1376,7 +1414,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1501,7 +1539,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1624,7 +1662,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1748,7 +1786,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1877,7 +1915,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -2005,7 +2043,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * set the focus back on the widget
                  */
-                //Scheduler.get().scheduleDeferred(cmd);
+                // Scheduler.get().scheduleDeferred(cmd);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -2143,23 +2181,26 @@ public class EnvironmentalTabUI extends Screen {
      * "Prompt"
      */
     private Label<String> getPromptLabel(String text) {
-        Label<String> l;
-
-        l = new Label<String>(text + ":");
-        l.setStyleName(OpenELISResources.INSTANCE.style().Prompt());
-
-        return l;
+        return getLabel(text + ":", OpenELISResources.INSTANCE.style().Prompt());
     }
-    
+
     /**
      * Creates a Label; sets the passed value as its text and sets its style as
-     * "Prompt"
+     * "Heading"
      */
     private Label<String> getHeadingLabel(String text) {
+        return getLabel(text, OpenELISResources.INSTANCE.style().Heading());
+    }
+
+    /**
+     * Creates a Label; sets the passed values as its text and style
+     * respectively
+     */
+    private Label<String> getLabel(String text, String styleName) {
         Label<String> l;
 
         l = new Label<String>(text);
-        l.setStyleName(OpenELISResources.INSTANCE.style().Heading());
+        l.setStyleName(styleName);
 
         return l;
     }
@@ -2526,8 +2567,8 @@ public class EnvironmentalTabUI extends Screen {
     }
 
     /**
-     * Increments the number of times the widget with the passed key has been
-     * edited by one; returns the incremented value
+     * Increments by one, the number of times the widget with the passed key has
+     * been edited; returns the incremented value
      */
     private Integer updateNumEdit(String key) {
         Integer numEdit;
@@ -2542,4 +2583,22 @@ public class EnvironmentalTabUI extends Screen {
         return numEdit;
     }
 
+    /**
+     * 
+     */
+    private Widget onTab(int index, boolean forward) {
+        if (forward) {
+            if (index < editWidgets.size() - 1)
+                index++ ;
+            else
+                index = 0;
+        } else {
+            if (index > 0)
+                index-- ;
+            else
+                index = editWidgets.size() - 1;
+        }
+
+        return editWidgets.get(index);
+    }
 }
