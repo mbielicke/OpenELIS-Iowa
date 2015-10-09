@@ -265,40 +265,45 @@ public class IssuesTabUI extends Screen {
                 issueList = event.getIssueList();
                 issueMap = event.getIssueMap();
                 data = null;
-                if (AttachmentIssueEvent.Action.LOCK.equals(event.getAction())) {
-                    if (screen1 != event.getOriginalSource())
-                        return;
-                    if (lockForUpdate) {
-                        setState(UPDATE);
-                        data = issueMap.get(event.getAttachmentId());
-                        row.setData(data);
-                        table.setValueAt(r, 3, data.getText());
-                        table.startEditing(r, 2);
-                    } else if (lockForDelete) {
-                        setState(DELETE);
-                        table.removeRowAt(r);
-                    }
-                } else if (AttachmentIssueEvent.Action.UNLOCK.equals(event.getAction())) {
-                    if (screen1 != event.getOriginalSource())
-                        return;
-                    if (lockForUpdate || lockForDelete) {
-                        if (removed != null)
-                            removed = null;
-                        data = issueMap.get(event.getAttachmentId());
+                switch (event.getAction()) {
+                    case FETCH:
+                    case ADD:
+                    case UPDATE:
+                    case DELETE:
+                        /*
+                         * find which issue is selected in the table before
+                         * reloading the table
+                         */
+                        if (row != null)
+                            data = row.getData();
                         loadTable();
                         refresh(data);
-                        lockForUpdate = false;
-                        lockForDelete = false;
-                    }
-                } else {
-                    /*
-                     * find which issue is selected in the table before
-                     * reloading the table
-                     */
-                    if (row != null)
-                        data = row.getData();
-                    loadTable();
-                    refresh(data);
+                        break;
+                    case LOCK:
+                        if (screen1 == event.getOriginalSource()) {
+                            if (lockForUpdate) {
+                                setState(UPDATE);
+                                data = issueMap.get(event.getAttachmentId());
+                                row.setData(data);
+                                table.setValueAt(r, 3, data.getText());
+                                table.startEditing(r, 2);
+                            } else if (lockForDelete) {
+                                setState(DELETE);
+                                table.removeRowAt(r);
+                            }
+                        }
+                        break;
+                    case UNLOCK:
+                        if (screen1 == event.getOriginalSource()) {
+                            if (removed != null)
+                                removed = null;
+                            data = issueMap.get(event.getAttachmentId());
+                            loadTable();
+                            refresh(data);
+                            lockForUpdate = false;
+                            lockForDelete = false;
+                        }
+                        break;
                 }
             }
         });
@@ -422,18 +427,8 @@ public class IssuesTabUI extends Screen {
 
         row = table.getRowAt(table.getSelectedRow());
         data = row.getData();
-        try {
-            /*
-             * passing the same name to displayAttachment makes sure that the
-             * files open in the same window
-             */
-            AttachmentUtil.displayAttachment(data.getAttachmentId(),
-                                             Messages.get().trfAttachment_dataEntryTRFAttachment(),
-                                             parentScreen.getWindow());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        parentBus.fireEventFromSource(new DisplayAttachmentEvent(data.getAttachmentId(), true),
+                                      screen1);
     }
 
     @UiHandler("refreshButton")
@@ -480,7 +475,7 @@ public class IssuesTabUI extends Screen {
         AttachmentIssueViewDO tdata;
 
         if (table.getRowCount() > 0) {
-            i = -1;
+            i = 0;
             /*
              * if the issue selected previously is still in the table, find and
              * select the row that's showing it; otherwise, select the first row
@@ -494,7 +489,7 @@ public class IssuesTabUI extends Screen {
                     }
                 }
             }
-            table.selectRowAt(i >= 0 ? i : 0);
+            table.selectRowAt(i);
             setState(DISPLAY);
         } else {
             setState(DEFAULT);

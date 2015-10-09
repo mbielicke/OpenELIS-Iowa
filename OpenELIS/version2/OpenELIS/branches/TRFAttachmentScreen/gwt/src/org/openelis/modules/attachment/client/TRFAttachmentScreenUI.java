@@ -172,6 +172,31 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 }
             }
         });
+
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                String name;
+
+                if (screen == event.getSource())
+                    return;
+
+                try {
+                    /*
+                     * passing the same name to displayAttachment makes sure
+                     * that the files open in the same window; passing null
+                     * opens the file in a new window
+                     */
+                    name = event.getIsSameWindow() ? Messages.get()
+                                                             .trfAttachment_dataEntryTRFAttachment()
+                                                  : null;
+                    AttachmentUtil.displayAttachment(event.getId(), name, window);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                }
+            }
+        });
     }
 
     /**
@@ -256,7 +281,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                     fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
                 }
@@ -320,7 +345,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     Window.alert("commitUpdate(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };
@@ -353,7 +378,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     Window.alert("commitdelete(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };
@@ -376,13 +401,12 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 public void success(AttachmentIssueViewDO result) {
                     setDone(Messages.get().gen_updateAborted());
                     refreshIssues(result, false);
-                    logger.log(Level.SEVERE, "abort: " + screen.attachmentId);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.UNLOCK, screen.attachmentId);
                 }
 
                 public void failure(Throwable e) {
                     Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };

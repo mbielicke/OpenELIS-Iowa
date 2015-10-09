@@ -56,7 +56,7 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "AttachmentIssue.FetchList",
                            query = "select new org.openelis.domain.AttachmentIssueViewDO(ai.id, ai.attachmentId, ai.timestamp, ai.systemUserId,"
                                    + "ai.text, ai.attachment.description, '')"
-                                   + " from AttachmentIssue ai"),
+                                   + " from AttachmentIssue ai order by ai.timestamp"),
                @NamedQuery(name = "AttachmentIssue.FetchByAttachmentId",
                            query = "select new org.openelis.domain.AttachmentIssueViewDO(ai.id, ai.attachmentId, ai.timestamp, ai.systemUserId,"
                                    + "ai.text, ai.attachment.description, '')"
