@@ -236,7 +236,7 @@ public class DataExchangeExportBean {
 
             addEventLog(Messages.get().dataExchange_executedCriteria(name),
                         cm.getExchangeCriteria().getId(),
-                        Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION,
+                        Constants.dictionary().LOG_LEVEL_INFO,
                         now,
                         sb.toString());
         } catch (NotFoundException e) {
