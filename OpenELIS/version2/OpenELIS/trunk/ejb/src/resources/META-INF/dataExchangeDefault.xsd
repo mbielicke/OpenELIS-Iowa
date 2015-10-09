@@ -438,6 +438,7 @@
 			<xs:element name="translation" minOccurs="0" type="translation" />
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:integer" use="required" />
+		<xs:attribute name="status" type="xs:string" use="required" />
 		<xs:attribute name="earliest_released_date" type="xs:dateTime" />
 		<xs:attribute name="latest_released_date" type="xs:dateTime" />
 	</xs:complexType>
