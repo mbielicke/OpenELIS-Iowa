@@ -2721,7 +2721,16 @@ public class SampleManager1Bean {
                     ref = addAnalysisAndPrep(ret, anaByTest, tm, test, null);
                     ref.setParentAnalysisId(test.getAnalysisId());
                     ref.setParentResultId(test.getResultId());
-                    ref.setPanelId(test.getPanelId());
+
+                    /*
+                     * copy the panel from the reflexing analysis to the reflex
+                     * analysis if their test and method names are the same
+                     */
+                    ana = anaById.get(test.getAnalysisId());
+                    if (DataBaseUtil.isSame(ref.getTestName(), ana.getTestName()) &&
+                        DataBaseUtil.isSame(ref.getMethodName(), ana.getMethodName()))
+                        ref.setPanelId(test.getPanelId());
+                    
                     anaById.put(ref.getId(), ref);
                 }
             } else {
