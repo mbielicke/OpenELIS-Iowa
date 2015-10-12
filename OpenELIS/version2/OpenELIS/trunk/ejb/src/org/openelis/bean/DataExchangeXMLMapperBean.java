@@ -119,63 +119,63 @@ import org.w3c.dom.Node;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DataExchangeXMLMapperBean {
     @EJB
-    private UserCacheBean                systemUserCache;
+    private UserCacheBean              systemUserCache;
 
     @EJB
-    private DictionaryCacheBean          dictionaryCache;
+    private DictionaryCacheBean        dictionaryCache;
 
     @EJB
-    private MethodBean                   method;
+    private MethodBean                 method;
 
     @EJB
-    private ProjectBean                  project;
+    private ProjectBean                project;
 
     @EJB
-    private OrganizationBean             organization;
+    private OrganizationBean           organization;
 
     @EJB
-    private PWSBean                      pws;
+    private PWSBean                    pws;
 
     @EJB
-    private QaEventBean                  qaevent;
+    private QaEventBean                qaevent;
 
     @EJB
-    private TestBean                     test;
+    private TestBean                   test;
 
     @EJB
-    private AnalyteBean                  analyte;
+    private AnalyteBean                analyte;
 
     @EJB
-    private ExchangeExternalTermBean     exchangeExternalTerm;
+    private ExchangeExternalTermBean   exchangeExternalTerm;
 
     @EJB
-    private TestTrailerBean              testTrailer;
+    private TestTrailerBean            testTrailer;
 
     @EJB
-    private SectionCacheBean             sectionCache;
+    private SectionCacheBean           sectionCache;
 
     @EJB
-    private PanelBean                    panel;
+    private PanelBean                  panel;
 
     @EJB
-    private TestResultBean               testResult;
+    private TestResultBean             testResult;
 
     @EJB
-    private OrganizationParameterBean    organizationParameter;
+    private OrganizationParameterBean  organizationParameter;
 
-    private HashSet<Integer>             users, dicts, tests, testAnalytes, testResults, methods,
+    private HashSet<Integer>           users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections;
 
-    private HashMap<String, Integer>     resultRepeat;
+    private HashMap<String, Integer>   resultRepeat;
 
-    private HashMap<Integer, Datetime[]> panels;
+    private HashMap<Integer, Object[]> panels;
 
-    private static SimpleDateFormat      dateFormat, timeFormat;
+    private static SimpleDateFormat    dateFormat, timeFormat;
 
-    private static Integer               ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
+    private static Integer             ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
                     ORG_EPARTNER_AGGR;
 
-    private static final Logger          log = Logger.getLogger("openelis");
+    private static final Logger        log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -411,6 +411,8 @@ public class DataExchangeXMLMapperBean {
                     if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
                         ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                         continue;
+
+                    addPanel(a.getPanelId(), null, a.getStatusId());
                     /*
                      * don't want all the analysis, just those that were
                      * released in the run window.
@@ -988,7 +990,7 @@ public class DataExchangeXMLMapperBean {
         addTest(analysis.getTestId());
         addMethod(analysis.getMethodId());
         addSection(analysis.getSectionId());
-        addPanel(analysis.getPanelId(), analysis.getReleasedDate());
+        addPanel(analysis.getPanelId(), analysis.getReleasedDate(), null);
         addDictionary(analysis.getTypeId());
         addDictionary(analysis.getUnitOfMeasureId());
         addDictionary(analysis.getStatusId());
@@ -1069,6 +1071,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "id", panel.getId());
         setAttribute(elm, "earliest_released_date", panels.get(panel.getId())[0]);
         setAttribute(elm, "latest_released_date", panels.get(panel.getId())[1]);
+        setAttribute(elm, "status", panels.get(panel.getId())[2]);
         setText(doc, elm, "name", panel.getName());
         setText(doc, elm, "description", panel.getDescription());
 
@@ -1522,21 +1525,34 @@ public class DataExchangeXMLMapperBean {
         }
     }
 
-    private void addPanel(Integer id, Datetime released) {
-        Datetime minmax[];
+    /**
+     * Create an array for each panel in the sample. The first element is the
+     * earliest released date. The second element is the latest released date.
+     * The third element is a flag for whether all of the analyses in the panel
+     * are released or not("P" for not released(Preliminary), "F" for
+     * released(Final)).
+     */
+    private void addPanel(Integer id, Datetime released, Integer statusId) {
+        Object releasedData[];
         if (id != null) {
             if (panels == null)
-                panels = new HashMap<Integer, Datetime[]>();
-            minmax = panels.get(id);
-            if (minmax == null) {
-                minmax = new Datetime[2];
-                panels.put(id, minmax);
+                panels = new HashMap<Integer, Object[]>();
+            releasedData = panels.get(id);
+            if (releasedData == null) {
+                releasedData = new Object[3];
+                panels.put(id, releasedData);
             }
             if (released != null) {
-                if (minmax[0] == null || released.before(minmax[0]))
-                    minmax[0] = released;
-                if (minmax[1] == null || released.after(minmax[1]))
-                    minmax[1] = released;
+                if (releasedData[0] == null || released.before((Datetime)releasedData[0]))
+                    releasedData[0] = released;
+                if (releasedData[1] == null || released.after((Datetime)releasedData[1]))
+                    releasedData[1] = released;
+            }
+            if (statusId != null && !"P".equals(releasedData[2])) {
+                if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId))
+                    releasedData[2] = "F";
+                else
+                    releasedData[2] = "P";
             }
         }
     }
