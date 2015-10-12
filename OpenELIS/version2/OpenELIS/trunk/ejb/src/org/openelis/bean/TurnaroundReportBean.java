@@ -173,7 +173,7 @@ public class TurnaroundReportBean {
         fromDate = ReportUtil.getTimestampParameter(param, "FROM_RELEASED");
         toDate = ReportUtil.getTimestampParameter(param, "TO_RELEASED");
         section = ReportUtil.getListParameter(param, "SECTION");
-        domain = ReportUtil.getListParameter(param, "DOMAIN");
+        domain = ReportUtil.getStringListParameter(param, "DOMAIN");
         printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         if (fromDate == null || toDate == null)
