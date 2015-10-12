@@ -21,6 +21,9 @@
 	<parameter name="SECTION" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
+	<parameter name="DOMAIN" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT t.description as tst_name, m.name as mth_name,
        s.collection_date as s_col_date, s.collection_time as s_col_time, s.received_date as s_rec,
@@ -42,7 +45,7 @@ WHERE  a.released_date between $P{FROM_DATE} and $P{TO_DATE} and
                  join dictionary d1 on d1.id = q.type_id and d1.system_name = 'qaevent_override'
           WHERE  aq.analysis_id = a.id
          )
-        $P!{SECTION}
+        $P!{SECTION} $P!{DOMAIN}
 order by 1, 2]]>
 	</queryString>
 	<field name="tst_name" class="java.lang.String"/>
