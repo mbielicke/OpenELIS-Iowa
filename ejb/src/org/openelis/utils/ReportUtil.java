@@ -164,9 +164,40 @@ public class ReportUtil {
             if (q.getQuery().contains(","))
                 return "in (" + q.getQuery() + ")";
             else if ( !DataBaseUtil.isEmpty(q.getQuery()))
-                return " = " + q.getQuery();
+                return "= " + q.getQuery();
         }
         return null;
+    }
+
+    /**
+     * Return the query part of QueryData as a "in ('A','B','C',...)" or "= 'A'"
+     * depending on the contents of the query. This method is used to get the
+     * value(s) for a given Prompt key when it can have multiple values, i.e.
+     * multi select dropdowns.
+     */
+    public static String getStringListParameter(HashMap<String, QueryData> parameter, String key) {
+        int i;
+        QueryData q;
+        String value, list[];
+
+        value = null;
+        q = parameter.get(key);
+        if (q != null) {
+            value = q.getQuery();
+            if (value.contains(",")) {
+                list = value.split(",");
+                value = "in (";
+                for (i = 0; i < list.length; i++) {
+                    if (i > 0)
+                        value += ",";
+                    value += "'" + list[i] + "'";
+                }
+                value += ")";
+            } else if (!DataBaseUtil.isEmpty(value)) {
+                value = "= '" + value + "'";
+            }
+        }
+        return value;
     }
 
     /**
