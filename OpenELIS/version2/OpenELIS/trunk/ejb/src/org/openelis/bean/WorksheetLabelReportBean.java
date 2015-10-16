@@ -264,12 +264,12 @@ public class WorksheetLabelReportBean {
                     if (waVDO.getAnalysisId() != null) {
                         if (dilutionCol != -1)
                             dilution = wrVDO.getValueAt(dilutionCol);
-                        labelReport.worksheetAnalysisDilutionLabel(ps, accession, wiDO.getPosition().toString(),
+                        labelReport.worksheetAnalysisDilutionLabel(ps, accession, worksheetPosition,
                                                                    dilution, name1, name2);
                     } else if (waVDO.getQcLotId() != null) {
                         if (dilutionCol != -1)
                             dilution = wqrVDO.getValueAt(dilutionCol);
-                        labelReport.worksheetAnalysisDilutionLabel(ps, name1, wiDO.getPosition().toString(),
+                        labelReport.worksheetAnalysisDilutionLabel(ps, name1, worksheetPosition,
                                                                    dilution, name1, name2);
                     }
                 } else {
