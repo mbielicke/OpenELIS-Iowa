@@ -269,8 +269,15 @@ public class WorksheetLabelReportBean {
                     } else if (waVDO.getQcLotId() != null) {
                         if (dilutionCol != -1)
                             dilution = wqrVDO.getValueAt(dilutionCol);
-                        labelReport.worksheetAnalysisDilutionLabel(ps, name1, worksheetPosition,
-                                                                   dilution, name1, name2);
+                        if (waVDO1 == null && !worksheetPosition.equals(accession))
+                            labelReport.worksheetAnalysisDilutionLabel(ps, name1, worksheetPosition,
+                                                                       dilution, "(" + accession + ")", name2);
+                        else if (waVDO1 != null)
+                            labelReport.worksheetAnalysisDilutionLabel(ps, accession, worksheetPosition,
+                                                                       dilution, name1, name2);
+                        else 
+                            labelReport.worksheetAnalysisDilutionLabel(ps, name1, worksheetPosition,
+                                                                       dilution, name1, name2);
                     }
                 } else {
                     throw new Exception("Invalid report type.");
