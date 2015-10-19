@@ -28,8 +28,6 @@ package org.openelis.scriptlet;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import javax.xml.crypto.Data;
-
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
