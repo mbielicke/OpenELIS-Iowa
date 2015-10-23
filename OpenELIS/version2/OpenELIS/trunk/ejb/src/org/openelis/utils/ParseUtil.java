@@ -10,8 +10,8 @@ public class ParseUtil {
 
     /*
      * Checks a string for max length and if it can be null. Throws an exception
-     * using the fieldName parameter to identify the field in error.
-     * Returns the trimmed string.
+     * using the fieldName parameter to identify the field in error. Returns the
+     * trimmed string.
      */
     public static String parseStrField(String s, int maxlen, boolean canBeNull, String fieldName) throws Exception {
         s = DataBaseUtil.trim(s);
@@ -27,8 +27,8 @@ public class ParseUtil {
     }
 
     /*
-     * Converts a field into Integer and checks if it can be null. Throws an exception
-     * using the fieldName parameter to identify the field in error.
+     * Converts a field into Integer and checks if it can be null. Throws an
+     * exception using the fieldName parameter to identify the field in error.
      * Returns Integer.
      */
     public static Integer parseIntField(String s, boolean canBeNull, String fieldName) throws Exception {
@@ -41,14 +41,14 @@ public class ParseUtil {
             try {
                 return Integer.valueOf(s);
             } catch (NumberFormatException e) {
-                throw new InconsistencyException(fieldName + " has invalid number '"+s+"'");
+                throw new InconsistencyException(fieldName + " has invalid number '" + s + "'");
             }
         }
     }
 
     /*
-     * Converts a field into Date and checks if it can be null. Throws an exception
-     * using the fieldName parameter to identify the field in error.
+     * Converts a field into Date and checks if it can be null. Throws an
+     * exception using the fieldName parameter to identify the field in error.
      * Returns Datetime(YEAR, DAY)
      */
     public static Datetime parseDateField(String s, boolean canBeNull, String fieldName) throws Exception {
@@ -61,7 +61,7 @@ public class ParseUtil {
             try {
                 return Datetime.getInstance(Datetime.YEAR, Datetime.DAY, new Date(s));
             } catch (Exception e) {
-                throw new InconsistencyException(fieldName + " has invalid date '"+s+"'");
+                throw new InconsistencyException(fieldName + " has invalid date '" + s + "'");
             }
         }
     }

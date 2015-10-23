@@ -14,24 +14,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
-
 public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
 
     @Override
     public void onModuleLoad() {
         ScreenBus.get().addHandler(ScreenBus.SAMPLE_TRACKING, this);
     }
-    
+
     @Override
     public void showScreen() {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().sampleTracking_tracking());
-                    window.setSize("1074px", "444px");
-                    window.setContent(new SampleTrackingScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "tracking");
+                    addScreen();
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -45,5 +40,17 @@ public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
         });
     }
     
-
+    public SampleTrackingScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        SampleTrackingScreenUI screen;
+        
+        window = new org.openelis.ui.widget.Window();
+        screen = new SampleTrackingScreenUI(window);
+        window.setName(Messages.get().sampleTracking_tracking());
+        window.setSize("1074px", "444px");
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "tracking");
+        
+        return screen; 
+    }
 }

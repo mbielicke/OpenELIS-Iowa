@@ -23,36 +23,28 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.dataView.client;
+package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DataViewVO;
-import org.openelis.modules.report.client.ReportScreen;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't 
- * implement ReportScreen like Data View
+ * implement ReportScreen like Send-out Order
  */
-public class DataViewReportScreen extends ReportScreen<DataViewVO> {
+public class OrderRequestFormReportScreen extends ReportScreen<Query> {
 
-    String reportMethod;
-    
-    public DataViewReportScreen(String reportMethod, WindowInt window, String attachment) throws Exception {
-        this.reportMethod = reportMethod;
+    public OrderRequestFormReportScreen(WindowInt window) throws Exception { 
+        drawScreen(new ScreenDef());        
         this.window = window;
-        if (!DataBaseUtil.isEmpty(attachment))
-            setAttachmentName(attachment);
-    }
-    
-    public void setRunReportInterface(String reportMethod) {
-        this.reportMethod = reportMethod;
     }
     
     /**
@@ -69,10 +61,7 @@ public class DataViewReportScreen extends ReportScreen<DataViewVO> {
     }
 
     @Override
-    public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
-        if(reportMethod.equals("runReport"))
-            DataViewReportService.get().runReport(data, callback);
-        else if(reportMethod.equals("saveQuery"))
-            DataViewReportService.get().saveQuery(data, callback);
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        RequestFormReportService.get().runReport(query, callback);        
     }
 }

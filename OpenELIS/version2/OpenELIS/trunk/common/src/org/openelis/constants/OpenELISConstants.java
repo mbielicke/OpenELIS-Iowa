@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -140,15 +140,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("All of your changes will be lost if you abort. Are you sure?")
   @Key("abortWarning")
   String abortWarning();
-
-  /**
-   * Translated "Acc #".
-   * 
-   * @return translated "Acc #"
-   */
-  @DefaultMessage("Acc #")
-  @Key("accNum")
-  String accNum();
 
   /**
    * Translated "Accession #".
@@ -725,15 +716,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("The \"Analyte\" and \"Type\" fields are required for each analyte")
   @Key("anaTypeAndNameRequired")
   String anaTypeAndNameRequired();
-
-  /**
-   * Translated "Analyses".
-   * 
-   * @return translated "Analyses"
-   */
-  @DefaultMessage("Analyses")
-  @Key("analyses")
-  String analyses();
 
   /**
    * Translated "Analysis".
@@ -2833,15 +2815,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String averageLeadTime();
 
   /**
-   * Translated "% Avg. TAT Used".
-   * 
-   * @return translated "% Avg. TAT Used"
-   */
-  @DefaultMessage("% Avg. TAT Used")
-  @Key("avgTA")
-  String avgTA();
-
-  /**
    * Translated "Back To Search".
    * 
    * @return translated "Back To Search"
@@ -4849,15 +4822,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_tabFieldsDisabled();
 
   /**
-   * Translated "Date Collected".
-   * 
-   * @return translated "Date Collected"
-   */
-  @DefaultMessage("Date Collected")
-  @Key("dateCollected")
-  String dateCollected();
-
-  /**
    * Translated "yyyyMMdd".
    * 
    * @return translated "yyyyMMdd"
@@ -4930,22 +4894,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dayInYearPattern();
 
   /**
-   * Translated "Days".
+   * Translated "days".
    * 
-   * @return translated "Days"
+   * @return translated "days"
    */
-  @DefaultMessage("Days")
+  @DefaultMessage("days")
   @Key("days")
   String days();
-
-  /**
-   * Translated "Days in Initiated".
-   * 
-   * @return translated "Days in Initiated"
-   */
-  @DefaultMessage("Days in Initiated")
-  @Key("daysInInitiated")
-  String daysInInitiated();
 
   /**
    * Translated "Error loading default user for position {0} analysis {1}".
@@ -5072,15 +5027,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Detail:")
   @Key("detail")
   String detail();
-
-  /**
-   * Translated "Details".
-   * 
-   * @return translated "Details"
-   */
-  @DefaultMessage("Details")
-  @Key("details")
-  String details();
 
   /**
    * Translated "Dictionary".
@@ -5344,24 +5290,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String doNotInventory();
 
   /**
-   * Translated "Domain".
-   * 
-   * @return translated "Domain"
-   */
-  @DefaultMessage("Domain")
-  @Key("domain")
-  String domain();
-
-  /**
-   * Translated "Domain Specific Field".
-   * 
-   * @return translated "Domain Specific Field"
-   */
-  @DefaultMessage("Domain Specific Field")
-  @Key("domainSpecField")
-  String domainSpecField();
-
-  /**
    * Translated "Due".
    * 
    * @return translated "Due"
@@ -5495,24 +5423,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Effective End")
   @Key("effectiveEnd")
   String effectiveEnd();
-
-  /**
-   * Translated "8 - 10 days ago".
-   * 
-   * @return translated "8 - 10 days ago"
-   */
-  @DefaultMessage("8 - 10 days ago")
-  @Key("eightToTenDays")
-  String eightToTenDays();
-
-  /**
-   * Translated "11-20 days ago".
-   * 
-   * @return translated "11-20 days ago"
-   */
-  @DefaultMessage("11-20 days ago")
-  @Key("elevnToTwntyDays")
-  String elevnToTwntyDays();
 
   /**
    * Translated "Email".
@@ -6199,15 +6109,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String exit();
 
   /**
-   * Translated "% Exp Completion".
-   * 
-   * @return translated "% Exp Completion"
-   */
-  @DefaultMessage("% Exp Completion")
-  @Key("expCompletion")
-  String expCompletion();
-
-  /**
    * Translated "Exp Date".
    * 
    * @return translated "Exp Date"
@@ -6278,15 +6179,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Export To Location")
   @Key("exportToLocation")
   String exportToLocation();
-
-  /**
-   * Translated "Export To Excel".
-   * 
-   * @return translated "Export To Excel"
-   */
-  @DefaultMessage("Export To Excel")
-  @Key("exportToXl")
-  String exportToXl();
 
   /**
    * Translated "Add To Exst".
@@ -6818,15 +6710,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Flags")
   @Key("flags")
   String flags();
-
-  /**
-   * Translated "4 - 7 days ago".
-   * 
-   * @return translated "4 - 7 days ago"
-   */
-  @DefaultMessage("4 - 7 days ago")
-  @Key("fourToSevenDays")
-  String fourToSevenDays();
 
   /**
    * Translated "Frequency must be greater than zero".
@@ -9025,15 +8908,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String holdRefuseOrganization();
 
   /**
-   * Translated "% Holding Used".
-   * 
-   * @return translated "% Holding Used"
-   */
-  @DefaultMessage("% Holding Used")
-  @Key("holding")
-  String holding();
-
-  /**
    * Translated "Home #".
    * 
    * @return translated "Home #"
@@ -9374,15 +9248,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Init-Rel")
   @Key("ini-rel")
   String ini_rel();
-
-  /**
-   * Translated "Initiated".
-   * 
-   * @return translated "Initiated"
-   */
-  @DefaultMessage("Initiated")
-  @Key("initiated")
-  String initiated();
 
   /**
    * Translated "Analysis Above".
@@ -10681,15 +10546,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String log();
 
   /**
-   * Translated "Logged In".
-   * 
-   * @return translated "Logged In"
-   */
-  @DefaultMessage("Logged In")
-  @Key("loggedIn")
-  String loggedIn();
-
-  /**
    * Translated "Login".
    * 
    * @return translated "Login"
@@ -11102,33 +10958,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("More than one prep tests cannot be marked as not optional")
   @Key("moreThanOnePrepTestOptionalException")
   String moreThanOnePrepTestOptionalException();
-
-  /**
-   * Translated "> 3 days ago".
-   * 
-   * @return translated "> 3 days ago"
-   */
-  @DefaultMessage("> 3 days ago")
-  @Key("moreThanThreeDays")
-  String moreThanThreeDays();
-
-  /**
-   * Translated "> 30 days ago".
-   * 
-   * @return translated "> 30 days ago"
-   */
-  @DefaultMessage("> 30 days ago")
-  @Key("moreThanThrtyDays")
-  String moreThanThrtyDays();
-
-  /**
-   * Translated "> 10 days ago".
-   * 
-   * @return translated "> 10 days ago"
-   */
-  @DefaultMessage("> 10 days ago")
-  @Key("moreThenTenDays")
-  String moreThenTenDays();
 
   /**
    * Translated "Most Recent QCs".
@@ -11716,15 +11545,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String npi();
 
   /**
-   * Translated "No. of Analyses".
-   * 
-   * @return translated "No. of Analyses"
-   */
-  @DefaultMessage("No. of Analyses")
-  @Key("numAnalyses")
-  String numAnalyses();
-
-  /**
    * Translated "Days Left".
    * 
    * @return translated "Days Left"
@@ -11840,15 +11660,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("# Sample")
   @Key("numSample")
   String numSample();
-
-  /**
-   * Translated "No. of Samples".
-   * 
-   * @return translated "No. of Samples"
-   */
-  @DefaultMessage("No. of Samples")
-  @Key("numSamples")
-  String numSamples();
 
   /**
    * Translated "samples have been found.".
@@ -13291,15 +13102,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organizations();
 
   /**
-   * Translated "Other".
-   * 
-   * @return translated "Other"
-   */
-  @DefaultMessage("Other")
-  @Key("other")
-  String other();
-
-  /**
    * Translated "Other analytes from the same analyte group were also removed".
    * 
    * @return translated "Other analytes from the same analyte group were also removed"
@@ -13307,15 +13109,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Other analytes from the same analyte group were also removed")
   @Key("otherAnalytesRemoved")
   String otherAnalytesRemoved();
-
-  /**
-   * Translated "Override ".
-   * 
-   * @return translated "Override "
-   */
-  @DefaultMessage("Override ")
-  @Key("override")
-  String override();
 
   /**
    * Translated "Owner".
@@ -19060,15 +18853,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String showManifest();
 
   /**
-   * Translated "Show my section(s) only".
-   * 
-   * @return translated "Show my section(s) only"
-   */
-  @DefaultMessage("Show my section(s) only")
-  @Key("showMySectOnly")
-  String showMySectOnly();
-
-  /**
    * Translated "S.D.".
    * 
    * @return translated "S.D."
@@ -19103,15 +18887,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Singular")
   @Key("singular")
   String singular();
-
-  /**
-   * Translated "6-10 days ago".
-   * 
-   * @return translated "6-10 days ago"
-   */
-  @DefaultMessage("6-10 days ago")
-  @Key("sixToTenDays")
-  String sixToTenDays();
 
   /**
    * Translated "A destination URI beginning with ''socket://'' must be of the format ''socket://hostname:port''".
@@ -20446,15 +20221,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String text();
 
   /**
-   * Translated "3 days ago".
-   * 
-   * @return translated "3 days ago"
-   */
-  @DefaultMessage("3 days ago")
-  @Key("threeDays")
-  String threeDays();
-
-  /**
    * Translated "Time".
    * 
    * @return translated "Time"
@@ -20489,42 +20255,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("HH:mm")
   @Key("timePattern")
   String timePattern();
-
-  /**
-   * Translated "Time Since Analyses Completed".
-   * 
-   * @return translated "Time Since Analyses Completed"
-   */
-  @DefaultMessage("Time Since Analyses Completed")
-  @Key("timeSinceAnalysesCompleted")
-  String timeSinceAnalysesCompleted();
-
-  /**
-   * Translated "Time Since Analyses Initiated".
-   * 
-   * @return translated "Time Since Analyses Initiated"
-   */
-  @DefaultMessage("Time Since Analyses Initiated")
-  @Key("timeSinceAnalysesInitiated")
-  String timeSinceAnalysesInitiated();
-
-  /**
-   * Translated "Time Since Analyses Logged-In".
-   * 
-   * @return translated "Time Since Analyses Logged-In"
-   */
-  @DefaultMessage("Time Since Analyses Logged-In")
-  @Key("timeSinceAnalysesLoggedIn")
-  String timeSinceAnalysesLoggedIn();
-
-  /**
-   * Translated "Time Since Samples Received".
-   * 
-   * @return translated "Time Since Samples Received"
-   */
-  @DefaultMessage("Time Since Samples Received")
-  @Key("timeSinceSamplesReceived")
-  String timeSinceSamplesReceived();
 
   /**
    * Translated "Transit days".
@@ -20579,15 +20309,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("To")
   @Key("to")
   String to();
-
-  /**
-   * Translated "To Be Verified".
-   * 
-   * @return translated "To Be Verified"
-   */
-  @DefaultMessage("To Be Verified")
-  @Key("toBeVerified")
-  String toBeVerified();
 
   /**
    * Translated "To Company".
@@ -20653,15 +20374,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String toName();
 
   /**
-   * Translated "Today".
-   * 
-   * @return translated "Today"
-   */
-  @DefaultMessage("Today")
-  @Key("today")
-  String today();
-
-  /**
    * Translated "Acc #".
    * 
    * @return translated "Acc #"
@@ -20669,6 +20381,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Acc #")
   @Key("todo.accNum")
   String todo_accNum();
+
+  /**
+   * Translated "Collected".
+   * 
+   * @return translated "Collected"
+   */
+  @DefaultMessage("Collected")
+  @Key("todo.collected")
+  String todo_collected();
+
+  /**
+   * Translated "Completed".
+   * 
+   * @return translated "Completed"
+   */
+  @DefaultMessage("Completed")
+  @Key("todo.completed")
+  String todo_completed();
+
+  /**
+   * Translated "Completed Analyses".
+   * 
+   * @return translated "Completed Analyses"
+   */
+  @DefaultMessage("Completed Analyses")
+  @Key("todo.completedAnalyses")
+  String todo_completedAnalyses();
+
+  /**
+   * Translated "Created".
+   * 
+   * @return translated "Created"
+   */
+  @DefaultMessage("Created")
+  @Key("todo.created")
+  String todo_created();
 
   /**
    * Translated "Days in Initiated".
@@ -20698,6 +20446,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String todo_domainSpecField();
 
   /**
+   * Translated "8-10 days".
+   * 
+   * @return translated "8-10 days"
+   */
+  @DefaultMessage("8-10 days")
+  @Key("todo.eightToTenDays")
+  String todo_eightToTenDays();
+
+  /**
+   * Translated "11-20 days".
+   * 
+   * @return translated "11-20 days"
+   */
+  @DefaultMessage("11-20 days")
+  @Key("todo.elevnToTwntyDays")
+  String todo_elevnToTwntyDays();
+
+  /**
    * Translated "% Exp Completion".
    * 
    * @return translated "% Exp Completion"
@@ -20716,6 +20482,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String todo_exportToXl();
 
   /**
+   * Translated "Exporting to Excel".
+   * 
+   * @return translated "Exporting to Excel"
+   */
+  @DefaultMessage("Exporting to Excel")
+  @Key("todo.exportingToExcel")
+  String todo_exportingToExcel();
+
+  /**
+   * Translated "4-7 days".
+   * 
+   * @return translated "4-7 days"
+   */
+  @DefaultMessage("4-7 days")
+  @Key("todo.fourToSevenDays")
+  String todo_fourToSevenDays();
+
+  /**
    * Translated "% Holding Used".
    * 
    * @return translated "% Holding Used"
@@ -20723,6 +20507,105 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("% Holding Used")
   @Key("todo.holding")
   String todo_holding();
+
+  /**
+   * Translated "Initiated".
+   * 
+   * @return translated "Initiated"
+   */
+  @DefaultMessage("Initiated")
+  @Key("todo.initiated")
+  String todo_initiated();
+
+  /**
+   * Translated "Initiated Analyses".
+   * 
+   * @return translated "Initiated Analyses"
+   */
+  @DefaultMessage("Initiated Analyses")
+  @Key("todo.initiatedAnalyses")
+  String todo_initiatedAnalyses();
+
+  /**
+   * Translated "Logged In".
+   * 
+   * @return translated "Logged In"
+   */
+  @DefaultMessage("Logged In")
+  @Key("todo.loggedIn")
+  String todo_loggedIn();
+
+  /**
+   * Translated "Loggedin Analyses".
+   * 
+   * @return translated "Loggedin Analyses"
+   */
+  @DefaultMessage("Loggedin Analyses")
+  @Key("todo.loggedinAnalysis")
+  String todo_loggedinAnalysis();
+
+  /**
+   * Translated "Method".
+   * 
+   * @return translated "Method"
+   */
+  @DefaultMessage("Method")
+  @Key("todo.method")
+  String todo_method();
+
+  /**
+   * Translated "> 3 days".
+   * 
+   * @return translated "> 3 days"
+   */
+  @DefaultMessage("> 3 days")
+  @Key("todo.moreThanThreeDays")
+  String todo_moreThanThreeDays();
+
+  /**
+   * Translated "> 30 days".
+   * 
+   * @return translated "> 30 days"
+   */
+  @DefaultMessage("> 30 days")
+  @Key("todo.moreThanThrtyDays")
+  String todo_moreThanThrtyDays();
+
+  /**
+   * Translated "> 10 days".
+   * 
+   * @return translated "> 10 days"
+   */
+  @DefaultMessage("> 10 days")
+  @Key("todo.moreThenTenDays")
+  String todo_moreThenTenDays();
+
+  /**
+   * Translated "Not Verfied Samples".
+   * 
+   * @return translated "Not Verfied Samples"
+   */
+  @DefaultMessage("Not Verfied Samples")
+  @Key("todo.notVerfiedSamples")
+  String todo_notVerfiedSamples();
+
+  /**
+   * Translated "Other".
+   * 
+   * @return translated "Other"
+   */
+  @DefaultMessage("Other")
+  @Key("todo.other")
+  String todo_other();
+
+  /**
+   * Translated "Analyses in Other Statuses".
+   * 
+   * @return translated "Analyses in Other Statuses"
+   */
+  @DefaultMessage("Analyses in Other Statuses")
+  @Key("todo.otherAnalyses")
+  String todo_otherAnalyses();
 
   /**
    * Translated "Override".
@@ -20734,13 +20617,166 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String todo_override();
 
   /**
-   * Translated "My section(s)".
+   * Translated "Priority".
    * 
-   * @return translated "My section(s)"
+   * @return translated "Priority"
    */
-  @DefaultMessage("My section(s)")
+  @DefaultMessage("Priority")
+  @Key("todo.priority")
+  String todo_priority();
+
+  /**
+   * Translated "Received".
+   * 
+   * @return translated "Received"
+   */
+  @DefaultMessage("Received")
+  @Key("todo.received")
+  String todo_received();
+
+  /**
+   * Translated "Released".
+   * 
+   * @return translated "Released"
+   */
+  @DefaultMessage("Released")
+  @Key("todo.released")
+  String todo_released();
+
+  /**
+   * Translated "Report To".
+   * 
+   * @return translated "Report To"
+   */
+  @DefaultMessage("Report To")
+  @Key("todo.reportTo")
+  String todo_reportTo();
+
+  /**
+   * Translated "Section".
+   * 
+   * @return translated "Section"
+   */
+  @DefaultMessage("Section")
+  @Key("todo.section")
+  String todo_section();
+
+  /**
+   * Translated "My Sections Only".
+   * 
+   * @return translated "My Sections Only"
+   */
+  @DefaultMessage("My Sections Only")
   @Key("todo.showMySectOnly")
   String todo_showMySectOnly();
+
+  /**
+   * Translated "Show TRF".
+   * 
+   * @return translated "Show TRF"
+   */
+  @DefaultMessage("Show TRF")
+  @Key("todo.showTRF")
+  String todo_showTRF();
+
+  /**
+   * Translated "6-10 days".
+   * 
+   * @return translated "6-10 days"
+   */
+  @DefaultMessage("6-10 days")
+  @Key("todo.sixToTenDays")
+  String todo_sixToTenDays();
+
+  /**
+   * Translated "Test".
+   * 
+   * @return translated "Test"
+   */
+  @DefaultMessage("Test")
+  @Key("todo.test")
+  String todo_test();
+
+  /**
+   * Translated "3 days".
+   * 
+   * @return translated "3 days"
+   */
+  @DefaultMessage("3 days")
+  @Key("todo.threeDays")
+  String todo_threeDays();
+
+  /**
+   * Translated "To Be Verified".
+   * 
+   * @return translated "To Be Verified"
+   */
+  @DefaultMessage("To Be Verified")
+  @Key("todo.toBeVerified")
+  String todo_toBeVerified();
+
+  /**
+   * Translated "Today".
+   * 
+   * @return translated "Today"
+   */
+  @DefaultMessage("Today")
+  @Key("todo.today")
+  String todo_today();
+
+  /**
+   * Translated "21-30 days".
+   * 
+   * @return translated "21-30 days"
+   */
+  @DefaultMessage("21-30 days")
+  @Key("todo.twntyOneToThrtyDays")
+  String todo_twntyOneToThrtyDays();
+
+  /**
+   * Translated "2 days".
+   * 
+   * @return translated "2 days"
+   */
+  @DefaultMessage("2 days")
+  @Key("todo.twoDays")
+  String todo_twoDays();
+
+  /**
+   * Translated "2-5 days".
+   * 
+   * @return translated "2-5 days"
+   */
+  @DefaultMessage("2-5 days")
+  @Key("todo.twoToFiveDays")
+  String todo_twoToFiveDays();
+
+  /**
+   * Translated "Worksheet".
+   * 
+   * @return translated "Worksheet"
+   */
+  @DefaultMessage("Worksheet")
+  @Key("todo.worksheet")
+  String todo_worksheet();
+
+  /**
+   * Translated "Worksheet #".
+   * 
+   * @return translated "Worksheet #"
+   */
+  @DefaultMessage("Worksheet #")
+  @Key("todo.worksheetNum")
+  String todo_worksheetNum();
+
+  /**
+   * Translated "Yesterday".
+   * 
+   * @return translated "Yesterday"
+   */
+  @DefaultMessage("Yesterday")
+  @Key("todo.yesterday")
+  String todo_yesterday();
 
   /**
    * Translated "Total".
@@ -20966,33 +21002,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Turnaround")
   @Key("turnaround")
   String turnaround();
-
-  /**
-   * Translated "21-30 days ago".
-   * 
-   * @return translated "21-30 days ago"
-   */
-  @DefaultMessage("21-30 days ago")
-  @Key("twntyOneToThrtyDays")
-  String twntyOneToThrtyDays();
-
-  /**
-   * Translated "2 days ago".
-   * 
-   * @return translated "2 days ago"
-   */
-  @DefaultMessage("2 days ago")
-  @Key("twoDays")
-  String twoDays();
-
-  /**
-   * Translated "2-5 days ago".
-   * 
-   * @return translated "2-5 days ago"
-   */
-  @DefaultMessage("2-5 days ago")
-  @Key("twoToFiveDays")
-  String twoToFiveDays();
 
   /**
    * Translated "Type".
@@ -22541,15 +22550,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Yes")
   @Key("yes")
   String yes();
-
-  /**
-   * Translated "Yesterday".
-   * 
-   * @return translated "Yesterday"
-   */
-  @DefaultMessage("Yesterday")
-  @Key("yesterday")
-  String yesterday();
 
   /**
    * Translated "There needs to be at least one order item in your order".

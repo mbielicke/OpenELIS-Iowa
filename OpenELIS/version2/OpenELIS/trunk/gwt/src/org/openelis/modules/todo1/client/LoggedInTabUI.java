@@ -33,13 +33,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.moxieapps.gwt.highcharts.client.Credits;
+import org.moxieapps.gwt.highcharts.client.Legend;
+import org.moxieapps.gwt.highcharts.client.Series;
+import org.moxieapps.gwt.highcharts.client.plotOptions.ColumnPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -48,13 +51,18 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.PortalPanel;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.ui.widget.table.event.FilterEvent;
+import org.openelis.ui.widget.table.event.FilterHandler;
+import org.openelis.utilcommon.TurnaroundUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -63,13 +71,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.LegendPosition;
-import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
-import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 
 public class LoggedInTabUI extends Screen {
 
@@ -77,58 +78,59 @@ public class LoggedInTabUI extends Screen {
     interface LoggedInTabUiBinder extends UiBinder<Widget, LoggedInTabUI> {
     };
 
-    private static LoggedInTabUiBinder uiBinder = GWT.create(LoggedInTabUiBinder.class);
+    private static LoggedInTabUiBinder               uiBinder = GWT.create(LoggedInTabUiBinder.class);
 
     @UiField
-    protected Table                    table;
+    protected Table                                  table;
 
     @UiField
-    protected Dropdown<String>         domain;
+    protected Dropdown<String>                       domain;
 
-    @UiField(provided = true)
-    protected PortalPanel              loggedInPanel;
+    @UiField
+    protected Chart                                  chart;
 
-    protected Screen                   parentScreen;
+    protected Screen                                 parentScreen;
 
-    protected EventBus                 parentBus;
+    protected EventBus                               parentBus;
 
-    private boolean                    loadedFromCache, reattachChart, isVisible;
+    private boolean                                  visible, load, draw, mySection;
 
-    private String                     loadBySection;
+    private ArrayList<AnalysisViewVO>                analyses;
 
-    private ArrayList<String>          ranges;
+    private Series                                   chartSeries[];
 
-    private ArrayList<AnalysisViewVO>  fullList;
+    private int                                      chartStats[][];
 
-    private ColumnChart                chart;
+    private HashMap<String, Integer>                 domains;
 
-    // private JFreeChart chart;
+    private ScheduledCommand                         drawChartCmd;
 
-    private Options                    options;
+    private AsyncCallback<ArrayList<AnalysisViewVO>> getLoggedInCall;
 
     public LoggedInTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
-
-        loggedInPanel = new PortalPanel() {
-            @Override
-            public void onResize() {
-                refreshChart();
-            }
-        };
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
     }
 
     private void initialize() {
-        ArrayList<Item<String>> model;
+        int i;
         Item<String> row;
         List<DictionaryDO> list;
+        ArrayList<Item<String>> model;
+
+        mySection = true;
+        load = true;
 
         addScreenHandler(table, "loggedInTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                loadTableModel(true);
+                table.setModel(getTableModel());
+
+                draw = true;
+                recalculateChart();
+                update();
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -142,462 +144,289 @@ public class LoggedInTabUI extends Screen {
             }
         });
 
-        addVisibleHandler(new VisibleEvent.Handler() {
-            public void onVisibleOrInvisible(VisibleEvent event) {
-                isVisible = event.isVisible();
-                draw(loadBySection);
+        table.addFilterHandler(new FilterHandler() {
+            public void onFilter(FilterEvent event) {
+                draw = true;
+                recalculateChart();
+                update();
             }
         });
 
-        loadBySection = "N";
-        loadedFromCache = false;
+        addVisibleHandler(new VisibleEvent.Handler() {
+            public void onVisibleOrInvisible(VisibleEvent event) {
+                visible = event.isVisible();
+                update();
+            }
+        });
 
-        ranges = new ArrayList<String>();
-        ranges.add(Messages.get().today());
-        ranges.add(Messages.get().yesterday());
-        ranges.add(Messages.get().twoDays());
-        ranges.add(Messages.get().threeDays());
-        ranges.add(Messages.get().fourToSevenDays());
-        ranges.add(Messages.get().eightToTenDays());
-        ranges.add(Messages.get().moreThenTenDays());
-
+        i = 0;
+        domains = new HashMap<String, Integer>();
         model = new ArrayList<Item<String>>();
         list = CategoryCache.getBySystemName("sample_domain");
         for (DictionaryDO data : list) {
-            row = new Item<String>(data.getCode(), data.getEntry());
-            model.add(row);
-        }
-        domain.setModel(model);
-    }
-
-    public void onDataChange(String mySection) {
-        loadedFromCache = false;
-        draw(mySection);
-    }
-
-    public void reattachChart() {
-        reattachChart = true;
-    }
-
-    public Integer getSelectedId() {
-        Row row;
-        AnalysisViewVO data;
-
-        row = table.getRowAt(table.getSelectedRow());
-        if (row == null)
-            return null;
-
-        data = (AnalysisViewVO)row.getData();
-        return data.getSampleId();
-    }
-
-    public void draw(String loadBySection) {
-        if ( !isVisible)
-            return;
-        if ( !loadedFromCache || !loadBySection.equals(this.loadBySection)) {
-            this.loadBySection = loadBySection;
-            fireDataChange();
-        }
-        if (reattachChart) {
-            refreshChart();
-            reattachChart = false;
-        }
-        loadedFromCache = true;
-    }
-
-    private void loadTableModel(final boolean refreshChart) {
-        if (loadedFromCache && fullList != null) {
-            table.setModel(getTableModel());
-            if (refreshChart)
-                refreshChart();
-        } else {
-            if (parentScreen.getWindow().getContent() != null)
-                parentScreen.setBusy(Messages.get().gen_fetching());
-            // try {
-            // fullList = ToDoService1Impl.INSTANCE.getLoggedIn();
-            // table.setModel(getTableModel());
-            // } catch (Exception e) {
-            // if (e instanceof NotFoundException) {
-            // parentScreen.setDone(Messages.get().gen_noRecordsFound());
-            // } else {
-            // Window.alert(e.getMessage());
-            // logger.log(Level.SEVERE, e.getMessage(), e);
-            // parentScreen.clearStatus();
-            // }
-            // }
-            ToDoService1Impl.INSTANCE.getLoggedIn(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
-                public void onSuccess(ArrayList<AnalysisViewVO> result) {
-                    fullList = result;
-                    table.setModel(getTableModel());
-                    if (refreshChart)
-                        refreshChart();
-                    parentScreen.clearStatus();
-                }
-
-                public void onFailure(Throwable error) {
-                    if (error instanceof NotFoundException) {
-                        parentScreen.setDone(Messages.get().gen_noRecordsFound());
-                    } else {
-                        Window.alert(error.getMessage());
-                        logger.log(Level.SEVERE, error.getMessage(), error);
-                        parentScreen.clearStatus();
-                    }
-
-                }
-            });
-        }
-    }
-
-    private ArrayList<Row> getTableModel() {
-        boolean sectOnly;
-        Integer accNum, prevAccNum;
-        String secName;
-        Row row;
-        Datetime scd, sct, scdt;
-        Date temp;
-        SystemUserPermission perm;
-        ArrayList<Row> model;
-
-        model = new ArrayList<Row>();
-        perm = UserCache.getPermission();
-        sectOnly = "Y".equals(loadBySection);
-        accNum = null;
-        prevAccNum = null;
-        scdt = null;
-
-        try {
-            for (AnalysisViewVO data : fullList) {
-                secName = data.getSectionName();
-                if (sectOnly && perm.getSection(secName) == null)
-                    continue;
-                row = new Row(13);
-                accNum = data.getAccessionNumber();
-                row.setCell(0, accNum);
-                row.setCell(1, data.getPriority());
-                row.setCell(2, data.getDomain());
-                row.setCell(3, secName);
-                row.setCell(4, data.getTestName());
-                row.setCell(5, data.getMethodName());
-
-                if ( !accNum.equals(prevAccNum)) {
-                    scd = data.getCollectionDate();
-                    sct = data.getCollectionTime();
-                    if (scd != null) {
-                        temp = scd.getDate();
-                        if (sct == null) {
-                            temp.setHours(0);
-                            temp.setMinutes(0);
-                        } else {
-                            temp.setHours(sct.getDate().getHours());
-                            temp.setMinutes(sct.getDate().getMinutes());
-                        }
-                        scdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-                    } else {
-                        scdt = null;
-                    }
-                }
-
-                row.setCell(6, scdt);
-                row.setCell(7, data.getReceivedDate());
-                row.setCell(8, data.getAnalysisResultOverride());
-                row.setCell(9, DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(),
-                                                                  data.getCollectionDate(),
-                                                                  data.getCollectionTime(),
-                                                                  data.getTimeHolding()));
-                row.setCell(10, DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(),
-                                                                          data.getCollectionTime(),
-                                                                          data.getReceivedDate(),
-                                                                          data.getPriority(),
-                                                                          data.getTimeTaAverage()));
-                row.setCell(11, data.getToDoDescription());
-                row.setCell(12, data.getPrimaryOrganizationName());
-                row.setData(data);
+            if ("Y".equals(data.getIsActive())) {
+                row = new Item<String>(data.getCode(), data.getEntry());
                 model.add(row);
 
-                prevAccNum = accNum;
+                domains.put(data.getCode(), i++ );
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            Window.alert(e.getMessage());
+        }
+        domain.setModel(model);
+
+        /*
+         * chart at the bottom
+         */
+        chart.setCredits(new Credits().setEnabled(false))
+             .setType(Series.Type.COLUMN)
+             .setReflow(false)
+             .setColumnPlotOptions(new ColumnPlotOptions().setStacking(PlotOptions.Stacking.NORMAL))
+             .setLegend(new Legend().setLayout(Legend.Layout.VERTICAL)
+                                    .setAlign(Legend.Align.RIGHT)
+                                    .setVerticalAlign(Legend.VerticalAlign.TOP)
+                                    .setX(10)
+                                    .setY(20)
+                                    .setBorderWidth(0))
+             .setChartTitleText("");
+
+        chart.getXAxis().setCategories(Messages.get().todo_today(),
+                                       Messages.get().todo_yesterday(),
+                                       Messages.get().todo_twoDays(),
+                                       Messages.get().todo_threeDays(),
+                                       Messages.get().todo_fourToSevenDays(),
+                                       Messages.get().todo_eightToTenDays(),
+                                       Messages.get().todo_moreThenTenDays());
+        chart.getYAxis()
+             .setAllowDecimals(false)
+             .setAxisTitleText(Messages.get().todo_loggedinAnalysis())
+             .setMin(0);
+
+        chart.addAttachHandler(new AttachEvent.Handler() {
+            public void onAttachOrDetach(AttachEvent event) {
+                if (event.isAttached()) {
+                    draw = true;
+                    update();
+                }
+            }
+        });
+
+        chartSeries = new Series[list.size()];
+        for (DictionaryDO data : list) {
+            i = domains.get(data.getCode());
+            chartSeries[i] = chart.createSeries().setName(data.getEntry());
+            chart.addSeries(chartSeries[i]);
+        }
+
+        /*
+         * call for fetch data
+         */
+        getLoggedInCall = new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+            public void onSuccess(ArrayList<AnalysisViewVO> result) {
+                analyses = result;
+                fireDataChange();
+                parentScreen.clearStatus();
+            }
+
+            public void onFailure(Throwable error) {
+                analyses = null;
+                fireDataChange();
+                if (error instanceof NotFoundException) {
+                    parentScreen.setDone(Messages.get().gen_noRecordsFound());
+                } else {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
+                    parentScreen.clearStatus();
+                }
+            }
+        };
+
+        /*
+         * call to refresh the chart
+         */
+        drawChartCmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                drawChart();
+            }
+        };
+    }
+
+    /*
+     * Returns the current selected records's id
+     */
+    public Integer getSelectedId() {
+        Row row;
+
+        row = table.getRowAt(table.getSelectedRow());
+        if (row != null)
+            return ((AnalysisViewVO)row.getData()).getSampleId();
+
+        return null;
+    }
+
+    public void setMySectionOnly(boolean mySection) {
+        if (this.mySection != mySection) {
+            this.mySection = mySection;
+            fireDataChange();
+        }
+    }
+
+    /*
+     * Refetch's the data
+     */
+    public void refresh() {
+        load = true;
+        update();
+    }
+
+    /*
+     * update the data, chart, etc.
+     */
+    private void update() {
+        if (visible) {
+            if (load) {
+                load = false;
+                draw = false;
+                parentScreen.setBusy(Messages.get().gen_fetching());
+                ToDoService1Impl.INSTANCE.getInitiated(getLoggedInCall);
+            } else if (draw) {
+                draw = false;
+                Scheduler.get().scheduleDeferred(drawChartCmd);
+            }
+        }
+    }
+
+    /*
+     * Returns the fetched data as a table model
+     */
+    private ArrayList<Row> getTableModel() {
+        Row row;
+        ArrayList<Row> model;
+        SystemUserPermission perm;
+
+        model = new ArrayList<Row>();
+        if (analyses != null) {
+            perm = UserCache.getPermission();
+
+            for (AnalysisViewVO a : analyses) {
+                if (mySection && perm.getSection(a.getSectionName()) == null)
+                    continue;
+
+                row = new Row(a.getAccessionNumber(),
+                              a.getPriority(),
+                              a.getDomain(),
+                              a.getSectionName(),
+                              a.getTestName(),
+                              a.getMethodName(),
+                              TurnaroundUtil.getCombinedYM(a.getCollectionDate(),
+                                                           a.getCollectionTime()),
+                              a.getReceivedDate(),
+                              a.getAnalysisResultOverride(),
+                              TurnaroundUtil.getPercentHoldingUsed(a.getStartedDate(),
+                                                                   a.getCollectionDate(),
+                                                                   a.getCollectionTime(),
+                                                                   a.getTimeHolding()),
+                              TurnaroundUtil.getPercentExpectedCompletion(a.getCollectionDate(),
+                                                                          a.getCollectionTime(),
+                                                                          a.getReceivedDate(),
+                                                                          a.getPriority(),
+                                                                          a.getTimeTaAverage()),
+                              a.getToDoDescription(),
+                              a.getPrimaryOrganizationName());
+                row.setData(a);
+                model.add(row);
+            }
         }
 
         return model;
     }
 
-    private void refreshChart() {
-        long day, twodays, threedays, sevendays, tendays, avdur, mdur;
-        Integer val;
-        ArrayList<Row> model;
-        Datetime now, avd;
-        Date midNight;
-        AnalysisViewVO data;
-        HashMap<String, Integer> map;
+    /*
+     * Redraws the chart series
+     */
+    private void drawChart() {
+        int i, j;
+        Integer stack[];
 
-        now = Datetime.getInstance();
-        map = new HashMap<String, Integer>();
-        model = table.getModel();
+        chart.reflow();
 
-        if (model == null) {
-            drawChart(new HashMap<String, Integer>());
-            return;
-        }
-
-        day = 86400000;
-        twodays = 2 * day;
-        threedays = 3 * day;
-        sevendays = 7 * day;
-        tendays = 10 * day;
-
-        midNight = new Date();
-        midNight.setHours(0);
-        midNight.setMinutes(0);
-        midNight.setSeconds(0);
-        //
-        // the length of the time duration between right now and last midnight
-        //
-        mdur = Math.abs(now.getDate().getTime() - midNight.getTime());
-        for (Row row : model) {
-            data = (AnalysisViewVO)row.getData();
-            avd = data.getAvailableDate();
-            if (avd == null)
-                avd = now;
-            //
-            // the length of the time duration between right now and available
-            // date
-            //
-            avdur = Math.abs(now.getDate().getTime() - avd.getDate().getTime());
-
-            /*
-             * If avdur <= mdur then it means that the available date is today.
-             * If however avdur lies somewhere between the length of x number of
-             * days (mdur+x) and y number of days (mdur+y), then it means that
-             * the available date was somewhere between x and y number of days
-             * ago. E.g. if x is 3 and y is 7, then the available date was
-             * somewhere between 4 and 7 days ago (inclusive of 4 and 7).
-             */
-            if (avdur <= mdur) {
-                val = map.get(ranges.get(0));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(0), ++val);
-            } else if (mdur < avdur && avdur <= (mdur + day)) {
-                val = map.get(ranges.get(1));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(1), ++val);
-            } else if ( (mdur + day) < avdur && avdur <= (mdur + twodays)) {
-                val = map.get(ranges.get(2));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(2), ++val);
-            } else if ( (mdur + twodays) < avdur && avdur <= (mdur + threedays)) {
-                val = map.get(ranges.get(3));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(3), ++val);
-            } else if ( (mdur + threedays) < avdur && avdur <= (mdur + sevendays)) {
-                val = map.get(ranges.get(4));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(4), ++val);
-            } else if ( (mdur + sevendays) < avdur && avdur <= (mdur + tendays)) {
-                val = map.get(ranges.get(5));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(5), ++val);
-            } else if (avdur > (mdur + tendays)) {
-                val = map.get(ranges.get(6));
-                if (val == null)
-                    val = 0;
-                map.put(ranges.get(6), ++val);
+        /*
+         * draw each stack; chart needs to keep the array until it draws
+         */
+        if (chartStats != null) {
+            stack = new Integer[7];
+            for (i = 0; i < domains.size(); i++ ) {
+                for (j = 0; j < 7; j++ )
+                    stack[j] = chartStats[i][j];
+                chartSeries[i].setPoints(stack, true);
             }
         }
-
-        drawChart(map);
     }
 
-    private void drawChart(HashMap<String, Integer> map) {
-        int size;
-        Integer val;
-        String range;
-        DataTable data;
+    /*
+     * Creates the chart data model using table model
+     */
+    private void recalculateChart() {
+        int i;
+        long days[], day;
+        ArrayList<Row> model;
+        AnalysisViewVO a;
 
-        data = DataTable.create();
-        data.addColumn(ColumnType.STRING);
-        data.addColumn(ColumnType.NUMBER, Messages.get().analyses());
-        size = ranges.size();
-        data.addRows(size);
-        for (int i = 0; i < size; i++ ) {
-            range = ranges.get(i);
-            data.setValue(i, 0, range);
-            val = map.get(range);
-            if (val == null)
-                val = 0;
-            data.setValue(i, 1, val.intValue());
-        }
+        model = table.getModel();
+        if (model != null) {
+            chartStats = new int[domains.size()][7];
+            days = last10Days();
+            for (Row r : model) {
+                // filtered out
+                if (table.convertModelIndexToView(r) == -1)
+                    continue;
 
-        if (options == null)
-            options = getOptions();
-        options.setWidth(loggedInPanel.getOffsetWidth());
-        /*
-         * If "chart" is null then this is the first time that it's being drawn,
-         * i.e. the tab was opened for the first time. If "reattachChart" is
-         * true then chart needs to be re-attached to the panel it's being
-         * diplayed in because the screen's being dragged caused chart to get
-         * detached. Otherwise, chart can just be redrawn because only the data
-         * showing in it changed.
-         */
-        // TODO
-        // chart = createChart(createDataset());
-        // ChartPanel panel = new ChartPanel(chart);
-        // panel.setFillZoomRectangle(true);
-        // panel.setMouseWheelEnabled(true);
-        // loggedInPanel.add(panel);
+                a = (AnalysisViewVO)r.getData();
+                i = domains.get(a.getDomain());
 
-        if (chart == null) {
-            chart = new ColumnChart(data, options);
-            chart.setWidth("100%");
-            chart.setHeight("100%");
-            loggedInPanel.add(chart);
-        } else if (reattachChart) {
-            loggedInPanel.clear();
-            chart = new ColumnChart(data, options);
-            loggedInPanel.add(chart);
+                if (a.getAvailableDate() != null)
+                    day = a.getAvailableDate().getDate().getTime();
+                else
+                    day = days[0];
+
+                if (day >= days[0])
+                    chartStats[i][0]++ ;
+                else if (day >= days[1])
+                    chartStats[i][1]++ ;
+                else if (day >= days[2])
+                    chartStats[i][2]++ ;
+                else if (day >= days[3])
+                    chartStats[i][3]++ ;
+                else if (day >= days[7])
+                    chartStats[i][4]++ ;
+                else if (day >= days[9])
+                    chartStats[i][5]++ ;
+                else
+                    chartStats[i][6]++ ;
+            }
         } else {
-            chart.draw(data, options);
+            chartStats = null;
         }
     }
 
-    // private static JFreeChart createChart(XYDataset dataset) {
-    //
-    // JFreeChart chart =
-    // ChartFactory.createTimeSeriesChart("Legal & General Unit Trust Prices",
-    // // title
-    // "Date", // x-axis
-    // // label
-    // "Price Per Unit", // y-axis
-    // // label
-    // dataset, // data
-    // true, // create
-    // // legend?
-    // true, // generate
-    // // tooltips?
-    // false // generate
-    // // URLs?
-    // );
-    //
-    // chart.setBackgroundPaint(Color.white);
-    //
-    // XYPlot plot = (XYPlot)chart.getPlot();
-    // plot.setBackgroundPaint(Color.lightGray);
-    // plot.setDomainGridlinePaint(Color.white);
-    // plot.setRangeGridlinePaint(Color.white);
-    // plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-    // plot.setDomainCrosshairVisible(true);
-    // plot.setRangeCrosshairVisible(true);
-    //
-    // XYItemRenderer r = plot.getRenderer();
-    // if (r instanceof XYLineAndShapeRenderer) {
-    // XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)r;
-    // renderer.setBaseShapesVisible(true);
-    // renderer.setBaseShapesFilled(true);
-    // renderer.setDrawSeriesLineAsPath(true);
-    // }
-    //
-    // DateAxis axis = (DateAxis)plot.getDomainAxis();
-    // axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
-    //
-    // return chart;
-    //
-    // }
-    //
-    // private static XYDataset createDataset() {
-    //
-    // TimeSeries s1 = new TimeSeries("L&G European Index Trust");
-    // s1.add(new Month(2, 2001), 181.8);
-    // s1.add(new Month(3, 2001), 167.3);
-    // s1.add(new Month(4, 2001), 153.8);
-    // s1.add(new Month(5, 2001), 167.6);
-    // s1.add(new Month(6, 2001), 158.8);
-    // s1.add(new Month(7, 2001), 148.3);
-    // s1.add(new Month(8, 2001), 153.9);
-    // s1.add(new Month(9, 2001), 142.7);
-    // s1.add(new Month(10, 2001), 123.2);
-    // s1.add(new Month(11, 2001), 131.8);
-    // s1.add(new Month(12, 2001), 139.6);
-    // s1.add(new Month(1, 2002), 142.9);
-    // s1.add(new Month(2, 2002), 138.7);
-    // s1.add(new Month(3, 2002), 137.3);
-    // s1.add(new Month(4, 2002), 143.9);
-    // s1.add(new Month(5, 2002), 139.8);
-    // s1.add(new Month(6, 2002), 137.0);
-    // s1.add(new Month(7, 2002), 132.8);
-    //
-    // TimeSeries s2 = new TimeSeries("L&G UK Index Trust");
-    // s2.add(new Month(2, 2001), 129.6);
-    // s2.add(new Month(3, 2001), 123.2);
-    // s2.add(new Month(4, 2001), 117.2);
-    // s2.add(new Month(5, 2001), 124.1);
-    // s2.add(new Month(6, 2001), 122.6);
-    // s2.add(new Month(7, 2001), 119.2);
-    // s2.add(new Month(8, 2001), 116.5);
-    // s2.add(new Month(9, 2001), 112.7);
-    // s2.add(new Month(10, 2001), 101.5);
-    // s2.add(new Month(11, 2001), 106.1);
-    // s2.add(new Month(12, 2001), 110.3);
-    // s2.add(new Month(1, 2002), 111.7);
-    // s2.add(new Month(2, 2002), 111.0);
-    // s2.add(new Month(3, 2002), 109.6);
-    // s2.add(new Month(4, 2002), 113.2);
-    // s2.add(new Month(5, 2002), 111.6);
-    // s2.add(new Month(6, 2002), 108.8);
-    // s2.add(new Month(7, 2002), 101.6);
-    //
-    // // ******************************************************************
-    // // More than 150 demo applications are included with the JFreeChart
-    // // Developer Guide...for more information, see:
-    // //
-    // // > http://www.object-refinery.com/jfreechart/guide.html
-    // //
-    // // ******************************************************************
-    //
-    // TimeSeriesCollection dataset = new TimeSeriesCollection();
-    // dataset.addSeries(s1);
-    // dataset.addSeries(s2);
-    //
-    // return dataset;
-    // }
+    /*
+     * Returns a list representing previous 10 days in Millis
+     */
+    private long[] last10Days() {
+        long days[];
+        Date day;
 
-    private Options getOptions() {
-        Options ops;
-        AxisOptions aops;
-        TextStyle fts;
-
-        ops = ColumnChart.createOptions();
-        ops.setLegend(LegendPosition.NONE);
-
-        aops = AxisOptions.create();
-        aops.setTitle(Messages.get().numAnalyses());
-        ops.setVAxisOptions(aops);
-
-        aops = AxisOptions.create();
-        fts = TextStyle.create();
-        fts.setFontSize(10);
-        aops.setTextStyle(fts);
-        ops.setHAxisOptions(aops);
-
-        ops.setWidth(loggedInPanel.getOffsetWidth());
-        ops.setHeight(215);
-        ops.setTitle(Messages.get().timeSinceAnalysesLoggedIn());
-        return ops;
+        /*
+         * fix the time to midnight for each day
+         */
+        day = new Date();
+        days = new long[10];
+        for (int i = 0; i < 10; i++ ) {
+            day.setHours(0);
+            day.setMinutes(0);
+            day.setSeconds(0);
+            days[i] = day.getTime();
+            day.setTime(day.getTime() - 86400000L);
+        }
+        return days;
     }
-
-    // private void sortRows(int col, int dir) {
-    // try {
-    // table.applySort(col, dir, null);
-    // } catch (Exception e) {
-    // Window.alert("error: " + e.getMessage());
-    // logger.log(Level.SEVERE, e.getMessage(), e);
-    // }
-    // }
 }

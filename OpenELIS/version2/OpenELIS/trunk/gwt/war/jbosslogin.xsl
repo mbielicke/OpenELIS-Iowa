@@ -84,17 +84,12 @@
             </table>
           </td>
         </tr>
-        
-
- 		 <tr>
- 		     <td style="color:#ac0000;"><font face="Arial,Helvetica"><xsl:value-of select="error"/></font></td>
-		  </tr>
-
-		
+        <tr>
+ 		  <td style="color:#ac0000;"><font face="Arial,Helvetica"><xsl:value-of select="error"/></font></td>
+        </tr>
     </table>
 </body>
 </html>
 </xsl:template>
-
 
 </xsl:stylesheet>

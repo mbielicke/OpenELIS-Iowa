@@ -26,35 +26,30 @@
 				width="100%">
 				<g:HorizontalPanel>
 					<w:Button css="{res.buttonPanel}" ui:field="refreshButton"
-						leftIcon="{res.icon.refreshButtonImage}" text="{msg.gen_refresh}" />
-					<w:Button css="{res.buttonPanel}" ui:field="trackingButton"
+						enabled="true" leftIcon="{res.icon.refreshButtonImage}" text="{msg.gen_refresh}" />
+					<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />					
+					<w:Button css="{res.buttonPanel}" ui:field="detailsButton"
 						leftIcon="{res.icon.trackingIcon}" text="{msg.gen_details}" />
-					<w:Button css="{res.buttonPanel}" ui:field="exportToXl"
-						text="{msg.todo_exportToXl}" />
+					<w:Button css="{res.buttonPanel}" ui:field="exportButton"
+						leftIcon="{res.icon.NextPageButtonImage}" text="{msg.todo_exportToXl}" />
+					<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />					
+						<w:Menu ui:field="optionsMenu" selfShow="true" enabled="true">
+							<w:display>
+								<w:Button ui:field="optionsButton" css="{res.buttonPanel}"
+									text="{msg.gen_options}" rightIcon="{res.icon.OptionsButtonImage}" enabled="true"/>
+							</w:display>
+							<w:CheckMenuItem ui:field="showTrf" display="{msg.todo_showTRF}" />
+							<w:CheckMenuItem ui:field="mySection" display="{msg.todo_showMySectOnly}" />
+						</w:Menu>
 				</g:HorizontalPanel>
 			</g:AbsolutePanel>
 		</g:layer>
-		<g:layer top="30px" height="30px">
-			<g:HTMLPanel>
-				<table class="{res.style.Form}">
-					<tr>
-						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.section}:" />
-						</td>
-						<td>
-							<w:Dropdown ui:field="displaySections" width="203px"
-								field="String" />
-						</td>
-					</tr>
-				</table>
-			</g:HTMLPanel>
-		</g:layer>
-		<g:layer top="60" bottom="0px">
+		<g:layer top="30" bottom="0px">
 			<w:TabLayoutPanel ui:field="tabPanel" barHeight="25"
 				barUnit="PX">
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.loggedIn}" />
+						<w:TabWidget text="{msg.todo_loggedIn}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -64,7 +59,7 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.initiated}" />
+						<w:TabWidget text="{msg.todo_initiated}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -74,7 +69,7 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.worksheet}" />
+						<w:TabWidget text="{msg.todo_worksheet}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -84,7 +79,7 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.completed}" />
+						<w:TabWidget text="{msg.todo_completed}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -94,7 +89,7 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.released}" />
+						<w:TabWidget text="{msg.todo_released}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -104,7 +99,7 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.toBeVerified}" />
+						<w:TabWidget text="{msg.todo_toBeVerified}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
@@ -114,21 +109,11 @@
 				</w:tab>
 				<w:tab>
 					<w:customHeader>
-						<w:TabWidget text="{msg.other}" />
+						<w:TabWidget text="{msg.todo_other}" />
 					</w:customHeader>
 					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 						<g:layer>
 							<d:OtherTabUI ui:field="otherTab" />
-						</g:layer>
-					</g:LayoutPanel>
-				</w:tab>
-				<w:tab>
-					<w:customHeader>
-						<w:TabWidget text="{msg.instrument}" />
-					</w:customHeader>
-					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
-						<g:layer>
-							<d:InstrumentTabUI ui:field="instrumentTab" />
 						</g:layer>
 					</g:LayoutPanel>
 				</w:tab>
