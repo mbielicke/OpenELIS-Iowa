@@ -26,7 +26,7 @@
 package org.openelis.modules.attachment.client;
 
 import org.openelis.meta.AttachmentMeta;
-import org.openelis.modules.report.attachment.client.AttachmentReportScreen;
+import org.openelis.modules.report.client.AttachmentReportScreen;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;

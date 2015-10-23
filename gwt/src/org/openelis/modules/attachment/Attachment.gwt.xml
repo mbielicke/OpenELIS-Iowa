@@ -10,5 +10,4 @@
   of a UIRF Software License are applicable instead of those above. -->
 <module>
   <entry-point class="org.openelis.modules.attachment.client.AttachmentEntry" />
-  <inherits name="org.openelis.modules.report.attachment.Attachment"/>
 </module>

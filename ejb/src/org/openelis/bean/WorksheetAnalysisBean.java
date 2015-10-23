@@ -53,6 +53,7 @@ import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.utilcommon.TurnaroundUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -379,16 +380,16 @@ public class WorksheetAnalysisBean {
             // client requested a priority number of days.
             //
             if (waVVO.getPriority() != null)
-                waVDO.setDueDays(DataBaseUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getPriority()));
+                waVDO.setDueDays(TurnaroundUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getPriority()));
             else
-                waVDO.setDueDays(DataBaseUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getTimeTaAverage()));
+                waVDO.setDueDays(TurnaroundUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getTimeTaAverage()));
             
             //
             // Compute and set the expiration date on the analysis based
             // on the collection date and the tests definition of holding
             // hours.
             //
-            waVDO.setExpireDate(DataBaseUtil.getExpireDate(waVVO.getCollectionDate(),
+            waVDO.setExpireDate(TurnaroundUtil.getExpireDate(waVVO.getCollectionDate(),
                                                            waVVO.getCollectionTime(),
                                                            waVVO.getTimeHolding()));
         }

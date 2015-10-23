@@ -27,7 +27,6 @@ UIRF Software License are applicable instead of those above.
 <module>
   <inherits name="org.openelis.modules.sample.Sample"/>
   <inherits name="org.openelis.modules.shipping.ShippingService"/>
-  <inherits name="org.openelis.modules.report.orderRequestForm.OrderRequestForm"/>
   <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
   

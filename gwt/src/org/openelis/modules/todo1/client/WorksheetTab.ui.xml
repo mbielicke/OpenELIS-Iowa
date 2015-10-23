@@ -24,7 +24,7 @@
 		<g:layer top="0px" bottom="0px">
 			<t:Table ui:field="table" visibleRows="10" verticalScroll="ALWAYS"
 				horizontalScroll="ALWAYS" header="true">
-				<t:Column width="80" label="{msg.worksheet_worksheetNumber}"
+				<t:Column width="80" label="{msg.todo_worksheetNum}"
 					sortable="true">
 					<t:LabelCell />
 				</t:Column>
@@ -32,15 +32,15 @@
 					filterable="true">
 					<t:LabelCell />
 				</t:Column>
-				<t:Column width="100" label="{msg.gen_section}" sortable="true"
+				<t:Column width="110" label="{msg.todo_section}" sortable="true"
 					filterable="true">
 					<t:LabelCell />
 				</t:Column>
-				<t:Column width="183" label="{msg.gen_description}"
+				<t:Column width="250" label="{msg.gen_description}"
 					sortable="true" filterable="true">
 					<t:LabelCell />
 				</t:Column>
-				<t:Column width="105" label="{msg.worksheet_createdDate}"
+				<t:Column width="105" label="{msg.todo_created}"
 					sortable="true">
 					<t:CalendarCell>
 						<c:Calendar begin="0" end="4" />

@@ -37,7 +37,6 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.auxData.AuxData"/>
   <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
   <inherits name="org.openelis.modules.sample.Sample"/>
-  <inherits name="org.openelis.modules.report.orderRequestForm.OrderRequestForm"/>
   
   <entry-point class="org.openelis.modules.orderFill.client.OrderFillEntry"/>
 </module>

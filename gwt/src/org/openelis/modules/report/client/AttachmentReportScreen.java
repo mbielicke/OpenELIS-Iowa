@@ -23,28 +23,24 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.orderRequestForm.client;
+package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.meta.AttachmentMeta;
+import org.openelis.modules.attachment.client.AttachmentService;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.modules.report.client.ReportScreen;
-import org.openelis.modules.report.client.RequestFormReportService;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-/**
- * This class is used to execute reports on behalf of those screens that don't 
- * implement ReportScreen like Send-out Order
- */
-public class OrderRequestFormReportScreen extends ReportScreen<Query> {
-
-    public OrderRequestFormReportScreen(WindowInt window) throws Exception { 
+public class AttachmentReportScreen extends ReportScreen<Query> {
+    
+    public AttachmentReportScreen(WindowInt window) throws Exception {         
         drawScreen(new ScreenDef());        
         this.window = window;
     }
@@ -64,6 +60,13 @@ public class OrderRequestFormReportScreen extends ReportScreen<Query> {
 
     @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
-        RequestFormReportService.get().runReport(query, callback);        
+        Integer id;
+        
+        id = null;
+        for (QueryData field : query.getFields()) {
+            if (AttachmentMeta.getId().equals(field.getKey())) 
+                id = Integer.valueOf(field.getQuery());
+        }
+        AttachmentService.get().get(id, callback);
     }
 }

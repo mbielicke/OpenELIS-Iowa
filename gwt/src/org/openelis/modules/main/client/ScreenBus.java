@@ -5,6 +5,13 @@ import org.openelis.modules.main.client.event.ShowScreenHandler;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
+/**
+ * 
+ * This class allows us to register screen and modules by name and use
+ * events to instantiate them. The onModuleLoad method for each xxxxEntry.java
+ * class registers showScreenHandler for each module and OpenELIS.java will fire
+ * the event once menu item is selected.
+ */
 public class ScreenBus extends SimpleEventBus {
 
     public static ScreenBus instance;
@@ -90,15 +97,14 @@ public class ScreenBus extends SimpleEventBus {
                     ABNORMALS_REPORT = new ShowScreenType("Abnormals Report"),
                     PATIENT_MERGE = new ShowScreenType("Patient Merge");
 
+    private ScreenBus() {
+    }
+
     public static ScreenBus get() {
         if (instance == null)
             instance = new ScreenBus();
 
         return instance;
-    }
-
-    private ScreenBus() {
-
     }
 
     public static class ShowScreenType extends Type<ShowScreenHandler> {

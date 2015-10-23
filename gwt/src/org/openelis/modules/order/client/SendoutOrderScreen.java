@@ -77,7 +77,7 @@ import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
-import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
+import org.openelis.modules.report.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.shipping.client.ShippingScreen;
