@@ -198,7 +198,7 @@ public class StorageLocationBean {
             dups = fetchByName(data.getName());
             if (dups.size() > 0 && DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId()) &&
                 dups.get(0).getParentStorageLocationId() == null) {
-                list.add(new FieldErrorException("fieldUniqueException", StorageLocationMeta.getName()));
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(), StorageLocationMeta.getName()));
             }
 
         }

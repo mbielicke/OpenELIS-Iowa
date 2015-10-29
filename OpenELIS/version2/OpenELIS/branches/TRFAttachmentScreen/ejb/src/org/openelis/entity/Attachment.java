@@ -54,23 +54,27 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "Attachment.FetchById",
+               @NamedQuery( name = "Attachment.FetchById",
                            query = "select new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id = :id"),
-               @NamedQuery(name = "Attachment.FetchByIds",
+               @NamedQuery( name = "Attachment.FetchByIds",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id in (:ids)"),
-               @NamedQuery(name = "Attachment.FetchByIdsDescending",
+               @NamedQuery( name = "Attachment.FetchByIdsDescending",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id in (:ids) order by a.id desc"),
-               @NamedQuery(name = "Attachment.FetchUnattachedByDescription",
+               @NamedQuery( name = "Attachment.FetchUnattachedByDescription",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id)"
                                    + " and a.description like (:description) order by a.id"),
-               @NamedQuery(name = "Attachment.FetchUnattachedBeforeCreatedDate",
+               @NamedQuery( name = "Attachment.FetchUnattachedBeforeCreatedDate",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                  + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id)"
-                                 + " and a.createdDate < :createdDate")})
+                                 + " and a.createdDate < :createdDate"),
+               @NamedQuery( name = "Attachment.FetchByDescriptionReferenceIdReferenceTableId",
+                           query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                 + " from Attachment a left join a.attachmentItem i where a.description like (:description) and i.referenceId = :referenceId"
+                                 + " and i.referenceTableId = :referenceTableId")})
 @Entity
 @Table(name = "attachment")
 @EntityListeners({AuditUtil.class})

@@ -43,6 +43,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface AttachmentServiceIntAsync {
 
     public void get(Integer id, AsyncCallback<ReportStatus> callback);
+    
+    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback);
 
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              AsyncCallback<ArrayList<AttachmentManager>> callback);

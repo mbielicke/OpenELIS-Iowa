@@ -26,29 +26,25 @@
 package org.openelis.modules.secondDataEntry.client;
 
 import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ProjectDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.resources.OpenELISResources;
-import org.openelis.modules.organization1.client.OrganizationService1Impl;
-import org.openelis.modules.project.client.ProjectService;
-import org.openelis.modules.secondDataEntry.client.SecondDataEntryScreenUI.Type;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
-import org.openelis.ui.event.GetMatchesEvent;
-import org.openelis.ui.event.GetMatchesHandler;
+import org.openelis.ui.event.ShortcutHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -57,19 +53,12 @@ import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
-import org.openelis.ui.widget.DoubleHelper;
 import org.openelis.ui.widget.Dropdown;
-import org.openelis.ui.widget.IntegerHelper;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Label;
-import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TextBase;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
-import org.openelis.ui.widget.table.CellRenderer;
-import org.openelis.ui.widget.table.Column;
-import org.openelis.ui.widget.table.LabelCell;
-import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -81,7 +70,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -111,9 +100,11 @@ public class EnvironmentalTabUI extends Screen {
 
     protected ArrayList<Widget>                editWidgets;
 
-    protected HashMap<String, ArrayList<Item>> models;
+    protected HashMap<Widget, Integer>         numEdits;
 
-    protected HashMap<String, Integer>         numEdits;
+    protected boolean                          canEdit;
+
+    protected int                              tabIndex;
 
     protected static final String              REPORT_TO = "report_to", BILL_TO = "bill_to";
 
@@ -123,6 +114,86 @@ public class EnvironmentalTabUI extends Screen {
         initWidget(uiBinder.createAndBindUi(this));
 
         screen = this;
+        initialize();
+    }
+
+    /**
+     * Setup state and data change handles for every widget on the screen
+     */
+    private void initialize() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                ScheduledCommand cmd;
+
+                if ( !isState(UPDATE) || !canEdit)
+                    return;
+                /*
+                 * this keeps track of how many times a widget with a given key
+                 * was edited
+                 */
+                numEdits = new HashMap<Widget, Integer>();
+
+                /*
+                 * this is the index of the most recent widget that lost focus
+                 * when Tab was pressed
+                 */
+                tabIndex = -1;
+
+                /*
+                 * set the focus to the first editable widget; if the focus is
+                 * not set in this command, the style for focus doesn't show up
+                 * even if the widget has the cursor and is enabled
+                 */
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        if (editWidgets != null && editWidgets.size() > 0)
+                            ((Focusable)editWidgets.get(0)).setFocus(true);
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        });
+        
+        /*
+         * add shortcuts to select the tabs on the screen by using the Ctrl key
+         * and a number, e.g. Ctrl+'1' for the first tab, and so on; the
+         * ScheduledCommands make sure that the tab is opened before the focus
+         * is set
+         */
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                Command cmd;
+
+                cmd = new Command() {
+                    @Override
+                    public void execute() {                        
+                        logger.log(Level.SEVERE, "env tab Ctrl+1");
+                        if (focused != null)
+                            logger.log(Level.SEVERE, "focused is not null ");
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);                
+            }
+        }, '1', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                Command cmd;
+
+                cmd = new Command() {
+                    @Override
+                    public void execute() {
+                        logger.log(Level.SEVERE, "env tab Ctrl+2");
+                        if (focused != null)
+                            logger.log(Level.SEVERE, "focused is not null ");
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '2', CTRL);
     }
 
     public void setData(SampleManager1 manager) {
@@ -130,15 +201,9 @@ public class EnvironmentalTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-
-        /*
-         * this keeps track of how many times a widget with a given key was
-         * edited
-         */
-        if (isState(UPDATE))
-            numEdits = new HashMap<String, Integer>();
     }
 
     public void onDataChange() {
@@ -154,18 +219,6 @@ public class EnvironmentalTabUI extends Screen {
         Node root, node;
 
         row = 0;
-        /*
-         * add the labels that inform the user which shortcut can be used to
-         * copy the value from the widget being edited, to the manager
-         */
-        widgetTable.setWidget(row,
-                              1,
-                              getHeadingLabel(Messages.get()
-                                                      .secondDataEntry_secondDataEntryHeading()));
-        widgetTable.setWidget(row,
-                              4,
-                              getHeadingLabel(Messages.get()
-                                                      .secondDataEntry_firstDataEntryHeading()));
         editWidgets = new ArrayList<Widget>();
         /*
          * parse the xml and add widgets for the fields to the widget table
@@ -183,11 +236,19 @@ public class EnvironmentalTabUI extends Screen {
         }
     }
 
+    private void evaluateEdit() {
+        canEdit = manager != null &&
+                  Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain());
+    }
+
     /**
      * Adds a row for the widget with the passed key, at the passed index
      */
     private void addWidgetRow(String key, int row) {
         switch (key) {
+            case SampleMeta.ORDER_ID:
+                addOrderId(row);
+                break;
             case SampleMeta.COLLECTION_DATE:
                 addCollectionDate(row);
                 break;
@@ -199,15 +260,6 @@ public class EnvironmentalTabUI extends Screen {
                 break;
             case SampleMeta.CLIENT_REFERENCE:
                 addClientReference(row);
-                break;
-            case REPORT_TO:
-                addReportTo(row);
-                break;
-            case BILL_TO:
-                addBillTo(row);
-                break;
-            case SampleMeta.PROJECT_NAME:
-                addProject(row);
                 break;
             case SampleMeta.ENV_IS_HAZARDOUS:
                 addEnvIsHazardous(row);
@@ -245,7 +297,128 @@ public class EnvironmentalTabUI extends Screen {
             case SampleMeta.LOCATION_ADDR_COUNTRY:
                 addLocationAddrCountry(row);
                 break;
+            case REPORT_TO:
+                addReportTo(row);
+                break;
+            case BILL_TO:
+                addBillTo(row);
+                break;
+            case SampleMeta.PROJECT_NAME:
+                addProject(row);
+                break;
         }
+    }
+    
+    /**
+     * Adds the row for oder id at the passed index; also adds the applicable
+     * screen handlers to the widgets in the row
+     */
+    private void addOrderId(int row) {
+        final int index;
+        Label<String> l1;
+        final TextBox<Integer> t1, t2;
+        final Image i;
+        HorizontalPanel h;
+        final ScheduledCommand cmd;
+
+        /*
+         * create the widgets and add them to the table panel
+         */
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().order_orderNum());
+
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.INTEGER, 75, null, null, null);
+        i = new Image();
+        h = new HorizontalPanel();
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(t1);
+
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.INTEGER, 75, null, null, null);
+
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(t1, SampleMeta.ORDER_ID, new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                t1.setValue(null);
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Integer numEdit;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                if (DataBaseUtil.isDifferent(event.getValue(), manager.getSample()
+                                                                      .getOrderId())) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1)
+                        t2.setValue(manager.getSample()
+                                    .getOrderId());
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the image
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ORDER_ID),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(t2,
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ORDER_ID),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
+                                 t2.setValue(null);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 t2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
@@ -258,39 +431,40 @@ public class EnvironmentalTabUI extends Screen {
         final Calendar c1, c2;
         final Image i;
         HorizontalPanel hp;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().sample_collected());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_collected());
 
-        c1 = getCalendar(90, 0, 2);
+        c1 = SecondDataEntryUtil.getCalendar(90, 0, 2);
         i = new Image();
         hp = new HorizontalPanel();
-        addWidgetAndImage(hp, c1, i);
+        SecondDataEntryUtil.addWidgetAndImage(hp, c1, i);
 
         index = editWidgets.size();
         editWidgets.add(c1);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sample_collected());
-        c2 = getCalendar(90, 0, 2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_collected());
+        c2 = SecondDataEntryUtil.getCalendar(90, 0, 2);
 
-        addWidgets(row, l1, hp, b, l2, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, b, l2, c2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(c1);
+        cmd = SecondDataEntryUtil.getFocusCommand(c1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(c1, SampleMeta.COLLECTION_DATE, new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 c1.setValue(null);
             }
 
@@ -300,7 +474,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.COLLECTION_DATE);
+                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -314,23 +488,26 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         c2.setValue(manager.getSample().getCollectionDate());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
                     /*
-                     * set the focus back on the widget
+                     * set the focus back on the widget if the user pressed Tab
                      */
-                    Scheduler.get().scheduleDeferred(cmd);
+                    if (isFocusLostOnTab(c1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                c1.setEnabled(isState(UPDATE));
+                c1.setEnabled(isState(UPDATE) && canEdit);
             }
 
             public Widget onTab(boolean forward) {
-                return screen.onTab(index, forward);
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
 
         });
@@ -338,17 +515,19 @@ public class EnvironmentalTabUI extends Screen {
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.COLLECTION_DATE), new ScreenHandler<Datetime>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.COLLECTION_DATE),
+                         new ScreenHandler<Datetime>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.COLLECTION_DATE),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.COLLECTION_DATE),
                          new ScreenHandler<Datetime>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -362,15 +541,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 c1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(c2,
-                         getRightWidgetKey(SampleMeta.COLLECTION_DATE),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.COLLECTION_DATE),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  c2.setValue(null);
                              }
 
@@ -390,39 +569,40 @@ public class EnvironmentalTabUI extends Screen {
         final Calendar c1, c2;
         final Image i;
         HorizontalPanel hp;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().gen_time());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_time());
 
-        c1 = getCalendar(60, 3, 4);
+        c1 = SecondDataEntryUtil.getCalendar(60, 3, 4);
         i = new Image();
         hp = new HorizontalPanel();
-        addWidgetAndImage(hp, c1, i);
+        SecondDataEntryUtil.addWidgetAndImage(hp, c1, i);
 
         index = editWidgets.size();
         editWidgets.add(c1);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().gen_time());
-        c2 = getCalendar(60, 3, 4);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_time());
+        c2 = SecondDataEntryUtil.getCalendar(60, 3, 4);
 
-        addWidgets(row, l1, hp, b, l2, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, b, l2, c2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(c1);
+        cmd = SecondDataEntryUtil.getFocusCommand(c1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(c1, SampleMeta.COLLECTION_TIME, new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 c1.setValue(null);
             }
 
@@ -432,7 +612,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.COLLECTION_TIME);
+                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -446,40 +626,45 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         c2.setValue(manager.getSample().getCollectionTime());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
                     /*
-                     * set the focus back on the widget
+                     * set the focus back on the widget if the user pressed Tab
                      */
-                    Scheduler.get().scheduleDeferred(cmd);
+                    if (isFocusLostOnTab(c1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                c1.setEnabled(isState(UPDATE));
+                c1.setEnabled(isState(UPDATE) && canEdit);
             }
 
             public Widget onTab(boolean forward) {
-                return screen.onTab(index, forward);
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.COLLECTION_TIME), new ScreenHandler<Datetime>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.COLLECTION_TIME),
+                         new ScreenHandler<Datetime>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.COLLECTION_TIME),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.COLLECTION_TIME),
                          new ScreenHandler<Datetime>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -493,15 +678,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 c1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(c2,
-                         getRightWidgetKey(SampleMeta.COLLECTION_TIME),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.COLLECTION_TIME),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  c2.setValue(null);
                              }
 
@@ -520,39 +705,40 @@ public class EnvironmentalTabUI extends Screen {
         final Calendar c1, c2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().sample_received());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_received());
 
-        c1 = getCalendar(90, 0, 4);
+        c1 = SecondDataEntryUtil.getCalendar(90, 0, 4);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, c1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, c1, i);
 
         index = editWidgets.size();
         editWidgets.add(c1);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sample_received());
-        c2 = getCalendar(90, 0, 4);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_received());
+        c2 = SecondDataEntryUtil.getCalendar(90, 0, 4);
 
-        addWidgets(row, l1, h, b, l2, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, c2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(c1);
+        cmd = SecondDataEntryUtil.getFocusCommand(c1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(c1, SampleMeta.RECEIVED_DATE, new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 c1.setValue(null);
             }
 
@@ -562,7 +748,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.RECEIVED_DATE);
+                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -576,43 +762,50 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         c2.setValue(manager.getSample().getReceivedDate());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
                     /*
-                     * set the focus back on the widget
+                     * set the focus back on the widget if the user pressed Tab
                      */
-                    Scheduler.get().scheduleDeferred(cmd);
+                    if (isFocusLostOnTab(c1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                c1.setEnabled(isState(UPDATE));
+                c1.setEnabled(isState(UPDATE) && canEdit);
             }
 
             public Widget onTab(boolean forward) {
-                return screen.onTab(index, forward);
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(i, getImageKey(SampleMeta.RECEIVED_DATE), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.RECEIVED_DATE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.RECEIVED_DATE), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.RECEIVED_DATE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -621,15 +814,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 c1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(c2,
-                         getRightWidgetKey(SampleMeta.RECEIVED_DATE),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.RECEIVED_DATE),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  c2.setValue(null);
                              }
 
@@ -644,40 +837,53 @@ public class EnvironmentalTabUI extends Screen {
      * applicable screen handlers to the widgets in the row
      */
     private void addClientReference(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().sample_clntRef());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_clntRef());
 
-        t1 = getTextBox(Type.STRING, 196, TextBase.Case.LOWER, 20, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            196,
+                                            TextBase.Case.LOWER,
+                                            20,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sample_clntRef());
-        t2 = getTextBox(Type.STRING, 196, TextBase.Case.LOWER, 20, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_clntRef());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            196,
+                                            TextBase.Case.LOWER,
+                                            20,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.CLIENT_REFERENCE, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -687,7 +893,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.CLIENT_REFERENCE);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -701,40 +907,50 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSample().getClientReference());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.CLIENT_REFERENCE), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.CLIENT_REFERENCE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.CLIENT_REFERENCE), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.CLIENT_REFERENCE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -743,15 +959,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.CLIENT_REFERENCE),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.CLIENT_REFERENCE),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -762,263 +978,49 @@ public class EnvironmentalTabUI extends Screen {
     }
 
     /**
-     * Adds the row for the report-to organization at the passed index
-     */
-    private void addReportTo(int row) {
-        Label<String> l1, l2;
-        final AutoComplete a1, a2;
-        final Image i;
-        HorizontalPanel h;
-        final Button b;
-        final ScheduledCommand cmd;
-
-        /*
-         * create the widgets and add them to the table panel
-         */
-        l1 = getPromptLabel(Messages.get().sampleOrganization_reportTo());
-        a1 = getOrgAutocomplete(180, TextBase.Case.UPPER, 565);
-        i = new Image();
-        h = new HorizontalPanel();
-        addWidgetAndImage(h, a1, i);
-
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sampleOrganization_reportTo());
-        a2 = getOrgAutocomplete(180, TextBase.Case.UPPER, 565);
-
-        addWidgets(row, l1, h, b, l2, a2);
-
-        /*
-         * the scheduled command for setting the focus back to this widget when
-         * it loses focus
-         */
-        cmd = getFocusCommand(a1);
-
-        /*
-         * add screen handler for the editable widget
-         */
-        addScreenHandler(a1, REPORT_TO, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
-                a1.setValue(null, "");
-            }
-
-            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                // setCollectionDate(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                a1.setEnabled(isState(UPDATE));
-            }
-        });
-
-        /*
-         * add screen handler for the button
-         */
-        addScreenHandler(b, getButtonKey(REPORT_TO), new ScreenHandler<Datetime>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
-
-        b.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        /*
-         * add screen handler for the widget on the right
-         */
-        addScreenHandler(a2, getRightWidgetKey(REPORT_TO), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                a2.setValue(null, "");
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                a2.setEnabled(false);
-            }
-        });
-    }
-
-    /**
-     * Adds the row for the bill-to organization at the passed index
-     */
-    private void addBillTo(int row) {
-        Label<String> l1, l2;
-        final AutoComplete a1, a2;
-        final Image i;
-        HorizontalPanel h;
-        final Button b;
-
-        l1 = getPromptLabel(Messages.get().sampleOrganization_billTo());
-        a1 = getOrgAutocomplete(180, TextBase.Case.UPPER, 565);
-        i = new Image();
-        h = new HorizontalPanel();
-        addWidgetAndImage(h, a1, i);
-
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sampleOrganization_billTo());
-        a2 = getOrgAutocomplete(180, TextBase.Case.UPPER, 565);
-
-        addWidgets(row, l1, h, b, l2, a2);
-
-        /*
-         * add screen handler for the editable widget
-         */
-        addScreenHandler(a1, BILL_TO, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
-                a1.setValue(null, "");
-            }
-
-            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                // setCollectionDate(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                a1.setEnabled(isState(UPDATE));
-            }
-        });
-
-        /*
-         * add screen handler for the button
-         */
-        addScreenHandler(b, getButtonKey(BILL_TO), new ScreenHandler<Datetime>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
-
-        b.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        /*
-         * add screen handler for the widget on the right
-         */
-        addScreenHandler(a2, getRightWidgetKey(BILL_TO), new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
-                a2.setValue(null, "");
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                a2.setEnabled(false);
-            }
-        });
-    }
-
-    /**
-     * Adds the row for project at the passed index
-     */
-    private void addProject(int row) {
-        Label<String> l1, l2;
-        final AutoComplete a1, a2;
-        final Image i;
-        HorizontalPanel h;
-        final Button b;
-
-        l1 = getPromptLabel(Messages.get().project_project());
-        a1 = getProjectAutocomplete(180, TextBase.Case.LOWER, 440);
-        i = new Image();
-        h = new HorizontalPanel();
-        addWidgetAndImage(h, a1, i);
-
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().project_project());
-        a2 = getProjectAutocomplete(180, TextBase.Case.LOWER, 440);
-
-        addWidgets(row, l1, h, b, l2, a2);
-
-        /*
-         * add screen handler for the editable widget
-         */
-        addScreenHandler(a1, SampleMeta.PROJECT_NAME, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
-                a1.setValue(null, "");
-            }
-
-            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                // setCollectionDate(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                a1.setEnabled(isState(UPDATE));
-            }
-        });
-
-        /*
-         * add screen handler for the button
-         */
-        addScreenHandler(b, getButtonKey(SampleMeta.PROJECT_NAME), new ScreenHandler<Datetime>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
-
-        b.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        /*
-         * add screen handler for the widget on the right
-         */
-        addScreenHandler(a2,
-                         getRightWidgetKey(SampleMeta.PROJECT_NAME),
-                         new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 a2.setValue(null, "");
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 a2.setEnabled(false);
-                             }
-                         });
-    }
-
-    /**
      * Adds the row for environmental is_hazardous at the passed index; also
      * adds the applicable screen handlers to the widgets in the row
      */
     private void addEnvIsHazardous(int row) {
+        final int index;
         Label<String> l1, l2;
         final CheckBox c1, c2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().sampleEnvironmental_hazardous());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleEnvironmental_hazardous());
 
         c1 = new CheckBox();
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, c1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, c1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sampleEnvironmental_hazardous());
+        index = editWidgets.size();
+        editWidgets.add(c1);
+
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleEnvironmental_hazardous());
         c2 = new CheckBox();
 
-        addWidgets(row, l1, h, b, l2, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, c2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(c1);
+        cmd = SecondDataEntryUtil.getFocusCommand(c1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(c1, SampleMeta.ENV_IS_HAZARDOUS, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 c1.setValue("N");
             }
 
@@ -1028,7 +1030,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_IS_HAZARDOUS);
+                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1042,40 +1044,50 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         c2.setValue(manager.getSampleEnvironmental().getIsHazardous());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(c1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                c1.setEnabled(isState(UPDATE));
+                c1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.ENV_IS_HAZARDOUS), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_IS_HAZARDOUS),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.ENV_IS_HAZARDOUS), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_IS_HAZARDOUS),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -1084,15 +1096,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 c1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(c2,
-                         getRightWidgetKey(SampleMeta.ENV_IS_HAZARDOUS),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_IS_HAZARDOUS),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  c2.setValue("N");
                              }
 
@@ -1106,40 +1118,53 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental priority at the passed index
      */
     private void addEnvPriority(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<Integer> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().gen_priority());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_priority());
 
-        t1 = getTextBox(Type.INTEGER, 24, null, null, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.INTEGER,
+                                            24,
+                                            TextBase.Case.LOWER,
+                                            null,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().gen_priority());
-        t2 = getTextBox(Type.INTEGER, 24, null, null, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_priority());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.INTEGER,
+                                            24,
+                                            TextBase.Case.LOWER,
+                                            null,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.ENV_PRIORITY, new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 t1.setValue(null);
             }
 
@@ -1149,7 +1174,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_PRIORITY);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1163,40 +1188,50 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSampleEnvironmental().getPriority());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.ENV_PRIORITY), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_PRIORITY),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.ENV_PRIORITY), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_PRIORITY),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -1205,15 +1240,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.ENV_PRIORITY),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_PRIORITY),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  t2.setValue(null);
                              }
 
@@ -1227,40 +1262,45 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental collector at the passed index
      */
     private void addEnvCollector(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().sample_collector());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_collector());
 
-        t1 = getTextBox(Type.STRING, 235, null, 40, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 235, null, 40, null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().sample_collector());
-        t2 = getTextBox(Type.STRING, 235, null, 40, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sample_collector());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 235, null, 40, null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.ENV_COLLECTOR, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1270,7 +1310,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_COLLECTOR);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1282,42 +1322,50 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getCollector())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
+                    if (numEdit > 1)
                         t2.setValue(manager.getSampleEnvironmental().getCollector());
-                        b.setEnabled(true);
-                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.ENV_COLLECTOR), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_COLLECTOR),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.ENV_COLLECTOR), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_COLLECTOR),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -1326,15 +1374,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.ENV_COLLECTOR),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_COLLECTOR),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1348,40 +1396,53 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental collector phone at the passed index
      */
     private void addEnvCollectorPhone(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().address_phone());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_phone());
 
-        t1 = getTextBox(Type.STRING, 115, null, 17, Messages.get().gen_phoneWithExtensionPattern());
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            115,
+                                            null,
+                                            17,
+                                            Messages.get().gen_phoneWithExtensionPattern());
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_phone());
-        t2 = getTextBox(Type.STRING, 115, null, 17, Messages.get().gen_phoneWithExtensionPattern());
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_phone());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            115,
+                                            null,
+                                            17,
+                                            Messages.get().gen_phoneWithExtensionPattern());
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.ENV_COLLECTOR_PHONE, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1391,7 +1452,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_COLLECTOR_PHONE);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1405,20 +1466,26 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSampleEnvironmental().getCollectorPhone());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
@@ -1426,7 +1493,7 @@ public class EnvironmentalTabUI extends Screen {
          * add screen handler for the image
          */
         addScreenHandler(i,
-                         getImageKey(SampleMeta.ENV_COLLECTOR_PHONE),
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_COLLECTOR_PHONE),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  i.setResource(OpenELISResources.INSTANCE.blankIcon());
@@ -1436,8 +1503,8 @@ public class EnvironmentalTabUI extends Screen {
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.ENV_COLLECTOR_PHONE),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_COLLECTOR_PHONE),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -1451,15 +1518,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.ENV_COLLECTOR_PHONE),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_COLLECTOR_PHONE),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1473,40 +1540,45 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental description at the passed index
      */
     private void addEnvDescription(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().gen_description());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_description());
 
-        t1 = getTextBox(Type.STRING, 280, null, 40, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 280, null, 40, null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().gen_description());
-        t2 = getTextBox(Type.STRING, 280, null, 40, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_description());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 280, null, 40, null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.ENV_DESCRIPTION, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1516,7 +1588,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_DESCRIPTION);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1530,37 +1602,45 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSampleEnvironmental().getDescription());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.ENV_DESCRIPTION), new ScreenHandler<String>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_DESCRIPTION),
+                         new ScreenHandler<String>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.ENV_DESCRIPTION),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_DESCRIPTION),
                          new ScreenHandler<Datetime>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -1574,15 +1654,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.ENV_DESCRIPTION),
-                         new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_DESCRIPTION),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1596,40 +1676,53 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental description at the passed index
      */
     private void addEnvLocation(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().gen_location());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_location());
 
-        t1 = getTextBox(Type.STRING, 231, TextBase.Case.LOWER, 40, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.LOWER,
+                                            40,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().gen_location());
-        t2 = getTextBox(Type.STRING, 231, TextBase.Case.LOWER, 40, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().gen_location());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.LOWER,
+                                            40,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.ENV_LOCATION, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1639,7 +1732,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.ENV_LOCATION);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1653,40 +1746,50 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSampleEnvironmental().getLocation());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
         /*
          * add screen handler for the image
          */
-        addScreenHandler(i, getImageKey(SampleMeta.ENV_LOCATION), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                i.setResource(OpenELISResources.INSTANCE.blankIcon());
-            }
-        });
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.ENV_LOCATION),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b, getButtonKey(SampleMeta.ENV_LOCATION), new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                b.setEnabled(false);
-            }
-        });
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.ENV_LOCATION),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
         b.addClickHandler(new ClickHandler() {
             @Override
@@ -1695,15 +1798,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.ENV_LOCATION),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.ENV_LOCATION),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1717,40 +1820,53 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental location multiple unit at the passed index
      */
     private void addLocationAddrMultipleUnit(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().address_aptSuite());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_aptSuite());
 
-        t1 = getTextBox(Type.STRING, 231, TextBase.Case.UPPER, null, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_aptSuite());
-        t2 = getTextBox(Type.STRING, 231, TextBase.Case.UPPER, null, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_aptSuite());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1760,7 +1876,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1777,20 +1893,26 @@ public class EnvironmentalTabUI extends Screen {
                         t2.setValue(manager.getSampleEnvironmental()
                                            .getLocationAddress()
                                            .getMultipleUnit());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
@@ -1798,7 +1920,7 @@ public class EnvironmentalTabUI extends Screen {
          * add screen handler for the image
          */
         addScreenHandler(i,
-                         getImageKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  i.setResource(OpenELISResources.INSTANCE.blankIcon());
@@ -1808,8 +1930,8 @@ public class EnvironmentalTabUI extends Screen {
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -1823,15 +1945,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_MULTIPLE_UNIT),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1846,40 +1968,53 @@ public class EnvironmentalTabUI extends Screen {
      * index
      */
     private void addLocationAddrStreetAddress(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().address_address());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_address());
 
-        t1 = getTextBox(Type.STRING, 231, TextBase.Case.UPPER, null, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_address());
-        t2 = getTextBox(Type.STRING, 231, TextBase.Case.UPPER, null, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_address());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            231,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.LOCATION_ADDR_STREET_ADDRESS, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -1889,7 +2024,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.LOCATION_ADDR_STREET_ADDRESS);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1906,20 +2041,26 @@ public class EnvironmentalTabUI extends Screen {
                         t2.setValue(manager.getSampleEnvironmental()
                                            .getLocationAddress()
                                            .getStreetAddress());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
@@ -1927,7 +2068,7 @@ public class EnvironmentalTabUI extends Screen {
          * add screen handler for the image
          */
         addScreenHandler(i,
-                         getImageKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  i.setResource(OpenELISResources.INSTANCE.blankIcon());
@@ -1937,8 +2078,8 @@ public class EnvironmentalTabUI extends Screen {
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -1954,15 +2095,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_STREET_ADDRESS),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -1976,40 +2117,53 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental location city at the passed index
      */
     private void addLocationAddrCity(int row) {
+        final int index;
         Label<String> l1, l2;
         final TextBox<String> t1, t2;
         final Image i;
         HorizontalPanel h;
-        final Button b;
+        //final Button b;
         final ScheduledCommand cmd;
 
         /*
          * create the widgets and add them to the table panel
          */
-        l1 = getPromptLabel(Messages.get().address_city());
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_city());
 
-        t1 = getTextBox(Type.STRING, 98, TextBase.Case.UPPER, null, null);
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            98,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_city());
-        t2 = getTextBox(Type.STRING, 98, TextBase.Case.UPPER, null, null);
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_city());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            98,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            null);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
          * it loses focus
          */
-        cmd = getFocusCommand(t1);
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
 
         /*
          * add screen handler for the editable widget
          */
         addScreenHandler(t1, SampleMeta.LOCATION_ADDR_CITY, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 t1.setValue(null);
             }
 
@@ -2019,7 +2173,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = updateNumEdit(SampleMeta.LOCATION_ADDR_CITY);
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2034,20 +2188,26 @@ public class EnvironmentalTabUI extends Screen {
                     i.setResource(OpenELISResources.INSTANCE.abort());
                     if (numEdit > 1) {
                         t2.setValue(manager.getSampleEnvironmental().getLocationAddress().getCity());
-                        b.setEnabled(true);
+                        //b.setEnabled(true);
                     }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
                 } else {
                     i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-
-                /*
-                 * set the focus back on the widget
-                 */
-                // Scheduler.get().scheduleDeferred(cmd);
+                tabIndex = -1;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                t1.setEnabled(isState(UPDATE));
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
@@ -2055,7 +2215,7 @@ public class EnvironmentalTabUI extends Screen {
          * add screen handler for the image
          */
         addScreenHandler(i,
-                         getImageKey(SampleMeta.LOCATION_ADDR_CITY),
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_CITY),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  i.setResource(OpenELISResources.INSTANCE.blankIcon());
@@ -2065,8 +2225,8 @@ public class EnvironmentalTabUI extends Screen {
         /*
          * add screen handler for the button
          */
-        addScreenHandler(b,
-                         getButtonKey(SampleMeta.LOCATION_ADDR_CITY),
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_CITY),
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  b.setEnabled(false);
@@ -2080,15 +2240,15 @@ public class EnvironmentalTabUI extends Screen {
                 i.setResource(OpenELISResources.INSTANCE.commit());
                 t1.setFocus(true);
             }
-        });
+        });*/
 
         /*
          * add screen handler for the widget on the right
          */
         addScreenHandler(t2,
-                         getRightWidgetKey(SampleMeta.LOCATION_ADDR_CITY),
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_CITY),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  t2.setValue(null);
                              }
 
@@ -2102,503 +2262,917 @@ public class EnvironmentalTabUI extends Screen {
      * Adds the row for environmental location state at the passed index
      */
     private void addLocationAddrState(int row) {
+        final int index;
         Label<String> l1, l2;
-        Dropdown<String> d1, d2;
-        Image i;
+        final Dropdown<String> d1, d2;
+        final Image i;
         HorizontalPanel h;
-        Button b;
+        //final Button b;
+        final ScheduledCommand cmd;
         ArrayList<Item> model;
 
-        l1 = getPromptLabel(Messages.get().address_state());
+        /*
+         * create the widgets and add them to the table panel
+         */
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_state());
 
-        model = getDictionaryModel("state", CategoryMeta.getDictionaryEntry());
-        d1 = getDropdown(Type.STRING, 42, TextBase.Case.UPPER, model);
+        model = SecondDataEntryUtil.getDictionaryModel("state", CategoryMeta.getDictionaryEntry());
+        d1 = SecondDataEntryUtil.getDropdown(SecondDataEntryUtil.Type.STRING,
+                                             42,
+                                             TextBase.Case.UPPER,
+                                             model);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, d1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, d1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_state());
-        d2 = getDropdown(Type.STRING, 42, TextBase.Case.UPPER, model);
+        index = editWidgets.size();
+        editWidgets.add(d1);
 
-        addWidgets(row, l1, h, b, l2, d2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_state());
+        d2 = SecondDataEntryUtil.getDropdown(SecondDataEntryUtil.Type.STRING,
+                                             42,
+                                             TextBase.Case.UPPER,
+                                             model);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, d2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(d1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(d1, SampleMeta.LOCATION_ADDR_STATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                d1.setValue(null);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                Integer numEdit;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
+                                                                      .getLocationAddress()
+                                                                      .getState())) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        d2.setValue(manager.getSampleEnvironmental()
+                                           .getLocationAddress()
+                                           .getState());
+                        //b.setEnabled(true);
+                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(d1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                d1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the button
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_STATE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
+
+        /*
+         * add screen handler for the button
+         */
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_STATE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
+
+        b.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                d1.setValue(manager.getSampleEnvironmental().getLocationAddress().getState());
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                d1.setFocus(true);
+            }
+        });*/
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(d2,
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_STATE),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 d2.setValue(null);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 d2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
      * Adds the row for environmental location state at the passed index
      */
     private void addLocationAddrZipCode(int row) {
+        final int index;
         Label<String> l1, l2;
-        TextBox<String> t1, t2;
-        Image i;
+        final TextBox<String> t1, t2;
+        final Image i;
         HorizontalPanel h;
-        Button b;
+        //final Button b;
+        final ScheduledCommand cmd;
 
-        l1 = getPromptLabel(Messages.get().address_zipcode());
+        /*
+         * create the widgets and add them to the table panel
+         */
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_zipcode());
 
-        t1 = getTextBox(Type.STRING, 75, TextBase.Case.UPPER, null, Messages.get()
-                                                                            .gen_zipcodePattern());
+        t1 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            75,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            Messages.get().gen_zipcodePattern());
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, t1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, t1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_zipcode());
-        t2 = getTextBox(Type.STRING, 75, TextBase.Case.UPPER, null, Messages.get()
-                                                                            .gen_zipcodePattern());
+        index = editWidgets.size();
+        editWidgets.add(t1);
 
-        addWidgets(row, l1, h, b, l2, t2);
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_zipcode());
+        t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING,
+                                            75,
+                                            TextBase.Case.UPPER,
+                                            null,
+                                            Messages.get().gen_zipcodePattern());
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(t1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(t1, SampleMeta.LOCATION_ADDR_ZIP_CODE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                t1.setValue(null);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                Integer numEdit;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
+                                                                      .getLocationAddress()
+                                                                      .getZipCode())) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        t2.setValue(manager.getSampleEnvironmental()
+                                           .getLocationAddress()
+                                           .getZipCode());
+                        //b.setEnabled(true);
+                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(t1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                t1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the button
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_ZIP_CODE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
+
+        /*
+         * add screen handler for the button
+         */
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_ZIP_CODE),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
+
+        b.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                t1.setValue(manager.getSampleEnvironmental().getLocationAddress().getZipCode());
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                t1.setFocus(true);
+            }
+        });*/
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(t2,
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_ZIP_CODE),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 t2.setValue(null);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 t2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
      * Adds the row for environmental location country at the passed index
      */
     private void addLocationAddrCountry(int row) {
+        final int index;
         Label<String> l1, l2;
-        Dropdown<String> d1, d2;
-        Image i;
+        final Dropdown<String> d1, d2;
+        final Image i;
         HorizontalPanel h;
-        Button b;
+        //final Button b;
+        final ScheduledCommand cmd;
         ArrayList<Item> model;
 
-        l1 = getPromptLabel(Messages.get().address_country());
+        /*
+         * create the widgets and add them to the table panel
+         */
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_country());
 
-        model = getDictionaryModel("country", CategoryMeta.getDictionaryEntry());
-        d1 = getDropdown(Type.STRING, 231, null, model);
+        model = SecondDataEntryUtil.getDictionaryModel("country", CategoryMeta.getDictionaryEntry());
+        d1 = SecondDataEntryUtil.getDropdown(SecondDataEntryUtil.Type.STRING, 231, null, model);
         i = new Image();
         h = new HorizontalPanel();
-        addWidgetAndImage(h, d1, i);
+        SecondDataEntryUtil.addWidgetAndImage(h, d1, i);
 
-        b = getCopyButton();
-        l2 = getPromptLabel(Messages.get().address_country());
-        d2 = getDropdown(Type.STRING, 231, null, model);
+        index = editWidgets.size();
+        editWidgets.add(d1);
 
-        addWidgets(row, l1, h, b, l2, d2);
-    }
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().address_country());
+        d2 = SecondDataEntryUtil.getDropdown(SecondDataEntryUtil.Type.STRING, 231, null, model);
 
-    /**
-     * Creates a Label; sets the passed value as its text and sets its style as
-     * "Prompt"
-     */
-    private Label<String> getPromptLabel(String text) {
-        return getLabel(text + ":", OpenELISResources.INSTANCE.style().Prompt());
-    }
-
-    /**
-     * Creates a Label; sets the passed value as its text and sets its style as
-     * "Heading"
-     */
-    private Label<String> getHeadingLabel(String text) {
-        return getLabel(text, OpenELISResources.INSTANCE.style().Heading());
-    }
-
-    /**
-     * Creates a Label; sets the passed values as its text and style
-     * respectively
-     */
-    private Label<String> getLabel(String text, String styleName) {
-        Label<String> l;
-
-        l = new Label<String>(text);
-        l.setStyleName(styleName);
-
-        return l;
-    }
-
-    /**
-     * Creates a Calendar; sets "width" as its width and the integers as its
-     * begin and end precisions
-     */
-    private Calendar getCalendar(int width, int begin, int end) {
-        Calendar c;
-
-        c = new Calendar();
-        c.setWidth(width + "px");
-        c.setBegin(begin);
-        c.setEnd(end);
-
-        return c;
-    }
-
-    /**
-     * Creates a TextBox; sets "type" as its type e.g. Integer or String,
-     * "width" as its width, "textCase" as its case e.g. UPPER or LOWER,
-     * "maxLength" as its maximum allowed length and "mask" as its mask
-     */
-    private TextBox getTextBox(Type type, int width, TextBase.Case textCase, Integer maxLength,
-                               String mask) {
-        TextBox t;
-
-        t = null;
-        switch (type) {
-            case INTEGER:
-                t = new TextBox<Integer>();
-                t.setHelper(new IntegerHelper());
-                break;
-            case DOUBLE:
-                t = new TextBox<Double>();
-                t.setHelper(new DoubleHelper());
-                break;
-            case STRING:
-                t = new TextBox<String>();
-                break;
-        }
-
-        t.setWidth(width + "px");
-        if (textCase != null)
-            t.setCase(textCase);
-        if (maxLength != null)
-            t.setMaxLength(maxLength);
-        if (mask != null)
-            t.setMask(mask);
-
-        return t;
-    }
-
-    /**
-     * Creates the button used to copy the value from the widget on the right to
-     * the one on the left
-     */
-    private Button getCopyButton() {
-        Button b;
-
-        b = new Button();
-        b.setText(Messages.get().moveLeft());
-        b.setCss(OpenELISResources.INSTANCE.FormFieldButton());
-
-        return b;
-    }
-
-    /**
-     * Creates a Dropdown; sets "type" as its type e.g. Integer or String,
-     * "width" as its width, "textCase" as its case e.g. UPPER or LOWER, and
-     * "model" as its model
-     */
-    private Dropdown getDropdown(Type type, int width, TextBase.Case textCase, ArrayList<Item> model) {
-        Dropdown d;
-
-        d = null;
-        switch (type) {
-            case INTEGER:
-                d = new Dropdown<Integer>();
-                break;
-            case STRING:
-                d = new Dropdown<String>();
-                break;
-        }
-
-        d.setWidth(width + "px");
-        if (textCase != null)
-            d.setCase(textCase);
-
-        d.setModel(model);
-
-        return d;
-    }
-
-    /**
-     * Creates an autocomplete for showing organizations; sets "width" as its
-     * width, "textCase" as its case e.g. UPPER or LOWER, and "dropWidth" as the
-     * total width of its table; the table's columns show various fields of an
-     * organization
-     */
-    private AutoComplete getOrgAutocomplete(int width, TextBase.Case textCase, int dropWidth) {
-        final AutoComplete a;
-        Table t;
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, d2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
 
         /*
-         * set the basic fields e.g. dimensions
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
          */
-        a = getAutocomplete(width, textCase, dropWidth);
+        cmd = SecondDataEntryUtil.getFocusCommand(d1);
 
         /*
-         * create and set the table
+         * add screen handler for the editable widget
          */
-        t = new Table();
-        t.setVisibleRows(10);
-        t.setHeader(true);
+        addScreenHandler(d1, SampleMeta.LOCATION_ADDR_COUNTRY, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                d1.setValue(null);
+            }
 
-        t.addColumn(getColumn(250, Messages.get().gen_name(), new LabelCell()));
-        t.addColumn(getColumn(70, Messages.get().address_aptSuite(), new LabelCell()));
-        t.addColumn(getColumn(110, Messages.get().address_street(), new LabelCell()));
-        t.addColumn(getColumn(100, Messages.get().address_city(), new LabelCell()));
-        t.addColumn(getColumn(20, Messages.get().address_st(), new LabelCell()));
+            public void onValueChange(ValueChangeEvent<String> event) {
+                Integer numEdit;
 
-        a.setPopupContext(t);
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
 
-        /*
-         * add the matches handler
-         */
-        a.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                Item<Integer> row;
-                OrganizationDO data;
-                ArrayList<OrganizationDO> list;
-                ArrayList<Item<Integer>> model;
-
-                parentScreen.getWindow().setBusy();
-                try {
-                    list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(5);
-                        data = list.get(i);
-
-                        row.setKey(data.getId());
-                        row.setData(data);
-                        row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getMultipleUnit());
-                        row.setCell(2, data.getAddress().getStreetAddress());
-                        row.setCell(3, data.getAddress().getCity());
-                        row.setCell(4, data.getAddress().getState());
-
-                        model.add(row);
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
+                                                                      .getLocationAddress()
+                                                                      .getCountry())) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        d2.setValue(manager.getSampleEnvironmental()
+                                           .getLocationAddress()
+                                           .getCountry());
+                        //b.setEnabled(true);
                     }
-                    a.showAutoMatches(model);
-                } catch (Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(d1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
                 }
-                parentScreen.getWindow().clearStatus();
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                d1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
             }
         });
 
-        return a;
-    }
-
-    /**
-     * Creates an autocomplete for showing organizations; sets "width" as its
-     * width, "textCase" as its case e.g. UPPER or LOWER, and "dropWidth" as the
-     * total width of its table; the table's columns show various fields of a
-     * project
-     */
-    private AutoComplete getProjectAutocomplete(int width, TextBase.Case textCase, int dropWidth) {
-        final AutoComplete a;
-        Table t;
+        /*
+         * add screen handler for the image
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.LOCATION_ADDR_COUNTRY),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
 
         /*
-         * set the basic fields e.g. dimensions
+         * add screen handler for the button
          */
-        a = getAutocomplete(width, textCase, dropWidth);
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.LOCATION_ADDR_COUNTRY),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
 
-        /*
-         * create and set the table
-         */
-        t = new Table();
-        t.setVisibleRows(10);
-        t.setHeader(true);
-
-        t.addColumn(getColumn(150, Messages.get().gen_name(), new LabelCell()));
-        t.addColumn(getColumn(275, Messages.get().gen_description(), new LabelCell()));
-
-        a.setPopupContext(t);
-
-        /*
-         * add the matches handler
-         */
-        a.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                Item<Integer> row;
-                ArrayList<ProjectDO> list;
-                ArrayList<Item<Integer>> model;
-
-                parentScreen.getWindow().setBusy();
-                try {
-                    list = ProjectService.get()
-                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-                    for (ProjectDO p : list) {
-                        row = new Item<Integer>(2);
-
-                        row.setKey(p.getId());
-                        row.setCell(0, p.getName());
-                        row.setCell(1, p.getDescription());
-                        row.setData(p);
-                        model.add(row);
-                    }
-                    a.showAutoMatches(model);
-                } catch (Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                parentScreen.getWindow().clearStatus();
-            }
-        });
-
-        return a;
-    }
-
-    /**
-     * Creates an autocomplete; sets "width" as its width, "textCase" as its
-     * case e.g. UPPER or LOWER, and "dropWidth" as the total width of its table
-     */
-    private AutoComplete getAutocomplete(int width, TextBase.Case textCase, int dropWidth) {
-        AutoComplete a;
-
-        a = new AutoComplete();
-        a.setWidth(width + "px");
-        a.setCase(textCase);
-        a.setDropWidth(dropWidth + "px");
-
-        return a;
-    }
-
-    /**
-     * Creates a table column; sets "width" as its width, "label" as its header
-     * , and "renderer" as the class that handles showing the data in the column
-     */
-    private Column getColumn(int width, String label, CellRenderer renderer) {
-        Column c;
-
-        c = new Column();
-        c.setWidth(250);
-        c.setLabel(Messages.get().gen_name());
-        c.setCellRenderer(new LabelCell());
-
-        return c;
-    }
-
-    /**
-     * Creates the model for a dropdown filled from dictionary entries;
-     * "category" is the category to which the entries belong and "key" is name
-     * of the field that should be set as the key of each item in the model
-     */
-    private ArrayList<Item> getDictionaryModel(String category, String key) {
-        Item row;
-        ArrayList<Item> model;
-
-        if (models == null)
-            models = new HashMap<String, ArrayList<Item>>();
-
-        model = models.get(category);
-        if (model != null)
-            return model;
-
-        model = new ArrayList<Item>();
-        models.put(category, model);
-        for (DictionaryDO d : CategoryCache.getBySystemName(category)) {
-            row = new Item(1);
-            if (CategoryMeta.getDictionaryId().equals(key))
-                row.setKey(d.getId());
-            else if (CategoryMeta.getDictionaryEntry().equals(key))
-                row.setKey(d.getEntry());
-
-            row.setCell(0, d.getEntry());
-            row.setEnabled("Y".equals(d.getIsActive()));
-            model.add(row);
-        }
-
-        return model;
-    }
-
-    /**
-     * Adds the passed widget "w" to the passed panel; also adds an Image widget
-     * next to "w" for showing the image indicating whether the value entered in
-     * "w" matches the value in the manager
-     */
-    private void addWidgetAndImage(HorizontalPanel h, Widget w, Image i) {
-        HorizontalPanel h1;
-
-        h.add(w);
-
-        /*
-         * some padding between the widget and the image
-         */
-        h1 = new HorizontalPanel();
-        h1.setWidth("5px");
-        h.add(h1);
-
-        /*
-         * the blank icon is used as a placeholder; without this icon, there's
-         * no space between the widget and the button in the row, until another
-         * icon is shown
-         */
-        i.setResource(OpenELISResources.INSTANCE.blankIcon());
-        h.add(i);
-    }
-
-    /**
-     * Creates a row at the passed index in the table panel and adds the passed
-     * widgets to that row
-     */
-    private void addWidgets(int row, Widget... widgets) {
-        for (int i = 0; i < widgets.length; i++ )
-            widgetTable.setWidget(row, i, widgets[i]);
-    }
-
-    /**
-     * Returns the command that makes the focus get set to the passed widget as
-     * soon as it loses focus
-     */
-    private ScheduledCommand getFocusCommand(final Focusable w) {
-        ScheduledCommand cmd;
-
-        cmd = new ScheduledCommand() {
+        b.addClickHandler(new ClickHandler() {
             @Override
-            public void execute() {
-                w.setFocus(true);
+            public void onClick(ClickEvent event) {
+                d1.setValue(manager.getSampleEnvironmental().getLocationAddress().getCountry());
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                d1.setFocus(true);
             }
-        };
+        });*/
 
-        return cmd;
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(d2,
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.LOCATION_ADDR_COUNTRY),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 d2.setValue(null);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 d2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
-     * Creates a key for the image in the row for the widget with the passed key
+     * Adds the row for the report-to organization at the passed index
      */
-    private String getImageKey(String editWidgetKey) {
-        return editWidgetKey + "_image";
+    private void addReportTo(int row) {
+        final int index;
+        Label<String> l1, l2;
+        final AutoComplete a1, a2;
+        final Image i;
+        HorizontalPanel h;
+        //final Button b;
+        final ScheduledCommand cmd;
+
+        /*
+         * create the widgets and add them to the table panel
+         */
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleOrganization_reportTo());
+        a1 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
+        i = new Image();
+        h = new HorizontalPanel();
+        SecondDataEntryUtil.addWidgetAndImage(h, a1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(a1);
+
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleOrganization_reportTo());
+        a2 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(a1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(a1, REPORT_TO, new ScreenHandler<AutoCompleteValue>() {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                a1.setValue(null, "");
+            }
+
+            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                Integer numEdit, eventId, orgId;
+                String orgName;
+                AutoCompleteValue val;
+                ArrayList<SampleOrganizationViewDO> orgs;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                val = event.getValue();
+                eventId = val != null ? val.getId() : null;
+
+                orgs = manager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                orgId = null;
+                orgName = null;
+                if (orgs != null && orgs.size() > 0) {
+                    orgId = orgs.get(0).getOrganizationId();
+                    orgName = orgs.get(0).getOrganizationName();
+                }
+
+                if (DataBaseUtil.isDifferent(eventId, orgId)) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        a2.setValue(orgId, orgName);
+                        //b.setEnabled(true);
+                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(a1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                a1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the image
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(REPORT_TO),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
+
+        /*
+         * add screen handler for the button
+         */
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(REPORT_TO),
+                         new ScreenHandler<Datetime>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
+
+        b.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Integer orgId;
+                String orgName;
+                ArrayList<SampleOrganizationViewDO> orgs;
+
+                orgs = manager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                orgId = null;
+                orgName = null;
+                if (orgs != null && orgs.size() > 0) {
+                    orgId = orgs.get(0).getOrganizationId();
+                    orgName = orgs.get(0).getOrganizationName();
+                }
+
+                a1.setValue(orgId, orgName);
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                a1.setFocus(true);
+            }
+        });*/
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(a2,
+                         SecondDataEntryUtil.getRightWidgetKey(REPORT_TO),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                                 a2.setValue(null, "");
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 a2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
-     * Creates a key for the button in the row for the widget with the passed
-     * key
+     * Adds the row for the bill-to organization at the passed index
      */
-    private String getButtonKey(String editWidgetKey) {
-        return editWidgetKey + "_button";
+    private void addBillTo(int row) {
+        final int index;
+        Label<String> l1, l2;
+        final AutoComplete a1, a2;
+        final Image i;
+        HorizontalPanel h;
+        //final Button b;
+        final ScheduledCommand cmd;
+
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleOrganization_billTo());
+        a1 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
+        i = new Image();
+        h = new HorizontalPanel();
+        SecondDataEntryUtil.addWidgetAndImage(h, a1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(a1);
+
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().sampleOrganization_billTo());
+        a2 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(a1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(a1, BILL_TO, new ScreenHandler<AutoCompleteValue>() {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                a1.setValue(null, "");
+            }
+
+            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                Integer numEdit, eventId, orgId;
+                String orgName;
+                AutoCompleteValue val;
+                SampleOrganizationViewDO sorg;
+                ArrayList<SampleOrganizationViewDO> sorgs;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                val = event.getValue();
+                eventId = val != null ? val.getId() : null;
+
+                sorgs = manager.organization.getByType(Constants.dictionary().ORG_BILL_TO);
+                orgId = null;
+                orgName = null;
+                if (sorgs != null && sorgs.size() > 0) {
+                    sorg = sorgs.get(0);
+                    orgId = sorg.getOrganizationId();
+                    orgName = sorg.getOrganizationName();
+                }
+
+                if (DataBaseUtil.isDifferent(eventId, orgId)) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        a2.setValue(orgId, orgName);
+                        //b.setEnabled(true);
+                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(a1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                a1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the image
+         */
+        addScreenHandler(i, SecondDataEntryUtil.getMatchImageKey(BILL_TO), new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                i.setResource(OpenELISResources.INSTANCE.blankIcon());
+            }
+        });
+
+        /*
+         * add screen handler for the button
+         */
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(BILL_TO),
+                         new ScreenHandler<Datetime>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
+
+        b.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Integer orgId;
+                String orgName;
+                ArrayList<SampleOrganizationViewDO> orgs;
+
+                orgs = manager.organization.getByType(Constants.dictionary().ORG_BILL_TO);
+                orgId = null;
+                orgName = null;
+                if (orgs != null && orgs.size() > 0) {
+                    orgId = orgs.get(0).getOrganizationId();
+                    orgName = orgs.get(0).getOrganizationName();
+                }
+
+                a1.setValue(orgId, orgName);
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                a1.setFocus(true);
+            }
+        });*/
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(a2,
+                         SecondDataEntryUtil.getRightWidgetKey(BILL_TO),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                                 a2.setValue(null, "");
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 a2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
-     * Creates a key for the widget on the right in the row for the widget with
-     * the passed key
+     * Adds the row for project at the passed index
      */
-    private String getRightWidgetKey(String editWidgetKey) {
-        return editWidgetKey + "_1";
+    private void addProject(int row) {
+        final int index;
+        Label<String> l1, l2;
+        final AutoComplete a1, a2;
+        final Image i;
+        HorizontalPanel h;
+        //final Button b;
+        final ScheduledCommand cmd;
+
+        l1 = SecondDataEntryUtil.getPromptLabel(Messages.get().project_project());
+        a1 = SecondDataEntryUtil.getProjectAutocomplete(180, TextBase.Case.LOWER, 440, parentScreen);
+        i = new Image();
+        h = new HorizontalPanel();
+        SecondDataEntryUtil.addWidgetAndImage(h, a1, i);
+
+        index = editWidgets.size();
+        editWidgets.add(a1);
+
+        //b = SecondDataEntryUtil.getCopyButton();
+        //l2 = SecondDataEntryUtil.getPromptLabel(Messages.get().project_project());
+        a2 = SecondDataEntryUtil.getProjectAutocomplete(180, TextBase.Case.LOWER, 440, parentScreen);
+
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
+        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+
+        /*
+         * the scheduled command for setting the focus back to this widget when
+         * it loses focus
+         */
+        cmd = SecondDataEntryUtil.getFocusCommand(a1);
+
+        /*
+         * add screen handler for the editable widget
+         */
+        addScreenHandler(a1, SampleMeta.PROJECT_NAME, new ScreenHandler<AutoCompleteValue>() {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                a1.setValue(null, "");
+            }
+
+            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                Integer numEdit, eventId, projId;
+                String projName;
+                AutoCompleteValue val;
+                SampleProjectViewDO sproj;
+
+                /*
+                 * find out how many times the widget has been edited
+                 */
+                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+
+                /*
+                 * if the value entered is different from the value in the
+                 * manager, show the icon for "no match" and if this widget has
+                 * been edited multiple times, show the value in the manager in
+                 * the widget on the right; if the value entered is the same as
+                 * the value in the manager, show the icon for "match"
+                 */
+                val = event.getValue();
+                eventId = val != null ? val.getId() : null;
+
+                projId = null;
+                projName = null;
+                if (manager.project.count() > 0) {
+                    sproj = manager.project.get(0);
+                    projId = sproj.getProjectId();
+                    projName = sproj.getProjectName();
+                }
+
+                if (DataBaseUtil.isDifferent(eventId, projId)) {
+                    i.setResource(OpenELISResources.INSTANCE.abort());
+                    if (numEdit > 1) {
+                        a2.setValue(projId, projName);
+                        //b.setEnabled(true);
+                    }
+                    /*
+                     * set the focus back on the widget if the user pressed Tab
+                     */
+                    if (isFocusLostOnTab(a1))
+                        Scheduler.get().scheduleDeferred(cmd);
+                } else {
+                    i.setResource(OpenELISResources.INSTANCE.commit());
+                }
+                tabIndex = -1;
+
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                a1.setEnabled(isState(UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                tabIndex = index;
+                return SecondDataEntryUtil.onTab(index, forward, editWidgets);
+            }
+        });
+
+        /*
+         * add screen handler for the image
+         */
+        addScreenHandler(i,
+                         SecondDataEntryUtil.getMatchImageKey(SampleMeta.PROJECT_NAME),
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 i.setResource(OpenELISResources.INSTANCE.blankIcon());
+                             }
+                         });
+
+        /*
+         * add screen handler for the button
+         */
+        /*addScreenHandler(b,
+                         SecondDataEntryUtil.getButtonKey(SampleMeta.PROJECT_NAME),
+                         new ScreenHandler<Datetime>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 b.setEnabled(false);
+                             }
+                         });
+
+        b.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Integer projId;
+                String projName;
+                SampleProjectViewDO proj;
+
+                projId = null;
+                projName = null;
+                if (manager.project.count() > 0) {
+                    proj = manager.project.get(0);
+                    projId = proj.getProjectId();
+                    projName = proj.getProjectName();
+                }
+
+                a1.setValue(projId, projName);
+                i.setResource(OpenELISResources.INSTANCE.commit());
+                a1.setFocus(true);
+            }
+        });*/
+
+        /*
+         * add screen handler for the widget on the right
+         */
+        addScreenHandler(a2,
+                         SecondDataEntryUtil.getRightWidgetKey(SampleMeta.PROJECT_NAME),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                                 a2.setValue(null, "");
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 a2.setEnabled(false);
+                             }
+                         });
     }
 
     /**
-     * Increments by one, the number of times the widget with the passed key has
-     * been edited; returns the incremented value
+     * Returns true if the passed widget lost focus by Tab being pressed;
+     * returns false otherwise
      */
-    private Integer updateNumEdit(String key) {
-        Integer numEdit;
-
-        numEdit = numEdits.get(key);
-        if (numEdit == null)
-            numEdit = 1;
-        else
-            numEdit++ ;
-        numEdits.put(key, numEdit);
-
-        return numEdit;
-    }
-
-    /**
-     * 
-     */
-    private Widget onTab(int index, boolean forward) {
-        if (forward) {
-            if (index < editWidgets.size() - 1)
-                index++ ;
-            else
-                index = 0;
-        } else {
-            if (index > 0)
-                index-- ;
-            else
-                index = editWidgets.size() - 1;
-        }
-
-        return editWidgets.get(index);
+    private boolean isFocusLostOnTab(Widget widget) {
+        return tabIndex != -1 && widget == editWidgets.get(tabIndex);
     }
 }

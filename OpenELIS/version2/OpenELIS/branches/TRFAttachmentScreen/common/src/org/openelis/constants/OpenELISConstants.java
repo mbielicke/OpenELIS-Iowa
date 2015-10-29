@@ -2158,11 +2158,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_cantChangeFromSystemException(String arg0);
 
   /**
-   * Translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else  ".
+   * Translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else".
    * 
-   * @return translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else  "
+   * @return translated "Attachment ''{0}'': The section can''t be change to ''system'' from something else"
    */
-  @DefaultMessage("Attachment ''{0}'': The section can''t be change to ''system'' from something else  ")
+  @DefaultMessage("Attachment ''{0}'': The section can''t be change to ''system'' from something else")
   @Key("attachment.cantChangeToSystemException")
   String attachment_cantChangeToSystemException(String arg0);
 
@@ -2212,6 +2212,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_fileName();
 
   /**
+   * Translated "Generic attachment pattern is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Generic attachment pattern is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Generic attachment pattern is missing. Please contact the system administrator.")
+  @Key("attachment.missingGenericPatternException")
+  String attachment_missingGenericPatternException();
+
+  /**
    * Translated "Path to attachment directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to attachment directory is missing. Please contact the system administrator."
@@ -2237,6 +2246,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample # {0,number,#0}")
   @Key("attachment.sampleDescription")
   String attachment_sampleDescription(Integer arg0);
+
+  /**
+   * Translated "TRF not found".
+   * 
+   * @return translated "TRF not found"
+   */
+  @DefaultMessage("TRF not found")
+  @Key("attachment.trfNotFoundException")
+  String attachment_trfNotFoundException();
 
   /**
    * Translated "Attachment ''{0}'': You do not have permission to view the attachment".
@@ -16783,6 +16801,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_moreThanOneReportToException(Integer arg0);
 
   /**
+   * Translated "Accession # {0,number,#0}: A sample cannot have more than one TRF".
+   * 
+   * @return translated "Accession # {0,number,#0}: A sample cannot have more than one TRF"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: A sample cannot have more than one TRF")
+  @Key("sample.moreThanOneTRFException")
+  String sample_moreThanOneTRFException(Integer arg0);
+
+  /**
    * Translated "Accession # ''{0}'': Only one record with the type Bill To is allowed".
    * 
    * @return translated "Accession # ''{0}'': Only one record with the type Bill To is allowed"
@@ -17962,6 +17989,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sampleSDWIS_sampleCatRequiredException(Integer arg0);
 
   /**
+   * Translated "Accession # {0,number,#0}: SDWIS Sample Facility Id is required".
+   * 
+   * @return translated "Accession # {0,number,#0}: SDWIS Sample Facility Id is required"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Facility Id is required")
+  @Key("sampleSDWIS.sampleFacilityIdRequiredException")
+  String sampleSDWIS_sampleFacilityIdRequiredException(Integer arg0);
+
+  /**
    * Translated "Sample Pt Id".
    * 
    * @return translated "Sample Pt Id"
@@ -18376,6 +18412,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String secondDataEntry_accessionAttachment();
 
   /**
+   * Translated "Please enter a valid username".
+   * 
+   * @return translated "Please enter a valid username"
+   */
+  @DefaultMessage("Please enter a valid username")
+  @Key("secondDataEntry.enterValidUsername")
+  String secondDataEntry_enterValidUsername();
+
+  /**
    * Translated "First Data Entry (Ctrl+1)".
    * 
    * @return translated "First Data Entry (Ctrl+1)"
@@ -18383,6 +18428,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("First Data Entry (Ctrl+1)")
   @Key("secondDataEntry.firstDataEntryHeading")
   String secondDataEntry_firstDataEntryHeading();
+
+  /**
+   * Translated "Accession # {0,number,#0} : {1} must be the id of an existing PWS".
+   * 
+   * @return translated "Accession # {0,number,#0} : {1} must be the id of an existing PWS"
+   */
+  @DefaultMessage("Accession # {0,number,#0} : {1} must be the id of an existing PWS")
+  @Key("secondDataEntry.invalidPwsException")
+  String secondDataEntry_invalidPwsException(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Loaded with E-Order".
+   * 
+   * @return translated "Loaded with E-Order"
+   */
+  @DefaultMessage("Loaded with E-Order")
+  @Key("secondDataEntry.loadedWithEOrder")
+  String secondDataEntry_loadedWithEOrder();
+
+  /**
+   * Translated "Loaded with Send-out Order".
+   * 
+   * @return translated "Loaded with Send-out Order"
+   */
+  @DefaultMessage("Loaded with Send-out Order")
+  @Key("secondDataEntry.loadedWithSendoutOrder")
+  String secondDataEntry_loadedWithSendoutOrder();
+
+  /**
+   * Translated "This sample has already been verified".
+   * 
+   * @return translated "This sample has already been verified"
+   */
+  @DefaultMessage("This sample has already been verified")
+  @Key("secondDataEntry.sampleAlreadyVerified")
+  String secondDataEntry_sampleAlreadyVerified();
 
   /**
    * Translated "Second Data Entry".
@@ -18403,13 +18484,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String secondDataEntry_secondDataEntryHeading();
 
   /**
-   * Translated "Please select an attachment to view it".
+   * Translated "Verification".
    * 
-   * @return translated "Please select an attachment to view it"
+   * @return translated "Verification"
    */
-  @DefaultMessage("Please select an attachment to view it")
-  @Key("secondDataEntry.selectAttachmentToView")
-  String secondDataEntry_selectAttachmentToView();
+  @DefaultMessage("Verification")
+  @Key("secondDataEntry.verification")
+  String secondDataEntry_verification();
 
   /**
    * Translated "Second Entry".
@@ -20984,6 +21065,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Issue List")
   @Key("trfAttachment.issueList")
   String trfAttachment_issueList();
+
+  /**
+   * Translated "Attachment ''{0}'': Issue text is required".
+   * 
+   * @return translated "Attachment ''{0}'': Issue text is required"
+   */
+  @DefaultMessage("Attachment ''{0}'': Issue text is required")
+  @Key("trfAttachment.issueTextRequired")
+  String trfAttachment_issueTextRequired(String arg0);
 
   /**
    * Translated "Lock".

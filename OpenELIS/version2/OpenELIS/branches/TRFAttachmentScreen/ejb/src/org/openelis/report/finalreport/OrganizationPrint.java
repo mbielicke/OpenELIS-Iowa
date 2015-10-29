@@ -33,7 +33,7 @@ import org.openelis.ui.common.DataBaseUtil;
  */
 public class OrganizationPrint {
 
-	private Integer organizationId, sampleId, accessionNumber, revision, pageCount;
+	private Integer organizationId, sampleId, accessionNumber, revision;
     private String organizationName, domain, faxNumber, fromCompany, toCompany, faxNote, faxAttention;
 	
 	public OrganizationPrint() {
@@ -99,14 +99,6 @@ public class OrganizationPrint {
         this.domain = DataBaseUtil.trim(domain);
     }
 
-    public Integer getPageCount() {
-        return pageCount;
-    }
-
-    public void setPageCount(Integer pageCount) {
-        this.pageCount = pageCount;
-    }
-    
 	public String getFaxNumber() {
         return faxNumber;
     }

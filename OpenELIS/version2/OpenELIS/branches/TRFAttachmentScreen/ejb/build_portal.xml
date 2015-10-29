@@ -10,7 +10,6 @@
 	<mkdir dir="deploylib"/>
 	
 	<ivy:configure file="ivysettings.xml"/>
-	<ivy:resolve/>
 	<ivy:retrieve conf="deploy" pattern="deploylib/[artifact]-[revision].[ext]" sync="true"/>
 	
 	<delete file="build/openelis.war" />

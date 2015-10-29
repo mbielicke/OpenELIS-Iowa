@@ -49,8 +49,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-//import com.google.gwt.visualization.client.VisualizationUtils;
-//import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
+import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 
 public class OpenELIS extends Screen {
 
@@ -70,22 +70,21 @@ public class OpenELIS extends Screen {
                     sampleLoginLabelAdditionalReport, quickEntry, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
-                    ptSampleLogin, secondDataEntry, project, provider, organization,
-                    worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
-                    secondaryLabelReport, storage, QC, analyteParameter, internalOrder, vendorOrder,
-                    sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
-                    inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
-                    testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
-                    billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
-                    sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, kitTrackingReport, airQualityExport,
+                    ptSampleLogin, secondDataEntry, project, provider, organization, worksheetBuilder,
+                    worksheetCompletion, addOrCancel, reviewAndRelease, toDo, secondaryLabelReport,
+                    storage, QC, analyteParameter, internalOrder, vendorOrder, sendoutOrder,
+                    fillOrder, shipping, buildKits, inventoryTransfer, inventoryReceipt,
+                    inventoryAdjustment, inventoryItem, verificationReport, orderRequestForm,
+                    holdRefuseOrganization, testReport, sampleInhouseReport, volumeReport,
+                    toDoAnalyteReport, sampleDataExport, QASummaryReport, testCountByFacility,
+                    turnaround, turnAroundStatisticReport, kitTrackingReport, airQualityExport,
                     sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
                     finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection,
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
                     instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport,
-                    chlGcToCDCExport, abnormalsReport;
+                    chlGcToCDCExport, abnormalsReport, patientMerge;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -106,10 +105,10 @@ public class OpenELIS extends Screen {
         method.ensureDebugId("openelis.method");
 
         // load the google chart api
-        /*VisualizationUtils.loadVisualizationApi(new Runnable() {
+        VisualizationUtils.loadVisualizationApi(new Runnable() {
             public void run() {
             }
-        }, PieChart.PACKAGE, PieChart.PACKAGE);*/
+        }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
 
@@ -186,12 +185,6 @@ public class OpenELIS extends Screen {
         addCommand(animalSampleLogin, "sampleanimal", new Command() {
             public void execute() {
                 showScreen(SAMPLE_ANIMAL);
-            }
-        });
-
-        addCommand(ptSampleLogin, "samplept", new Command() {
-            public void execute() {
-                showScreen(SAMPLE_PT);
             }
         });
 
@@ -632,6 +625,12 @@ public class OpenELIS extends Screen {
         addCommand(abnormalsReport, "sampletracking", new Command() {
             public void execute() {
                 showScreen(ABNORMALS_REPORT);
+            }
+        });
+
+        addCommand(patientMerge, "patientmerge", new Command() {
+            public void execute() {
+                showScreen(PATIENT_MERGE);
             }
         });
     }

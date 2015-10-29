@@ -247,6 +247,26 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public WorksheetAnalysisViewDO fetchViewById(Integer id) throws Exception {
+        Query query;
+        WorksheetAnalysisViewDO waVDO;
+        WorksheetAnalysisViewVO waVVO;
+
+        query = manager.createNamedQuery("WorksheetAnalysisView.FetchById");
+        query.setParameter("id", id);
+
+        try {
+            waVVO = (WorksheetAnalysisViewVO)query.getSingleResult();
+            waVDO = copyViewToDO(waVVO);
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+
+        return waVDO;
+    }
+
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 

@@ -35,51 +35,55 @@ import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
+import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.QueryFieldUtil;
+import org.openelis.ui.widget.TextArea;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
-import org.openelis.ui.widget.tree.Node;
-import org.openelis.ui.widget.tree.Tree;
+import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Row;
+import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SecondDataEntryScreenUI extends Screen {
@@ -88,12 +92,14 @@ public class SecondDataEntryScreenUI extends Screen {
     interface SecondDataEntryUiBinder extends UiBinder<Widget, SecondDataEntryScreenUI> {
     };
 
-    public static final SecondDataEntryUiBinder             uiBinder      = GWT.create(SecondDataEntryUiBinder.class);
+    public static final SecondDataEntryUiBinder             uiBinder         = GWT.create(SecondDataEntryUiBinder.class);
 
     protected ModulePermission                              userPermission;
 
+    protected ScreenNavigator<SecondDataEntryVO>            nav;
+
     @UiField
-    protected Tree                                          tree;
+    protected Table                                         table;
 
     @UiField
     protected Button                                        queryButton, nextButton,
@@ -103,26 +109,35 @@ public class SecondDataEntryScreenUI extends Screen {
     protected TextBox<Integer>                              accessionNumber;
 
     @UiField
-    protected Dropdown<Integer>                             historySystemUserId;
+    protected TextBox<String>                               historySystemUser;
+    
+    @UiField
+    protected Calendar                                     receivedDate;
+
+    @UiField
+    protected TextArea                                      orderMessage;
 
     @UiField
     protected DeckPanel                                     deckPanel;
+    
+    @UiField(provided = true)
+    protected SampleNotesTabUI                          sampleNotesTab;
 
     @UiField(provided = true)
     protected EnvironmentalTabUI                            environmentalTab;
 
-    // @UiField
-    // protected FlexTable widgetTable;
+    @UiField(provided = true)
+    protected SDWISTabUI                                    sdwisTab;
 
     protected SampleManager1                                manager;
 
     protected HashMap<Integer, SampleManager1>              managers;
 
+    protected HashMap<Integer, ArrayList<Integer>>          userIds;
+
     protected SecondDataEntryScreenUI                       screen;
 
-    protected Screen                                        sampleWidgetScreen;
-
-    protected SecondDataEntryServiceImpl                    service       = SecondDataEntryServiceImpl.INSTANCE;
+    protected SecondDataEntryServiceImpl                    service          = SecondDataEntryServiceImpl.INSTANCE;
 
     protected AsyncCallbackUI<ArrayList<SecondDataEntryVO>> queryCall;
 
@@ -131,30 +146,17 @@ public class SecondDataEntryScreenUI extends Screen {
 
     protected AsyncCallbackUI<ArrayList<SampleManager1>>    fetchByIdsCall;
 
-    protected Query                                         query;
+    protected String                                        domain;
 
-    protected String                                        envXML, domain;
+    protected boolean                                       envFieldsAdded, sdwisFieldsAdded;
 
-    protected Widget                                        focusedWidget;
+    protected static int                                    ROWS_PER_PAGE    = 23;
 
-    protected HashMap<String, ArrayList<Item>>              models;
-
-    protected HashMap<String, Integer>                      numEdits;
-
-    protected static int                                    ROWS_PER_PAGE = 23;
-
-    protected static final String                           SAMPLE_USER_LEAF = "sampleUser",
-                    ATTACHMENT_LEAF = "attachment", REPORT_TO = "report_to", BILL_TO = "bill_to";
-
-    protected static final SampleManager1.Load              fetchElements[]  = {SampleManager1.Load.ATTACHMENT},
+    protected static final SampleManager1.Load              fetchElements[]  = {},
                     updateElements[] = {SampleManager1.Load.AUXDATA,
                     SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
-                    SampleManager1.Load.RESULT, SampleManager1.Load.ATTACHMENT,
-                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
-
-    protected enum Type {
-        INTEGER, DOUBLE, STRING
-    }
+                    SampleManager1.Load.RESULT, SampleManager1.Load.EORDER,
+                    SampleManager1.Load.PROVIDER};
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -165,6 +167,8 @@ public class SecondDataEntryScreenUI extends Screen {
                                                   .gen_screenPermException("Second Data Entry"));
 
         environmentalTab = new EnvironmentalTabUI(this);
+        sdwisTab = new SDWISTabUI(this);
+        sampleNotesTab = new SampleNotesTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -180,9 +184,6 @@ public class SecondDataEntryScreenUI extends Screen {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
-        ArrayList<Item<Integer>> model;
-        ArrayList<SystemUserVO> users;
-
         screen = this;
 
         //
@@ -251,40 +252,25 @@ public class SecondDataEntryScreenUI extends Screen {
          */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                tree.setEnabled(true);
+                table.setEnabled(true);
             }
         });
 
-        tree.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+        table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             @Override
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-                Integer sampleId;
-                Node node;
-                AttachmentItemViewDO att;
+                Row row;
 
                 if ( !isState(UPDATE))
                     return;
 
                 /*
-                 * in Update state, only the nodes that belong to the locked
+                 * in Update state, only the node that belongs to the locked
                  * sample can be selected
                  */
-                node = tree.getNodeAt(event.getItem());
-                if (SAMPLE_USER_LEAF.equals(node.getType())) {
-                    sampleId = node.getData();
-                } else {
-                    att = node.getData();
-                    sampleId = att.getReferenceId();
-                }
-                if ( !manager.getSample().getId().equals(sampleId))
+                row = table.getRowAt(event.getItem());
+                if ( !manager.getSample().getId().equals(row.getData()))
                     event.cancel();
-            }
-        });
-
-        tree.addSelectionHandler(new SelectionHandler<Integer>() {
-            @Override
-            public void onSelection(SelectionEvent<Integer> event) {
-                nodeSelected(tree.getNodeAt(event.getSelectedItem()));
             }
         });
 
@@ -297,8 +283,8 @@ public class SecondDataEntryScreenUI extends Screen {
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 accessionNumber.setValue(null);
+                             public void onDataChange(DataChangeEvent<Integer> event) {
+                                 accessionNumber.setValue(getAccessionNumber());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -307,29 +293,56 @@ public class SecondDataEntryScreenUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? historySystemUserId : historySystemUserId;
+                                 return forward ? historySystemUser : receivedDate;
                              }
                          });
 
-        addScreenHandler(historySystemUserId,
+        addScreenHandler(historySystemUser,
                          SampleMeta.getHistorySystemUserId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 historySystemUserId.setValue(null);
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 historySystemUser.setValue(getUsers());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 historySystemUserId.setEnabled(isState(QUERY));
-                                 historySystemUserId.setQueryMode(isState(QUERY));
+                                 historySystemUser.setEnabled(isState(QUERY));
+                                 historySystemUser.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : accessionNumber;
+                                 return forward ? receivedDate : accessionNumber;
                              }
                          });
 
+        addScreenHandler(receivedDate,
+                         SampleMeta.getReceivedDate(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 receivedDate.setValue(getReceivedDate());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 receivedDate.setEnabled(isState(QUERY));
+                                 receivedDate.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : historySystemUser;
+                             }
+                         });
+
+        addScreenHandler(orderMessage, "orderMessage", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                orderMessage.setValue(getOrderMessage());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                orderMessage.setEnabled(false);
+            }
+        });
+
         addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 environmentalTab.onDataChange();
             }
 
@@ -337,6 +350,126 @@ public class SecondDataEntryScreenUI extends Screen {
                 environmentalTab.setState(event.getState());
             }
         });
+
+        addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                sdwisTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sdwisTab.setState(event.getState());
+            }
+        });
+
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator<SecondDataEntryVO>(table, nextPageButton) {
+            public void executeQuery(final Query query) {
+                setBusy(Messages.get().gen_querying());
+
+                if (queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<SecondDataEntryVO>>() {
+                        public void success(ArrayList<SecondDataEntryVO> result) {
+                            ArrayList<SecondDataEntryVO> addedList;
+                            HashSet<Integer> ids;
+
+                            userIds = new HashMap<Integer, ArrayList<Integer>>();
+
+                            clearStatus();
+                            if (nav.getQuery().getPage() == 0) {
+                                setQueryResult(result);
+                                select(0);
+                            } else {
+                                addedList = getQueryResult();
+                                addedList.addAll(result);
+                                setQueryResult(addedList);
+                                select(table.getModel().size() - result.size());
+                                table.scrollToVisible(table.getModel().size() - 1);
+                            }
+
+                            ids = new HashSet<Integer>();
+                            for (SecondDataEntryVO data : result)
+                                ids.add(data.getSampleId());
+                            fetchSamples(DataBaseUtil.toArrayList(ids));
+                        }
+
+                        public void notFound() {
+                            manager = null;
+                            setData();
+                            setState(DEFAULT);
+                            fireDataChange();
+                            setQueryResult(null);
+                            setDone(Messages.get().gen_noRecordsFound());
+                        }
+
+                        public void lastPage() {
+                            setQueryResult(null);
+                            setError(Messages.get().gen_noMoreRecordInDir());
+                        }
+
+                        public void failure(Throwable error) {
+                            setQueryResult(null);
+                            Window.alert("Error: Second Data Entry call query failed; " +
+                                         error.getMessage());
+                            setError(Messages.get().gen_queryFailed());
+                        }
+                    };
+                }
+                query.setRowsPerPage(ROWS_PER_PAGE);
+                service.query(query, queryCall);
+            }
+
+            public ArrayList<Item<Integer>> getModel() {
+                Integer prevId, currId;
+                Item<Integer> node;
+                ArrayList<Integer> ids;
+                ArrayList<SecondDataEntryVO> result;
+                ArrayList<Item<Integer>> model;
+
+                prevId = null;
+                node = null;
+                model = null;
+                result = nav.getQueryResult();
+                if (result != null) {
+                    model = new ArrayList<Item<Integer>>();
+                    for (SecondDataEntryVO entry : result) {
+                        currId = entry.getSampleId();
+                        if ( !currId.equals(prevId)) {
+                            node = new Item<Integer>(2);
+                            node.setCell(0, entry.getSampleAccessionNumber());
+                            node.setCell(1, entry.getHistorysystemUserLoginName());
+                            node.setData(entry.getSampleId());
+                            model.add(node);
+                        } else {
+                            node.setCell(1,
+                                         DataBaseUtil.concatWithSeparator(node.getCell(1),
+                                                                          ", ",
+                                                                          entry.getHistorysystemUserLoginName()));
+                        }
+
+                        /*
+                         * this keeps track of which users added/updated which
+                         * sample
+                         */
+                        ids = userIds.get(currId);
+                        if (ids == null) {
+                            ids = new ArrayList<Integer>();
+                            userIds.put(currId, ids);
+                        }
+                        ids.add(entry.getHistorySystemUserId());
+                        prevId = currId;
+                    }
+                }
+                return model;
+            }
+
+            @Override
+            public boolean fetch(SecondDataEntryVO entry) {
+                rowSelected(entry.getSampleId());
+                return true;
+            }
+        };
 
         //
         // screen fields
@@ -349,22 +482,76 @@ public class SecondDataEntryScreenUI extends Screen {
                 }
             }
         });
-
-        try {
-            model = new ArrayList<Item<Integer>>();
-            users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete("*"));
-            for (SystemUserVO user : users)
-                model.add(new Item<Integer>(user.getId(), user.getLoginName()));
-            historySystemUserId.setModel(model);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            Window.alert(e.getMessage());
-        }
     }
 
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public Validation validate() {
+        String loginName;
+        ArrayList<SystemUserVO> userList;
+        Validation validation;
+
+        historySystemUser.clearExceptions();
+        validation = super.validate();
+
+        if (isState(QUERY)) {
+            loginName = historySystemUser.getText();
+            if ( !DataBaseUtil.isEmpty(loginName)) {
+                try {
+                    userList = UserCacheService.get().getEmployees(loginName);
+                    if (userList.size() == 0) {
+                        validation.setStatus(Status.ERRORS);
+                        historySystemUser.addException(new Exception(Messages.get()
+                                                                             .secondDataEntry_enterValidUsername()));
+                    }
+                } catch (Exception anyE) {
+                    Window.alert(anyE.getMessage());
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+            }
+        }
+        
+        return validation;
+    }
+
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> fields;
+        ArrayList<SystemUserVO> userList;
+        String loginName;
+        StringBuffer userIds;
+
+        fields = super.getQueryFields();
+        for (QueryData field : fields) {
+            if (SampleMeta.getHistorySystemUserId().equals(field.getKey())) {
+                /*
+                 * Since we cannot join with the security database to link
+                 * system user's login name to the query, we need to lookup the
+                 * matching id(s) from the UserCache to input into the query
+                 */
+                loginName = field.getQuery();
+
+                field.setType(QueryData.Type.INTEGER);
+                userIds = new StringBuffer();
+                try {
+                    userList = UserCacheService.get().getEmployees(loginName);
+                    for (SystemUserVO userVO : userList) {
+                        if (userIds.length() > 0)
+                            userIds.append(" | ");
+                        userIds.append(userVO.getId());
+                    }
+                    field.setQuery(userIds.toString());
+                } catch (Exception anyE) {
+                    Window.alert(anyE.getMessage());
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+                break;
+            }
+        }
+
+        return fields;
     }
 
     /*
@@ -378,11 +565,13 @@ public class SecondDataEntryScreenUI extends Screen {
     protected void query(ClickEvent event) {
         manager = null;
         managers = null;
+        userIds = null;
+        domain = null;
 
         setData();
         setState(QUERY);
-        tree.setRoot(getRoot(null));
-        domain = null;
+        table.setModel(null);
+        deckPanel.showWidget(deckPanel.getWidgetCount() - 1);
         fireDataChange();
         accessionNumber.setFocus(true);
         setDone(Messages.get().gen_enterFieldsToQuery());
@@ -390,42 +579,16 @@ public class SecondDataEntryScreenUI extends Screen {
 
     @UiHandler("previousButton")
     protected void previous(ClickEvent event) {
-        int index;
-        Node node, root, prevNode;
-
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if (ATTACHMENT_LEAF.equals(node.getType()))
-            node = node.getParent();
-
-        root = tree.getRoot();
-        index = root.getIndex(node);
-        if (index == 0) {
+        if (DataBaseUtil.isSame(table.getSelectedRow(), 0)) {
             setError(Messages.get().gen_noMoreRecordInDir());
-        } else {
-            prevNode = root.getChildAt(index - 1);
-            tree.selectNodeAt(prevNode);
-            nodeSelected(prevNode);
+            return;
         }
+        nav.previous();
     }
 
     @UiHandler("nextButton")
     protected void next(ClickEvent event) {
-        int index;
-        Node node, root, prevNode;
-
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if (ATTACHMENT_LEAF.equals(node.getType()))
-            node = node.getParent();
-
-        root = tree.getRoot();
-        index = root.getIndex(node);
-        if (index < root.getChildCount() - 1) {
-            prevNode = root.getChildAt(index + 1);
-            tree.selectNodeAt(prevNode);
-            nodeSelected(prevNode);
-        } else {
-            loadNextPage();
-        }
+        nav.next();
     }
 
     @UiHandler("updateButton")
@@ -435,31 +598,44 @@ public class SecondDataEntryScreenUI extends Screen {
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
-                    Focusable f;
+                    ScheduledCommand cmd;
 
                     manager = result;
                     managers.put(manager.getSample().getId(), manager);
-                    /*
-                     * this keeps track of how many times a widget with a given
-                     * key was edited
-                     */
-                    numEdits = new HashMap<String, Integer>();
 
                     /*
-                     * this makes sure that if the domain of the locked sample
-                     * is different from when it was fetched, the fields for
-                     * verification are redrawn
+                     * make sure that the sample is still not verified; if it is
+                     * verified, unlock it because the user can't be allowed to
+                     * change anything in it
+                     */
+                    if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
+                                                                                   .getStatusId())) {
+                        Window.alert(Messages.get().secondDataEntry_sampleAlreadyVerified());
+                        state = UPDATE;
+                        abort();
+                    }
+
+                    /*
+                     * this is done so that if the domain of the locked sample
+                     * was changed from when it was initially fetched, the
+                     * fields for the current domain are shown
                      */
                     addWidgets(manager.getSample().getDomain());
 
-                    setState(UPDATE);
-                    fireDataChange();
                     /*
-                     * if (widgetTable.getRowCount() > 0 &&
-                     * widgetTable.getCellCount(0) > 0) { f =
-                     * (Focusable)widgetTable.getWidget(0, 0); f.setFocus(true);
-                     * }
+                     * this command makes sure that widgets get added to the tab
+                     * before any other action takes place on the tab e.g. the
+                     * state being set
                      */
+                    cmd = new ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            setData();
+                            setState(UPDATE);
+                            fireDataChange();
+                        }
+                    };
+                    Scheduler.get().scheduleDeferred(cmd);
                 }
 
                 public void failure(Throwable e) {
@@ -508,10 +684,11 @@ public class SecondDataEntryScreenUI extends Screen {
     }
 
     protected void commitQuery() {
+        Query query;
+
         query = new Query();
         query.setFields(getQueryFields());
-        query.setRowsPerPage(ROWS_PER_PAGE);
-        executeQuery(query);
+        nav.setQuery(query);
     }
 
     protected void commitUpdate() {
@@ -537,10 +714,7 @@ public class SecondDataEntryScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
-                    if (isState(ADD))
-                        Window.alert("commitAdd(): " + e.getMessage());
-                    else
-                        Window.alert("commitUpdate(): " + e.getMessage());
+                    Window.alert("commitUpdate(): " + e.getMessage());
                     clearStatus();
                 }
             };
@@ -551,6 +725,10 @@ public class SecondDataEntryScreenUI extends Screen {
 
     @UiHandler("abortButton")
     protected void abort(ClickEvent event) {
+        abort();
+    }
+
+    protected void abort() {
         finishEditing();
         clearErrors();
         setBusy(Messages.get().gen_cancelChanges());
@@ -594,116 +772,18 @@ public class SecondDataEntryScreenUI extends Screen {
     }
 
     /**
-     * Executes the user query to get the next page of results
-     */
-    @UiHandler("nextPageButton")
-    protected void nextPage(ClickEvent event) {
-        loadNextPage();
-    }
-    
-    /**
      * Sets the latest manager in the tabs
      */
     private void setData() {
         environmentalTab.setData(manager);
-    }
-
-    /**
-     * Executes the passed query and loads the screen with the results
-     */
-    private void executeQuery(final Query query) {
-        setBusy(Messages.get().gen_querying());
-
-        if (queryCall == null) {
-            queryCall = new AsyncCallbackUI<ArrayList<SecondDataEntryVO>>() {
-                public void success(ArrayList<SecondDataEntryVO> result) {
-                    int index;
-                    Node root, first, last;
-                    HashSet<Integer> ids;
-
-                    /*
-                     * if "managers" is null, it's a new query i.e. the first
-                     * page will be loaded in the tree; otherwise, the next page
-                     * will be loaded after all the previous pages
-                     */
-                    if (query.getPage() == 0) {
-                        index = 0;
-                        root = getRoot(result);
-                    } else {
-                        root = tree.getRoot();
-                        index = root.getChildCount();
-                        loadSamples(root, result);
-                    }
-
-                    /*
-                     * reload the tree; select the first node of the newest page
-                     * and load the screen with its sample's data; make sure
-                     * that only the nodes of the newest page are in the visible
-                     * area
-                     */
-                    tree.setRoot(root);
-                    first = root.getChildAt(index);
-                    last = root.getLastChild();
-                    tree.selectNodeAt(first);
-                    tree.scrollToVisible(tree.getNodeViewIndex(last));
-
-                    ids = new HashSet<Integer>();
-                    for (SecondDataEntryVO data : result)
-                        ids.add(data.getSampleId());
-                    fetchSamples(DataBaseUtil.toArrayList(ids));
-                }
-
-                public void lastPage() {
-                    int page;
-
-                    /*
-                     * make sure that the page doesn't stay one more than the
-                     * current one, if there are no more pages in this direction
-                     */
-                    page = query.getPage();
-                    if (page > 0)
-                        query.setPage(page - 1);
-                    setError(Messages.get().gen_noMoreRecordInDir());
-                }
-
-                public void notFound() {
-                    manager = null;
-                    setData();
-                    setState(DEFAULT);
-                    fireDataChange();
-                    setDone(Messages.get().gen_noRecordsFound());
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("Error: Second Data Entry call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    setError(Messages.get().gen_queryFailed());
-                }
-            };
-        }
-
-        service.query(query, queryCall);
-    }
-
-    private void loadNextPage() {
-        int page;
-
-        /*
-         * query is a class variable because this screen doesn't use a screen
-         * navigator but it needs to keep track of the previously executed query
-         * and not a query created from the screen's current data
-         */
-        page = query.getPage();
-
-        query.setPage(page + 1);
-        executeQuery(query);
+        sdwisTab.setData(manager);
     }
 
     private void fetchSamples(ArrayList<Integer> ids) {
         if (fetchByIdsCall == null) {
             fetchByIdsCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
-                    Node first;
+                    Item<Integer> row;
 
                     if (managers == null)
                         managers = new HashMap<Integer, SampleManager1>();
@@ -716,13 +796,10 @@ public class SecondDataEntryScreenUI extends Screen {
                     for (SampleManager1 sm : result)
                         managers.put(sm.getSample().getId(), sm);
 
-                    first = tree.getNodeAt(tree.getSelectedNode());
-                    loadAttachments(tree.getSelectedNode());
-
                     setState(DISPLAY);
-                    fireDataChange();
+                    row = table.getRowAt(table.getSelectedRow());
+                    rowSelected((Integer)row.getData());
                     clearStatus();
-                    nodeSelected(first);
                 }
 
                 public void notFound() {
@@ -744,108 +821,44 @@ public class SecondDataEntryScreenUI extends Screen {
         SampleService1.get().fetchByIds(ids, fetchElements, fetchByIdsCall);
     }
 
-    /**
-     * Creates a tree loaded from the passed list where every sample in the
-     * passed list has a different subtree and returns the root node
-     */
-    private Node getRoot(ArrayList<SecondDataEntryVO> list) {
-        Node root;
+    private void rowSelected(Integer sampleId) {
+        ScheduledCommand cmd;
 
-        root = new Node();
-        if (list == null)
-            return root;
+        if (managers == null)
+            return;
 
-        loadSamples(root, list);
-
-        return root;
-    }
-
-    /**
-     * Creates subtrees for each sample in the passed list; adds all subtrees to
-     * the passed node, which is the root of the tree
-     */
-    private void loadSamples(Node root, ArrayList<SecondDataEntryVO> list) {
-        Integer prevId, currId;
-        Node node;
-
-        prevId = null;
-        node = null;
-        for (SecondDataEntryVO data : list) {
-            currId = data.getSampleId();
-            if ( !currId.equals(prevId)) {
-                node = new Node(2);
-                node.setCell(0, data.getSampleAccessionNumber());
-                node.setCell(1, data.getHistorysystemUserLoginName());
-                node.setType(SAMPLE_USER_LEAF);
-                node.setData(data.getSampleId());
-                root.add(node);
-            } else {
-                node.setCell(1,
-                             DataBaseUtil.concatWithSeparator(node.getCell(1),
-                                                              ", ",
-                                                              data.getHistorysystemUserLoginName()));
-            }
-            prevId = currId;
-        }
-    }
-
-    private void loadAttachments(int sel) {
-        int i, j;
-        Node root, node, child;
-        SampleManager1 sm;
-        AttachmentItemViewDO att;
-
-        root = tree.getRoot();
-        for (i = sel; i < root.getChildCount(); i++ ) {
-            node = root.getChildAt(i);
-            sm = managers.get(node.getData());
-
-            for (j = 0; j < sm.attachment.count(); j++ ) {
-                att = sm.attachment.get(j);
-                child = new Node(1);
-                child.setCell(0, att.getAttachmentDescription());
-                child.setType(ATTACHMENT_LEAF);
-                child.setData(att);
-                tree.addNodeAt(node, child);
-            }
-        }
-    }
-
-    private void nodeSelected(Node node) {
-        Integer sampleId;
-        Node child;
-        AttachmentItemViewDO att;
-
-        child = null;
         /*
          * if a top level node is selected and if its sample has any
-         * attachments, open the attachment if there's only one, otherwise tell
-         * the user that an attachment should be selected to open it; if an
-         * attachment's node is selected, open it
+         * attachments, open the first attachment whose description begins with
+         * "TRF"; if no such attachment is found, tell the user that an
+         * attachment should be selected to open it; if an attachment's node is
+         * selected, open it
          */
-        sampleId = null;
-        if (SAMPLE_USER_LEAF.equals(node.getType())) {
-            if (node.getChildCount() == 1)
-                child = node.getChildAt(0);
-            else if (node.getChildCount() > 1)
-                Window.alert(Messages.get().secondDataEntry_selectAttachmentToView());
-            sampleId = node.getData();
-        } else {
-            child = node;
-        }
-
-        if (child != null) {
-            att = child.getData();
-            displayAttachment(att.getAttachmentId(), Messages.get()
-                                                             .secondDataEntry_secondDataEntry());
-            sampleId = att.getReferenceId();
-        }
-
         manager = managers.get(sampleId);
-        setData();
+        
+        if (manager == null)
+            return;
 
-        if ( !isState(UPDATE))
+        displayTRF(sampleId,
+                   manager.getSample().getAccessionNumber(),
+                   Messages.get().secondDataEntry_secondDataEntry());
+
+        if ( !isState(UPDATE)) {
             addWidgets(manager.getSample().getDomain());
+            /*
+             * this command makes sure that widgets get added to the tab before
+             * any other action takes place on the tab e.g. the state being set
+             */
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    setData();
+                    setState(state);
+                    fireDataChange();
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
+        }
     }
 
     /**
@@ -854,17 +867,66 @@ public class SecondDataEntryScreenUI extends Screen {
      * was called then the file is opened in a new window, otherwise it's opened
      * in the same window as before.
      */
-    private void displayAttachment(Integer id, String name) {
+    private void displayTRF(Integer sampleId, Integer accession, String name) {
         try {
             /*
-             * passing the same name to displayAttachment makes sure that the
-             * files open in the same window
+             * passing the same name to displayTRF makes sure that the files
+             * open in the same window
              */
-            AttachmentUtil.displayAttachment(id, name, window);
+            AttachmentUtil.displayTRF(sampleId, name, window);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Returns the accession number or null if the manager is null
+     */
+    private Integer getAccessionNumber() {
+        if (manager != null)
+            return manager.getSample().getAccessionNumber();
+        return null;
+    }
+
+    /**
+     * Returns the login names of the users who added/updated the selected
+     * sample
+     */
+    private String getUsers() {
+        Row row;
+
+        row = table.getRowAt(table.getSelectedRow());
+        if (row == null)
+            return null;
+
+        return row.getCell(1);
+    }
+    
+    /**
+     * Returns the received date or null if the manager is null
+     */
+    private Datetime getReceivedDate() {
+        if (manager != null)
+            return manager.getSample().getReceivedDate();
+        return null;
+    }
+
+    /**
+     * Returns the message that tells the user whether the sample was loaded
+     * from a send-out order or e-order
+     */
+    private String getOrderMessage() {
+        if (manager == null || manager.getSample().getOrderId() == null)
+            return null;
+        else if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+                 Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain))
+            return Messages.get().secondDataEntry_loadedWithSendoutOrder();
+        else if (Constants.domain().CLINICAL.equals(domain) ||
+                 Constants.domain().NEONATAL.equals(domain))
+            return Messages.get().secondDataEntry_loadedWithEOrder();
+
+        return null;
     }
 
     /**
@@ -884,23 +946,32 @@ public class SecondDataEntryScreenUI extends Screen {
 
         try {
             /*
-             * get the xml string for the passed domain from the back-end
+             * if this is the first time that a sample with this domain has been
+             * selected in the tree, get the xml string for the passed domain
+             * from the back-end and add the widgets to the appropriate tab;
+             * otherwise just show the tab
              */
             if (Constants.domain().ENVIRONMENTAL.equals(dom)) {
-                if (envXML == null) {
+                if ( !envFieldsAdded) {
                     status = service.getFields("env_verification_fields");
-                    envXML = status.getMessage();
-                    environmentalTab.addWidgets(envXML);
+                    environmentalTab.addWidgets(status.getMessage());
+                    envFieldsAdded = true;
                 }
                 deckPanel.showWidget(0);
-            } else {
+            } else if (Constants.domain().SDWIS.equals(dom)) {
+                if ( !sdwisFieldsAdded) {
+                    status = service.getFields("sdwis_verification_fields");
+                    sdwisTab.addWidgets(status.getMessage());
+                    sdwisFieldsAdded = true;
+                }
                 deckPanel.showWidget(1);
+            } else {
+                deckPanel.showWidget(deckPanel.getWidgetCount() - 1);
                 return;
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
-            return;
         }
     }
 }

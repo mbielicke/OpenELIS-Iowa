@@ -33,4 +33,6 @@ public interface Style extends CssResource {
     public String Title();
     
     public String Heading();
+    
+    public String FlexTableAlternateRow();
 }

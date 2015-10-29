@@ -9,36 +9,30 @@
   may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:d='urn:import:org.openelis.modules.secondDataEntry.client'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:d='urn:import:org.openelis.modules.secondDataEntry.client' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:west size="270">
+    <g:west size="220">
       <g:LayoutPanel>
         <g:layer top="0px" bottom="0px" left="0px" right="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="25px">
-              <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
-                <r:Column width="165" label="{msg.secondDataEntry_accessionAttachment}" />
-                <r:Column width="75" label="{msg.gen_username}" />
-                <r:Leaf key="sampleUser">
-                  <r:LeafColumn>
-                    <t:LabelCell>
-                      <w:Label field="Integer" />
-                    </t:LabelCell>
-                  </r:LeafColumn>
-                  <r:LeafColumn>
-                    <t:LabelCell />
-                  </r:LeafColumn>
-                </r:Leaf>
-                <r:Leaf key="attachment">
-                  <r:LeafColumn>
-                    <t:LabelCell />
-                  </r:LeafColumn>
-                </r:Leaf>
-              </r:Tree>
+              <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
+                <t:Column width="80" label="{msg.sample_accessionNum}">
+                  <t:LabelCell>
+                    <w:Label field="Integer" />
+                  </t:LabelCell>
+                </t:Column>
+                <t:Column width="110" label="{msg.gen_username}">
+                  <t:LabelCell>
+                    <w:Label field="Integer" />
+                  </t:LabelCell>
+                </t:Column>
+              </t:Table>
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
@@ -74,42 +68,87 @@
             </g:HorizontalPanel>
           </g:AbsolutePanel>
         </g:layer>
-        <g:layer top="30px" height="30px">
-          <g:HTMLPanel>
-            <table class="{res.style.Form}">
-              <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.sample_accessionNum}:" />
-                </td>
-                <td>
-                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
-                </td>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.gen_username}:" />
-                </td>
-                <td>
-                  <w:Dropdown ui:field="historySystemUserId" width="165px" field="Integer"
-                    dropWidth="201px" />
-                </td>
-              </tr>
-            </table>
-          </g:HTMLPanel>
+        <g:layer top="30px" height="60px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" width="100%">
+              <g:HTMLPanel>
+                <table class="{res.style.Form}">
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_accessionNum}:" />
+                    </td>
+                    <td>
+                      <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
+                    </td>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_username}:" />
+                    </td>
+                    <td colspan="3">
+                      <w:TextBox ui:field="historySystemUser" width="165px" field="String" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_received}:" />
+                    </td>
+                    <td>
+                      <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextArea ui:field="orderMessage" height="18px" width="231px" />
+                    </td>
+                  </tr>
+                </table>
+              </g:HTMLPanel>
+            </g:layer>
+          </g:LayoutPanel>
         </g:layer>
-        <g:layer top="60px" bottom="0px">
-          <!-- <g:ScrollPanel width="100%" height="100%"> <g:FlexTable ui:field="widgetTable" styleName="{res.style.Form}" 
-            /> </g:ScrollPanel> -->
-          <g:DeckPanel ui:field="deckPanel">
-            <g:LayoutPanel>
-              <g:layer>
-                <d:EnvironmentalTabUI ui:field="environmentalTab" />
-              </g:layer>
-            </g:LayoutPanel>
-            <g:LayoutPanel>
-              <g:layer>
-                <g:HorizontalPanel />
-              </g:layer>
-            </g:LayoutPanel>
-          </g:DeckPanel>
+        <g:layer top="75px" bottom="0px" left="0px" width="100%">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer top="0px" height="25px" left="12%" width="100%">
+                  <g:HorizontalPanel horizontalAlignment="CENTER">
+                    <w:Label text="{msg.secondDataEntry_secondDataEntryHeading}" styleName="{res.style.Heading}" />
+                    <g:HorizontalPanel width="175px" />
+                    <w:Label text="{msg.secondDataEntry_firstDataEntryHeading}" styleName="{res.style.Heading}" />
+                  </g:HorizontalPanel>
+                </g:layer>
+                <g:layer>
+                  <g:DeckPanel ui:field="deckPanel">
+                    <g:LayoutPanel>
+                      <g:layer>
+                        <d:EnvironmentalTabUI ui:field="environmentalTab" />
+                      </g:layer>
+                    </g:LayoutPanel>
+                    <g:LayoutPanel>
+                      <g:layer>
+                        <d:SDWISTabUI ui:field="sdwisTab" />
+                      </g:layer>
+                    </g:LayoutPanel>
+                    <g:LayoutPanel>
+                      <g:layer>
+                        <g:HorizontalPanel />
+                      </g:layer>
+                    </g:LayoutPanel>
+                  </g:DeckPanel>
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.sample_notes}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <s:SampleNotesTabUI ui:field="sampleNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+          </w:TabLayoutPanel>
         </g:layer>
       </g:LayoutPanel>
     </g:center>

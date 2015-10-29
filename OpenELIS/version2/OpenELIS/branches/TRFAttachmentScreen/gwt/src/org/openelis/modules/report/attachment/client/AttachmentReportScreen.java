@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.meta.AttachmentMeta;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentService;
 import org.openelis.modules.report.client.ReportScreen;
 import org.openelis.ui.common.Prompt;
@@ -61,13 +62,25 @@ public class AttachmentReportScreen extends ReportScreen<Query> {
 
     @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        boolean isSample;
         Integer id;
         
         id = null;
+        isSample = false;
         for (QueryData field : query.getFields()) {
-            if (AttachmentMeta.getId().equals(field.getKey())) 
+            if (AttachmentMeta.getId().equals(field.getKey())) {
                 id = Integer.valueOf(field.getQuery());
+                break;
+            } else if (SampleMeta.getId().equals(field.getKey())) {
+                id = Integer.valueOf(field.getQuery());
+                isSample = true;
+                break;
+            }
         }
-        AttachmentService.get().get(id, callback);
+        if (isSample)            
+            AttachmentService.get().getTRF(id, callback);
+        else 
+            AttachmentService.get().get(id, callback);
+        
     }
 }

@@ -135,7 +135,7 @@ public abstract class TestReflexUtility1 {
                                                ana.getId(),
                                                null,
                                                r.getId(),
-                                               null,
+                                               ana.getPanelId(),
                                                allowDup,
                                                null);
                 tests.add(test);

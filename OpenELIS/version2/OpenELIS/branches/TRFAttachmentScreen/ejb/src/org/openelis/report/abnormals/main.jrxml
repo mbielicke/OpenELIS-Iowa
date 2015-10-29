@@ -10,7 +10,7 @@
 	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<import value="org.openelis.utils.Counter"/>
 	<reportFont name="times" isDefault="false" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
-	<parameter name="LOGNAME" class="java.lang.String">
+	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="FROM_DATE" class="java.sql.Timestamp">
@@ -111,7 +111,7 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 					<reportElement key="addToReportTotal" isPrintRepeatedValues="false" mode="Opaque" x="470" y="12" width="253" height="0" backcolor="#CCCCCC">
-						<printWhenExpression><![CDATA[$V{ABNORMAL_TOTAL}.add($V{ABNORMAL_TEST})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[$V{ABNORMAL_TOTAL}.add($V{ABNORMAL_CITY})]]></printWhenExpression>
 					</reportElement>
 					<textElement>
 						<font reportFont="times" size="8"/>
@@ -129,18 +129,18 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 		<groupFooter>
 			<band height="12">
 				<textField pattern="">
-					<reportElement key="city" isPrintRepeatedValues="false" x="0" y="0" width="97" height="12"/>
+					<reportElement key="city" isPrintRepeatedValues="false" x="0" y="0" width="97" height="12" printWhenGroupChanges="city"/>
 					<textElement>
 						<font reportFont="times" size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}.trim()]]></textFieldExpression>
 				</textField>
 				<textField pattern="">
-					<reportElement key="orgName" isPrintRepeatedValues="false" x="98" y="0" width="193" height="12"/>
+					<reportElement key="orgName" isPrintRepeatedValues="false" x="98" y="0" width="193" height="12" printWhenGroupChanges="organization"/>
 					<textElement>
 						<font reportFont="times" size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}.trim()]]></textFieldExpression>
 				</textField>
 				<textField pattern="">
 					<reportElement key="testName" x="292" y="0" width="88" height="12" printWhenGroupChanges="testmethod"/>
@@ -227,11 +227,11 @@ ORDER BY city, o_name, t_name, m_name, a_id]]>
 				<textFieldExpression class="java.lang.String"><![CDATA["Samples entered from " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{FROM_DATE}) + " to " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{TO_DATE})]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
-				<reportElement key="logname" x="662" y="13" width="93" height="13"/>
+				<reportElement key="username" x="662" y="13" width="93" height="13"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGNAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

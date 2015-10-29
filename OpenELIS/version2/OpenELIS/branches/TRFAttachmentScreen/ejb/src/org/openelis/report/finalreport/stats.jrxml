@@ -18,6 +18,9 @@
 	<parameter name="LOGNAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["uhl"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="PAGE_COUNTER" class="org.openelis.report.finalreport.PageCounter" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new org.openelis.report.finalreport.PageCounter()]]></defaultValueExpression>
+	</parameter>
 	<field name="organization_name" class="java.lang.String"/>
 	<field name="organization_id" class="java.lang.Integer"/>
 	<field name="faxed_printed" class="java.lang.String"/>
@@ -158,7 +161,9 @@
 				<textElement>
 					<font reportFont="FieldData" fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{faxed_printed}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[("Printed".equals($F{faxed_printed}) ?
+" " + $P{PAGE_COUNTER}.getCount($F{organization_id}) + " pg. " : "")
++ $F{faxed_printed}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement key="accessionNumberValue" positionType="Float" x="430" y="0" width="65" height="12" isRemoveLineWhenBlank="true">

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -88,6 +89,8 @@ public interface SampleServiceInt1 extends XsrfProtectedService {
     public void validateAccessionNumber(SampleManager1 sm) throws Exception;
     
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception;
+    
+    public void mergePatients(ArrayList<PatientDO> fromPatients, PatientDO toPatient) throws Exception;
     
     public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception;
     

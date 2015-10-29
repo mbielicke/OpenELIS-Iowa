@@ -1,0 +1,138 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:d="urn:import:org.openelis.modules.todo1.client">
+	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
+
+	<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+		<g:layer top="0px" height="30px">
+			<g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
+				width="100%">
+				<g:HorizontalPanel>
+					<w:Button css="{res.buttonPanel}" ui:field="refreshButton"
+						leftIcon="{res.icon.refreshButtonImage}" text="{msg.gen_refresh}" />
+					<w:Button css="{res.buttonPanel}" ui:field="trackingButton"
+						leftIcon="{res.icon.trackingIcon}" text="{msg.gen_details}" />
+					<w:Button css="{res.buttonPanel}" ui:field="exportToXl"
+						text="{msg.todo_exportToXl}" />
+				</g:HorizontalPanel>
+			</g:AbsolutePanel>
+		</g:layer>
+		<g:layer top="30px" height="30px">
+			<g:HTMLPanel>
+				<table class="{res.style.Form}">
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.section}:" />
+						</td>
+						<td>
+							<w:Dropdown ui:field="displaySections" width="203px"
+								field="String" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:layer>
+		<g:layer top="60" bottom="0px">
+			<w:TabLayoutPanel ui:field="tabPanel" barHeight="25"
+				barUnit="PX">
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.loggedIn}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:LoggedInTabUI ui:field="loggedInTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.initiated}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:InitiatedTabUI ui:field="initiatedTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.worksheet}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:WorksheetTabUI ui:field="worksheetTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.completed}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:CompletedTabUI ui:field="completedTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.released}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:ReleasedTabUI ui:field="releasedTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.toBeVerified}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:ToBeVerifiedTabUI ui:field="toBeVerifiedTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.other}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:OtherTabUI ui:field="otherTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+				<w:tab>
+					<w:customHeader>
+						<w:TabWidget text="{msg.instrument}" />
+					</w:customHeader>
+					<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+						<g:layer>
+							<d:InstrumentTabUI ui:field="instrumentTab" />
+						</g:layer>
+					</g:LayoutPanel>
+				</w:tab>
+			</w:TabLayoutPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

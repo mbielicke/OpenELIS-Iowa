@@ -53,6 +53,7 @@ import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserPermission;
@@ -597,6 +598,41 @@ public class AttachmentManagerBean {
               .setPath(dst.toString())
               .setStatus(ReportStatus.Status.SAVED);
         return status;
+    }
+    
+    /**
+     * Copies to the upload directory, the file linked to the attachment record
+     * whose id is "attachmentId"; creates a ReportStatus containing the path
+     * and name of the copied file
+     * 
+     * @param attachmentId
+     *        the id of an attachment record
+     * @return the created ReportStatus
+     * @throws Exception
+     */
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        String pattern;
+        ArrayList<AttachmentDO> attachments;
+
+        try {
+            pattern = systemVariable.fetchByName("attachment_pattern_generic").getValue();
+            pattern = pattern.replaceAll("\\*", "\\%");
+        } catch (Exception e) {
+            log.severe("No 'attachment_pattern_generic' system variable defined");
+            throw new InconsistencyException(Messages.get()
+                                                     .attachment_missingGenericPatternException());
+        }
+
+        try {
+            attachments = attachment.fetchByDescriptionReferenceIdReferenceTableId(pattern,
+                                                                               sampleId,
+                                                                               Constants.table().SAMPLE);
+        } catch (NotFoundException e) {
+            throw new InconsistencyException(Messages.get()
+                                                     .attachment_trfNotFoundException());
+        }
+        
+        return get(attachments.get(0).getId());
     }
 
     /**
