@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -16736,6 +16736,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Received")
   @Key("sample.received")
   String sample_received();
+
+  /**
+   * Translated "Accession # {0,number,#0}: Received date can''t be after entered".
+   * 
+   * @return translated "Accession # {0,number,#0}: Received date can''t be after entered"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Received date can''t be after entered")
+  @Key("sample.receivedDateAfterEnteredException")
+  String sample_receivedDateAfterEnteredException(Integer arg0);
 
   /**
    * Translated "Accession # {0,number,#0}: Received date is required".
