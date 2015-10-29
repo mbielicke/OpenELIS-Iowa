@@ -155,7 +155,7 @@
                         <ui:text from="{msg.sample_collector}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="envCollector" field="String" width="235px"
+                        <w:TextBox ui:field="envCollector" case="LOWER" field="String" width="235px"
                           maxLength="40" />
                       </td>
                     </tr>

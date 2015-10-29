@@ -44,9 +44,9 @@
             <c:Calendar width="110" begin="0" end="4" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="310" label="{msg.trfAttachment_issue}">
+        <t:Column width="310" label="{msg.trfAttachment_issue}" required="true">
           <t:TextBoxCell>
-            <w:TextBox required="true" />
+            <w:TextBox />
           </t:TextBoxCell>
         </t:Column>
         <t:Column width="120" label="{msg.attachment_attachment}">

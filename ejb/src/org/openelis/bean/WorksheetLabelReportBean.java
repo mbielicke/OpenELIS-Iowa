@@ -16,9 +16,15 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.manager.WorksheetManager1Accessor;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
@@ -39,13 +45,25 @@ public class WorksheetLabelReportBean {
     private SessionCacheBean      session;
 
     @EJB
-    private WorksheetManager1Bean worksheetManager;
+    private DictionaryCacheBean   dictionaryCache;
+
+    @EJB
+    private LabelReportBean       labelReport;
 
     @EJB
     private PrinterCacheBean      printer;
 
     @EJB
-    private LabelReportBean       labelReport;
+    private QcBean                qc;
+
+    @EJB
+    private WorksheetAnalysisBean worksheetAnalysis;
+
+    @EJB
+    private WorksheetItemBean     worksheetItem;
+
+    @EJB
+    private WorksheetManager1Bean worksheetManager;
 
     private static final Logger   log = Logger.getLogger("openelis");
 
@@ -65,6 +83,7 @@ public class WorksheetLabelReportBean {
                                                                  .setRequired(true));
 
             format = new ArrayList<OptionListItem>();
+            format.add(new OptionListItem("DI", "Distillation (1 X 2)"));
             format.add(new OptionListItem("SM", "Small (.5 X 1)"));
 
             p.add(new Prompt("FORMAT", Prompt.Type.ARRAY).setPrompt("Format:")
@@ -92,16 +111,25 @@ public class WorksheetLabelReportBean {
      */
     @RolesAllowed("worksheet-select")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int i, j, index;
+        int i, j, k, index, dilutionCol;
+        ArrayList<IdNameVO> worksheetColumns;
+        ArrayList<WorksheetAnalysisViewDO> waVDOs;
+        ArrayList<WorksheetQcResultViewDO> wqrVDOs;
+        ArrayList<WorksheetResultViewDO> wrVDOs;
+        DictionaryDO dDO;
         HashMap<String, QueryData> param;
         Integer worksheetId;
         Path path;
         PrintStream ps;
+        QcViewDO qcVDO;
         ReportStatus status;
-        String accession, format, name1, name2, printer, printstat, started, users, worksheetPosition;
-        WorksheetAnalysisViewDO waVDO;
-        WorksheetItemDO wiDO;
+        String accession, dilution, format, name1, name2, printer, printstat, qcCode,
+               qcLink, started, users, worksheetPosition;
+        WorksheetAnalysisViewDO waVDO, waVDO1;
+        WorksheetItemDO wiDO1;
         WorksheetManager1 wMan;
+        WorksheetQcResultViewDO wqrVDO;
+        WorksheetResultViewDO wrVDO;
 
         /*
          * push status into session so we can query it while the report is
@@ -125,9 +153,6 @@ public class WorksheetLabelReportBean {
         status.setMessage("Outputing report").setPercentComplete(0);
         session.setAttribute("WorksheetLabelReport", status);
 
-        /*
-         * fetch accession number counter and increment it
-         */
         try {
             wMan = worksheetManager.fetchById(worksheetId, WorksheetManager1.Load.DETAIL);
         } catch (Exception e) {
@@ -138,15 +163,53 @@ public class WorksheetLabelReportBean {
         status.setPercentComplete(50);
         session.setAttribute("WorksheetLabelReport", status);
 
+        try {
+            dilutionCol = -1;
+            worksheetColumns = worksheetManager.getColumnNames(wMan.getWorksheet().getFormatId());
+            for (i = 0; i < worksheetColumns.size(); i++) {
+                if ("dilut_factor".equals(worksheetColumns.get(i))) {
+                    dilutionCol = i;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error fetching worksheet columns for id "+worksheetId, e);
+            throw e;
+        }
+        
         /*
          * print the labels and send it to printer
          */
+        i = 0;
+        j = 0;
+        k = 0;
         path = ReportUtil.createTempFile("worksheetLabel", ".txt", null);
         ps = new PrintStream(Files.newOutputStream(path));
-        for (i = 0; i < wMan.item.count(); i++) {
-            wiDO = wMan.item.get(i);
-            for (j = 0; j < wMan.analysis.count(wiDO); j++) {
-                waVDO = wMan.analysis.get(wiDO, j);
+        waVDOs = WorksheetManager1Accessor.getAnalyses(wMan);
+        wrVDOs = WorksheetManager1Accessor.getResults(wMan);
+        wqrVDOs = WorksheetManager1Accessor.getQcResults(wMan);
+        for (WorksheetItemDO wiDO : WorksheetManager1Accessor.getItems(wMan)) {
+            for (; i < waVDOs.size(); i++) {
+                waVDO = waVDOs.get(i);
+                if (!wiDO.getId().equals(waVDO.getWorksheetItemId()))
+                    break;
+                
+                /*
+                 * Find the first Result or QC Result belonging to this Analysis
+                 */
+                wrVDO = null;
+                wqrVDO = null;
+                if (waVDO.getAnalysisId() != null) {
+                    do {
+                        wrVDO = wrVDOs.get(j);
+                        j++;
+                    } while (!waVDO.getId().equals(wrVDO.getWorksheetAnalysisId())) ;
+                } else if (waVDO.getQcLotId() != null) {
+                    do {
+                        wqrVDO = wqrVDOs.get(k);
+                        k++;
+                    } while (!waVDO.getId().equals(wqrVDO.getWorksheetAnalysisId())) ;
+                }
                 accession = waVDO.getAccessionNumber();
                 worksheetPosition = waVDO.getWorksheetId() + "." + wiDO.getPosition();
                 if (waVDO.getAnalysisId() != null) {
@@ -160,6 +223,7 @@ public class WorksheetLabelReportBean {
                     name1 = "";
                     name2 = "";
                 }
+                
                 if (waVDO.getStartedDate() != null)
                     started = ReportUtil.toString(waVDO.getStartedDate(), Messages.get().dateTimePattern());
                 else
@@ -169,12 +233,48 @@ public class WorksheetLabelReportBean {
                 else
                     users = wMan.getWorksheet().getSystemUser();
                     
-                if ("SM".equals(format))
+                qcCode = "";
+                waVDO1 = null;
+                wiDO1 = null;
+                if (waVDO.getWorksheetAnalysisId() != null) {
+                    waVDO1 = worksheetAnalysis.fetchViewById(waVDO.getWorksheetAnalysisId());
+                    wiDO1 = worksheetItem.fetchById(waVDO1.getWorksheetItemId());
+                    qcVDO = qc.fetchById(waVDO.getQcId());
+                    if (qcVDO.getTypeId() != null) {
+                        dDO = dictionaryCache.getById(qcVDO.getTypeId());
+                        if (dDO.getCode() != null)
+                            qcCode = dDO.getCode();
+                    }
+                }
+
+                if ("SM".equals(format)) {
+                    qcLink = "";
+                    if (waVDO1 != null && wiDO1 != null)
+                        qcLink = waVDO1.getAccessionNumber() + " (" + wiDO1.getPosition() + ")";
+                    
+                    users = users.substring(0, Math.min(8, users.length()));
                     labelReport.worksheetAnalysisSmallLabel(ps, accession, worksheetPosition,
                                                             name1, name2, started,
-                                                            users);
-                else
+                                                            users, qcLink);
+                } else if ("DI".equals(format)) {
+                    if (waVDO1 != null)
+                        accession = waVDO1.getAccessionNumber() + "@" + qcCode;
+
+                    dilution = "";
+                    if (waVDO.getAnalysisId() != null) {
+                        if (dilutionCol != -1)
+                            dilution = wrVDO.getValueAt(dilutionCol);
+                        labelReport.worksheetAnalysisDilutionLabel(ps, accession, wiDO.getPosition().toString(),
+                                                                   dilution, name1, name2);
+                    } else if (waVDO.getQcLotId() != null) {
+                        if (dilutionCol != -1)
+                            dilution = wqrVDO.getValueAt(dilutionCol);
+                        labelReport.worksheetAnalysisDilutionLabel(ps, name1, wiDO.getPosition().toString(),
+                                                                   dilution, name1, name2);
+                    }
+                } else {
                     throw new Exception("Invalid report type.");
+                }
             }
         }
         ps.close();

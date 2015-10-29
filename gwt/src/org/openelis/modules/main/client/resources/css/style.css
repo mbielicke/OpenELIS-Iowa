@@ -90,3 +90,7 @@
     font-weight:bold;
     white-space: nowrap;
 }
+
+.FlexTableAlternateRow {
+    background: #f8f8f8;
+}

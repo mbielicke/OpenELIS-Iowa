@@ -79,6 +79,20 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getTRF(sampleId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback) {
+        service.getTRF(sampleId, callback);
+    }
+
+    @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Callback<ArrayList<AttachmentManager>> callback;
 

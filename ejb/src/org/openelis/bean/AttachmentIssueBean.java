@@ -37,14 +37,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.entity.AttachmentIssue;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -247,7 +250,14 @@ public class AttachmentIssueBean {
         userCache.applyPermission("attachment", flag);
     }*/
     
-    private void validate(AttachmentIssueViewDO data) {
-        // TODO Auto-generated method stub
+    private void validate(AttachmentIssueViewDO data) throws Exception {
+        ValidationErrorsList errors;
+    
+        errors = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getText()))
+            errors.add(new FormErrorException(Messages.get().trfAttachment_issueTextRequired(data.getAttachmentDescription())));
+        
+        if (errors.size() > 0)
+            throw errors;
     }
 }

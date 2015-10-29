@@ -18,10 +18,12 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.PatientMergeHelperBean;
 import org.openelis.bean.SampleBean;
 import org.openelis.bean.SampleManager1Bean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -38,13 +40,16 @@ import org.openelis.ui.server.RemoteServlet;
 @WebServlet("/openelis/sample1")
 public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
 
-    private static final long  serialVersionUID = 1L;
+    private static final long      serialVersionUID = 1L;
 
     @EJB
-    private SampleBean         sample;
+    private SampleBean             sample;
 
     @EJB
-    private SampleManager1Bean sampleManager1;
+    private SampleManager1Bean     sampleManager1;
+    
+    @EJB
+    private PatientMergeHelperBean patientMergeHelper;
 
     public SampleManager1 getInstance(String domain) throws Exception {
         try {
@@ -197,6 +202,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         try {
             return sampleManager1.mergeQuickEntry(sm);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public void mergePatients(ArrayList<PatientDO> fromPatients, PatientDO toPatient) throws Exception {
+        try {
+            patientMergeHelper.mergePatients(fromPatients, toPatient);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

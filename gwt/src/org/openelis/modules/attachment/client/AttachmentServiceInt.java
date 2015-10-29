@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 public interface AttachmentServiceInt extends XsrfProtectedService {
     
     public ReportStatus get(Integer id) throws Exception;
+    
+    public ReportStatus getTRF(Integer sampleId) throws Exception;
 
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception;
     

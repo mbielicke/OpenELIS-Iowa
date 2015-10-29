@@ -28,25 +28,21 @@ package org.openelis.bean;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.sql.DataSource;
-import javax.transaction.UserTransaction;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PWSDO;
 import org.openelis.exception.ParseException;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.utils.ParseUtil;
 
 /**
  * Reads data from a PWS file and updates the pws table in the database. This
@@ -54,21 +50,16 @@ import org.openelis.ui.common.ReportStatus;
  */
 @Stateless
 @SecurityDomain("openelis")
-@TransactionManagement(TransactionManagementType.BEAN)
-@Resource(name = "jdbc/OpenELISDB",
-          type = DataSource.class,
-          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
-          mappedName = "java:/OpenELISDS")
 public class PWSImportHelperBean {
+
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager       manager;
 
     @EJB
     private SessionCacheBean    session;
 
     @EJB
     private SystemVariableBean  systemVariable;
-
-    @Resource
-    private SessionContext      ctx;
 
     @EJB
     private PWSBean             pws;
@@ -84,95 +75,85 @@ public class PWSImportHelperBean {
      * that does not yet exist there, update records that are different, and
      * remove records that are not present in the file.
      */
+    @RolesAllowed("pws-add")
     public void load(ReportStatus status) throws Exception {
-        boolean toCommit;
-        int i, onePercent;
+        int i, r, onePercent;
         PWSDO p;
-        UserTransaction ut;
         ArrayList<PWSDO> records;
-        HashMap<Integer, PWSDO> pwsm;
+        HashMap<Integer, PWSDO> pm;
 
-        ut = null;
-        try {
-            status.setMessage("Reading file 1 of 4: PWS file");
-            session.setAttribute("PWSFileImport", status);
-            /*
-             * create a hash map from the file
-             */
-            pwsm = parse();
-            records = pws.fetchAll();
-            /*
-             * calculate the number of records needed to be updated to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (records.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            i = 0;
-            ut = ctx.getUserTransaction();
-            ut.begin();
-            toCommit = false;
-            for (PWSDO record : records) {
-                p = pwsm.get(record.getTinwsysIsNumber());
-                if (p == null)
-                    continue;
+        status.setMessage("Reading file 1 of 4: PWS file");
+        session.setAttribute("PWSFileImport", status);
+
+        /*
+         * create a hash map from the file and fetch records from table
+         */
+        pm = parse();
+        records = pws.fetchAll();
+
+        /*
+         * calculate the number of records needed to be updated to indicate
+         * one percent of progress towards completion
+         */
+        onePercent = (int)Math.max(records.size() / 12.5, 12);
+        status.setMessage("Loading file 1 of 4: PWS file");
+        session.setAttribute("PWSFileImport", status);
+
+        /*
+         * update the records in the database with records from file
+         */
+        i = r = 0;
+        for (PWSDO record : records) {
+            i++ ;
+
+            p = pm.get(record.getTinwsysIsNumber());
+            if (p != null) {
                 /*
                  * check if the database needs to be updated
                  */
                 if ( !equals(p, record)) {
-                    i++ ;
                     p.setId(record.getId());
                     pws.update(p);
-                    toCommit = true;
-                    if (i % 1000 == 0) {
-                        ut.commit();
-                        ut.begin();
-                        toCommit = false;
-                    }
-                    if (i % onePercent == 0) {
-                        status.setMessage("Loading file 1 of 4: PWS file");
-                        status.setPercentComplete(i / onePercent);
-                        session.setAttribute("PWSFileImport", status);
-                    }
+                    r++ ;
+
+                    /*
+                     * batch update
+                     */
+                    if (r % 200 == 0)
+                        manager.flush();
                 }
-                /*
-                 * this map must only have records that don't exist in the
-                 * database
-                 */
-                pwsm.remove(p.getTinwsysIsNumber());
+
+                pm.remove(p.getTinwsysIsNumber());
             }
-            i = 0;
-            /*
-             * calculate the number of records needed to be added to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (pwsm.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            for (PWSDO toAdd : pwsm.values()) {
-                i++ ;
-                pws.add(toAdd);
-                toCommit = true;
-                if (i % 1000 == 0) {
-                    ut.commit();
-                    ut.begin();
-                    toCommit = false;
-                }
-                if (i % onePercent == 0) {
-                    status.setMessage("Loading file 1 of 4: PWS file");
-                    status.setPercentComplete(13 + i / onePercent);
-                    session.setAttribute("PWSFileImport", status);
-                }
+            
+            if (i % onePercent == 0) {
+                status.setPercentComplete(i / onePercent);
+                session.setAttribute("PWSFileImport", status);
             }
-            if (toCommit)
-                ut.commit();
-            else
-                ut.rollback();
-        } catch (Exception e) {
-            if (ut != null)
-                ut.rollback();
-            throw e;
         }
+
+        /*
+         * add the records that were in the file but not in database
+         */
+        onePercent = (int)Math.max(pm.size() / 12.5, 12);
+
+        i = 0;
+        for (PWSDO tp : pm.values()) {
+            i++ ;
+
+            pws.add(tp);
+            r++;
+
+            if (r % 200 == 0)
+                manager.flush();
+
+            if (i % onePercent == 0) {
+                status.setPercentComplete(13 + i / onePercent);
+                session.setAttribute("PWSFileImport", status);
+            }
+        }
+
+        manager.flush();
     }
 
     /**
@@ -184,7 +165,7 @@ public class PWSImportHelperBean {
         String line, path, buf[];
         PWSDO data;
         BufferedReader reader;
-        HashMap<Integer, PWSDO> pwsMap;
+        HashMap<Integer, PWSDO> pm;
 
         try {
             path = systemVariable.fetchByName("pws_path").getValue();
@@ -192,13 +173,15 @@ public class PWSImportHelperBean {
             log.severe("No 'pws_path' system variable defined");
             throw e;
         }
+
         reader = new BufferedReader(new FileReader(path + PWS_FILE));
         i = 1;
+
         /*
          * map from the pws file, with the tinwsys_is_number being the key, and
          * the data for pws fields being the value
          */
-        pwsMap = new HashMap<Integer, PWSDO>();
+        pm = new HashMap<Integer, PWSDO>();
 
         try {
             /*
@@ -217,61 +200,54 @@ public class PWSImportHelperBean {
                     throw new ParseException("Too few columns");
 
                 data = new PWSDO();
-                data.setTinwsysIsNumber(Integer.parseInt(buf[0]));
-                data.setNumber0(buf[1]);
-                data.setAlternateStNum(buf[2]);
-                data.setName(buf[3]);
-                data.setActivityStatusCd(buf[4]);
-                data.setDPrinCitySvdNm(buf[5]);
-                data.setDPrinCntySvdNm(buf[6]);
-                data.setDPopulationCount(Integer.parseInt(buf[7]));
-                data.setDPwsStTypeCd(buf[8]);
-                if (buf[9].length() > 255)
-                    data.setActivityRsnTxt(buf[9].substring(0, 255));
-                else
-                    data.setActivityRsnTxt(buf[9]);
-                data.setStartDay(Integer.parseInt(buf[10]));
-                data.setStartMonth(Integer.parseInt(buf[11]));
-                data.setEndDay(Integer.parseInt(buf[12]));
-                data.setEndMonth(Integer.parseInt(buf[13]));
-                data.setEffBeginDt(Datetime.getInstance(Datetime.YEAR,
-                                                        Datetime.DAY,
-                                                        new Date(buf[14])));
-                if ( !DataBaseUtil.isEmpty(buf[15]))
-                    data.setEffEndDt(Datetime.getInstance(Datetime.YEAR,
-                                                          Datetime.DAY,
-                                                          new Date(buf[15])));
+                data.setTinwsysIsNumber(ParseUtil.parseIntField(buf[0], false, "TINWSYS_IS_NUMBER"));
+                data.setNumber0(ParseUtil.parseStrField(buf[1], 12, false, "NUMBER0"));
+                data.setAlternateStNum(ParseUtil.parseStrField(buf[2], 5, true, "ALTERNATE_ST_NUM"));
+                data.setName(ParseUtil.parseStrField(buf[3], 40, true, "NAME"));
+                data.setActivityStatusCd(ParseUtil.parseStrField(buf[4], 1, true, "ACTIVITY_STATUS_CD"));
+                data.setDPrinCitySvdNm(ParseUtil.parseStrField(buf[5], 40, true, "D_PRIN_CITY_SVD_NM"));
+                data.setDPrinCntySvdNm(ParseUtil.parseStrField(buf[6], 40, true, "D_PRIN_CITY_SVD_NM"));
+                data.setDPopulationCount(ParseUtil.parseIntField(buf[7], false, "D_POPULATION_COUNT"));
+                data.setDPwsStTypeCd(ParseUtil.parseStrField(buf[8], 4, true, "PWS_ST_TYPE_CD"));
+                data.setActivityRsnTxt(ParseUtil.parseStrField(buf[9], -255, true, "ACTIVITY_RSN_TXT"));
+                data.setStartDay(ParseUtil.parseIntField(buf[10], false, "START_DAY"));
+                data.setStartMonth(ParseUtil.parseIntField(buf[11], false, "START_MONTH"));
+                data.setEndDay(ParseUtil.parseIntField(buf[12], false, "END_DAY"));
+                data.setEndMonth(ParseUtil.parseIntField(buf[13], false, "END_MONTH"));
+                data.setEffBeginDt(ParseUtil.parseDateField(buf[14], false, "EFF_BEGIN_DT"));
+                data.setEffEndDt(ParseUtil.parseDateField(buf[15], true, "EFF_END_DT"));
 
-                pwsMap.put(data.getTinwsysIsNumber(), data);
+                pm.put(data.getTinwsysIsNumber(), data);
             }
         } catch (Exception e) {
-            throw new Exception("Data file for pws has error at line " + i + ": " + e.getMessage());
+            throw new Exception(PWS_FILE + " has error in line " + i + ": " + e.getMessage());
         } finally {
             reader.close();
         }
-        return pwsMap;
+
+        return pm;
     }
 
     /**
      * compares the corresponding fields in the two DOs and returns true if they
      * are all the same, false otherwise
      */
-    private boolean equals(PWSDO pws, PWSDO pws2) {
-        return !DataBaseUtil.isDifferent(pws.getTinwsysIsNumber(), pws2.getTinwsysIsNumber()) &&
-               !DataBaseUtil.isDifferent(pws.getNumber0(), pws2.getNumber0()) &&
-               !DataBaseUtil.isDifferent(pws.getAlternateStNum(), pws2.getAlternateStNum()) &&
-               !DataBaseUtil.isDifferent(pws.getName(), pws2.getName()) &&
-               !DataBaseUtil.isDifferent(pws.getActivityStatusCd(), pws2.getActivityStatusCd()) &&
-               !DataBaseUtil.isDifferent(pws.getDPrinCitySvdNm(), pws2.getDPrinCitySvdNm()) &&
-               !DataBaseUtil.isDifferent(pws.getDPrinCntySvdNm(), pws2.getDPrinCntySvdNm()) &&
-               !DataBaseUtil.isDifferent(pws.getDPopulationCount(), pws2.getDPopulationCount()) &&
-               !DataBaseUtil.isDifferent(pws.getDPwsStTypeCd(), pws2.getDPwsStTypeCd()) &&
-               !DataBaseUtil.isDifferent(pws.getActivityRsnTxt(), pws2.getActivityRsnTxt()) &&
-               !DataBaseUtil.isDifferent(pws.getStartDay(), pws2.getStartDay()) &&
-               !DataBaseUtil.isDifferent(pws.getStartMonth(), pws2.getStartMonth()) &&
-               !DataBaseUtil.isDifferent(pws.getEndDay(), pws2.getEndDay()) &&
-               !DataBaseUtil.isDifferent(pws.getEndMonth(), pws2.getEndMonth()) &&
-               !DataBaseUtil.isDifferentDT(pws.getEffBeginDt(), pws2.getEffBeginDt()) &&
-               !DataBaseUtil.isDifferentDT(pws.getEffEndDt(), pws2.getEffEndDt());
+    private boolean equals(PWSDO a, PWSDO b) {
+        return !DataBaseUtil.isDifferent(a.getTinwsysIsNumber(), b.getTinwsysIsNumber()) &&
+               !DataBaseUtil.isDifferent(a.getNumber0(), b.getNumber0()) &&
+               !DataBaseUtil.isDifferent(a.getAlternateStNum(), b.getAlternateStNum()) &&
+               !DataBaseUtil.isDifferent(a.getName(), b.getName()) &&
+               !DataBaseUtil.isDifferent(a.getActivityStatusCd(), b.getActivityStatusCd()) &&
+               !DataBaseUtil.isDifferent(a.getDPrinCitySvdNm(), b.getDPrinCitySvdNm()) &&
+               !DataBaseUtil.isDifferent(a.getDPrinCntySvdNm(), b.getDPrinCntySvdNm()) &&
+               !DataBaseUtil.isDifferent(a.getDPopulationCount(), b.getDPopulationCount()) &&
+               !DataBaseUtil.isDifferent(a.getDPwsStTypeCd(), b.getDPwsStTypeCd()) &&
+               !DataBaseUtil.isDifferent(a.getActivityRsnTxt(), b.getActivityRsnTxt()) &&
+               !DataBaseUtil.isDifferent(a.getStartDay(), b.getStartDay()) &&
+               !DataBaseUtil.isDifferent(a.getStartMonth(), b.getStartMonth()) &&
+               !DataBaseUtil.isDifferent(a.getEndDay(), b.getEndDay()) &&
+               !DataBaseUtil.isDifferent(a.getEndMonth(), b.getEndMonth()) &&
+               !DataBaseUtil.isDifferentDT(a.getEffBeginDt(), b.getEffBeginDt()) &&
+               !DataBaseUtil.isDifferentDT(a.getEffEndDt(), b.getEffEndDt());
     }
 }

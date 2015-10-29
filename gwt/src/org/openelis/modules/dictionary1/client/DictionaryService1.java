@@ -23,6 +23,8 @@ public interface DictionaryService1 extends XsrfProtectedService {
 
     ArrayList<DictionaryViewDO> fetchByEntry(String entry) throws Exception;
 
+    ArrayList<DictionaryViewDO> fetchByExactEntry(String entry) throws Exception;
+
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
     CategoryManager1 add(CategoryManager1 man) throws Exception;

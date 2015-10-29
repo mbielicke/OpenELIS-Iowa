@@ -160,7 +160,7 @@ public class AttachmentBean {
      * "description"
      * 
      * @param description
-     *        the value for description used in the query
+     *         the value used to find attachments with matching description
      * @param first
      *        the index of the first record to be returned by the query i.e. the
      *        first record in the current "page"
@@ -205,6 +205,41 @@ public class AttachmentBean {
 
         query = manager.createNamedQuery("Attachment.FetchUnattachedBeforeCreatedDate");
         query.setParameter("createdDate", createdDate);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    /**
+     * Fetches the attachment records whose description matches "description"
+     * and whose attachment items are linked to the record with the passed
+     * reference id and reference table id
+     * 
+     * @param description
+     *        the value used to find attachments with matching description
+     * @param referenceId
+     *        the id of a particular record (e.g. a sample); used to find
+     *        attachment items linked to that record
+     * @param referenceTableId
+     *        the id of paticular table (e.g sample); used to find attachment
+     *        items linked to records from that table
+     * @return the DOs corresponding to the fetched attachment records
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<AttachmentDO> fetchByDescriptionReferenceIdReferenceTableId(String description,
+                                                                                 Integer referenceId,
+                                                                                 Integer referenceTableId) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("Attachment.FetchByDescriptionReferenceIdReferenceTableId");
+        query.setParameter("description", description);
+        query.setParameter("referenceId", referenceId);
+        query.setParameter("referenceTableId", referenceTableId);
 
         list = query.getResultList();
         if (list.isEmpty())

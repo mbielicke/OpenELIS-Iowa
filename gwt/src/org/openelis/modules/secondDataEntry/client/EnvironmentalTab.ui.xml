@@ -8,10 +8,7 @@
   ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
   may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
   of a UIRF Software License are applicable instead of those above. -->
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table'
->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">

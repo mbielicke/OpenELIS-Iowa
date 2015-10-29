@@ -73,6 +73,22 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
 
         return st;
     }
+    
+    @Override
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        ReportStatus st;
+
+        try {
+            st = attachmentManager.getTRF(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
 
     @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {

@@ -1875,7 +1875,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         sampleItemTab.setFocus();
                     }
                 };
-                Scheduler.get().scheduleDeferred(cmd);
+                Scheduler.get().scheduleDeferred(cmd);                
             }
         }, '1', CTRL);
 

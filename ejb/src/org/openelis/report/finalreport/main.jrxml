@@ -15,6 +15,9 @@
 	<parameter name="CONNECTION" class="java.sql.Connection" isForPrompting="false">
 		<parameterDescription><![CDATA[Database connection for subreports]]></parameterDescription>
 	</parameter>
+	<parameter name="PAGE_COUNTER" class="org.openelis.report.finalreport.PageCounter" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new org.openelis.report.finalreport.PageCounter()]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -23,10 +26,7 @@
 	<field name="revision" class="java.lang.Integer"/>
 	<field name="domain" class="java.lang.String"/>
 	<field name="organization_id" class="java.lang.Integer"/>
-	<variable name="PAGE_COUNTER" class="org.openelis.report.finalreport.PageCounter" resetType="Group" resetGroup="Sample_Organization">
-		<variableExpression><![CDATA[$V{PAGE_COUNTER}]]></variableExpression>
-		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.PageCounter("B")]]></initialValueExpression>
-	</variable>
+	<field name="faxed_printed" class="java.lang.String"/>
 	<variable name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" resetType="Group" resetGroup="Sample_Organization">
 		<variableExpression><![CDATA[$V{UNIT_LIST}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.AnalysisUnitList()]]></initialValueExpression>
@@ -195,7 +195,7 @@
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="counter-incrementer" positionType="Float" mode="Transparent" x="0" y="0" width="12" height="12">
-					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.incrementCount()]]></printWhenExpression>
+					<printWhenExpression><![CDATA["Printed".equals($F{faxed_printed}) ? $P{PAGE_COUNTER}.incrementCount($F{organization_id}) : Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman"/>

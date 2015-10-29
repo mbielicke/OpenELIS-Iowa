@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -342,6 +343,25 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         callback = new Callback<SampleManager1>();
         service.mergeQuickEntry(sm, callback);
         return callback.getResult();
+    }
+
+    @Override
+    public void mergePatients(ArrayList<PatientDO> fromPatients, PatientDO toPatient,
+                              AsyncCallback<Void> callback) {
+        service.mergePatients(fromPatients, toPatient, callback);
+    }
+
+    @Override
+    public void mergePatients(ArrayList<PatientDO> fromPatients, PatientDO toPatient) throws Exception {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.mergePatients(fromPatients, toPatient, callback);
+        /*
+         * this is done so that the exceptions thrown in the back-end get thrown
+         * to the front-end, which won't happen otherwise
+         */
+        callback.getResult();
     }
 
     @Override

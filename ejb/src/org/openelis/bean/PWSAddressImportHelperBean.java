@@ -31,20 +31,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.sql.DataSource;
-import javax.transaction.UserTransaction;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PWSAddressDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.utils.ParseUtil;
 
 /**
  * Reads data from a PWS Address file and updates the pws_address table in the
@@ -53,21 +51,17 @@ import org.openelis.ui.common.ReportStatus;
  */
 @Stateless
 @SecurityDomain("openelis")
-@TransactionManagement(TransactionManagementType.BEAN)
-@Resource(name = "jdbc/OpenELISDB",
-          type = DataSource.class,
-          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
-          mappedName = "java:/OpenELISDS")
+
 public class PWSAddressImportHelperBean {
+
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager       manager;
 
     @EJB
     private SessionCacheBean    session;
 
     @EJB
     private SystemVariableBean  systemVariable;
-
-    @Resource
-    private SessionContext      ctx;
 
     @EJB
     private PWSAddressBean      pwsAddress;
@@ -83,128 +77,110 @@ public class PWSAddressImportHelperBean {
      * for data that does not yet exist there, update records that are
      * different, and remove records that are not present in the file.
      */
+    @RolesAllowed("pws-add")
     public void load(ReportStatus status) throws Exception {
-        boolean toCommit;
-        int i, count, onePercent;
-        Integer tinwslecIsNumber, tinlgentIsNumber;
-        UserTransaction ut;
-        PWSAddressDO pa;
+        int i, r, onePercent;
+        PWSAddressDO p;
         ArrayList<PWSAddressDO> records;
         HashMap<Integer, HashMap<Integer, PWSAddressDO>> pam;
         HashMap<Integer, PWSAddressDO> childMap;
         ArrayList<PWSAddressDO> deleteList;
 
-        ut = null;
-        try {
-            deleteList = new ArrayList<PWSAddressDO>();
-            status.setMessage("Reading file 3 of 4: PWS address file");
-            status.setPercentComplete(50);
-            session.setAttribute("PWSFileImport", status);
+        status.setMessage("Reading file 3 of 4: PWS address file");
+        status.setPercentComplete(50);
+        session.setAttribute("PWSFileImport", status);
+
+        /*
+         * create a hash map from the file and fetch records from table
+         */
+        pam = parse();
+        records = pwsAddress.fetchAll();
+
+        /*
+         * calculate the number of records needed to be updated to indicate
+         * one percent of progress towards completion
+         */
+        onePercent = (int)Math.max(records.size() / 12.5, 12);
+        status.setMessage("Loading file 3 of 4: PWS address file");
+        session.setAttribute("PWSFileImport", status);
+
+        /*
+         * update the records in the database with records from file
+         */
+        i = r = 0;
+        deleteList = new ArrayList<PWSAddressDO>();
+        for (PWSAddressDO record : records) {
+            i++;
+
             /*
-             * create a hash map from the file
+             * the record is not present in the file, so it needs to be
+             * deleted
              */
-            pam = parse();
-            records = pwsAddress.fetchAll();
-            /*
-             * calculate the number of records needed to be updated to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (records.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            i = 0;
-            ut = ctx.getUserTransaction();
-            ut.begin();
-            toCommit = false;
-            for (PWSAddressDO record : records) {
-                tinwslecIsNumber = record.getTinwslecIsNumber();
-                tinlgentIsNumber = record.getTinlgentIsNumber();
-                childMap = pam.get(tinwslecIsNumber);
-                /*
-                 * the record is not present in the file, so it needs to be
-                 * deleted
-                 */
-                if (childMap == null) {
-                    deleteList.add(record);
-                    continue;
-                }
-                pa = childMap.get(tinlgentIsNumber);
-                if (pa == null) {
-                    deleteList.add(record);
-                    continue;
-                }
+            childMap = pam.get(record.getTinwslecIsNumber());
+            if (childMap == null || (p = childMap.get(record.getTinlgentIsNumber())) == null) {
+                deleteList.add(record);
+            } else {
                 /*
                  * check if the database needs to be updated
                  */
-                if ( !equals(pa, record)) {
-                    i++ ;
-                    pwsAddress.update(pa);
-                    toCommit = true;
-                    if (i % 1000 == 0) {
-                        ut.commit();
-                        ut.begin();
-                        toCommit = false;
-                    }
-                    if (i % onePercent == 0) {
-                        status.setMessage("Loading file 3 of 4: PWS address file");
-                        status.setPercentComplete(50 + i / onePercent);
-                        session.setAttribute("PWSFileImport", status);
-                    }
+                if ( !equals(p, record)) {
+                    pwsAddress.update(p);
+                    r++ ;
+
+                    /*
+                     * batch update
+                     */
+                    if (r % 200 == 0)
+                        manager.flush();
                 }
-                /*
-                 * this map must only have records that don't exist in the
-                 * database
-                 */
-                childMap.remove(tinlgentIsNumber);
+
+                childMap.remove(record.getTinlgentIsNumber());
                 if (childMap.size() == 0)
-                    pam.remove(tinwslecIsNumber);
+                    pam.remove(record.getTinwslecIsNumber());
             }
-            /*
-             * delete records from the database that are not present in the file
-             */
-            if (deleteList.size() > 0) {
-                for (PWSAddressDO address : deleteList) {
-                    pwsAddress.delete(address);
-                }
-                ut.commit();
-                ut.begin();
+
+            if (i % onePercent == 0) {
+                status.setPercentComplete(50 + i / onePercent);
+                session.setAttribute("PWSFileImport", status);
             }
-            i = 0;
-            count = 0;
-            /*
-             * calculate the number of records needed to be added to indicate
-             * one percent of progress towards completion
-             */
-            onePercent = (int) (pam.size() / 12.5);
-            if (onePercent == 0)
-                onePercent = 12;
-            for (HashMap<Integer, PWSAddressDO> pwsam : pam.values()) {
-                count++ ;
-                for (PWSAddressDO pwsa : pwsam.values()) {
-                    i++ ;
-                    pwsAddress.add(pwsa);
-                    toCommit = true;
-                    if (i % 1000 == 0) {
-                        ut.commit();
-                        ut.begin();
-                        toCommit = false;
-                    }
-                    if (count % onePercent == 0) {
-                        status.setMessage("Loading file 3 of 4: PWS address file");
-                        status.setPercentComplete(50 + 13 + count / onePercent);
-                        session.setAttribute("PWSFileImport", status);
-                    }
-                }
-            }
-            if (toCommit)
-                ut.commit();
-            else
-                ut.rollback();
-        } catch (Exception e) {
-            if (ut != null)
-                ut.rollback();
-            throw e;
         }
+
+        /*
+         * delete records from the database that are not present in the file
+         */
+        if (deleteList.size() > 0) {
+            for (PWSAddressDO address : deleteList) {
+                pwsAddress.delete(address);
+                r++ ;
+            }
+
+            if (r % 200 == 0)
+                manager.flush();
+        }
+
+        /*
+         * add the records that were in the file but not in database
+         */
+        onePercent = (int)Math.max(pam.size() / 12.5, 12);
+
+        i = 0;
+        for (HashMap<Integer, PWSAddressDO> child : pam.values()) {
+            i++ ;
+            for (PWSAddressDO pa : child.values()) {
+                pwsAddress.add(pa);
+                r++ ;
+
+                if (r % 200 == 0)
+                    manager.flush();
+            }
+
+            if (i % onePercent == 0) {
+                status.setPercentComplete(50 + 13 + i / onePercent);
+                session.setAttribute("PWSFileImport", status);
+            }
+        }
+        
+        manager.flush();
     }
 
     /**
@@ -214,11 +190,11 @@ public class PWSAddressImportHelperBean {
      */
     private HashMap<Integer, HashMap<Integer, PWSAddressDO>> parse() throws Exception {
         int i;
-        Integer tinwslecIsNumber, tinlgentIsNumber, zero;
         String line, path, buf[];
         PWSAddressDO data;
+        Integer zero;
         BufferedReader reader;
-        HashMap<Integer, HashMap<Integer, PWSAddressDO>> pwsAddressMap;
+        HashMap<Integer, HashMap<Integer, PWSAddressDO>> pam;
         HashMap<Integer, PWSAddressDO> childMap;
 
         try {
@@ -227,16 +203,17 @@ public class PWSAddressImportHelperBean {
             log.severe("No 'pws_path' system variable defined");
             throw e;
         }
+
         reader = new BufferedReader(new FileReader(path + PWS_ADDRESS_FILE));
         i = 1;
-        zero = new Integer(0);
+
         /*
          * A map from the pws address file, with the tinwslec_is_number being
-         * the key, and a hashmap with all records with that tinwslec_is_number
-         * being the value. The key of the inner map is the tinlgent_is_number
-         * of the facility.
+         * the key, with a hashmap of all the addresses with tinlgent_is_number
+         * as key.
          */
-        pwsAddressMap = new HashMap<Integer, HashMap<Integer, PWSAddressDO>>();
+        pam = new HashMap<Integer, HashMap<Integer, PWSAddressDO>>();
+        zero = new Integer(0);
 
         try {
             /*
@@ -255,63 +232,52 @@ public class PWSAddressImportHelperBean {
                     throw new ParseException("Too few columns");
 
                 data = new PWSAddressDO();
-                data.setTinwslecIsNumber(Integer.parseInt(buf[0]));
-                if ( !DataBaseUtil.isEmpty(buf[1]))
-                    data.setTinlgentIsNumber(Integer.parseInt(buf[1]));
-                else
+                data.setTinwslecIsNumber(ParseUtil.parseIntField(buf[0], false, "TINWSLEC_IS_NUMBER"));
+                data.setTinlgentIsNumber(ParseUtil.parseIntField(buf[1], true, "TINLGENT_IS_NUMBER"));
+                if (data.getTinlgentIsNumber() == null)
                     data.setTinlgentIsNumber(zero);
-                data.setTinwsysIsNumber(Integer.parseInt(buf[2]));
-                data.setTypeCode(buf[3]);
-                data.setActiveIndCd(buf[4]);
-                data.setName(buf[5]);
-                data.setAddrLineOneTxt(buf[6]);
-                data.setAddrLineTwoTxt(buf[7]);
-                data.setAddressCityName(buf[8]);
-                data.setAddressStateCode(buf[9]);
-                data.setAddressZipCode(buf[10]);
-                data.setStateFipsCode(buf[11]);
-                data.setPhoneNumber(buf[12]);
+                data.setTinwsysIsNumber(ParseUtil.parseIntField(buf[2], false, "TINWSYS_IS_NUMBER"));
+                data.setTypeCode(ParseUtil.parseStrField(buf[3], 3, true, "TYPE_CODE"));
+                data.setActiveIndCd(ParseUtil.parseStrField(buf[4], 1, true, "ACTIVE_IND_CD"));
+                data.setName(ParseUtil.parseStrField(buf[5], 40, true, "NAME"));
+                data.setAddrLineOneTxt(ParseUtil.parseStrField(buf[6], 40, true, "ADDR_LINE_ONE_TXT"));
+                data.setAddrLineTwoTxt(ParseUtil.parseStrField(buf[7], 40, true, "ADDR_LINE_TWO_TXT"));
+                data.setAddressCityName(ParseUtil.parseStrField(buf[8], 40, true, "ADDRESS_CITY_NAME"));
+                data.setAddressStateCode(ParseUtil.parseStrField(buf[9], 2, true, "ADDRESS_STATE_CODE"));
+                data.setAddressZipCode(ParseUtil.parseStrField(buf[10], 10, true, "ADDRESS_ZIP_CODE"));
+                data.setStateFipsCode(ParseUtil.parseStrField(buf[11], 2, true, "STATE_FIPS_CODE"));
+                data.setPhoneNumber(ParseUtil.parseStrField(buf[12], 12, true, "PHONE_NUMBER"));
 
-                tinwslecIsNumber = data.getTinwslecIsNumber();
-                tinlgentIsNumber = data.getTinlgentIsNumber();
-                if (pwsAddressMap.get(tinwslecIsNumber) == null)
+                childMap = pam.get(data.getTinwslecIsNumber());
+                if (childMap == null) {
                     childMap = new HashMap<Integer, PWSAddressDO>();
-                else
-                    childMap = pwsAddressMap.get(tinwslecIsNumber);
-                childMap.put(tinlgentIsNumber, data);
-                pwsAddressMap.put(tinwslecIsNumber, childMap);
+                    pam.put(data.getTinwslecIsNumber(), childMap);
+                }
+                childMap.put(data.getTinlgentIsNumber(), data);
             }
         } catch (Exception e) {
-            throw new Exception("Data file for pws_address has error at line " + i + ": " +
-                                e.getMessage());
+            throw new Exception(PWS_ADDRESS_FILE+" has error in line " + i + ": " + e.getMessage());
         } finally {
             reader.close();
         }
-        return pwsAddressMap;
+        return pam;
     }
 
     /**
      * compares the corresponding fields in the two DOs and returns true if they
      * are all the same, false otherwise
      */
-    private boolean equals(PWSAddressDO pwsAddress, PWSAddressDO pwsAddress2) {
-        return !DataBaseUtil.isDifferent(pwsAddress.getTinwsysIsNumber(),
-                                         pwsAddress2.getTinwsysIsNumber()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getTypeCode(), pwsAddress2.getTypeCode()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getActiveIndCd(), pwsAddress2.getActiveIndCd()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getName(), pwsAddress2.getName()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getAddrLineOneTxt(),
-                                         pwsAddress2.getAddrLineOneTxt()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getAddrLineTwoTxt(),
-                                         pwsAddress2.getAddrLineTwoTxt()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getAddressCityName(),
-                                         pwsAddress2.getAddressCityName()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getAddressStateCode(),
-                                         pwsAddress2.getAddressStateCode()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getAddressZipCode(),
-                                         pwsAddress2.getAddressZipCode()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getStateFipsCode(),
-                                         pwsAddress2.getStateFipsCode()) &&
-               !DataBaseUtil.isDifferent(pwsAddress.getPhoneNumber(), pwsAddress2.getPhoneNumber());
+    private boolean equals(PWSAddressDO a, PWSAddressDO b) {
+        return !DataBaseUtil.isDifferent(a.getTinwsysIsNumber(), b.getTinwsysIsNumber()) &&
+               !DataBaseUtil.isDifferent(a.getTypeCode(), b.getTypeCode()) &&
+               !DataBaseUtil.isDifferent(a.getActiveIndCd(), b.getActiveIndCd()) &&
+               !DataBaseUtil.isDifferent(a.getName(), b.getName()) &&
+               !DataBaseUtil.isDifferent(a.getAddrLineOneTxt(), b.getAddrLineOneTxt()) &&
+               !DataBaseUtil.isDifferent(a.getAddrLineTwoTxt(), b.getAddrLineTwoTxt()) &&
+               !DataBaseUtil.isDifferent(a.getAddressCityName(), b.getAddressCityName()) &&
+               !DataBaseUtil.isDifferent(a.getAddressStateCode(), b.getAddressStateCode()) &&
+               !DataBaseUtil.isDifferent(a.getAddressZipCode(), b.getAddressZipCode()) &&
+               !DataBaseUtil.isDifferent(a.getStateFipsCode(), b.getStateFipsCode()) &&
+               !DataBaseUtil.isDifferent(a.getPhoneNumber(), b.getPhoneNumber());
     }
 }

@@ -44,6 +44,7 @@ import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.OrganizationPrintDataSource;
+import org.openelis.report.finalreport.PageCounter;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
@@ -862,11 +863,13 @@ public class FinalReportBean {
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
         JasperPrint stats;
+        PageCounter pageCounter;
         OrganizationPrintDataSource ds;
         ArrayList<OrganizationPrint> orgFaxList;
 
         con = null;
         userName = User.getName(ctx);
+        pageCounter = new PageCounter();
         try {
             con = ReportUtil.getConnection(ctx);
 
@@ -882,6 +885,7 @@ public class FinalReportBean {
             jparam.put("SUBREPORT_DIR", dir);
             jparam.put("LOGNAME", userName);
             jparam.put("CONNECTION", con);
+            jparam.put("PAGE_COUNTER", pageCounter);
 
             /*
              * fill all the printed reports

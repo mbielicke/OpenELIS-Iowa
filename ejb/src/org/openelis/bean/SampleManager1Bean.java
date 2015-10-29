@@ -285,7 +285,7 @@ public class SampleManager1Bean {
         HashMap<Integer, ProviderDO> map5;
         EnumSet<SampleManager1.Load> el;
 
-        log.log(Level.FINE, "In fetchByIds");
+        log.finer("In fetchByIds");
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
@@ -308,7 +308,7 @@ public class SampleManager1Bean {
         ids5 = new ArrayList<Integer>();
         map5 = new HashMap<Integer, ProviderDO>();
 
-        log.log(Level.INFO, "Fetching samples");
+        log.finer("Fetching samples");
         for (SampleDO data : sample.fetchByIds(sampleIds)) {
             sm = new SampleManager1();
             setSample(sm, data);
@@ -322,7 +322,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.INFO, "Fetching domains");
+        log.finer("Fetching domains");
         /*
          * additional domains for each sample
          */
@@ -369,7 +369,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching eorders, patients and providers");
+        log.finer("Fetching eorders, patients and providers");
         /*
          * fetch e-orders, patients and providers and set them for clinical and
          * neonatal samples
@@ -417,7 +417,7 @@ public class SampleManager1Bean {
         map4 = null;
         map5 = null;
 
-        log.log(Level.FINE, "Fetching orgs, projects, sample qas, notes, aux, attachments");
+        log.finer("Fetching orgs, projects, sample qas, notes, aux, attachments");
         /*
          * various lists for each sample
          */
@@ -473,7 +473,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching sample items");
+        log.finer("Fetching sample items");
         /*
          * build level 2, everything is based on item ids
          */
@@ -495,7 +495,7 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        log.log(Level.FINE, "Fetching analyses");
+        log.finer("Fetching analyses");
         /*
          * build level 3, everything is based on analysis ids
          */
@@ -512,7 +512,7 @@ public class SampleManager1Bean {
         ids2 = null;
         map2 = null;
 
-        log.log(Level.INFO, "Fetching analysis notes, qas, storages, users, results, worksheets");
+        log.finer("Fetching analysis notes, qas, storages, users, results, worksheets");
         /*
          * it is possible for a sample to have no analyses before it's verified
          */
@@ -1157,6 +1157,7 @@ public class SampleManager1Bean {
     public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
         int dep, ldep;
         boolean nodep;
+        String trfPattern;
         Integer tmpid, id, so, maxAccession;
         NoteViewDO ext;
         SystemVariableDO sys;
@@ -1231,6 +1232,18 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
+        
+        /*
+         * get the generic pattern for TRF's
+         */
+        try {
+            sys = systemVariable.fetchByName("attachment_pattern_generic");
+            trfPattern = sys.getValue();
+        } catch (Exception any) {
+            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_pattern_generic'", any);
+            throw new FormErrorException(Messages.get()
+                                                 .systemVariable_missingInvalidSystemVariable("attachment_pattern_generic"));
+        }
 
         /*
          * this map is used to validate analysis qa events
@@ -1250,7 +1263,7 @@ public class SampleManager1Bean {
                  */
                 scriptletHelper.runScriptlets(sm, cache, null, null, Action_Before.UPDATE);
 
-                validate(sm, permission, maxAccession, tms, ams, qas);
+                validate(sm, permission, maxAccession, trfPattern, tms, ams, qas);
                 /*
                  * the status will be the lowest of the statuses of the analyses
                  */
@@ -1827,7 +1840,6 @@ public class SampleManager1Bean {
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
-        ArrayList<AttachmentItemViewDO> atts, qatts;
 
         data = getSample(sm);
         qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
@@ -1854,27 +1866,9 @@ public class SampleManager1Bean {
         setSampleClinical(qsm, getSampleClinical(sm));
         setSamplePT(qsm, getSamplePT(sm));
 
-        /*
-         * copy the attachments added on the screen to the fetched manager; this
-         * makes sure that if the user is doing data entry from attachments, the
-         * attachment added on the screen isn't lost when the fetched manager is
-         * returned
-         */
-        atts = getAttachments(sm);
-        if (atts != null) {
-            qatts = getAttachments(qsm);
-            if (qatts == null) {
-                qatts = new ArrayList<AttachmentItemViewDO>();
-                setAttachments(qsm, qatts);
-            }
-
-            for (AttachmentItemViewDO a : atts)
-                qatts.add(a);
-        }
-
         return qsm;
     }
-
+    
     /**
      * Loads the data from send-out order or electronic order, depending on
      * domain, into the SampleManager. This method returns both the loaded
@@ -2740,7 +2734,16 @@ public class SampleManager1Bean {
                     ref = addAnalysisAndPrep(ret, anaByTest, tm, test, null);
                     ref.setParentAnalysisId(test.getAnalysisId());
                     ref.setParentResultId(test.getResultId());
-                    ref.setPanelId(test.getPanelId());
+
+                    /*
+                     * copy the panel from the reflexing analysis to the reflex
+                     * analysis if their test and method names are the same
+                     */
+                    ana = anaById.get(test.getAnalysisId());
+                    if (DataBaseUtil.isSame(ref.getTestName(), ana.getTestName()) &&
+                        DataBaseUtil.isSame(ref.getMethodName(), ana.getMethodName()))
+                        ref.setPanelId(test.getPanelId());
+                    
                     anaById.put(ref.getId(), ref);
                 }
             } else {
@@ -2958,6 +2961,7 @@ public class SampleManager1Bean {
      * of exceptions/warnings listing all the problems for each sample.
      */
     private void validate(SampleManager1 sm, SystemUserPermission permission, Integer maxAccession,
+                          String trfPattern,
                           HashMap<Integer, TestManager> tms,
                           HashMap<Integer, AuxFieldGroupManager> ams,
                           HashMap<Integer, QaEventDO> qas) throws Exception {
@@ -3060,6 +3064,22 @@ public class SampleManager1Bean {
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
+            }
+        }
+        
+        /*
+         * a sample can't have more than one TRF
+         */
+        cnt = 0;
+        if (getAttachments(sm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(sm)) {
+                if (data.getAttachmentDescription().matches(trfPattern))
+                    cnt++;                
+                if (cnt > 1) {
+                    e.add(new FormErrorException(Messages.get()
+                                                 .sample_moreThanOneTRFException(accession)));
+                    break;
+                }
             }
         }
 

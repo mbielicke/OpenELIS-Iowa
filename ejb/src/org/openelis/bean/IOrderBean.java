@@ -197,9 +197,6 @@ public class IOrderBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
-        if (list == null)
-            throw new LastPageException();
-
         try {
             for (int i = 0; i < list.size(); i++ ) {
                 data = (IOrderViewDO)list.get(i);

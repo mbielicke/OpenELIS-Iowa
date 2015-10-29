@@ -86,6 +86,14 @@ public class DictionaryService1Impl extends RemoteServlet implements DictionaryS
         }
     }
 
+    public ArrayList<DictionaryViewDO> fetchByExactEntry(String entry) throws Exception {
+        try {
+            return dictionary.fetchByEntry(entry, 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     // public CategoryManager1 fetchWithEntries(Integer id) throws Exception {
     // try {
     // return categoryManager1.fetchWithEntries(id);

@@ -29,12 +29,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
@@ -96,6 +96,9 @@ public interface SampleServiceInt1Async {
     public void validateAccessionNumber(SampleManager1 sm, AsyncCallback<Void> callback);
 
     public void mergeQuickEntry(SampleManager1 sm, AsyncCallback<SampleManager1> callback);
+
+    public void mergePatients(ArrayList<PatientDO> fromPatients, PatientDO toPatient,
+                              AsyncCallback<Void> callback);
 
     public void importOrder(SampleManager1 sm, Integer orderId,
                             AsyncCallback<SampleTestReturnVO> callback);

@@ -42,6 +42,13 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
+    @NamedQuery( name = "WorksheetAnalysisView.FetchById",
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, wav.formatId, wav.worksheetDescription, " +
+                        "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
+                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, wav.sectionName, " +
+                        "wav.unitOfMeasureId, wav.unitOfMeasure, wav.analysisStatusId, wav.analysisTypeId, wav.collectionDate, wav.collectionTime, wav.receivedDate, " +
+                        "wav.priority)"
+                      + " from WorksheetAnalysisView wav where wav.id = :id"),
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetId",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, wav.formatId, wav.worksheetDescription, " +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
