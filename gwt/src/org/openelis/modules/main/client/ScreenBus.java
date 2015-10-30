@@ -95,6 +95,7 @@ public class ScreenBus extends SimpleEventBus {
                     TUBE_LABEL_REPORT = new ShowScreenType("Tube Labels"),
                     CHL_GC_TO_CDC_EXPORT = new ShowScreenType("Chl-Gc to CDC Export"),
                     ABNORMALS_REPORT = new ShowScreenType("Abnormals Report"),
+                    ABNORMALS_CALL_LIST_REPORT = new ShowScreenType("Abnormals Call List Report"),
                     PATIENT_MERGE = new ShowScreenType("Patient Merge");
 
     private ScreenBus() {
