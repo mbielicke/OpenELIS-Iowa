@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orgFax" pageWidth="227" pageHeight="12" columnWidth="227" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.scriptlethandling" value="2"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT op.value AS fax_number
+FROM   organization_parameter op
+WHERE  op.organization_id = $P{ORGANIZATION_ID} and
+       op.type_id = (select dictionary.id
+                       from dictionary
+                      where dictionary.system_name = 'org_general_fax_number')]]>
+	</queryString>
+	<field name="fax_number" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="faxNumber" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="227" height="12" forecolor="#FFFFFF" backcolor="#000000">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fax_number}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
