@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -113,6 +113,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Abnormals Report")
   @Key("abnormals.abnormalsReport")
   String abnormals_abnormalsReport();
+
+  /**
+   * Translated "Abnormals Call List Report".
+   * 
+   * @return translated "Abnormals Call List Report"
+   */
+  @DefaultMessage("Abnormals Call List Report")
+  @Key("abnormalsCallList.abnormalsCallListReport")
+  String abnormalsCallList_abnormalsCallListReport();
 
   /**
    * Translated "Abort".
@@ -13678,11 +13687,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String patientMerge_nextOfKinNote(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ".
+   * Translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0}".
    * 
-   * @return translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0} "
+   * @return translated "Merged Patient ID# {0,number,#0} into ID# {1,number,#0}"
    */
-  @DefaultMessage("Merged Patient ID# {0,number,#0} into ID# {1,number,#0} ")
+  @DefaultMessage("Merged Patient ID# {0,number,#0} into ID# {1,number,#0}")
   @Key("patientMerge.patientNote")
   String patientMerge_patientNote(Integer arg0,  Integer arg1);
 
@@ -14504,6 +14513,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Provider Location")
   @Key("providerLocationHistory")
   String providerLocationHistory();
+
+  /**
+   * Translated "You may not select the same provider for both a From and a To.".
+   * 
+   * @return translated "You may not select the same provider for both a From and a To."
+   */
+  @DefaultMessage("You may not select the same provider for both a From and a To.")
+  @Key("providerMerge.duplicateFromTo")
+  String providerMerge_duplicateFromTo();
+
+  /**
+   * Translated "Both From and To providers must be specified.".
+   * 
+   * @return translated "Both From and To providers must be specified."
+   */
+  @DefaultMessage("Both From and To providers must be specified.")
+  @Key("providerMerge.missingProvider")
+  String providerMerge_missingProvider();
+
+  /**
+   * Translated "Merged Provider ID# {0,number,#0} into ID# {1,number,#0}".
+   * 
+   * @return translated "Merged Provider ID# {0,number,#0} into ID# {1,number,#0}"
+   */
+  @DefaultMessage("Merged Provider ID# {0,number,#0} into ID# {1,number,#0}")
+  @Key("providerMerge.providerNote")
+  String providerMerge_providerNote(Integer arg0,  Integer arg1);
 
   /**
    * Translated "Providers".
