@@ -181,8 +181,6 @@ public class WorksheetLabelReportBean {
          * print the labels and send it to printer
          */
         i = 0;
-        j = 0;
-        k = 0;
         path = ReportUtil.createTempFile("worksheetLabel", ".txt", null);
         ps = new PrintStream(Files.newOutputStream(path));
         waVDOs = WorksheetManager1Accessor.getAnalyses(wMan);
@@ -200,15 +198,21 @@ public class WorksheetLabelReportBean {
                 wrVDO = null;
                 wqrVDO = null;
                 if (waVDO.getAnalysisId() != null) {
+                    j = 0;
                     do {
                         wrVDO = wrVDOs.get(j);
                         j++;
-                    } while (!waVDO.getId().equals(wrVDO.getWorksheetAnalysisId())) ;
+                    } while (!waVDO.getId().equals(wrVDO.getWorksheetAnalysisId()) && j < wrVDOs.size()) ;
+                    if (!waVDO.getId().equals(wrVDO.getWorksheetAnalysisId()))
+                        wrVDO = null;
                 } else if (waVDO.getQcLotId() != null) {
+                    k = 0;
                     do {
                         wqrVDO = wqrVDOs.get(k);
                         k++;
-                    } while (!waVDO.getId().equals(wqrVDO.getWorksheetAnalysisId())) ;
+                    } while (!waVDO.getId().equals(wqrVDO.getWorksheetAnalysisId()) && k < wqrVDOs.size()) ;
+                    if (!waVDO.getId().equals(wqrVDO.getWorksheetAnalysisId()))
+                        wqrVDO = null;
                 }
                 accession = waVDO.getAccessionNumber();
                 worksheetPosition = waVDO.getWorksheetId() + "." + wiDO.getPosition();
@@ -262,12 +266,12 @@ public class WorksheetLabelReportBean {
 
                     dilution = "";
                     if (waVDO.getAnalysisId() != null) {
-                        if (dilutionCol != -1)
+                        if (dilutionCol != -1 && wrVDO != null)
                             dilution = wrVDO.getValueAt(dilutionCol);
                         labelReport.worksheetAnalysisDilutionLabel(ps, accession, worksheetPosition,
                                                                    dilution, name1, name2);
                     } else if (waVDO.getQcLotId() != null) {
-                        if (dilutionCol != -1)
+                        if (dilutionCol != -1 && wqrVDO != null)
                             dilution = wqrVDO.getValueAt(dilutionCol);
                         if (waVDO1 == null && !worksheetPosition.equals(accession))
                             labelReport.worksheetAnalysisDilutionLabel(ps, name1, worksheetPosition,

@@ -25,5 +25,6 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-
+  <inherits name="org.openelis.modules.analysis.Analysis"/>
+  <entry-point class="org.openelis.modules.patient.client.PatientMergeEntry"/>
 </module>
