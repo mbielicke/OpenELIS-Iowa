@@ -561,8 +561,14 @@ public class WorksheetPrintReportBean {
                     form.setField("provider_last_"+(i + 1), proDO.getLastName());
                     form.setField("provider_first_"+(i + 1), proDO.getFirstName());
                 }
-                if (sOrgs != null && sOrgs.size() > 0)
-                    form.setField("organization_name_"+(i + 1), sOrgs.get(0).getOrganizationName());
+                if (sOrgs != null && sOrgs.size() > 0) {
+                    for (SampleOrganizationViewDO soVDO : sOrgs) {
+                        if (Constants.dictionary().ORG_REPORT_TO.equals(soVDO.getTypeId()))
+                            form.setField("organization_name_"+(i + 1), soVDO.getOrganizationName());
+                        else if (Constants.dictionary().ORG_BILL_TO.equals(soVDO.getTypeId()))
+                            form.setField("bill_to_name_"+(i + 1), soVDO.getOrganizationName());
+                    }
+                }
                 form.setField("type_of_sample_"+(i + 1), siVDO.getTypeOfSample());
                 form.setField("source_of_sample_"+(i + 1), siVDO.getSourceOfSample());
                 form.setField("source_other_"+(i + 1), siVDO.getSourceOther());
