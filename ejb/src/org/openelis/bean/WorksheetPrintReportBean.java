@@ -137,10 +137,16 @@ public class WorksheetPrintReportBean {
             format.add(new OptionListItem("96V", "96 Well Plate Vertical"));
             format.add(new OptionListItem("AFBCulture", "AFB Culture"));
             format.add(new OptionListItem("EntericCulture", "Enteric Culture"));
+            format.add(new OptionListItem("FungusCulture", "Fungus Culture"));
+            format.add(new OptionListItem("GCCulture", "GC Culture"));
             format.add(new OptionListItem("LLS", "Line List Single Line"));
             format.add(new OptionListItem("LLM", "Line List Multi Line"));
+            format.add(new OptionListItem("LegionellaCulture", "Legionella Culture"));
+            format.add(new OptionListItem("MiscCulture", "Misc Culture"));
             format.add(new OptionListItem("QFTG", "QFTG Plate"));
+            format.add(new OptionListItem("ReferenceId", "Reference ID"));
             format.add(new OptionListItem("WNV", "WNV Plate"));
+            format.add(new OptionListItem("YersiniaVibrio", "Yersinia & Vibrio"));
 
             p.add(new Prompt("FORMAT", Prompt.Type.ARRAY).setPrompt("Format:")
                                                          .setWidth(200)
@@ -272,6 +278,12 @@ public class WorksheetPrintReportBean {
 
                 case "AFBCulture":
                 case "EntericCulture":
+                case "FungusCulture":
+                case "GCCulture":
+                case "LegionellaCulture":
+                case "MiscCulture":
+                case "ReferenceId":
+                case "YersiniaVibrio":
                     path = fillPDFWorksheet(worksheetId, format);
                     break;
                     
@@ -443,6 +455,11 @@ public class WorksheetPrintReportBean {
 
             reader = new PdfReader(dirName + "OEWorksheet" + templateName + ".pdf");
             original = reader.getSafeFile();
+            
+            form = reader.getAcroFields();
+            if (form.getField("capacity") != null)
+                formCapacity = Integer.parseInt(form.getField("capacity"));
+            
             doc = new Document(reader.getPageSizeWithRotation(1));
             writer = new PdfCopy(doc, out);
             doc.open();
