@@ -638,6 +638,7 @@ public class WorksheetManager1Bean {
         HashMap<Integer, ResultViewDO> updatedResults;
         HashMap<Integer, SampleManager1> sMansByAnalysisId;
         HashMap<Integer, String> testMethodNames;
+        HashMap<Integer, TestManager> tManMap;
         HashMap<Integer, WorksheetItemDO> wItems;
         HashMap<Integer, WorksheetAnalysisViewDO> updatedWorksheetAnalyses;
         HashMap<String, HashMap<Integer, ArrayList<AnalyteParameterViewDO>>> apMap;
@@ -645,11 +646,13 @@ public class WorksheetManager1Bean {
         HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         Integer tmpid, id, col;
         QcAnalyteViewDO qcaVDO;
+        ResultFormatter rf;
         ResultViewDO rVDO;
         SampleManager1 sManager;
         SectionPermission userPermission;
         StringBuffer description;
         TestAnalyteViewDO taVDO;
+        TestManager tMan;
         WorksheetAnalysisViewDO waVDO;
         WorksheetItemDO itemDO;
         ValidationErrorsList errors;
@@ -830,6 +833,7 @@ public class WorksheetManager1Bean {
 
         createdDate = getWorksheet(wm).getCreatedDate();
         if (!updateAnalysisIds.isEmpty()) {
+            tManMap = new HashMap<Integer, TestManager>();
             try {
                 sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds),
                                                            SampleManager1.Load.ORGANIZATION,
@@ -884,6 +888,25 @@ public class WorksheetManager1Bean {
                                                              ana.getUnitOfMeasureId())) {
                                     try {
                                         sampleMan.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                                        try {
+                                            tMan = tManMap.get(ana.getTestId());
+                                            if (tMan == null) {
+                                                tMan = testManager.fetchById(ana.getTestId());
+                                                tManMap.put(ana.getTestId(), tMan);
+                                            }
+                                            rf = tMan.getFormatter();
+                                        } catch (Exception anyE) {
+                                            throw new FormErrorException(Messages.get()
+                                                                                 .worksheet_errorLoadingResultFormatter("'" +
+                                                                                                                        ana.getTestName() +
+                                                                                                                        ", " +
+                                                                                                                        ana.getMethodName(),
+                                                                                                                        anyE.getMessage()));
+                                        }
+                                        for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
+                                            if (res.getAnalysisId().equals(ana.getId()) & res.getValue() != null && res.getTypeId() == null)
+                                                ResultHelper.formatValue(res, res.getValue(), ana.getUnitOfMeasureId(), rf);
+                                        }
                                     } catch (ValidationErrorsList vel) {
                                         if (vel.hasErrors())
                                             throw vel;
@@ -2247,6 +2270,32 @@ public class WorksheetManager1Bean {
             if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(), aVDO.getUnitOfMeasureId())) {
                 try {
                     aHelper.changeAnalysisUnit(sMan, aVDO.getId(), waVDO.getUnitOfMeasureId());
+                    
+                    tMan = tManMap.get(aVDO.getTestId());
+                    taMap = testTestAnalyteMap.get(aVDO.getTestId());
+                    if (tMan == null) {
+                        try {
+                            tMan = testManager.fetchById(aVDO.getTestId());
+                            tManMap.put(aVDO.getTestId(), tMan);
+                            taMap = new HashMap<Integer, TestAnalyteViewDO>();
+                            for (ArrayList<TestAnalyteViewDO> taRow : tMan.getTestAnalytes().getAnalytes())
+                                taMap.put(taRow.get(0).getId(), taRow.get(0));
+                            testTestAnalyteMap.put(aVDO.getTestId(), taMap);
+                        } catch (Exception anyE) {
+                            errorList.add(new FormErrorException(Messages.get().worksheet_errorLoadingResultFormatter("'" +
+                                                                                                                      waVDO.getTestName() +
+                                                                                                                      ", " +
+                                                                                                                      waVDO.getMethodName(),
+                                                                                                                      anyE.getMessage())));
+                            continue;
+                        }
+                    }
+                    rf = tMan.getFormatter();
+                    for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
+                        if (res.getAnalysisId().equals(aVDO.getId()) & res.getValue() != null && res.getTypeId() == null)
+                            ResultHelper.formatValue(res, res.getValue(), aVDO.getUnitOfMeasureId(), rf);
+                    }
+
                     update = true;
                 } catch (Exception anyE) {
                     errorList.add(new FormErrorException(Messages.get().worksheet_errorChangingAnalysisUnit(String.valueOf(wiDO.getPosition()),
