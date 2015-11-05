@@ -312,10 +312,13 @@ public class WorksheetItemTabUI extends Screen {
                         waVDO.setWorksheetAnalysisId((Integer)val);
                         break;
                     case 6:
-                        if (val != null)
+                        if (val != null) {
                             waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
-                        else
+                            waVDO.setUnitOfMeasure(((AutoCompleteValue)val).getDisplay());
+                        } else {
                             waVDO.setUnitOfMeasureId(null);
+                            waVDO.setUnitOfMeasure(null);
+                        }
                         break;
                 }
             }
