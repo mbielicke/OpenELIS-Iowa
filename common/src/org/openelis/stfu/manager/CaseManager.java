@@ -11,6 +11,7 @@ import org.openelis.stfu.domain.CaseDO;
 import org.openelis.stfu.domain.CasePatientDO;
 import org.openelis.stfu.domain.CaseProviderDO;
 import org.openelis.stfu.domain.CaseResultDO;
+import org.openelis.stfu.domain.CaseSampleDO;
 import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.domain.CaseUserDO;
 
@@ -28,6 +29,7 @@ public class CaseManager implements Serializable {
 	protected OrganizationViewDO            organization;
 	protected CaseUserDO                    caseUser;
 	protected CaseProviderDO                caseProvider;
+	protected ArrayList<CaseSampleDO>       caseSamples;
 	protected ArrayList<CaseAnalysisDO>     caseAnalyses;
 	protected ArrayList<CaseResultDO>       caseResults;
 	protected ArrayList<CaseTagDO>          caseTags;
@@ -35,6 +37,7 @@ public class CaseManager implements Serializable {
 	
 	protected int                           nextUID              = -1;
 	
+	public transient final Sample   sample   = new Sample();
 	public transient final Analysis analysis = new Analysis();
 	public transient final Result   result   = new Result();
 	public transient final Tag      tag      = new Tag();
@@ -82,11 +85,51 @@ public class CaseManager implements Serializable {
     public int getNextUID() {
         return --nextUID;
     }
+    
+    public class Sample {
+    	
+    	public void add() {
+    		CaseSampleDO sample = new CaseSampleDO();
+    		sample.setId(getNextUID());
+    		sample.setCaseId(mycase.getId());
+    		add(sample);
+    	}
+    	
+    	public void add(CaseSampleDO sample) {
+    		if (caseSamples == null)
+    			caseSamples = new ArrayList<CaseSampleDO>();
+    		
+    		caseSamples.add(sample);
+    	}
+    	
+    	public CaseSampleDO get(int i) {
+    		return caseSamples != null ? caseSamples.get(i) : null;
+    	}
+    	
+    	public void remove(int i) {
+    		if (caseSamples != null) 
+    			remove(caseSamples.get(i));
+    	}
+    	
+    	public void remove(CaseSampleDO sample) {
+    		if (caseSamples != null) {
+    			caseSamples.remove(sample);
+    			dataObjectRemove(sample.getId(),sample);
+    		}
+    	}
+    	
+    	public int count() {
+    		return caseSamples != null ? caseSamples.size() : 0;
+    	}
+    }
 	
 	public class Analysis {
 		
-		public void add() {
-			add(new CaseAnalysisDO());
+		public void add(Integer caseSampleId) {
+			CaseAnalysisDO analysis = new CaseAnalysisDO();
+			analysis.setId(getNextUID());
+			analysis.setCaseSampleId(caseSampleId);
+			add(analysis);
 		}
 		
 		public void add(CaseAnalysisDO analysis) {
@@ -118,8 +161,11 @@ public class CaseManager implements Serializable {
 	}
 	
 	public class Result {
-		public void add() {
-			add(new CaseResultDO());
+		public void add(Integer caseAnalysisId) {
+			CaseResultDO result = new CaseResultDO();
+			result.setId(getNextUID());
+			result.setCaseAnalysisId(caseAnalysisId);
+			add(result);
 		}
 		
 		public void add(CaseResultDO result) {
@@ -182,7 +228,7 @@ public class CaseManager implements Serializable {
 			return caseTags != null ? caseTags.size() : 0;
 		}
 	}
-	
+
     /**
      * adds the data object to the list of objects that should be removed from
      * the database
