@@ -11,23 +11,18 @@ public class CaseAnalysisDO extends DataObject {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Integer id,caseId,organizationId,testId,statusId,conditionId;
-	private String accession;
-	private Datetime collectionDate,completedDate;
+	private Integer id,caseSampleId,testId,statusId,conditionId;
+	private Datetime completedDate;
 	
 	public CaseAnalysisDO() {
 		
 	}
 	
-	public CaseAnalysisDO(Integer id, Integer caseId, String accession, Integer organizationId,Integer testId,
-			              Integer statusId,Date collectionDate, Date completedDate,Integer conditionId) {
+	public CaseAnalysisDO(Integer id, Integer caseSampleId, Integer testId, Integer statusId, Date completedDate,Integer conditionId) {
 		setId(id);
-		setCaseId(caseId);
-		setAccession(accession);
-		setOrganizationId(organizationId);
+		setCaseSampleId(caseSampleId);
 		setTestId(testId);
 		setStatusId(statusId);
-		setCollectionDate(toYM(collectionDate));
 		setCompletedDate(toYM(completedDate));
 		setConditionId(conditionId);
 		_changed = false;
@@ -42,24 +37,15 @@ public class CaseAnalysisDO extends DataObject {
 		_changed = true;
 	}
 
-	public Integer getCaseId() {
-		return caseId;
+	public Integer getCaseSampleId() {
+		return caseSampleId;
 	}
 	
-	public void setCaseId(Integer caseId) {
-		this.caseId = caseId;
+	public void setCaseSampleId(Integer caseSampleId) {
+		this.caseSampleId = caseSampleId;
 		_changed = true;
 	}
 	
-	public Integer getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(Integer organizationId) {
-		this.organizationId = organizationId;
-		_changed = true;
-	}
-
 	public Integer getTestId() {
 		return testId;
 	}
@@ -84,24 +70,6 @@ public class CaseAnalysisDO extends DataObject {
 
 	public void setConditionId(Integer conditionId) {
 		this.conditionId = conditionId;
-		_changed = true;
-	}
-
-	public String getAccession() {
-		return accession;
-	}
-
-	public void setAccession(String accession) {
-		this.accession = trim(accession);
-		_changed = true;
-	}
-
-	public Datetime getCollectionDate() {
-		return collectionDate;
-	}
-
-	public void setCollectionDate(Datetime collectionDate) {
-		this.collectionDate = toYM(collectionDate);
 		_changed = true;
 	}
 
