@@ -11,34 +11,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.AnalysisDO;
 
 global HashMap<Integer,CaseManager> cases;
 
 rule "transfused"
-salience 1
     when 
-        $sr : ScannerRecord (isTransfused(getInterpratation()))
+        $sr : ScannerRecord (isTransfused(getSampleManager()))
     then 
 		createTag($sr.getSampleManager(),1,cases);
-		retract($sr);
 end
 
 rule "early collection"
-salience 1
 	when 
-		$sr : ScannerRecord (isEarlyCollection(getInterpratation()))
+		$sr : ScannerRecord (isEarlyCollection(getSampleManager()))
 	then 
 		createTag($sr.getSampleManager(),10,cases);
-		retract($sr);
+end
+
+rule "unknown weight"
+	when 
+	    $sr : ScannerRecord (isUnknownWeight(getSampleManager()))
+	then 
+	    createTag($sr.getSampleManager(),12,cases);
 end
 
 rule "poor quality"
-salience 1
 	when 
-		$sr : ScannerRecord (isPoorQuality(getInterpratation()))
+		$sr : ScannerRecord (isPoorQuality(getSampleManager()))
 	then 
 		createTag($sr.getSampleManager(),11,cases);
-		retract($sr);
 end
 		
 rule "cah"
@@ -106,54 +109,71 @@ rule "irt"
 end
 
 function void createTag(SampleManager1 sm, Integer tag,HashMap cases) {
-	CaseManager cm = CaseFactory.createCase(sm,cases);
+	CaseManager cm = CaseFactory.getCase(sm,cases);
 	CaseManagerAccessor.addTag(cm,CaseFactory.createCaseTag(tag));
 }
 
 function boolean isCah(TestDO test) {
-	return test.getName().equals("nbs cah");
+	return test != null && test.getName().equals("nbs cah");
 }
 
 function boolean isBt(TestDO test) {
-	return test.getName().equals("nbs bt");
+	return test != null && test.getName().equals("nbs bt");
 }
 	
 function boolean isHb(TestDO test) {
-	return test.getName().equals("nbs hb");
+	return test != null && test.getName().equals("nbs hb");
 }
 
 function boolean isCFTR(TestDO test) {
-	return test.getName().equals("nbs cftr");
+	return test != null && test.getName().equals("nbs cftr");
 }
 
 function boolean isGalt(TestDO test) {
-	return test.getName().equals("nbs galt");
+	return test != null && test.getName().equals("nbs galt");
 }
 
 function boolean isTsh(TestDO test) {
-	return test.getName().equals("nbs tsh");
+	return test != null && test.getName().equals("nbs tsh");
 }
 
 function boolean isTms(TestDO test) {
-	return test.getName().equals("nbs tms");
+	return test != null && test.getName().equals("nbs tms");
 }
 
 function boolean isIrt(TestDO test) {
-	return test.getName().equals("nbs irt");
+	return test != null && test.getName().equals("nbs irt");
 }
 
-function boolean isTransfused(DictionaryDO interpratation) {
-	return interpratation.getSystemName().equals("newborn_inter_tran");
+function boolean isTransfused(SampleManager1 sm) {
+	return "Y".equals(sm.getSampleNeonatal().getIsTransfused());
 }
 
 function boolean isPositive(DictionaryDO interpratation) {
 	return interpratation.getSystemName().equals("newborn_inter_pp_nr");
 }
 
-function boolean isPoorQuality(DictionaryDO interpratation) {
-	return interpratation.getSystemName().equals("newborn_inter_pq");
+function boolean isPoorQuality(SampleManager1 sm) {
+    
+	if (sm.qaEvent.hasType(Constants.dictionary().QAEVENT_WARNING)) {
+	    return true;
+	}
+	
+	if (SampleManager1Accessor.getAnalyses(sm) != null) {
+		for (AnalysisDO analysis : SampleManager1Accessor.getAnalyses(sm)) {
+			if(sm.qaEvent.hasType(analysis, Constants.dictionary().QAEVENT_WARNING)) {
+		    	return true;
+			}
+		}
+	}
+	
+	return false;
 }
 
-function boolean isEarlyCollection(DictionaryDO interpratation) {
-	return interpratation.getSystemName().equals("newborn_inter_ec");
+function boolean isEarlyCollection(SampleManager1 sm) {
+	return !"Y".equals(sm.getSampleNeonatal().getIsCollectionValid());
+}
+
+function boolean isUnknownWeight(SampleManager1 sm) {
+    return sm.getSampleNeonatal().getWeight() == null;
 }
