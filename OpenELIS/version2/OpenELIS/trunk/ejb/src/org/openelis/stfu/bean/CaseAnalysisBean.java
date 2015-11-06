@@ -64,11 +64,8 @@ public class CaseAnalysisBean {
     	manager.setFlushMode(FlushModeType.COMMIT);
     	
     	entity = new CaseAnalysis();
-    	entity.setAccessionNumber(data.getAccession());
-    	entity.setOrganizationId(data.getOrganizationId());
     	entity.setTestId(data.getTestId());
     	entity.setStatusId(data.getStatusId());
-    	entity.setCollectionDate(data.getCollectionDate());
     	entity.setCompletedDate(data.getCompletedDate());
     	entity.setConditionId(data.getConditionId());
     	
@@ -87,11 +84,8 @@ public class CaseAnalysisBean {
     	manager.setFlushMode(FlushModeType.COMMIT);
     	
     	entity = manager.find(CaseAnalysis.class,data.getId());
-    	entity.setAccessionNumber(data.getAccession());
-    	entity.setOrganizationId(data.getOrganizationId());
     	entity.setTestId(data.getTestId());
     	entity.setStatusId(data.getStatusId());
-    	entity.setCollectionDate(data.getCollectionDate());
     	entity.setCompletedDate(data.getCompletedDate());
     	entity.setConditionId(data.getConditionId());
     	

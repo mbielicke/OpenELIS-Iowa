@@ -10,6 +10,7 @@ import org.openelis.stfu.domain.CaseDO;
 import org.openelis.stfu.domain.CasePatientDO;
 import org.openelis.stfu.domain.CaseProviderDO;
 import org.openelis.stfu.domain.CaseResultDO;
+import org.openelis.stfu.domain.CaseSampleDO;
 import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.domain.CaseUserDO;
 
@@ -78,6 +79,18 @@ public class CaseManagerAccessor {
 	
 	public static void setCaseProvider(CaseManager cm, CaseProviderDO caseProvider) {
 		cm.caseProvider = caseProvider;
+	}
+	
+	public static ArrayList<CaseSampleDO> getCaseSamples(CaseManager cm) {
+		return cm.caseSamples;
+	}
+	
+	public static void setCaseSamples(CaseManager cm, ArrayList<CaseSampleDO> samples) {
+		cm.caseSamples = samples;
+	}
+	
+	public static void addSample(CaseManager cm, CaseSampleDO sample) {
+		cm.sample.add(sample);
 	}
 	
 	public static ArrayList<CaseAnalysisDO> getCaseAnalyses(CaseManager cm) {

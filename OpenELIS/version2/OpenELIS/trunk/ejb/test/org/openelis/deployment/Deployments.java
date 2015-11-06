@@ -41,7 +41,7 @@ public class Deployments {
 				.addAsLibraries(jarupCommon())
 				.addAsLibraries(new File("../OpenELIS-GWT/war/WEB-INF/lib/gwt-servlet.jar"))
 				.addAsLibraries(new File("../OpenELIS-UI/ui.jar"))
-				.addAsLibraries(new File("../Security/security.jar"))
+				.addAsLibraries(new File("../Security/security-client.jar"))
 				.addAsLibraries(Maven.resolver().resolve("net.sf.ehcache:ehcache:1.2").withoutTransitivity().asFile())
 				.addAsLibraries(Maven.resolver().resolve("org.mockito:mockito-all:1.9.5").withTransitivity().asFile())
 				.addAsLibraries(Maven.resolver().resolve("net.lightoze.gwt-i18n-server:gwt-i18n-server:0.22").withoutTransitivity().asFile())

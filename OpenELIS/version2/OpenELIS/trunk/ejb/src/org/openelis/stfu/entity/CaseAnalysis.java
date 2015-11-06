@@ -23,17 +23,17 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseAnalysis.fetchById",
-			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
-			             +"collectionDate,completedDate,conditionId) from CaseAnalysis where id = :id"),
+			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseSampleId,testId,statusId,"
+			             +"completedDate,conditionId) from CaseAnalysis where id = :id"),
 	@NamedQuery( name = "CaseAnalysis.fetchByIds",
-			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
-			             +"collectionDate,completedDate,conditionId) from CaseAnalysis where id in (:ids)"),		
+			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseSampleId,testId,statusId,"
+			             +"completedDate,conditionId) from CaseAnalysis where id in (:ids)"),		
 	@NamedQuery( name = "CaseAnalysis.fetchByCaseId",
-                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
-                         +"collectionDate,completedDate,conditionId) from CaseAnalysis where caseId = :id"),
+                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseSampleId,testId,statusId,"
+                         +"completedDate,conditionId) from CaseAnalysis where caseId = :id"),
     @NamedQuery( name = "CaseAnalysis.fetchByCaseIds",
-                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
-                         +"collectionDate,completedDate,conditionId) from CaseAnalysis where caseId in (:ids)")			
+                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseSampleId,testId,statusId,"
+                         +"completedDate,conditionId) from CaseAnalysis where caseId in (:ids)")			
 })
 
 @Entity
@@ -46,24 +46,15 @@ public class CaseAnalysis implements Auditable, Cloneable {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "case_id")
-	private Integer caseId;
-	
-	@Column(name = "accession_number")
-	private String accessionNumber;
-	
-	@Column(name = "organization_id")
-	private Integer organizationId;
-	
+	@Column(name = "case_sample_id")
+	private Integer caseSampleId;
+			
 	@Column(name = "test_id")
 	private Integer testId;
 	
 	@Column(name = "status_id")
 	private Integer statusId;
-	
-	@Column(name = "collection_date")
-	private Date collectionDate;
-	
+		
 	@Column(name = "completed_date")
 	private Date completedDate;
 	
@@ -82,31 +73,13 @@ public class CaseAnalysis implements Auditable, Cloneable {
 			this.id = id;
 	}
 	
-	public Integer getCaseId() {
-		return caseId;
+	public Integer getCaseSampleId() {
+		return caseSampleId;
 	}
 	
-	public void setCaseId(Integer caseId) {
-		if(isDifferent(caseId,this.caseId))
-			this.caseId = caseId;
-	}
-
-	public String getAccessionNumber() {
-		return accessionNumber;
-	}
-
-	public void setAccessionNumber(String accessionNumber) {
-		if(isDifferent(accessionNumber,this.accessionNumber))
-			this.accessionNumber = accessionNumber;
-	}
-
-	public Integer getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(Integer organizationId) {
-		if(isDifferent(organizationId,this.organizationId))
-			this.organizationId = organizationId;
+	public void setCaseId(Integer caseSampleId) {
+		if(isDifferent(caseSampleId,this.caseSampleId))
+			this.caseSampleId = caseSampleId;
 	}
 
 	public Integer getTestId() {
@@ -125,15 +98,6 @@ public class CaseAnalysis implements Auditable, Cloneable {
 	public void setStatusId(Integer statusId) {
 		if(isDifferent(statusId,this.statusId))
 			this.statusId = statusId;
-	}
-
-	public Datetime getCollectionDate() {
-		return toYM(collectionDate);
-	}
-
-	public void setCollectionDate(Datetime collectionDate) {
-		if(isDifferentYM(collectionDate,this.collectionDate))
-			this.collectionDate = toDate(collectionDate);
 	}
 
 	public Datetime getCompletedDate() {
@@ -173,12 +137,9 @@ public class CaseAnalysis implements Auditable, Cloneable {
         
         if(original != null) {
         	audit.setField("id", id, original.id)
-        	     .setField("case_id", caseId, original.caseId)
-        	     .setField("accession_number", accessionNumber, original.accessionNumber)
-        	     .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
+        	     .setField("case_id", caseSampleId, original.caseSampleId)
         	     .setField("test_id", testId, original.testId, Constants.table().TEST)
         	     .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
-        	     .setField("collection_date", collectionDate, original.collectionDate)
         	     .setField("completed_date", completedDate, original.completedDate)
         	     .setField("condition_id", conditionId, original.conditionId, Constants.table().DICTIONARY);
         }

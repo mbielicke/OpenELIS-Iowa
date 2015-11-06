@@ -290,4 +290,12 @@ public class UserCacheBean {
         
         return validUsers;
     }
+    
+    /**
+     * Method used by unit test and other clients that do not have access to session context
+     * @return String sessionId
+     */
+    public String getSessionId() {
+    	return User.getSessionId(ctx);
+    }
 }

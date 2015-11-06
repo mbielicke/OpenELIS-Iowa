@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.jboss.security.annotation.SecurityDomain;
@@ -28,7 +27,6 @@ import org.openelis.stfu.domain.CaseProviderDO;
 import org.openelis.stfu.domain.CaseResultDO;
 import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.domain.CaseUserDO;
-import org.openelis.stfu.entity.CaseTag;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.stfu.manager.CaseManagerAccessor;
 import org.openelis.ui.common.DatabaseException;
@@ -153,7 +151,7 @@ public class CaseManagerBean {
         
         if(el.contains(CaseManager.Load.ANALYSIS)) {
         	for(CaseAnalysisDO data : analysisBean.fetchByCaseIds(ids)) {
-        		cm = map.get(data.getCaseId());
+        		cm = map.get(data.getCaseSampleId());
         		accessor.addAnalysis(cm,data);
         		ids2.add(data.getId()); // for fetch
                 map2.put(data.getId(), cm); // for linking
