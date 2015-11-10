@@ -1,4 +1,4 @@
-package org.openelis.stfu.bean;
+package org.openelis.bean;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

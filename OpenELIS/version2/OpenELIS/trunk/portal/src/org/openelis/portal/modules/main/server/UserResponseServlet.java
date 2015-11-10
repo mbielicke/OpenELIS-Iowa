@@ -28,8 +28,8 @@ package org.openelis.portal.modules.main.server;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.UserResponsePortalBean;
 import org.openelis.portal.modules.main.client.UserResponseServiceInt;
-import org.openelis.stfu.bean.UserResponsePortalBean;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 

@@ -31,10 +31,10 @@ import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.SampleStatusReportBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.portal.modules.sampleStatus.client.SampleStatusServiceInt;
-import org.openelis.stfu.bean.SampleStatusPortalBean;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -44,7 +44,7 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
     private static final long      serialVersionUID = 1L;
 
     @EJB
-    private SampleStatusPortalBean sampleStatusPortal;
+    private SampleStatusReportBean sampleStatusPortal;
 
     public ArrayList<SampleViewVO> getSampleListForSampleStatusReport(Query query) throws Exception {
         try {
@@ -79,5 +79,4 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
             throw serializeForGWT(anyE);
         }
     }
-
 }
