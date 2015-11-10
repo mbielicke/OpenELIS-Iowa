@@ -22,6 +22,4 @@ public interface FinalReportServiceIntAsync {
 
     void runReportForSingle(Query query, AsyncCallback<ReportStatus> callback);
 
-    void runReportForWeb(Query query, AsyncCallback<ReportStatus> callback);
-
 }

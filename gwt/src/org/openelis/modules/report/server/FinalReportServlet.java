@@ -124,20 +124,4 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
 
         return st;
     }
-    
-    public ReportStatus runReportForWeb(Query query) throws Exception {
-        ReportStatus st;       
-
-        try {        
-            st = finalReport.runReportForWeb(query.getFields());
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
-
 }

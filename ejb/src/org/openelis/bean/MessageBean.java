@@ -1,4 +1,4 @@
-package org.openelis.stfu.bean;
+package org.openelis.bean;
 
 import java.io.File;
 import java.util.Scanner;
@@ -7,7 +7,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.bean.SystemVariableBean;
 
 @Stateless
 @SecurityDomain("openelis")

@@ -24,6 +24,4 @@ public interface FinalReportServiceInt extends XsrfProtectedService {
 
     ReportStatus runReportForBatchReprint(Query query) throws Exception;
 
-    ReportStatus runReportForWeb(Query query) throws Exception;
-
 }

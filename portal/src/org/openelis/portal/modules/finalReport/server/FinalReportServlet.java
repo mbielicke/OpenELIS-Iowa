@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.stfu.bean.FinalReportPortalBean;
+import org.openelis.bean.FinalReportBean;
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
@@ -48,7 +48,7 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     private SessionCacheBean      session;
 
     @EJB
-    private FinalReportPortalBean finalReportPortal;
+    private FinalReportBean       finalReportPortal;
 
     public ReportStatus runReportForWeb(Query query) throws Exception {
         ReportStatus st;
@@ -90,5 +90,4 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
             throw serializeForGWT(anyE);
         }
     }
-
 }

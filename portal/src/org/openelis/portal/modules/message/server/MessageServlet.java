@@ -28,8 +28,8 @@ package org.openelis.portal.modules.message.server;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.MessageBean;
 import org.openelis.portal.modules.message.client.MessageServiceInt;
-import org.openelis.stfu.bean.MessageBean;
 import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelisweb/message")
