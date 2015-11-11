@@ -31,7 +31,6 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.FinalReportBean;
-import org.openelis.bean.FinalReportWebBean;
 import org.openelis.modules.report.client.FinalReportServiceInt;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -46,9 +45,6 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     @EJB
     FinalReportBean    finalReport;
     
-    @EJB
-    FinalReportWebBean finalReportWeb;
-
     public ArrayList<Prompt> getPromptsForBatch() throws Exception {
         try {        
             return finalReport.getPromptsForBatch();
