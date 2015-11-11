@@ -285,7 +285,7 @@ public class CompletedTabUI extends Screen {
                 load = false;
                 draw = false;
                 parentScreen.setBusy(Messages.get().gen_fetching());
-                ToDoService1Impl.INSTANCE.getInitiated(getCompletedCall);
+                ToDoService1Impl.INSTANCE.getCompleted(getCompletedCall);
             } else if (draw) {
                 draw = false;
                 Scheduler.get().scheduleDeferred(drawChartCmd);

@@ -287,7 +287,7 @@ public class LoggedInTabUI extends Screen {
                 load = false;
                 draw = false;
                 parentScreen.setBusy(Messages.get().gen_fetching());
-                ToDoService1Impl.INSTANCE.getInitiated(getLoggedInCall);
+                ToDoService1Impl.INSTANCE.getLoggedIn(getLoggedInCall);
             } else if (draw) {
                 draw = false;
                 Scheduler.get().scheduleDeferred(drawChartCmd);

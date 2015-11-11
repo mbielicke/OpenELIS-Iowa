@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -20383,11 +20383,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String toDoAnalyteReport();
 
   /**
-   * Translated "View your teams workload.".
+   * Translated "View your team''s workload.".
    * 
-   * @return translated "View your teams workload."
+   * @return translated "View your team''s workload."
    */
-  @DefaultMessage("View your teams workload.")
+  @DefaultMessage("View your team''s workload.")
   @Key("toDoDescription")
   String toDoDescription();
 
@@ -20581,11 +20581,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String todo_loggedIn();
 
   /**
-   * Translated "Loggedin Analyses".
+   * Translated "Logged In Analyses".
    * 
-   * @return translated "Loggedin Analyses"
+   * @return translated "Logged In Analyses"
    */
-  @DefaultMessage("Loggedin Analyses")
+  @DefaultMessage("Logged In Analyses")
   @Key("todo.loggedinAnalysis")
   String todo_loggedinAnalysis();
 
@@ -20705,6 +20705,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Section")
   @Key("todo.section")
   String todo_section();
+
+  /**
+   * Translated "Please select a row first".
+   * 
+   * @return translated "Please select a row first"
+   */
+  @DefaultMessage("Please select a row first")
+  @Key("todo.selectRowMessage")
+  String todo_selectRowMessage();
 
   /**
    * Translated "My Sections Only".
