@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.report.client.ToDoReportScreen;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingEntry;
@@ -171,29 +172,42 @@ public class ToDoScreenUI extends Screen {
 
     @UiHandler({"detailsButton"})
     protected void details(ClickEvent event) {
+        Integer id;
+        
+        id = null;
         try {
             switch (tabPanel.getSelectedIndex()) {
                 case 0:
-                    showTrackingScreen(loggedInTab.getSelectedId());
+                    id = loggedInTab.getSelectedId();
                     break;
                 case 1:
-                    showTrackingScreen(initiatedTab.getSelectedId());
+                    id = initiatedTab.getSelectedId();
                     break;
                 case 2:
-                    showCompletionScreen(worksheetTab.getSelectedId());
+                    id = worksheetTab.getSelectedId();
                     break;
                 case 3:
-                    showTrackingScreen(completedTab.getSelectedId());
+                    id = completedTab.getSelectedId();
                     break;
                 case 4:
-                    showTrackingScreen(releasedTab.getSelectedId());
+                    id = releasedTab.getSelectedId();
                     break;
                 case 5:
-                    showTrackingScreen(toBeVerifiedTab.getSelectedId());
+                    id = toBeVerifiedTab.getSelectedId();
                     break;
                 case 6:
-                    showTrackingScreen(otherTab.getSelectedId());
+                    id = otherTab.getSelectedId();
                     break;
+            }
+
+            if (id == null) {
+                setError(Messages.get().todo_selectRowMessage());
+            } else {
+                clearStatus();
+                if (tabPanel.getSelectedIndex() == 2)
+                    showCompletionScreen(id);
+                else
+                    showTrackingScreen(id);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -205,7 +219,7 @@ public class ToDoScreenUI extends Screen {
     protected void export(ClickEvent event) {
         ToDoReportScreen export;
         
-        setBusy("Exporting to Excel");
+        setBusy(Messages.get().todo_exportingToExcel());
 
         try {
             export = new ToDoReportScreen(window);
@@ -215,6 +229,8 @@ public class ToDoScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        
+        clearStatus();
     }
 
     private void showTrackingScreen(final Integer id) {
@@ -222,6 +238,8 @@ public class ToDoScreenUI extends Screen {
         final SampleTrackingScreenUI trackingScreen;
         ScheduledCommand cmd;
         SampleTrackingEntry entry;
+
+        setBusy();
 
         try {
             entry = new SampleTrackingEntry();
@@ -240,12 +258,16 @@ public class ToDoScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        
+        clearStatus();
     }
 
     private void showCompletionScreen(final Integer id) {
         final WorksheetCompletionScreenUI worksheetScreen;
         ScheduledCommand cmd;
         WorksheetCompletionEntry entry;
+
+        setBusy();
 
         try {
             entry = new WorksheetCompletionEntry();
@@ -262,5 +284,7 @@ public class ToDoScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+
+        clearStatus();
     }
 }
