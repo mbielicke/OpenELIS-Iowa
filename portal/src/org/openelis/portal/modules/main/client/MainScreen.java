@@ -67,28 +67,6 @@ public class MainScreen extends Composite {
             }
         });
 
-        // ui.navigation().cases.addClickHandler(new ClickHandler() {
-        // @Override
-        // public void onClick(ClickEvent event) {
-        // ui.main().clear();
-        // try {
-        // final CasesScreen screen = new CasesScreen();
-        // screen.setSize((Window.getClientWidth()-20)+"px",(Window.getClientHeight()-ui.main().getAbsoluteTop()-10)+"px");
-        // screen.setWindow(window);
-        // ui.main().add(screen);
-        // //Window.addResizeHandler(new ResizeHandler() {
-        // //@Override
-        // //public void onResize(ResizeEvent event) {
-        // //screen.setSize((Window.getClientWidth()-20)+"px",(Window.getClientHeight()-ui.main().getAbsoluteTop()-10)+"px");
-        // //}
-        // //});
-        // }catch(Exception e) {
-        // e.printStackTrace();
-        // Window.alert(e.getMessage());
-        // }
-        // }
-        // });
-
         ui.navigation().dataView().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -113,7 +91,7 @@ public class MainScreen extends Composite {
             @Override
             public void onClick(ClickEvent event) {
                 try {
-                    Window.open("https://www.shl.uiowa.edu/pwm", "password", null);
+                    Window.open("https://changepw.mo.gov", "password", null);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -152,6 +130,6 @@ public class MainScreen extends Composite {
             Window.alert(e.getMessage());
         }
 
-        Window.open("/openelisweb/OpenELIS.html", "_self", null);
+        Window.open("http://health.mo.gov/lab/index.php", "_self", null);
     }
 }
