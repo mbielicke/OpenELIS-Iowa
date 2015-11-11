@@ -266,17 +266,21 @@ public class EmailNotificationScreen extends Screen {
         String full[], part[];
         ArrayList<Integer> ids;
 
-        /*
-         * the structure of the clause should be "organizationId:id1,id2,..."
-         */
-        full = clause.split(":");
-        part = full[1].split(",");
-        if (part.length == 0)
-            return null;
-
-        ids = new ArrayList<Integer>();
-        for (int i = 0; i < part.length; i++ )
-            ids.add(Integer.parseInt(DataBaseUtil.trim(part[i])));
+        ids = null;
+        if (clause != null) {
+            /*
+             * the structure of the clause should be "organizationId:id1,id2,..."
+             */
+            full = clause.split(":");
+            if (full.length > 1) {
+                part = full[1].split(",");
+                if (part.length != 0) {
+                    ids = new ArrayList<Integer>(part.length);
+                    for (int i = 0; i < part.length; i++ )
+                        ids.add(Integer.parseInt(DataBaseUtil.trim(part[i])));
+                }
+            }
+        }
 
         return ids;
     }
