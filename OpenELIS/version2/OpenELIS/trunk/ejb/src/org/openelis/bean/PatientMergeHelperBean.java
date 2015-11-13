@@ -105,7 +105,7 @@ public class PatientMergeHelperBean {
             }
             
             if (sampleIds.size() > 0) {
-                sMans = sampleManager1.fetchForUpdate(new ArrayList<Integer>(sampleIds), SampleManager1.Load.NOTE);
+                sMans = sampleManager1.fetchForUpdate(new ArrayList<Integer>(sampleIds), SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION);
                 for (SampleManager1 sm : sMans) {
                     mergeNote = new NoteViewDO();
                     mergeNote.setId(sm.getNextUID());
