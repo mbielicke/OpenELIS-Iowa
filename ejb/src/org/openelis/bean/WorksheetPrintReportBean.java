@@ -52,11 +52,14 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
@@ -100,6 +103,12 @@ public class WorksheetPrintReportBean {
     private SessionCacheBean      session;
 
     @EJB
+    private CategoryCacheBean     categoryCache;
+    
+    @EJB
+    private DictionaryCacheBean   dictionaryCache;
+    
+    @EJB
     private PrinterCacheBean      printers;
 
     @EJB
@@ -117,8 +126,12 @@ public class WorksheetPrintReportBean {
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<Integer> dictIds;
         ArrayList<OptionListItem> prn, format;
         ArrayList<Prompt> p;
+        CategoryCacheVO ccVO;
+        HashMap<Integer, String> descriptionMap;
 
         try {
             p = new ArrayList<Prompt>();
@@ -129,25 +142,23 @@ public class WorksheetPrintReportBean {
                                                                  .setRequired(true));
 
             format = new ArrayList<OptionListItem>();
-            format.add(new OptionListItem("4x12B", "4 Slides 12 Blank Wells"));
-            format.add(new OptionListItem("6x10", "6 Slides 10 Wells"));
-            format.add(new OptionListItem("6x12", "6 Slides 12 Wells"));
-            format.add(new OptionListItem("8x4Arbo", "8 Slides 4 Wells Arbovirus"));
-            format.add(new OptionListItem("96H", "96 Well Plate Horizontal"));
-            format.add(new OptionListItem("96V", "96 Well Plate Vertical"));
-            format.add(new OptionListItem("AFBCulture", "AFB Culture"));
-            format.add(new OptionListItem("EntericCulture", "Enteric Culture"));
-            format.add(new OptionListItem("FungusCulture", "Fungus Culture"));
-            format.add(new OptionListItem("GCCulture", "GC Culture"));
-            format.add(new OptionListItem("LLS", "Line List Single Line"));
-            format.add(new OptionListItem("LLM", "Line List Multi Line"));
-            format.add(new OptionListItem("LegionellaCulture", "Legionella Culture"));
-            format.add(new OptionListItem("MiscCulture", "Misc Culture"));
-            format.add(new OptionListItem("QFTG", "QFTG Plate"));
-            format.add(new OptionListItem("ReferenceId", "Reference ID"));
-            format.add(new OptionListItem("WNV", "WNV Plate"));
-            format.add(new OptionListItem("YersiniaVibrio", "Yersinia & Vibrio"));
-
+            ccVO = categoryCache.getBySystemName("worksheet_print_format");
+            if (ccVO.getDictionaryList() != null && ccVO.getDictionaryList().size() > 0) {
+                dictIds = new ArrayList<Integer>();
+                for (DictionaryDO data : ccVO.getDictionaryList()) {
+                    if (data.getRelatedEntryId() != null)
+                        dictIds.add(data.getRelatedEntryId());
+                }
+                descriptionMap = new HashMap<Integer, String>();
+                if (dictIds.size() > 0) {
+                    dictList = dictionaryCache.getByIds(dictIds);
+                    for (DictionaryDO data : dictList)
+                        descriptionMap.put(data.getId(), data.getEntry());
+                }
+                for (DictionaryDO data : ccVO.getDictionaryList())
+                    format.add(new OptionListItem(data.getEntry(), descriptionMap.get(data.getRelatedEntryId())));
+            }
+            
             p.add(new Prompt("FORMAT", Prompt.Type.ARRAY).setPrompt("Format:")
                                                          .setWidth(200)
                                                          .setOptionList(format)
@@ -276,17 +287,6 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
 
-                case "AFBCulture":
-                case "EntericCulture":
-                case "FungusCulture":
-                case "GCCulture":
-                case "LegionellaCulture":
-                case "MiscCulture":
-                case "ReferenceId":
-                case "YersiniaVibrio":
-                    path = fillPDFWorksheet(worksheetId, format);
-                    break;
-                    
                 case "LLS":
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/lineListSingleLine.jasper");
                     dir = ReportUtil.getResourcePath(url);
@@ -326,7 +326,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 default:
-                    throw new InconsistencyException("An invalid format was specified for this report");
+                    path = fillPDFWorksheet(worksheetId, format);
             }
 
             if (path == null) {
@@ -411,6 +411,7 @@ public class WorksheetPrintReportBean {
         PdfStamper stamper;
         ProviderDO proDO;
         RandomAccessFileOrArray original;
+        SampleEnvironmentalDO seDO;
         SampleDO sDO;
         SampleItemViewDO siVDO;
         SampleManager1 sMan;
@@ -495,12 +496,15 @@ public class WorksheetPrintReportBean {
                 sDO = sMan.getSample();
                 patDO = null;
                 proDO = null;
+                seDO = null;
                 if (Constants.domain().CLINICAL.equals(sDO.getDomain())) {
                     patDO = sMan.getSampleClinical().getPatient();
                     proDO = sMan.getSampleClinical().getProvider();
                 } else if (Constants.domain().NEONATAL.equals(sDO.getDomain())) {
                     patDO = sMan.getSampleNeonatal().getPatient();
                     proDO = sMan.getSampleNeonatal().getProvider();
+                } else if (Constants.domain().ENVIRONMENTAL.equals(sDO.getDomain())) {
+                    seDO = sMan.getSampleEnvironmental();
                 }
                 sOrgs = SampleManager1Accessor.getOrganizations(sMan);
                 aVDO = (AnalysisViewDO) sMan.getObject(Constants.uid().getAnalysis(waVDO.getAnalysisId()));
@@ -577,6 +581,10 @@ public class WorksheetPrintReportBean {
                 if (proDO != null) {
                     form.setField("provider_last_"+(i + 1), proDO.getLastName());
                     form.setField("provider_first_"+(i + 1), proDO.getFirstName());
+                }
+                if (seDO != null) {
+                    form.setField("env_location_"+(i + 1), seDO.getLocation());
+                    form.setField("env_description_"+(i + 1), seDO.getDescription());
                 }
                 if (sOrgs != null && sOrgs.size() > 0) {
                     for (SampleOrganizationViewDO soVDO : sOrgs) {
