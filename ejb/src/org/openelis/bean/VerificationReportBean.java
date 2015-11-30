@@ -116,10 +116,10 @@ public class VerificationReportBean {
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
         printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if ( !DataBaseUtil.isEmpty(userWhere)) {
+        if (!DataBaseUtil.isEmpty(userWhere)) {
             userNames = "";
             if (userWhere.startsWith("in (")) {
-                userIds = userWhere.substring(4, userWhere.length() - 2);
+                userIds = userWhere.substring(4, userWhere.length() - 1);
                 tokenizer = new StringTokenizer(userIds, ",");
                 try {
                     while (tokenizer.hasMoreTokens()) {
@@ -133,8 +133,8 @@ public class VerificationReportBean {
                     userNames = "ERROR LOADING NAMES";
                     e.printStackTrace();
                 }
-            } else if (userWhere.startsWith(" = ")) {
-                userIds = userWhere.substring(3);
+            } else if (userWhere.startsWith("= ")) {
+                userIds = userWhere.substring(2);
                 try {
                     sysUserVO = userCache.getSystemUser(Integer.valueOf(userIds));
                     userNames = sysUserVO.getLoginName();
