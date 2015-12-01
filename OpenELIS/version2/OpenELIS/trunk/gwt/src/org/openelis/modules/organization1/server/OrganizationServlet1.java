@@ -83,7 +83,7 @@ public class OrganizationServlet1 extends RemoteServlet implements OrganizationS
             list = new ArrayList<OrganizationDO>(1);
             list.add(organization.fetchActiveById(id));
         } catch (NumberFormatException e) {
-            list = organization.fetchActiveByName(search + "%", 10);
+            list = organization.fetchActiveByName(search + "%", 30);
         } catch (NotFoundException e) {
             list = new ArrayList<OrganizationDO>(0);
         } catch (RuntimeException e) {
