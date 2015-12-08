@@ -245,3 +245,7 @@
 @sprite .blankIcon {
     gwt-image:'blankIcon';
 }
+
+@sprite .chartIcon {
+    gwt-image:'chartIcon';
+}

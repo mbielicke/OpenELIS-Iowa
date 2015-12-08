@@ -105,4 +105,6 @@ public interface IconCSS extends org.openelis.ui.resources.IconCSS {
     public String lockedBySelfIcon();
     
     public String blankIcon();
+    
+    public String chartIcon();
 }

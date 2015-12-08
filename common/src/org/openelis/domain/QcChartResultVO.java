@@ -35,14 +35,14 @@ public class QcChartResultVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Integer         wId, qcId, analyteId, worksheetAnalysisId;
-    protected String          accessionNumber, lotNumber, analyteParameter, worksheetFormat;
+    protected String          accessionNumber, lotNumber, analyteName, worksheetFormat;
     protected Datetime        worksheetCreatedDate;
     protected String          values[];
 
     public QcChartResultVO() {
     }
     
-    public QcChartResultVO(String accessionNumber, String lotNumber, Integer wId, Integer qcId, Integer analyteId, Integer worksheetAnalysisId, String analyteParameter, String worksheetFormat, Date worksheetCreatedDate,
+    public QcChartResultVO(String accessionNumber, String lotNumber, Integer wId, Integer qcId, Integer analyteId, Integer worksheetAnalysisId, String analyteName, String worksheetFormat, Date worksheetCreatedDate,
                            String v1, String v2, String v3, String v4, String v5, String v6, String v7, String v8,
                            String v9, String v10, String v11, String v12, String v13, String v14,
                            String v15, String v16, String v17, String v18, String v19, String v20,
@@ -57,7 +57,7 @@ public class QcChartResultVO implements Serializable {
         setQcId(qcId);
         setAnalyteId(analyteId);
         setWorksheetAnalysisId(worksheetAnalysisId);
-        setAnalyteParameter(analyteParameter);
+        setAnalyteName(analyteName);
         setWorksheetFormat(worksheetFormat);
         setWorksheetCreatedDate(DataBaseUtil.toYM(worksheetCreatedDate));
         setValueAt(0, v1);
@@ -140,12 +140,12 @@ public class QcChartResultVO implements Serializable {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 
-    public String getAnalyteParameter() {
-        return analyteParameter;
+    public String getAnalyteName() {
+        return analyteName;
     }
 
-    public void setAnalyteParameter(String analyteParameter) {
-        this.analyteParameter = DataBaseUtil.trim(analyteParameter);
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = DataBaseUtil.trim(analyteName);
     }
     
     public String getWorksheetFormat() {

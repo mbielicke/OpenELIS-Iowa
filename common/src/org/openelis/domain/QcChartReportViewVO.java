@@ -34,7 +34,7 @@ import org.openelis.ui.common.Datetime;
 public class QcChartReportViewVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public enum ReportType {SPIKE_CONC, SPIKE_PERCENT};
+    public enum ReportType {EXCEL, SPIKE_CONC, SPIKE_PERCENT};
     
     protected ReportType reportType;
     protected Integer plotType, qcType;
@@ -80,11 +80,11 @@ public class QcChartReportViewVO implements Serializable {
         private static final long serialVersionUID = 1L;
         
         protected Integer         qcId, wId, analyteId;
-        protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot;
+        protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot, worksheetFormat;
         protected Double          plotValue, mean, meanRecovery, uWL, uCL, lWL, lCL, sd;
         protected Datetime        worksheetCreatedDate;
-        
-        
+        protected String          values[];
+
         public Integer getQcId() {
             return qcId;
         }
@@ -227,6 +227,26 @@ public class QcChartReportViewVO implements Serializable {
 
         public void setWorksheetCreatedDate(Datetime worksheetCreatedDate) {
             this.worksheetCreatedDate = DataBaseUtil.toYM(worksheetCreatedDate);
+        }
+        
+        public String getWorksheetFormat() {
+            return worksheetFormat;
+        }
+
+        public void setWorksheetFormat(String worksheetFormat) {
+            this.worksheetFormat = DataBaseUtil.trim(worksheetFormat);
+        }
+        
+        public String getValueAt(int index) {
+            if (values == null)
+                values = new String[30];
+            return values[index];
+        }
+
+        public void setValueAt(int index, String value) {
+            if (values == null)
+                values = new String[30];
+            values[index] = DataBaseUtil.trim(value);
         }
     }
 }
