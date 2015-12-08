@@ -149,7 +149,7 @@
                   <w:MenuItem enabled="false" ui:field="turnaround" display="{msg.turnaround}" />
                   <w:MenuItem enabled="false" ui:field="turnAroundStatisticReport" display="{msg.turnAroundStatisticReport}" />
                   <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTracking_kitTrackingReport}" />
-                  <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />
+                  <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart_qcChart}" />
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />

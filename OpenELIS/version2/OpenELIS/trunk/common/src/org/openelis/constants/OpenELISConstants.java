@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -7810,6 +7810,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_options();
 
   /**
+   * Translated "OR".
+   * 
+   * @return translated "OR"
+   */
+  @DefaultMessage("OR")
+  @Key("gen.or")
+  String gen_or();
+
+  /**
    * Translated "Order Request Form".
    * 
    * @return translated "Order Request Form"
@@ -8357,6 +8366,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Unit")
   @Key("gen.unit")
   String gen_unit();
+
+  /**
+   * Translated "Unselect".
+   * 
+   * @return translated "Unselect"
+   */
+  @DefaultMessage("Unselect")
+  @Key("gen.unselect")
+  String gen_unselect();
 
   /**
    * Translated "Unselect All".
@@ -14873,6 +14891,177 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("QC Chart")
   @Key("qcChart")
   String qcChart();
+
+  /**
+   * Translated "Creation Date".
+   * 
+   * @return translated "Creation Date"
+   */
+  @DefaultMessage("Creation Date")
+  @Key("qcChart.creationDate")
+  String qcChart_creationDate();
+
+  /**
+   * Translated "Get Data".
+   * 
+   * @return translated "Get Data"
+   */
+  @DefaultMessage("Get Data")
+  @Key("qcChart.getData")
+  String qcChart_getData();
+
+  /**
+   * Translated "LCL".
+   * 
+   * @return translated "LCL"
+   */
+  @DefaultMessage("LCL")
+  @Key("qcChart.lCL")
+  String qcChart_lCL();
+
+  /**
+   * Translated "LWL".
+   * 
+   * @return translated "LWL"
+   */
+  @DefaultMessage("LWL")
+  @Key("qcChart.lWL")
+  String qcChart_lWL();
+
+  /**
+   * Translated "Mean".
+   * 
+   * @return translated "Mean"
+   */
+  @DefaultMessage("Mean")
+  @Key("qcChart.mean")
+  String qcChart_mean();
+
+  /**
+   * Translated "Most Recent QCs".
+   * 
+   * @return translated "Most Recent QCs"
+   */
+  @DefaultMessage("Most Recent QCs")
+  @Key("qcChart.mostRecentQc")
+  String qcChart_mostRecentQc();
+
+  /**
+   * Translated "# to Retrieve".
+   * 
+   * @return translated "# to Retrieve"
+   */
+  @DefaultMessage("# to Retrieve")
+  @Key("qcChart.numberToRetrieve")
+  String qcChart_numberToRetrieve();
+
+  /**
+   * Translated "Plot".
+   * 
+   * @return translated "Plot"
+   */
+  @DefaultMessage("Plot")
+  @Key("qcChart.plot")
+  String qcChart_plot();
+
+  /**
+   * Translated "Plot Data".
+   * 
+   * @return translated "Plot Data"
+   */
+  @DefaultMessage("Plot Data")
+  @Key("qcChart.plotData")
+  String qcChart_plotData();
+
+  /**
+   * Translated "Plot Using".
+   * 
+   * @return translated "Plot Using"
+   */
+  @DefaultMessage("Plot Using")
+  @Key("qcChart.plotUsing")
+  String qcChart_plotUsing();
+
+  /**
+   * Translated "Plot Value".
+   * 
+   * @return translated "Plot Value"
+   */
+  @DefaultMessage("Plot Value")
+  @Key("qcChart.plotValue")
+  String qcChart_plotValue();
+
+  /**
+   * Translated "QC Chart".
+   * 
+   * @return translated "QC Chart"
+   */
+  @DefaultMessage("QC Chart")
+  @Key("qcChart.qcChart")
+  String qcChart_qcChart();
+
+  /**
+   * Translated "Recompute".
+   * 
+   * @return translated "Recompute"
+   */
+  @DefaultMessage("Recompute")
+  @Key("qcChart.recompute")
+  String qcChart_recompute();
+
+  /**
+   * Translated "Please fill either From and To Dates or Number of Instances field.".
+   * 
+   * @return translated "Please fill either From and To Dates or Number of Instances field."
+   */
+  @DefaultMessage("Please fill either From and To Dates or Number of Instances field.")
+  @Key("qcChart.requiredEitherFields")
+  String qcChart_requiredEitherFields();
+
+  /**
+   * Translated "UCL".
+   * 
+   * @return translated "UCL"
+   */
+  @DefaultMessage("UCL")
+  @Key("qcChart.uCL")
+  String qcChart_uCL();
+
+  /**
+   * Translated "UWL".
+   * 
+   * @return translated "UWL"
+   */
+  @DefaultMessage("UWL")
+  @Key("qcChart.uWL")
+  String qcChart_uWL();
+
+  /**
+   * Translated "Use Date Range".
+   * 
+   * @return translated "Use Date Range"
+   */
+  @DefaultMessage("Use Date Range")
+  @Key("qcChart.useDateRange")
+  String qcChart_useDateRange();
+
+  /**
+   * Translated "Value1".
+   * 
+   * @return translated "Value1"
+   */
+  @DefaultMessage("Value1")
+  @Key("qcChart.value1")
+  String qcChart_value1();
+
+  /**
+   * Translated "Value2".
+   * 
+   * @return translated "Value2"
+   */
+  @DefaultMessage("Value2")
+  @Key("qcChart.value2")
+  String qcChart_value2();
 
   /**
    * Translated "QC Report".

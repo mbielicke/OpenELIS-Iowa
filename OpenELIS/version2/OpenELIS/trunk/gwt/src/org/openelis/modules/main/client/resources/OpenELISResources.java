@@ -206,4 +206,7 @@ public interface OpenELISResources extends UIResources {
     
     @Source("images/blank.png")
     ImageResource blankIcon();
+    
+    @Source("images/chart_curve.png")
+    ImageResource chartIcon();
 }
