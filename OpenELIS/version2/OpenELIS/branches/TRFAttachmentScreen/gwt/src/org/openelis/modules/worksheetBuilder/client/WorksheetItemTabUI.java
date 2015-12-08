@@ -103,6 +103,7 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellEditedEvent;
 import org.openelis.ui.widget.table.event.CellEditedHandler;
+import org.openelis.utilcommon.TurnaroundUtil;
 
 public class WorksheetItemTabUI extends Screen {
 
@@ -1570,16 +1571,16 @@ public class WorksheetItemTabUI extends Screen {
         // client requested a priority number of days.
         //
         if (avVO.getPriority() != null)
-            waVDO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getPriority()));
+            waVDO.setDueDays(TurnaroundUtil.getDueDays(avVO.getReceivedDate(), avVO.getPriority()));
         else
-            waVDO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getTimeTaAverage()));
+            waVDO.setDueDays(TurnaroundUtil.getDueDays(avVO.getReceivedDate(), avVO.getTimeTaAverage()));
         
         //
         // Compute and set the expiration date on the analysis based
         // on the collection date and the tests definition of holding
         // hours.
         //
-        waVDO.setExpireDate(DataBaseUtil.getExpireDate(avVO.getCollectionDate(),
+        waVDO.setExpireDate(TurnaroundUtil.getExpireDate(avVO.getCollectionDate(),
                                                        avVO.getCollectionTime(),
                                                        avVO.getTimeHolding()));
     }

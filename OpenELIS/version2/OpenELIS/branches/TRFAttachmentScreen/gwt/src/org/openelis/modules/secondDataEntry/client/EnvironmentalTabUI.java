@@ -51,7 +51,6 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
-import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -63,22 +62,15 @@ import org.openelis.ui.widget.calendar.Calendar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.XMLParser;
 
 public class EnvironmentalTabUI extends Screen {
     @UiTemplate("EnvironmentalTab.ui.xml")
@@ -87,8 +79,8 @@ public class EnvironmentalTabUI extends Screen {
 
     private static EnvironmentalTabUiBinder    uiBinder = GWT.create(EnvironmentalTabUiBinder.class);
 
-    @UiField
-    protected FlexTable                        widgetTable;
+    //@UiField
+    //protected FlexTable                        widgetTable;
 
     protected SampleManager1                   manager;
 
@@ -213,8 +205,8 @@ public class EnvironmentalTabUI extends Screen {
     /**
      * Adds widgets used for verification for the passed domain to the screen
      */
-    public void addWidgets(String xml) {
-        int i, row;
+    public void showWidgets() {
+        /*int i, row;
         Document doc;
         Node root, node;
 
@@ -222,18 +214,18 @@ public class EnvironmentalTabUI extends Screen {
         editWidgets = new ArrayList<Widget>();
         /*
          * parse the xml and add widgets for the fields to the widget table
-         */
+         /
         doc = XMLParser.parse(xml);
         root = doc.getDocumentElement();
         for (i = 0; i < root.getChildNodes().getLength(); i++ ) {
             node = root.getChildNodes().item(i);
             /*
              * this discards unwanted "child" nodes like whitespaces
-             */
+             /
             if (Node.ELEMENT_NODE != node.getNodeType())
                 continue;
             addWidgetRow(node.getNodeName(), ++row);
-        }
+        }*/
     }
 
     private void evaluateEdit() {
@@ -336,7 +328,7 @@ public class EnvironmentalTabUI extends Screen {
 
         t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.INTEGER, 75, null, null, null);
 
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -358,7 +350,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -370,9 +362,9 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSample()
                                                                       .getOrderId())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1)
-                        t2.setValue(manager.getSample()
-                                    .getOrderId());
+                    //if (numEdit > 1)
+                      //  t2.setValue(manager.getSample()
+                           //         .getOrderId());
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -452,7 +444,7 @@ public class EnvironmentalTabUI extends Screen {
         c2 = SecondDataEntryUtil.getCalendar(90, 0, 2);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, b, l2, c2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -474,7 +466,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -486,10 +478,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSample()
                                                                       .getCollectionDate())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        c2.setValue(manager.getSample().getCollectionDate());
+                    //if (numEdit > 1) {
+                     //   c2.setValue(manager.getSample().getCollectionDate());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -590,7 +582,7 @@ public class EnvironmentalTabUI extends Screen {
         c2 = SecondDataEntryUtil.getCalendar(60, 3, 4);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, b, l2, c2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, hp, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -612,7 +604,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -624,10 +616,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferentDT(event.getValue(), manager.getSample()
                                                                         .getCollectionTime())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        c2.setValue(manager.getSample().getCollectionTime());
+                    //if (numEdit > 1) {
+                       // c2.setValue(manager.getSample().getCollectionTime());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -726,7 +718,7 @@ public class EnvironmentalTabUI extends Screen {
         c2 = SecondDataEntryUtil.getCalendar(90, 0, 4);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, c2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -748,7 +740,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -760,10 +752,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSample()
                                                                       .getReceivedDate())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        c2.setValue(manager.getSample().getReceivedDate());
+                    //if (numEdit > 1) {
+                      //  c2.setValue(manager.getSample().getReceivedDate());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -871,7 +863,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -893,7 +885,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -905,10 +897,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSample()
                                                                       .getClientReference())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSample().getClientReference());
+                    //if (numEdit > 1) {
+                      //  t2.setValue(manager.getSample().getClientReference());
                         //b.setEnabled(true);
-                    }
+                   // }
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1008,7 +1000,7 @@ public class EnvironmentalTabUI extends Screen {
         c2 = new CheckBox();
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, c2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, c2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1030,7 +1022,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(c1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1042,10 +1034,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getIsHazardous())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        c2.setValue(manager.getSampleEnvironmental().getIsHazardous());
+                    //if (numEdit > 1) {
+                     //   c2.setValue(manager.getSampleEnvironmental().getIsHazardous());
                         //b.setEnabled(true);
-                    }
+                   // }
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1152,7 +1144,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1174,7 +1166,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+               // numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1186,10 +1178,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getPriority())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental().getPriority());
+                    //if (numEdit > 1) {
+                     //   t2.setValue(manager.getSampleEnvironmental().getPriority());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1288,7 +1280,7 @@ public class EnvironmentalTabUI extends Screen {
         t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 235, null, 40, null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1310,7 +1302,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1322,8 +1314,8 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getCollector())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1)
-                        t2.setValue(manager.getSampleEnvironmental().getCollector());
+                    //if (numEdit > 1)
+                      //  t2.setValue(manager.getSampleEnvironmental().getCollector());
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1430,7 +1422,7 @@ public class EnvironmentalTabUI extends Screen {
                                             Messages.get().gen_phoneWithExtensionPattern());
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1452,7 +1444,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1464,10 +1456,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getCollectorPhone())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental().getCollectorPhone());
+                    //if (numEdit > 1) {
+                    //    t2.setValue(manager.getSampleEnvironmental().getCollectorPhone());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1566,7 +1558,7 @@ public class EnvironmentalTabUI extends Screen {
         t2 = SecondDataEntryUtil.getTextBox(SecondDataEntryUtil.Type.STRING, 280, null, 40, null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1588,7 +1580,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1600,10 +1592,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getDescription())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental().getDescription());
+                    //if (numEdit > 1) {
+                     //   t2.setValue(manager.getSampleEnvironmental().getDescription());
                         //b.setEnabled(true);
-                    }
+                   // }
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1710,7 +1702,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1732,7 +1724,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1744,10 +1736,10 @@ public class EnvironmentalTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(event.getValue(), manager.getSampleEnvironmental()
                                                                       .getLocation())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental().getLocation());
+                    //if (numEdit > 1) {
+                     //   t2.setValue(manager.getSampleEnvironmental().getLocation());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -1854,7 +1846,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -1876,7 +1868,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -1889,12 +1881,12 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getMultipleUnit())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental()
-                                           .getLocationAddress()
-                                           .getMultipleUnit());
+                    //if (numEdit > 1) {
+                     //   t2.setValue(manager.getSampleEnvironmental()
+                       //                    .getLocationAddress()
+                       //                    .getMultipleUnit());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2002,7 +1994,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2024,7 +2016,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2037,12 +2029,12 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getStreetAddress())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental()
-                                           .getLocationAddress()
-                                           .getStreetAddress());
+                    //if (numEdit > 1) {
+                      //  t2.setValue(manager.getSampleEnvironmental()
+                       //                    .getLocationAddress()
+                       //                    .getStreetAddress());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2151,7 +2143,7 @@ public class EnvironmentalTabUI extends Screen {
                                             null);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2173,7 +2165,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2186,10 +2178,10 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getCity())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental().getLocationAddress().getCity());
+                    //if (numEdit > 1) {
+                       // t2.setValue(manager.getSampleEnvironmental().getLocationAddress().getCity());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2296,7 +2288,7 @@ public class EnvironmentalTabUI extends Screen {
                                              model);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, d2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2318,7 +2310,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2331,12 +2323,12 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getState())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        d2.setValue(manager.getSampleEnvironmental()
-                                           .getLocationAddress()
-                                           .getState());
+                   // if (numEdit > 1) {
+                     //   d2.setValue(manager.getSampleEnvironmental()
+                      //                     .getLocationAddress()
+                       //                    .getState());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2443,7 +2435,7 @@ public class EnvironmentalTabUI extends Screen {
                                             Messages.get().gen_zipcodePattern());
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, t2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, t2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2465,7 +2457,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(t1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2478,12 +2470,12 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getZipCode())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        t2.setValue(manager.getSampleEnvironmental()
-                                           .getLocationAddress()
-                                           .getZipCode());
+                    //if (numEdit > 1) {
+                     //   t2.setValue(manager.getSampleEnvironmental()
+                     //                      .getLocationAddress()
+                     //                      .getZipCode());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2584,7 +2576,7 @@ public class EnvironmentalTabUI extends Screen {
         d2 = SecondDataEntryUtil.getDropdown(SecondDataEntryUtil.Type.STRING, 231, null, model);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, d2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, d2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2606,7 +2598,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(d1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2619,12 +2611,12 @@ public class EnvironmentalTabUI extends Screen {
                                                                       .getLocationAddress()
                                                                       .getCountry())) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        d2.setValue(manager.getSampleEnvironmental()
-                                           .getLocationAddress()
-                                           .getCountry());
+                    //if (numEdit > 1) {
+                       // d2.setValue(manager.getSampleEnvironmental()
+                        //                   .getLocationAddress()
+                         //                  .getCountry());
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2722,7 +2714,7 @@ public class EnvironmentalTabUI extends Screen {
         a2 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2747,7 +2739,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2769,10 +2761,10 @@ public class EnvironmentalTabUI extends Screen {
 
                 if (DataBaseUtil.isDifferent(eventId, orgId)) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        a2.setValue(orgId, orgName);
+                    //if (numEdit > 1) {
+                      //  a2.setValue(orgId, orgName);
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -2879,7 +2871,7 @@ public class EnvironmentalTabUI extends Screen {
         a2 = SecondDataEntryUtil.getOrganizationAutocomplete(180, TextBase.Case.UPPER, 565, parentScreen);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -2905,7 +2897,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -2928,10 +2920,10 @@ public class EnvironmentalTabUI extends Screen {
 
                 if (DataBaseUtil.isDifferent(eventId, orgId)) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        a2.setValue(orgId, orgName);
+                    //if (numEdit > 1) {
+                    //    a2.setValue(orgId, orgName);
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */
@@ -3036,7 +3028,7 @@ public class EnvironmentalTabUI extends Screen {
         a2 = SecondDataEntryUtil.getProjectAutocomplete(180, TextBase.Case.LOWER, 440, parentScreen);
 
         //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, b, l2, a2);
-        SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
+        //SecondDataEntryUtil.addWidgets(row, widgetTable, l1, h, a2);
 
         /*
          * the scheduled command for setting the focus back to this widget when
@@ -3061,7 +3053,7 @@ public class EnvironmentalTabUI extends Screen {
                 /*
                  * find out how many times the widget has been edited
                  */
-                numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
+                //numEdit = SecondDataEntryUtil.updateNumEdit(a1, numEdits);
 
                 /*
                  * if the value entered is different from the value in the
@@ -3083,10 +3075,10 @@ public class EnvironmentalTabUI extends Screen {
 
                 if (DataBaseUtil.isDifferent(eventId, projId)) {
                     i.setResource(OpenELISResources.INSTANCE.abort());
-                    if (numEdit > 1) {
-                        a2.setValue(projId, projName);
+                    //if (numEdit > 1) {
+                     //   a2.setValue(projId, projName);
                         //b.setEnabled(true);
-                    }
+                    //}
                     /*
                      * set the focus back on the widget if the user pressed Tab
                      */

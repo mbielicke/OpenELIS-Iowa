@@ -50,13 +50,14 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetBuilderVO;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.meta.WorksheetBuilderMeta;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.TurnaroundUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -198,16 +199,16 @@ public class WorksheetBuilderBean {
                 // client requested a priority number of days.
                 //
                 if (avVO.getPriority() != null)
-                    wcVO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getPriority()));
+                    wcVO.setDueDays(TurnaroundUtil.getDueDays(avVO.getReceivedDate(), avVO.getPriority()));
                 else
-                    wcVO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getTimeTaAverage()));
+                    wcVO.setDueDays(TurnaroundUtil.getDueDays(avVO.getReceivedDate(), avVO.getTimeTaAverage()));
                 
                 //
                 // Compute and set the expiration date on the analysis based
                 // on the collection date and the tests definition of holding
                 // hours.
                 //
-                wcVO.setExpireDate(DataBaseUtil.getExpireDate(avVO.getCollectionDate(),
+                wcVO.setExpireDate(TurnaroundUtil.getExpireDate(avVO.getCollectionDate(),
                                                               avVO.getCollectionTime(),
                                                               avVO.getTimeHolding()));
                 returnList.add(wcVO);

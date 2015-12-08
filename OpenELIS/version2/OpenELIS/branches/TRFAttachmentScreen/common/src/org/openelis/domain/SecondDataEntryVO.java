@@ -41,17 +41,16 @@ public class SecondDataEntryVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, sampleAccessionNumber, historySystemUserId;
+    protected Integer         sampleId, sampleAccessionNumber;
     protected String          historySystemUserLoginName;
 
     public SecondDataEntryVO() {
     }
 
     public SecondDataEntryVO(Integer sampleId, Integer sampleAccessionNumber,
-                             Integer historySystemUserId, String historysystemUserLoginName) {
+                             String historysystemUserLoginName) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
-        setHistorySystemUserId(historySystemUserId);
         setHistorySystemUserLoginName(historysystemUserLoginName);
     }
 
@@ -69,14 +68,6 @@ public class SecondDataEntryVO implements Serializable {
 
     public void setSampleAccessionNumber(Integer sampleAccessionNumber) {
         this.sampleAccessionNumber = sampleAccessionNumber;
-    }
-
-    public Integer getHistorySystemUserId() {
-        return historySystemUserId;
-    }
-
-    public void setHistorySystemUserId(Integer historySystemUserId) {
-        this.historySystemUserId = historySystemUserId;
     }
 
     public String getHistorysystemUserLoginName() {

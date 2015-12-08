@@ -15,26 +15,18 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
 public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
-    
+
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);        
+        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);
     }
-    
+
     @Override
     public void showScreen() {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
-                WorksheetCompletionScreenUI screen;
-                
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().worksheetCompletion());
-                    window.setSize("1061px", "511px");
-                    screen = new WorksheetCompletionScreenUI(window);
-                    window.setContent(screen);
-                    screen.initialize();
-                    OpenELIS.getBrowser().addWindow(window, "worksheetCompletion");
+                    addScreen();
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -46,6 +38,20 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
-        
+    }
+
+    public WorksheetCompletionScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        WorksheetCompletionScreenUI screen;
+
+        window = new org.openelis.ui.widget.Window();
+        screen = new WorksheetCompletionScreenUI(window);
+        window.setName(Messages.get().worksheetCompletion());
+        window.setSize("1061px", "511px");
+        window.setContent(screen);
+        screen.initialize();
+        OpenELIS.getBrowser().addWindow(window, "worksheetCompletion");
+
+        return screen;
     }
 }

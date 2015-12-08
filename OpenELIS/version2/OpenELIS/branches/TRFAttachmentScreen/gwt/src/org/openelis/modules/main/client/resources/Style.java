@@ -34,5 +34,5 @@ public interface Style extends CssResource {
     
     public String Heading();
     
-    public String FlexTableAlternateRow();
+    public String WidgetTableAlternateRow();
 }

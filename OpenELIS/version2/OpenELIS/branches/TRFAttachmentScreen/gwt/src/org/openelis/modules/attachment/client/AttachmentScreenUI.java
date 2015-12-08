@@ -167,7 +167,7 @@ public class AttachmentScreenUI extends Screen {
 
     protected void initialize() {
         Item<Integer> row;
-        ArrayList<Item<Integer>> model;
+        ArrayList<Item<Integer>> model1, model2;
 
         screen = this;
 
@@ -295,7 +295,7 @@ public class AttachmentScreenUI extends Screen {
                          * the user has assign permission to the current section
                          */
                         name = SectionCache.getById(sectId).getName();
-                        if ( !perm.has(name, SectionFlags.ASSIGN)) {
+                        if ( !perm.has(name, SectionFlags.COMPLETE)) {
                             event.cancel();
                             return;
                         }
@@ -307,7 +307,7 @@ public class AttachmentScreenUI extends Screen {
                      */
                     for (Item<Integer> row : tableSection.getModel()) {
                         name = SectionCache.getById(row.getKey()).getName();
-                        row.setEnabled(perm.has(name, SectionFlags.ASSIGN));
+                        row.setEnabled(perm.has(name, SectionFlags.COMPLETE));
                     }
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -499,21 +499,28 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
-        model = new ArrayList<Item<Integer>>();
+        model1 = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("attachment_type")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
-            model.add(row);
+            model1.add(row);
         }
 
-        type.setModel(model);
+        type.setModel(model1);
 
-        model = new ArrayList<Item<Integer>>();
-        for (SectionDO s : SectionCache.getList())
-            model.add(new Item<Integer>(s.getId(), s.getName()));
+        /*
+         * here two separate models are created for the two dropdowns to make
+         * sure that any items disabled or enabled in one don't affect the other
+         */
+        model1 = new ArrayList<Item<Integer>>();
+        model2 = new ArrayList<Item<Integer>>();
+        for (SectionDO s : SectionCache.getList()) {
+            model1.add(new Item<Integer>(s.getId(), s.getName()));
+            model2.add(new Item<Integer>(s.getId(), s.getName()));
+        }
 
-        querySection.setModel(model);
-        tableSection.setModel(model);
+        querySection.setModel(model1);
+        tableSection.setModel(model2);
     }
 
     @UiHandler("searchButton")
@@ -803,9 +810,9 @@ public class AttachmentScreenUI extends Screen {
         }
 
         AttachmentService.get().fetchByQueryDescending(query.getFields(),
-                                             query.getPage() * query.getRowsPerPage(),
-                                             query.getRowsPerPage(),
-                                             queryCall);
+                                                       query.getPage() * query.getRowsPerPage(),
+                                                       query.getRowsPerPage(),
+                                                       queryCall);
     }
 
     /**

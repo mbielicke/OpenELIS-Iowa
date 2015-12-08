@@ -34,6 +34,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -52,6 +53,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
@@ -75,6 +77,9 @@ public class TurnaroundReportBean {
 
     @EJB
     private SessionCacheBean    session;
+
+    @EJB
+    private CategoryCacheBean   category;
 
     @EJB
     private SectionBean         section;
@@ -117,6 +122,11 @@ public class TurnaroundReportBean {
                                                           .setOptionList(getSections())
                                                           .setMultiSelect(true));
 
+            p.add(new Prompt("DOMAIN", Prompt.Type.ARRAY).setPrompt("Domain:")
+                  .setWidth(200)
+                  .setOptionList(getDomains())
+                  .setMultiSelect(true));
+
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
@@ -143,7 +153,7 @@ public class TurnaroundReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String section, userName, printer, printstat;
+        String section, domain, userName, printer, printstat;
         Timestamp fromDate, toDate;
 
         /*
@@ -163,6 +173,7 @@ public class TurnaroundReportBean {
         fromDate = ReportUtil.getTimestampParameter(param, "FROM_RELEASED");
         toDate = ReportUtil.getTimestampParameter(param, "TO_RELEASED");
         section = ReportUtil.getListParameter(param, "SECTION");
+        domain = ReportUtil.getStringListParameter(param, "DOMAIN");
         printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         if (fromDate == null || toDate == null)
@@ -172,6 +183,11 @@ public class TurnaroundReportBean {
             section = " and se.id " + section;
         else
             section = "";
+
+        if ( !DataBaseUtil.isEmpty(domain))
+            domain = " and s.domain " + domain;
+        else
+            domain = "";
 
         /*
          * start the report
@@ -188,6 +204,7 @@ public class TurnaroundReportBean {
             jparam.put("TO_DATE", toDate);
             jparam.put("USER_NAME", userName);
             jparam.put("SECTION", section);
+            jparam.put("DOMAIN", domain);
 
             status.setMessage("Outputing report").setPercentComplete(20);
 
@@ -234,7 +251,24 @@ public class TurnaroundReportBean {
             for (SectionViewDO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getName()));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Fetching sections", e);
+        }
+
+        return l;
+    }
+
+    private ArrayList<OptionListItem> getDomains() {
+        ArrayList<DictionaryDO> d;
+        ArrayList<OptionListItem> l;
+
+        l = new ArrayList<OptionListItem>();
+        l.add(new OptionListItem("", ""));
+        try {
+            d = category.getBySystemName("sample_domain").getDictionaryList();
+            for (DictionaryDO n : d)
+                l.add(new OptionListItem(n.getCode(), n.getEntry()));
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Fetching domains", e);
         }
 
         return l;

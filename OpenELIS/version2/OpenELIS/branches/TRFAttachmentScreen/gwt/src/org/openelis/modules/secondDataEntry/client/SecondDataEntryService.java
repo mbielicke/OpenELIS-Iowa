@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.ui.annotation.Service;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -38,8 +37,5 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @Service
 @RemoteServiceRelativePath("secondDataEntry")
 public interface SecondDataEntryService extends XsrfProtectedService {
-
     public ArrayList<SecondDataEntryVO> query(Query query) throws Exception;
-    
-    public ReportStatus getFields(String systemVariableName) throws Exception;
 }

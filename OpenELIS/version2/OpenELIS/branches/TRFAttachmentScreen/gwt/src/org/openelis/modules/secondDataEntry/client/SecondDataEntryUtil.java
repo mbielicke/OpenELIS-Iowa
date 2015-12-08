@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.secondDataEntry.client;
 
 import static org.openelis.modules.main.client.Logger.*;
@@ -122,8 +122,8 @@ public class SecondDataEntryUtil {
      * "width" as its width, "textCase" as its case e.g. UPPER or LOWER,
      * "maxLength" as its maximum allowed length and "mask" as its mask
      */
-    public static TextBox getTextBox(Type type, int width, TextBase.Case textCase, Integer maxLength,
-                               String mask) {
+    public static TextBox getTextBox(Type type, int width, TextBase.Case textCase,
+                                     Integer maxLength, String mask) {
         TextBox t;
 
         t = null;
@@ -171,7 +171,8 @@ public class SecondDataEntryUtil {
      * "width" as its width, "textCase" as its case e.g. UPPER or LOWER, and
      * "model" as its model
      */
-    public static Dropdown getDropdown(Type type, int width, TextBase.Case textCase, ArrayList<Item> model) {
+    public static Dropdown getDropdown(Type type, int width, TextBase.Case textCase,
+                                       ArrayList<Item> model) {
         Dropdown d;
 
         d = null;
@@ -199,7 +200,8 @@ public class SecondDataEntryUtil {
      * total width of its table; the table's columns show various fields of an
      * organization
      */
-    public static AutoComplete getOrganizationAutocomplete(int width, TextBase.Case textCase, int dropWidth, final Screen parentScreen) {
+    public static AutoComplete getOrganizationAutocomplete(int width, TextBase.Case textCase,
+                                                           int dropWidth, final Screen parentScreen) {
         final AutoComplete a;
         Table t;
 
@@ -226,10 +228,19 @@ public class SecondDataEntryUtil {
         /*
          * add the matches handler
          */
+        addOrganizationMatchesHandler(a, parentScreen);
+
+        return a;
+    }
+
+    /**
+     * Adds the matches handler to the passed autocomplete which will show
+     * organizations
+     */
+    public static void addOrganizationMatchesHandler(final AutoComplete a, final Screen parentScreen) {
         a.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Item<Integer> row;
-                OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
 
@@ -237,17 +248,16 @@ public class SecondDataEntryUtil {
                 try {
                     list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
-                    for (int i = 0; i < list.size(); i++ ) {
+                    for (OrganizationDO data : list) {
                         row = new Item<Integer>(5);
-                        data = list.get(i);
 
                         row.setKey(data.getId());
-                        row.setData(data);
                         row.setCell(0, data.getName());
                         row.setCell(1, data.getAddress().getMultipleUnit());
                         row.setCell(2, data.getAddress().getStreetAddress());
                         row.setCell(3, data.getAddress().getCity());
                         row.setCell(4, data.getAddress().getState());
+                        row.setData(data);
 
                         model.add(row);
                     }
@@ -259,8 +269,6 @@ public class SecondDataEntryUtil {
                 parentScreen.getWindow().clearStatus();
             }
         });
-
-        return a;
     }
 
     /**
@@ -269,7 +277,8 @@ public class SecondDataEntryUtil {
      * total width of its table; the table's columns show various fields of a
      * project
      */
-    public static AutoComplete getProjectAutocomplete(int width, TextBase.Case textCase, int dropWidth, final Screen parentScreen) {
+    public static AutoComplete getProjectAutocomplete(int width, TextBase.Case textCase,
+                                                      int dropWidth, final Screen parentScreen) {
         final AutoComplete a;
         Table t;
 
@@ -293,6 +302,19 @@ public class SecondDataEntryUtil {
         /*
          * add the matches handler
          */
+        addProjectMatchesHandler(a, parentScreen);
+
+        return a;
+    }
+
+    /**
+     * Adds the matches handler to the passed autocomplete which will show
+     * projects
+     */
+    public static void addProjectMatchesHandler(final AutoComplete a, final Screen parentScreen) {
+        /*
+         * add the matches handler
+         */
         a.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Item<Integer> row;
@@ -304,13 +326,13 @@ public class SecondDataEntryUtil {
                     list = ProjectService.get()
                                          .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
-                    for (ProjectDO p : list) {
+                    for (ProjectDO data : list) {
                         row = new Item<Integer>(2);
 
-                        row.setKey(p.getId());
-                        row.setCell(0, p.getName());
-                        row.setCell(1, p.getDescription());
-                        row.setData(p);
+                        row.setKey(data.getId());
+                        row.setCell(0, data.getName());
+                        row.setCell(1, data.getDescription());
+                        row.setData(data);
                         model.add(row);
                     }
                     a.showAutoMatches(model);
@@ -321,10 +343,8 @@ public class SecondDataEntryUtil {
                 parentScreen.getWindow().clearStatus();
             }
         });
-
-        return a;
     }
-    
+
     /**
      * Creates a key for the image showing match/no match in the row for the
      * widget with the passed key
@@ -332,7 +352,7 @@ public class SecondDataEntryUtil {
     public static String getMatchImageKey(String editWidgetKey) {
         return editWidgetKey + "_im";
     }
-    
+
     /**
      * Creates a key for the image showing the direction in which the copy was
      * performed in the row for the widget with the passed key
@@ -348,7 +368,7 @@ public class SecondDataEntryUtil {
     public static String getRightWidgetKey(String editWidgetKey) {
         return editWidgetKey + "_r";
     }
-    
+
     /**
      * Creates the model for a dropdown filled from dictionary entries;
      * "category" is the category to which the entries belong and "key" is name
@@ -373,7 +393,6 @@ public class SecondDataEntryUtil {
 
         return model;
     }
-    
 
     /**
      * Adds the passed widget to the passed panel; also adds an Image widget
@@ -409,23 +428,25 @@ public class SecondDataEntryUtil {
         for (int i = 0; i < widgets.length; i++ ) {
             widgetTable.setWidget(row, i, widgets[i]);
             if (row % 2 != 0)
-                widgetTable.getRowFormatter().setStyleName(row, OpenELISResources.INSTANCE.style().FlexTableAlternateRow());
+                widgetTable.getRowFormatter()
+                           .setStyleName(row,
+                                         OpenELISResources.INSTANCE.style().WidgetTableAlternateRow());
         }
     }
 
     /**
-     * Increments by one, the number of times the passed widget has been edited;
-     * returns the incremented value
+     * Increments by one, the number of times the widget with the passed key has
+     * been edited; returns the incremented value
      */
-    public static Integer updateNumEdit(Widget widget, HashMap<Widget, Integer> numEdits) {
+    public static Integer updateNumEdit(String key, HashMap<String, Integer> numEdits) {
         Integer numEdit;
 
-        numEdit = numEdits.get(widget);
+        numEdit = numEdits.get(key);
         if (numEdit == null)
             numEdit = 1;
         else
             numEdit++ ;
-        numEdits.put(widget, numEdit);
+        numEdits.put(key, numEdit);
 
         return numEdit;
     }

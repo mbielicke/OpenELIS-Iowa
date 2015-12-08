@@ -437,7 +437,11 @@ public class AttachmentBean {
 
         if (DataBaseUtil.isEmpty(data.getDescription()))
             e.add(new FormErrorException(Messages.get()
-                                                 .attachment_descRequiredException(data.getStorageReference())));
+                                                 .attachment_descRequiredException(data.getDescription())));
+        
+        if (data.getSectionId() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .attachment_sectRequiredException(data.getDescription())));
 
         /*
          * validate the section if the two DOs have different sections
@@ -445,10 +449,10 @@ public class AttachmentBean {
         if (dbData != null && DataBaseUtil.isDifferent(data.getSectionId(), dbData.getSectionId())) {
             if (systemId.equals(dbData.getSectionId()))
                 e.add(new FormErrorException(Messages.get()
-                                                     .attachment_cantChangeFromSystemException(data.getStorageReference())));
+                                                     .attachment_cantChangeFromSystemException(data.getDescription())));
             else if (systemId.equals(data.getSectionId()))
                 e.add(new FormErrorException(Messages.get()
-                                                     .attachment_cantChangeToSystemException(data.getStorageReference())));
+                                                     .attachment_cantChangeToSystemException(data.getDescription())));
         }
 
         if (e.size() > 0)
