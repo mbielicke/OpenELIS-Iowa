@@ -207,47 +207,6 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
     
-    @SuppressWarnings("unchecked")
-    public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
-        Query query;
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
-        query.setParameter("startedDate", dateFrom);
-        query.setParameter("endDate", dateTo);
-        query.setParameter("qcName", qcName);
-        query.setParameter("qcLocation", qcLocation);
-        
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
-    @SuppressWarnings("unchecked")
-    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName, Integer qcLocation) throws Exception {
-        Integer id;
-        Query query;
-        ArrayList<Object[]> list;
-        ArrayList<Integer> ids;
-
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchByInstancesForQcChart");
-        query.setParameter("qcName", qcName);
-        query.setParameter("qcLocation", qcLocation);
-        query.setMaxResults(numInstances);
-
-        list = DataBaseUtil.toArrayList(query.getResultList());
-        
-        ids = new ArrayList<Integer>();
-        for (int i = 0; i < list.size(); i++ ) {
-            id = (Integer)(list.get(i))[1];
-            if (id != null)
-                ids.add(id);
-        }
-        if (ids.size() == 0)
-            return new ArrayList<QcChartResultVO>();
-
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchAnalytesForQcChart");
-        query.setParameter("ids", ids);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
     public WorksheetAnalysisViewDO fetchViewById(Integer id) throws Exception {
         Query query;
         WorksheetAnalysisViewDO waVDO;

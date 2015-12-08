@@ -1,10 +1,34 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +42,9 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -50,14 +77,14 @@ import org.openelis.utils.User;
 @SecurityDomain("openelis")
 public class QcChartReportBean {
 
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager         manager;
+
     @Resource
     private SessionContext        ctx;
 
     @EJB
     private SessionCacheBean      session;
-
-    @EJB
-    private WorksheetAnalysisBean worksheetAnalysis;
 
     @EJB
     private CategoryCacheBean     categoryCache;
@@ -99,12 +126,9 @@ public class QcChartReportBean {
         resultList = null;
         try {
             if (startDate != null && endDate != null)
-                resultList = worksheetAnalysis.fetchByDateForQcChart(startDate,
-                                                                     endDate,
-                                                                     qcName,
-                                                                     location);
+                resultList = fetchByDate(startDate, endDate, qcName, location);
             else if (number != null)
-                resultList = worksheetAnalysis.fetchByInstancesForQcChart(number, qcName, location);
+                resultList = fetchByInstances(number, qcName, location);
 
             if (resultList.size() == 0)
                 throw new NotFoundException("No data found for the query. Please change your query parameters.");
@@ -313,7 +337,7 @@ public class QcChartReportBean {
         vo.setWId(result.getWId());
         vo.setQcId(result.getQcId());
         vo.setAnalyteId(result.getAnalyteId());
-        vo.setAnalyteName(result.getAnalyteParameter());
+        vo.setAnalyteName(result.getAnalyteName());
         vo.setWorksheetCreatedDate(result.getWorksheetCreatedDate());
 
         return vo;
@@ -414,6 +438,48 @@ public class QcChartReportBean {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
+    private ArrayList<QcChartResultVO> fetchByDate(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
+        query.setParameter("startedDate", dateFrom);
+        query.setParameter("endDate", dateTo);
+        query.setParameter("qcName", qcName);
+        query.setParameter("qcLocation", qcLocation);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ArrayList<QcChartResultVO> fetchByInstances(Integer numInstances, String qcName, Integer qcLocation) throws Exception {
+        Integer id;
+        Query query;
+        ArrayList<Object[]> list;
+        ArrayList<Integer> ids;
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByInstancesForQcChart");
+        query.setParameter("qcName", qcName);
+        query.setParameter("qcLocation", qcLocation);
+        query.setMaxResults(numInstances);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+        
+        ids = new ArrayList<Integer>();
+        for (int i = 0; i < list.size(); i++ ) {
+            id = (Integer)(list.get(i))[1];
+            if (id != null)
+                ids.add(id);
+        }
+        if (ids.size() == 0)
+            return new ArrayList<QcChartResultVO>();
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchAnalytesForQcChart");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     private void calculateStaticStatistics(QcChartReportViewVO list) throws Exception {
         AnalyteParameterViewDO apVDO;
         ArrayList<Value> qcList;
