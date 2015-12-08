@@ -1,11 +1,36 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -14,967 +39,506 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.utilcommon.TurnaroundUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 public class ToDoExcelHelperBean {
     @EJB
-    DictionaryCacheBean                dictionaryCache;
+    CategoryCacheBean                categoryCache;
 
     @EJB
-    CategoryCacheBean                  categoryCache;
+    SessionCacheBean                 session;
 
     @EJB
-    SessionCacheBean                   session;
+    ToDoBean                         toDo;
 
     @EJB
-    SystemVariableBean                 systemVariable;
+    UserCacheBean                    userCache;
 
-    @EJB
-    ToDoBean                           toDo;
+    private static final Logger      log = Logger.getLogger("openelis");
 
-    @EJB
-    UserCacheBean                      userCache;
+    private CellStyle                headerCellStyle, numberCellStyle;
 
-    private static final Logger        log = Logger.getLogger("openelis");
+    private SimpleDateFormat         dateTimeFormat;
 
-    private HashMap<String, CellStyle> styles;
+    private DecimalFormat            decimalFormat;
 
-    private SimpleDateFormat           dateTimeFormat;
+    private HashMap<String, String>  domains;
+
+    private HashMap<Integer, String> statuses;
 
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ReportStatus exportToExcel(boolean mySection) throws Exception {
         Path path;
-        HSSFWorkbook wb;
+        XSSFWorkbook wb;
         ReportStatus status;
 
-        status = new ReportStatus();
-        status.setPercentComplete(0);
-        status.setMessage("Exporting to Excel: Initializing");
-        session.setAttribute("ToDoExportToExcelStatus", status);
+        try {
+            /*
+             * defaults
+             */
+            dateTimeFormat = new SimpleDateFormat(Messages.get().dateTimePattern());
+            decimalFormat = new DecimalFormat("########.#");
 
-        dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            domains = new HashMap<String, String>();
+            for (DictionaryDO d : categoryCache.getBySystemName("sample_domain")
+                                               .getDictionaryList())
+                domains.put(d.getCode(), d.getEntry());
 
-        wb = new HSSFWorkbook();
-        createStyles(wb);
+            statuses = new HashMap<Integer, String>();
+            for (DictionaryDO d : categoryCache.getBySystemName("analysis_status")
+                                               .getDictionaryList())
+                statuses.put(d.getId(), d.getEntry());
 
-        status.setPercentComplete(20);
-        status.setMessage("Creating sheet 1 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillLoggedInSheet(wb, toDo.getLoggedIn(), mySection);
+            status = new ReportStatus();
+            status.setPercentComplete(0).setMessage("Exporting to Excel: Initializing");
+            session.setAttribute("ToDoExportToExcelStatus", status);
 
-        status.setPercentComplete(30);
-        status.setMessage("Creating sheet 2 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillInitiatedSheet(wb, toDo.getInitiated(), mySection);
+            wb = new XSSFWorkbook();
+            createStyles(wb);
 
-        status.setPercentComplete(40);
-        status.setMessage("Creating sheet 3 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillWorksheetSheet(wb, toDo.getWorksheet(), mySection);
+            status.setPercentComplete(20);
+            status.setMessage("Creating sheet 1 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillLoggedInSheet(wb, toDo.getLoggedIn(), mySection);
 
-        status.setPercentComplete(50);
-        status.setMessage("Creating sheet 4 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillCompletedSheet(wb, toDo.getCompleted(), mySection);
+            status.setPercentComplete(30);
+            status.setMessage("Creating sheet 2 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillInitiatedSheet(wb, toDo.getInitiated(), mySection);
 
-        status.setPercentComplete(60);
-        status.setMessage("Creating sheet 5 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillReleasedSheet(wb, toDo.getReleased(), mySection);
+            status.setPercentComplete(40);
+            status.setMessage("Creating sheet 3 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillWorksheetSheet(wb, toDo.getWorksheet(), mySection);
 
-        status.setPercentComplete(70);
-        status.setMessage("Creating sheet 6 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillToBeVerifiedSheet(wb, toDo.getToBeVerified());
+            status.setPercentComplete(50);
+            status.setMessage("Creating sheet 4 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillCompletedSheet(wb, toDo.getCompleted(), mySection);
 
-        status.setPercentComplete(80);
-        status.setMessage("Creating sheet 7 of 7...");
-        session.setAttribute("ToDoExportToExcelStatus", status);
-        fillOtherSheet(wb, toDo.getOther(), mySection);
+            status.setPercentComplete(60);
+            status.setMessage("Creating sheet 5 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillReleasedSheet(wb, toDo.getReleased(), mySection);
 
-        // fillInstrumentSheet(wb, toDo.getInstrument(), mySection);
+            status.setPercentComplete(70);
+            status.setMessage("Creating sheet 6 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillToBeVerifiedSheet(wb, toDo.getToBeVerified());
 
-        status.setPercentComplete(90);
-        status.setMessage("Exporting to Excel: Finalizing");
-        session.setAttribute("ToDoExportToExcelStatus", status);
+            status.setPercentComplete(80);
+            status.setMessage("Creating sheet 7 of 7...");
+            session.setAttribute("ToDoExportToExcelStatus", status);
+            fillOtherSheet(wb, toDo.getOther(), mySection);
 
-        path = export(wb, "upload_stream_directory");
-        status.setMessage(path.getFileName().toString())
-              .setPath(path.toString())
-              .setStatus(ReportStatus.Status.SAVED);
+            status.setPercentComplete(90);
+            status.setMessage("Exporting to Excel: Finalizing");
+            session.setAttribute("ToDoExportToExcelStatus", status);
 
-        styles = null;
-        dateTimeFormat = null;
+            path = export(wb, "upload_stream_directory");
+            status.setMessage(path.getFileName().toString())
+                  .setPercentComplete(100)
+                  .setPath(path.toString())
+                  .setStatus(ReportStatus.Status.SAVED);
+        } finally {
+            headerCellStyle = null;
+            numberCellStyle = null;
+            dateTimeFormat = null;
+            decimalFormat = null;
+            statuses = null;
+            domains = null;
+        }
 
         return status;
     }
 
-    private void createStyles(HSSFWorkbook wb) {
-        CellStyle dateTimeEditStyle, dateTimeNoEditStyle, headerStyle, rowEditStyle, rowNoEditStyle;
-        CreationHelper helper;
-        Font font;
-
-        helper = wb.getCreationHelper();
-        styles = new HashMap<String, CellStyle>();
-
-        font = wb.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());
-        headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        headerStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        headerStyle.setFont(font);
-        headerStyle.setLocked(true);
-        styles.put("header", headerStyle);
-
-        rowEditStyle = wb.createCellStyle();
-        rowEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowEditStyle.setLocked(false);
-        styles.put("row_edit", rowEditStyle);
-
-        rowNoEditStyle = wb.createCellStyle();
-        rowNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        rowNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
-        rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowNoEditStyle.setLocked(true);
-        styles.put("row_no_edit", rowNoEditStyle);
-
-        dateTimeEditStyle = wb.createCellStyle();
-        dateTimeEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
-        dateTimeEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        dateTimeEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        dateTimeEditStyle.setLocked(false);
-        styles.put("datetime_edit", dateTimeEditStyle);
-
-        dateTimeNoEditStyle = wb.createCellStyle();
-        dateTimeNoEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
-        dateTimeNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        dateTimeNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        dateTimeNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
-        dateTimeNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        dateTimeNoEditStyle.setLocked(true);
-        styles.put("datetime_no_edit", dateTimeNoEditStyle);
-    }
-
-    private void fillLoggedInSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
+    private void fillLoggedInSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
                                    boolean mySection) {
-        Integer accNum, prevAccNum;
-        String secName;
+        int r;
         SystemUserPermission perm;
-        Datetime scd, sct, scdt;
-        Date temp;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        AnalysisViewVO data;
-        ArrayList<String> headers;
+        XSSFSheet sheet;
 
-        accNum = null;
-        prevAccNum = null;
-        scdt = null;
         perm = userCache.getPermission();
-        sheet = wb.createSheet("LoggedIn");
 
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().gen_priority());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_test());
-        headers.add(Messages.get().gen_method());
-        headers.add(Messages.get().sample_collected());
-        headers.add(Messages.get().sample_received());
-        headers.add(Messages.get().todo_override());
-        headers.add(Messages.get().todo_holding());
-        headers.add(Messages.get().todo_expCompletion());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
+        sheet = wb.createSheet(Messages.get().todo_loggedIn());
+        r = 0;
 
-        // row = sheet.createRow(0);
-        // cell = row.createCell(0);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().sample_accessionNum());
-        //
-        // cell = row.createCell(1);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().gen_priority());
-        //
-        // cell = row.createCell(2);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().todo_domain());
-        //
-        // cell = row.createCell(3);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().gen_section());
-        //
-        // cell = row.createCell(4);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().gen_test());
-        //
-        // cell = row.createCell(5);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().gen_method());
-        //
-        // cell = row.createCell(6);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().sample_collected());
-        //
-        // cell = row.createCell(7);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().sample_received());
-        //
-        // cell = row.createCell(8);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().todo_override());
-        //
-        // cell = row.createCell(9);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().todo_holding());
-        //
-        // cell = row.createCell(10);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().todo_expCompletion());
-        //
-        // cell = row.createCell(11);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().todo_domainSpecField());
-        //
-        // cell = row.createCell(12);
-        // cell.setCellStyle(styles.get("header"));
-        // cell.setCellValue(Messages.get().sampleOrganization_reportTo());
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_priority(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_section(),
+                     Messages.get().todo_test(),
+                     Messages.get().todo_method(),
+                     Messages.get().todo_collected(),
+                     Messages.get().todo_received(),
+                     Messages.get().todo_override(),
+                     Messages.get().todo_holding(),
+                     Messages.get().todo_expCompletion(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
 
-        for (int r = 1; r < list.size(); r++ ) {
-            data = list.get(r - 1);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
+        for (AnalysisViewVO a : list) {
+            if (mySection && perm.getSection(a.getSectionName()) == null)
                 continue;
-            row = sheet.createRow(r);
 
-            accNum = data.getAccessionNumber();
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(accNum);
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPriority() != null)
-                cell.setCellValue(data.getPriority());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getTestName());
-
-            cell = row.createCell(5);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getMethodName() != null)
-                cell.setCellValue(data.getMethodName());
-
-            if ( !accNum.equals(prevAccNum)) {
-                scd = data.getCollectionDate();
-                sct = data.getCollectionTime();
-                if (scd != null) {
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
-                    }
-                    scdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-                } else {
-                    scdt = null;
-                }
-            }
-
-            cell = row.createCell(6);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (scdt != null)
-                cell.setCellValue(dateTimeFormat.format(scdt.getDate()));
-
-            cell = row.createCell(7);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (data.getReceivedDate() != null)
-                cell.setCellValue(dateTimeFormat.format(data.getReceivedDate().getDate()));
-
-            cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getAnalysisResultOverride() != null)
-                cell.setCellValue(data.getAnalysisResultOverride());
-
-            cell = row.createCell(9);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(),
-                                                                 data.getCollectionDate(),
-                                                                 data.getCollectionTime(),
-                                                                 data.getTimeHolding()));
-
-            cell = row.createCell(10);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(),
-                                                                        data.getCollectionTime(),
-                                                                        data.getReceivedDate(),
-                                                                        data.getPriority(),
-                                                                        data.getTimeTaAverage()));
-
-            cell = row.createCell(11);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getToDoDescription() != null)
-                cell.setCellValue(data.getToDoDescription());
-
-            cell = row.createCell(12);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
+            addDataRow(sheet.createRow(r++ ),
+                       a.getAccessionNumber(),
+                       a.getPriority(),
+                       domains.get(a.getDomain()),
+                       a.getSectionName(),
+                       a.getTestName(),
+                       a.getMethodName(),
+                       TurnaroundUtil.getCombinedYM(a.getCollectionDate(), a.getCollectionTime()),
+                       a.getReceivedDate(),
+                       a.getAnalysisResultOverride(),
+                       TurnaroundUtil.getPercentHoldingUsed(a.getStartedDate(),
+                                                            a.getCollectionDate(),
+                                                            a.getCollectionTime(),
+                                                            a.getTimeHolding()),
+                       TurnaroundUtil.getPercentExpectedCompletion(a.getCollectionDate(),
+                                                                   a.getCollectionTime(),
+                                                                   a.getReceivedDate(),
+                                                                   a.getPriority(),
+                                                                   a.getTimeTaAverage()),
+                       a.getToDoDescription(),
+                       a.getPrimaryOrganizationName());
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-        sheet.autoSizeColumn(9);
-        sheet.autoSizeColumn(10);
-        sheet.autoSizeColumn(11);
-        sheet.autoSizeColumn(12);
+
+        setSize(sheet, 13);
     }
 
-    private void fillInitiatedSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
+    private void fillInitiatedSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
                                     boolean mySection) {
-        Long day, hour, diff;
-        Double units;
-        String secName;
+        int r, initDays;
         SystemUserPermission perm;
+        XSSFSheet sheet;
         Datetime now;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        AnalysisViewVO data;
-        ArrayList<String> headers;
 
         perm = userCache.getPermission();
-        sheet = wb.createSheet("Initiated");
-        hour = 3600000L;
-        day = 24 * hour;
         now = Datetime.getInstance();
+        sheet = wb.createSheet(Messages.get().todo_initiated());
+        r = 0;
 
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().gen_priority());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_test());
-        headers.add(Messages.get().gen_method());
-        headers.add(Messages.get().todo_holding());
-        headers.add(Messages.get().todo_expCompletion());
-        headers.add(Messages.get().todo_daysInInitiated());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_priority(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_section(),
+                     Messages.get().todo_test(),
+                     Messages.get().todo_method(),
+                     Messages.get().todo_holding(),
+                     Messages.get().todo_expCompletion(),
+                     Messages.get().todo_daysInInitiated(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
 
-        for (int r = 1; r < list.size(); r++ ) {
-            data = list.get(r - 1);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
+        for (AnalysisViewVO a : list) {
+            if (mySection && perm.getSection(a.getSectionName()) == null)
                 continue;
-            row = sheet.createRow(r);
 
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAccessionNumber());
+            initDays = 0;
+            if (a.getStartedDate() != null)
+                initDays = TurnaroundUtil.diffDays(a.getStartedDate(), now);
 
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPriority() != null)
-                cell.setCellValue(data.getPriority());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getTestName());
-
-            cell = row.createCell(5);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getMethodName() != null)
-                cell.setCellValue(data.getMethodName());
-
-            cell = row.createCell(6);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(),
-                                                                 data.getCollectionDate(),
-                                                                 data.getCollectionTime(),
-                                                                 data.getTimeHolding()));
-
-            cell = row.createCell(7);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(),
-                                                                        data.getCollectionTime(),
-                                                                        data.getReceivedDate(),
-                                                                        data.getPriority(),
-                                                                        data.getTimeTaAverage()));
-
-            cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getStartedDate() == null) {
-                cell.setCellValue(0);
-            } else {
-                /*
-                 * Days in initiated are calculated based on started date.
-                 * Math.ceil() returns the value closest to an integer that's
-                 * greater than or equal to the argument("units" here). For
-                 * example 3.4 is converted to 4.0 and 5.0 stays the same.
-                 */
-                diff = now.getDate().getTime() - data.getStartedDate().getDate().getTime();
-                units = diff.doubleValue() / day.doubleValue();
-                cell.setCellValue(Math.ceil(units));
-            }
-
-            cell = row.createCell(9);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getToDoDescription() != null)
-                cell.setCellValue(data.getToDoDescription());
-
-            cell = row.createCell(10);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
+            addDataRow(sheet.createRow(r++ ),
+                       a.getAccessionNumber(),
+                       a.getPriority(),
+                       domains.get(a.getDomain()),
+                       a.getSectionName(),
+                       a.getTestName(),
+                       a.getMethodName(),
+                       TurnaroundUtil.getPercentHoldingUsed(a.getStartedDate(),
+                                                            a.getCollectionDate(),
+                                                            a.getCollectionTime(),
+                                                            a.getTimeHolding()),
+                       TurnaroundUtil.getPercentExpectedCompletion(a.getCollectionDate(),
+                                                                   a.getCollectionTime(),
+                                                                   a.getReceivedDate(),
+                                                                   a.getPriority(),
+                                                                   a.getTimeTaAverage()),
+                       initDays,
+                       a.getToDoDescription(),
+                       a.getPrimaryOrganizationName());
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-        sheet.autoSizeColumn(9);
-        sheet.autoSizeColumn(10);
+
+        setSize(sheet, 11);
     }
 
-    private void fillWorksheetSheet(HSSFWorkbook wb, ArrayList<ToDoWorksheetVO> list,
-                                    boolean mySection) {
-        String secName;
-        SystemUserPermission perm;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        ToDoWorksheetVO data;
-        ArrayList<String> headers;
-
-        perm = userCache.getPermission();
-        sheet = wb.createSheet("Worksheet");
-
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().gen_id());
-        headers.add(Messages.get().gen_user());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_description());
-        headers.add(Messages.get().gen_created());
-        createHeaders(sheet, headers);
-
-        for (int r = 1; r < list.size(); r++ ) {
-            data = list.get(r - 1);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
-                continue;
-            row = sheet.createRow(r);
-
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getId());
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getSystemUserName());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getDescription() != null)
-                cell.setCellValue(data.getDescription());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            cell.setCellValue(dateTimeFormat.format(data.getCreatedDate().getDate()));
-        }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-    }
-
-    private void fillCompletedSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
+    private void fillWorksheetSheet(XSSFWorkbook wb, ArrayList<ToDoWorksheetVO> list,
                                     boolean mySection) {
         int r;
-        String secName;
         SystemUserPermission perm;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        AnalysisViewVO data;
-        ArrayList<String> headers;
+        XSSFSheet sheet;
 
         perm = userCache.getPermission();
-        sheet = wb.createSheet("Completed");
 
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().gen_priority());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_test());
-        headers.add(Messages.get().gen_method());
-        headers.add(Messages.get().todo_override());
-        headers.add(Messages.get().analysis_completed());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
-        r = 1;
+        sheet = wb.createSheet(Messages.get().todo_worksheet());
+        r = 0;
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_worksheetNum(),
+                     Messages.get().gen_username(),
+                     Messages.get().todo_section(),
+                     Messages.get().gen_description(),
+                     Messages.get().todo_created());
+
+        for (ToDoWorksheetVO w : list) {
+            if (mySection && perm.getSection(w.getSectionName()) == null)
                 continue;
-            row = sheet.createRow(r++ );
 
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAccessionNumber());
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPriority() != null)
-                cell.setCellValue(data.getPriority());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getTestName());
-
-            cell = row.createCell(5);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getMethodName() != null)
-                cell.setCellValue(data.getMethodName());
-
-            cell = row.createCell(6);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getAnalysisResultOverride() != null)
-                cell.setCellValue(data.getAnalysisResultOverride());
-
-            cell = row.createCell(7);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (data.getCompletedDate() != null)
-                cell.setCellValue(dateTimeFormat.format(data.getCompletedDate().getDate()));
-
-            cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getToDoDescription() != null)
-                cell.setCellValue(data.getToDoDescription());
-
-            cell = row.createCell(9);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
+            addDataRow(sheet.createRow(r++ ),
+                       w.getId(),
+                       w.getSystemUserName(),
+                       w.getSectionName(),
+                       w.getDescription(),
+                       w.getCreatedDate());
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-        sheet.autoSizeColumn(9);
+
+        setSize(sheet, 5);
     }
 
-    private void fillReleasedSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
+    private void fillCompletedSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
+                                    boolean mySection) {
+        int r;
+        SystemUserPermission perm;
+        XSSFSheet sheet;
+
+        perm = userCache.getPermission();
+
+        sheet = wb.createSheet(Messages.get().todo_completed());
+        r = 0;
+
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_priority(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_section(),
+                     Messages.get().todo_test(),
+                     Messages.get().todo_method(),
+                     Messages.get().todo_override(),
+                     Messages.get().todo_completed(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
+
+        for (AnalysisViewVO a : list) {
+            if (mySection && perm.getSection(a.getSectionName()) == null)
+                continue;
+
+            addDataRow(sheet.createRow(r++ ),
+                       a.getAccessionNumber(),
+                       a.getPriority(),
+                       domains.get(a.getDomain()),
+                       a.getSectionName(),
+                       a.getTestName(),
+                       a.getMethodName(),
+                       a.getAnalysisResultOverride(),
+                       a.getCompletedDate(),
+                       a.getToDoDescription(),
+                       a.getPrimaryOrganizationName());
+        }
+
+        setSize(sheet, 10);
+    }
+
+    private void fillReleasedSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
                                    boolean mySection) {
         int r;
-        String secName;
         SystemUserPermission perm;
-        Datetime scd, sct;
-        Date temp;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        AnalysisViewVO data;
-        ArrayList<String> headers;
+        XSSFSheet sheet;
 
         perm = userCache.getPermission();
-        sheet = wb.createSheet("Released");
 
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_test());
-        headers.add(Messages.get().gen_method());
-        headers.add(Messages.get().sample_collected());
-        headers.add(Messages.get().gen_released());
-        headers.add(Messages.get().todo_override());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
-        r = 1;
+        sheet = wb.createSheet(Messages.get().todo_released());
+        r = 0;
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_section(),
+                     Messages.get().todo_test(),
+                     Messages.get().todo_method(),
+                     Messages.get().todo_collected(),
+                     Messages.get().todo_released(),
+                     Messages.get().todo_override(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
+
+        for (AnalysisViewVO a : list) {
+            if (mySection && perm.getSection(a.getSectionName()) == null)
                 continue;
-            row = sheet.createRow(r++ );
 
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAccessionNumber());
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getTestName());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getMethodName() != null)
-                cell.setCellValue(data.getMethodName());
-
-            scd = data.getCollectionDate();
-            sct = data.getCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
-                }
-
-                cell = row.createCell(5);
-                cell.setCellStyle(styles.get("datetime_no_edit"));
-                cell.setCellValue(dateTimeFormat.format(Datetime.getInstance(Datetime.YEAR,
-                                                                             Datetime.MINUTE,
-                                                                             temp).getDate()));
-            }
-
-            cell = row.createCell(6);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (data.getReleasedDate() != null)
-                cell.setCellValue(dateTimeFormat.format(data.getReleasedDate().getDate()));
-
-            cell = row.createCell(7);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getAnalysisResultOverride() != null)
-                cell.setCellValue(data.getAnalysisResultOverride());
-
-            cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getToDoDescription() != null)
-                cell.setCellValue(data.getToDoDescription());
-
-            cell = row.createCell(9);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
+            addDataRow(sheet.createRow(r++ ),
+                       a.getAccessionNumber(),
+                       domains.get(a.getDomain()),
+                       a.getSectionName(),
+                       a.getTestName(),
+                       a.getMethodName(),
+                       TurnaroundUtil.getCombinedYM(a.getCollectionDate(), a.getCollectionTime()),
+                       a.getReleasedDate().getDate(),
+                       a.getAnalysisResultOverride(),
+                       a.getToDoDescription(),
+                       a.getPrimaryOrganizationName());
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-        sheet.autoSizeColumn(9);
+
+        setSize(sheet, 10);
     }
 
-    private void fillToBeVerifiedSheet(HSSFWorkbook wb, ArrayList<ToDoSampleViewVO> list) {
-        Datetime scd, sct;
-        Date temp;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        ToDoSampleViewVO data;
-        ArrayList<String> headers;
-
-        sheet = wb.createSheet("ToBeVerified");
-
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().sample_collected());
-        headers.add(Messages.get().sample_received());
-        headers.add(Messages.get().todo_override());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
-
-        for (int r = 1; r < list.size(); r++ ) {
-            data = list.get(r - 1);
-            row = sheet.createRow(r);
-
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAccessionNumber());
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            scd = data.getCollectionDate();
-            sct = data.getCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
-                }
-
-                cell = row.createCell(2);
-                cell.setCellStyle(styles.get("datetime_no_edit"));
-                cell.setCellValue(dateTimeFormat.format(Datetime.getInstance(Datetime.YEAR,
-                                                                             Datetime.MINUTE,
-                                                                             temp).getDate()));
-            }
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (data.getReceivedDate() != null)
-                cell.setCellValue(dateTimeFormat.format(data.getReceivedDate().getDate()));
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSampleResultOverride() != null)
-                cell.setCellValue(data.getSampleResultOverride());
-
-            cell = row.createCell(5);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getDescription() != null)
-                cell.setCellValue(data.getDescription());
-
-            cell = row.createCell(6);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
-        }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-    }
-
-    private void fillOtherSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list, boolean mySection) {
+    private void fillToBeVerifiedSheet(XSSFWorkbook wb, ArrayList<ToDoSampleViewVO> list) {
         int r;
-        String secName;
+        XSSFSheet sheet;
+
+        sheet = wb.createSheet(Messages.get().todo_toBeVerified());
+        r = 0;
+
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_collected(),
+                     Messages.get().todo_received(),
+                     Messages.get().todo_override(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
+
+        for (ToDoSampleViewVO s : list) {
+            addDataRow(sheet.createRow(r++ ),
+                       s.getAccessionNumber(),
+                       domains.get(s.getDomain()),
+                       TurnaroundUtil.getCombinedYM(s.getCollectionDate(), s.getCollectionTime()),
+                       s.getReceivedDate(),
+                       s.getSampleResultOverride(),
+                       s.getDescription(),
+                       s.getPrimaryOrganizationName());
+        }
+
+        setSize(sheet, 7);
+    }
+
+    private void fillOtherSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list, boolean mySection) {
+        int r;
         SystemUserPermission perm;
-        Datetime scd, sct;
-        Date temp;
-        HSSFSheet sheet;
-        Row row;
-        Cell cell;
-        AnalysisViewVO data;
-        ArrayList<String> headers;
+        XSSFSheet sheet;
 
         perm = userCache.getPermission();
-        sheet = wb.createSheet("Other");
 
-        headers = new ArrayList<String>();
-        headers.add(Messages.get().sample_accessionNum());
-        headers.add(Messages.get().todo_domain());
-        headers.add(Messages.get().gen_section());
-        headers.add(Messages.get().gen_status());
-        headers.add(Messages.get().gen_test());
-        headers.add(Messages.get().gen_method());
-        headers.add(Messages.get().sample_collected());
-        headers.add(Messages.get().sample_received());
-        headers.add(Messages.get().todo_override());
-        headers.add(Messages.get().todo_domainSpecField());
-        headers.add(Messages.get().sampleOrganization_reportTo());
-        createHeaders(sheet, headers);
-        r = 1;
+        sheet = wb.createSheet(Messages.get().todo_other());
+        r = 0;
 
-        for (int i = 0; i < list.size(); i++ ) {
-            data = list.get(i);
-            secName = data.getSectionName();
-            if (mySection && perm.getSection(secName) == null)
+        addHeaderRow(sheet.createRow(r++ ),
+                     Messages.get().todo_accNum(),
+                     Messages.get().todo_domain(),
+                     Messages.get().todo_section(),
+                     Messages.get().gen_status(),
+                     Messages.get().todo_test(),
+                     Messages.get().todo_method(),
+                     Messages.get().todo_collected(),
+                     Messages.get().todo_received(),
+                     Messages.get().todo_override(),
+                     Messages.get().todo_domainSpecField(),
+                     Messages.get().todo_reportTo());
+
+        for (AnalysisViewVO a : list) {
+            if (mySection && perm.getSection(a.getSectionName()) == null)
                 continue;
-            row = sheet.createRow(r++ );
 
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAccessionNumber());
-
-            cell = row.createCell(1);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getDomain());
-
-            cell = row.createCell(2);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getSectionName() != null)
-                cell.setCellValue(data.getSectionName());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getAnalysisStatusId());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            cell.setCellValue(data.getTestName());
-
-            cell = row.createCell(5);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getMethodName() != null)
-                cell.setCellValue(data.getMethodName());
-
-            scd = data.getCollectionDate();
-            sct = data.getCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
-                }
-
-                cell = row.createCell(6);
-                cell.setCellStyle(styles.get("datetime_no_edit"));
-                cell.setCellValue(dateTimeFormat.format(Datetime.getInstance(Datetime.YEAR,
-                                                                             Datetime.MINUTE,
-                                                                             temp).getDate()));
-            }
-
-            cell = row.createCell(7);
-            cell.setCellStyle(styles.get("datetime_no_edit"));
-            if (data.getReceivedDate() != null)
-                cell.setCellValue(dateTimeFormat.format(data.getReceivedDate().getDate()));
-
-            cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getAnalysisResultOverride() != null)
-                cell.setCellValue(data.getAnalysisResultOverride());
-
-            cell = row.createCell(9);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getToDoDescription() != null)
-                cell.setCellValue(data.getToDoDescription());
-
-            cell = row.createCell(10);
-            cell.setCellStyle(styles.get("row_no_edit"));
-            if (data.getPrimaryOrganizationName() != null)
-                cell.setCellValue(data.getPrimaryOrganizationName());
+            addDataRow(sheet.createRow(r++ ),
+                       a.getAccessionNumber(),
+                       domains.get(a.getDomain()),
+                       a.getSectionName(),
+                       statuses.get(a.getAnalysisStatusId()),
+                       a.getTestName(),
+                       a.getMethodName(),
+                       TurnaroundUtil.getCombinedYM(a.getCollectionDate(), a.getCollectionTime()),
+                       a.getReceivedDate(),
+                       a.getAnalysisResultOverride(),
+                       a.getToDoDescription(),
+                       a.getPrimaryOrganizationName());
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-        sheet.autoSizeColumn(9);
-        sheet.autoSizeColumn(10);
+
+        setSize(sheet, 7);
     }
 
-    private void fillInstrumentSheet(HSSFWorkbook wb, ArrayList<AnalysisViewVO> list,
-                                     boolean mySection) {
-        // TODO
-    }
-
-    private void createHeaders(HSSFSheet sheet, ArrayList<String> headers) {
-        String header;
+    /*
+     * add header row
+     */
+    private void addHeaderRow(Row row, String... headers) {
+        int i;
         Cell cell;
-        Row row;
 
-        row = sheet.createRow(0);
-        for (int i = 0; i < headers.size(); i++ ) {
-            header = headers.get(i);
-            cell = row.createCell(i);
-            cell.setCellStyle(styles.get("header"));
-            cell.setCellValue(header);
+        i = 0;
+        for (String h : headers) {
+            cell = row.createCell(i++ );
+            cell.setCellValue(h);
+            cell.setCellStyle(headerCellStyle);
         }
+    }
+
+    /*
+     * add data row
+     */
+    private void addDataRow(Row row, Object... data) {
+        int i;
+        Cell cell;
+
+        i = 0;
+        for (Object d : data) {
+            cell = row.createCell(i++ );
+            if (d instanceof Datetime) {
+                cell.setCellValue(dateTimeFormat.format( ((Datetime)d).getDate()));
+            } else if (d instanceof Double) {
+                cell.setCellValue(decimalFormat.format(d));
+                cell.setCellStyle(numberCellStyle);
+            } else if (d instanceof Integer) {
+                cell.setCellValue((Integer)d);
+            } else {
+                cell.setCellValue(DataBaseUtil.toString(d));
+            }
+        }
+    }
+
+    private void setSize(XSSFSheet sheet, int numCols) {
+        for (int i = 0; i < numCols; i++ )
+            sheet.autoSizeColumn(i);
+    }
+
+    /*
+     * creates the styles needed for header and row data
+     */
+    private void createStyles(XSSFWorkbook wb) {
+        headerCellStyle = wb.createCellStyle();
+        headerCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        headerCellStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+        headerCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+
+        numberCellStyle = wb.createCellStyle();
+        numberCellStyle.setAlignment(CellStyle.ALIGN_RIGHT);
     }
 
     /*
      * Exports the filled workbook to a temp file for printing or faxing.
      */
-    private Path export(HSSFWorkbook wb, String systemVariableDirectory) throws Exception {
+    private Path export(XSSFWorkbook wb, String systemVariableDirectory) throws Exception {
         Path path;
         OutputStream out;
 

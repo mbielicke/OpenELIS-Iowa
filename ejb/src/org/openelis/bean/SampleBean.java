@@ -549,11 +549,16 @@ public class SampleBean {
                                                  .sample_enteredDateRequiredException(accession)));
         else
             minEnt = ent.add( -180);
-        if (rec == null)
+        if (rec == null) {
             e.add(new FormErrorException(Messages.get()
                                                  .sample_receivedDateRequiredException(accession)));
-        else if (rec.before(minEnt))
-            e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(accession)));
+        } else if (ent != null) {
+            if (rec.before(minEnt))
+                e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(accession)));
+            else if (rec.after(ent))
+                e.add(new FormErrorException(Messages.get()
+                                             .sample_receivedDateAfterEnteredException(accession)));
+        }
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             if (col != null) {
@@ -569,15 +574,17 @@ public class SampleBean {
         }
 
         if (col != null) {
-            if (rec != null && col.after(rec))
+            if (rec != null && col.after(rec)) {
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedDateAfterReceivedException(accession)));
-            if (col.before(minEnt))
-                e.add(new FormErrorException(Messages.get()
+            } else if (ent != null) {
+                if (col.before(minEnt))
+                    e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedTooOldWarning(accession)));
-            if (ent != null && col.after(ent))
-                e.add(new FormErrorException(Messages.get()
+                else if (col.after(ent))
+                    e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedDateAfterEnteredException(accession)));
+            }
         }
 
         if (e.size() > 0)

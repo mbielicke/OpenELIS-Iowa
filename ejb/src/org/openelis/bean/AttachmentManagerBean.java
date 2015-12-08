@@ -384,7 +384,7 @@ public class AttachmentManagerBean {
      * @throws Exception
      */
     public ArrayList<AttachmentManager> put(List<String> paths, Integer sectionId) throws Exception {
-        String base;
+        String base, name;
         AttachmentDO data;
         ArrayList<Integer> ids;
 
@@ -394,6 +394,17 @@ public class AttachmentManagerBean {
             log.severe("No 'attachment_directory' system variable defined");
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
         }
+        
+        if (sectionId == null) {
+            try {
+                name = ReportUtil.getSystemVariableValue("internal_section");
+                sectionId = sectionCache.getByName(name).getId();
+            } catch (Exception e) {
+                log.severe("No 'internal_section' system variable defined");
+                throw new InconsistencyException(Messages.get().systemVariable_missingInvalidSystemVariable("internal_section"));
+            } 
+        }
+        
         ids = new ArrayList<Integer>();
         /*
          * create attachment records by saving the uploaded files and fetch the
@@ -432,13 +443,23 @@ public class AttachmentManagerBean {
      */
     public AttachmentDO put(String file, boolean getNameFromFile, String filename,
                             String description, Integer sectionId) throws Exception {
-        String base;
+        String base, name;
 
         try {
             base = systemVariable.fetchByName("attachment_directory").getValue();
         } catch (Exception e) {
             log.severe("No 'attachment_directory' system variable defined");
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
+        }
+        
+        if (sectionId == null) {
+            try {
+                name = ReportUtil.getSystemVariableValue("internal_section");
+                sectionId = sectionCache.getByName(name).getId();
+            } catch (Exception e) {
+                log.severe("No 'internal_section' system variable defined");
+                throw new InconsistencyException(Messages.get().systemVariable_missingInvalidSystemVariable("internal_section"));
+            } 
         }
 
         return put(base, file, getNameFromFile, filename, description, sectionId);
@@ -556,7 +577,7 @@ public class AttachmentManagerBean {
 
             if (sp == null || !sp.hasViewPermission())
                 throw new InconsistencyException(Messages.get()
-                                                         .attachment_viewPermException(data.getStorageReference()));
+                                                         .attachment_viewPermException(data.getDescription()));
         }
 
         src = Paths.get(base,
@@ -615,10 +636,10 @@ public class AttachmentManagerBean {
         ArrayList<AttachmentDO> attachments;
 
         try {
-            pattern = systemVariable.fetchByName("attachment_pattern_generic").getValue();
+            pattern = systemVariable.fetchByName("attachment_pattern_gen_sql").getValue();
             pattern = pattern.replaceAll("\\*", "\\%");
         } catch (Exception e) {
-            log.severe("No 'attachment_pattern_generic' system variable defined");
+            log.severe("No 'attachment_pattern_gen_sql' system variable defined");
             throw new InconsistencyException(Messages.get()
                                                      .attachment_missingGenericPatternException());
         }

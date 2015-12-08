@@ -6,26 +6,19 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.constants.Messages;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.StatusBarPopupScreenUI;
+import org.openelis.modules.report.client.ToDoReportScreen;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingEntry;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionEntry;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
-import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.Dropdown;
-import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.WindowInt;
 
@@ -33,15 +26,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ToDoScreenUI extends Screen {
@@ -53,16 +43,10 @@ public class ToDoScreenUI extends Screen {
     private static final ToDoUiBinder       uiBinder = GWT.create(ToDoUiBinder.class);
 
     @UiField
-    protected Dropdown<String>              displaySections;
-
+    protected Button                        refreshButton, detailsButton, exportButton;
+    
     @UiField
-    protected Button                        refreshButton;
-
-    @UiField
-    protected Button                        trackingButton;
-
-    @UiField
-    protected Button                        exportToXl;
+    protected CheckMenuItem                 showTrf,  mySection;
 
     @UiField
     protected TabLayoutPanel                tabPanel;
@@ -88,42 +72,18 @@ public class ToDoScreenUI extends Screen {
     @UiField(provided = true)
     protected OtherTabUI                    otherTab;
 
-    @UiField(provided = true)
-    protected InstrumentTabUI               instrumentTab;
-
     protected ToDoScreenUI                  screen;
 
-    protected AsyncCallbackUI<ReportStatus> exportToExcelCall;
-
-    private ToDoService1Impl                service  = ToDoService1Impl.INSTANCE;
-
-    private PopupPanel                      statusPanel;
-
-    private StatusBarPopupScreenUI          statusScreen;
-
-    private Timer                           exportTimer;
-
-    protected String                        displayExcelDirectory;
-
     public ToDoScreenUI(WindowInt window) throws Exception {
-        SystemVariableDO sysVarDO;
-
         setWindow(window);
         try {
-            CategoryCache.getBySystemNames(new String[] {"sample_domain", "analysis_status",
-                            "todo_section"});
+            CategoryCache.getBySystemNames(new String[] {"sample_domain", "analysis_status"});
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
             window.close();
         }
-        try {
-            sysVarDO = SystemVariableService.get().fetchByExactName("worksheet_display_directory");
-            displayExcelDirectory = sysVarDO.getValue();
-        } catch (Exception anyE) {
-            throw new Exception(Messages.get().worksheet_displayDirectoryLookupException());
-        }
-
+        
         loggedInTab = new LoggedInTabUI(this);
         initiatedTab = new InitiatedTabUI(this);
         worksheetTab = new WorksheetTabUI(this);
@@ -131,7 +91,6 @@ public class ToDoScreenUI extends Screen {
         releasedTab = new ReleasedTabUI(this);
         toBeVerifiedTab = new ToBeVerifiedTabUI(this);
         otherTab = new OtherTabUI(this);
-        instrumentTab = new InstrumentTabUI(this);
 
         initWidget((Widget)uiBinder.createAndBindUi(this));
 
@@ -140,182 +99,51 @@ public class ToDoScreenUI extends Screen {
     }
 
     private void initialize() {
-        Item<String> row;
-        ArrayList<Item<String>> model;
-        ArrayList<DictionaryDO> list;
-
         screen = this;
-
-        addScreenHandler(displaySections, "displaySections", new ScreenHandler<String>() {
-            public void onValueChange(ValueChangeEvent<String> event) {
-                drawTabs(false);
-                fireDataChange();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                displaySections.setEnabled(true);
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? refreshButton : exportToXl;
-            }
-        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 refreshButton.setEnabled(true);
-                ;
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                trackingButton.setEnabled(true);
-                ;
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                exportToXl.setEnabled(true);
-                ;
+                detailsButton.setEnabled(true);
+                exportButton.setEnabled(true);
+                
+                loggedInTab.setState(state);
+                initiatedTab.setState(state);
+                worksheetTab.setState(state);
+                completedTab.setState(state);
+                releasedTab.setState(state);
+                toBeVerifiedTab.setState(state);
+                otherTab.setState(state);
             }
         });
 
         /*
+         * option menu
+         */
+        showTrf.setEnabled(false);
+        showTrf.addCommand(new Command() {
+            public void execute() {
+                //showTrf();
+            }
+        });
+
+        mySection.setCheck(true);
+        mySection.addCommand(new Command() {
+            public void execute() {
+                loggedInTab.setMySectionOnly(mySection.isChecked());
+                initiatedTab.setMySectionOnly(mySection.isChecked());
+                worksheetTab.setMySectionOnly(mySection.isChecked());
+                completedTab.setMySectionOnly(mySection.isChecked());
+                releasedTab.setMySectionOnly(mySection.isChecked());
+                toBeVerifiedTab.setMySectionOnly(mySection.isChecked());
+                otherTab.setMySectionOnly(mySection.isChecked());
+            }
+        });
+        
+        /*
          * tabs
          */
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
-
-        addScreenHandler(loggedInTab, "loggedInTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    loggedInTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                loggedInTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return loggedInTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(initiatedTab, "initiatedTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    initiatedTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                initiatedTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return initiatedTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(worksheetTab, "worksheetTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    worksheetTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                worksheetTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return worksheetTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(completedTab, "completedTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    completedTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                completedTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return completedTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(releasedTab, "releasedTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    releasedTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                releasedTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return releasedTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(toBeVerifiedTab, "toBeVerifiedTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    toBeVerifiedTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                toBeVerifiedTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return toBeVerifiedTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(otherTab, "otherTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    otherTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                otherTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return otherTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(instrumentTab, "instrumentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (displaySections.getSelectedItem() != null &&
-                    displaySections.getSelectedItem().getKey() != null)
-                    instrumentTab.onDataChange(displaySections.getSelectedItem().getKey());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                instrumentTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return instrumentTab.getQueryFields();
-            }
-        });
-        instrumentTab.setEnabled(false);
-        instrumentTab.setVisible(false);
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -328,77 +156,43 @@ public class ToDoScreenUI extends Screen {
         });
 
         setState(State.DEFAULT);
-        fireDataChange();
-
-        model = new ArrayList<Item<String>>();
-        list = CategoryCache.getBySystemName("todo_section");
-        for (DictionaryDO d : list) {
-            row = new Item<String>(d.getCode(), d.getEntry());
-            row.setEnabled("Y".equals(d.getIsActive()));
-            model.add(row);
-        }
-        displaySections.setModel(model);
-        displaySections.setValue("Y");
     }
-
+    
     @UiHandler({"refreshButton"})
     protected void refresh(ClickEvent event) {
-        fireDataChange();
+        loggedInTab.refresh();
+        initiatedTab.refresh();
+        worksheetTab.refresh();
+        completedTab.refresh();
+        releasedTab.refresh();
+        toBeVerifiedTab.refresh();
+        otherTab.refresh();
     }
 
-    @UiHandler({"trackingButton"})
-    protected void tracking(ClickEvent event) {
-        Integer id;
-
+    @UiHandler({"detailsButton"})
+    protected void details(ClickEvent event) {
         try {
             switch (tabPanel.getSelectedIndex()) {
                 case 0:
-                    id = loggedInTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(loggedInTab.getSelectedId());
                     break;
                 case 1:
-                    id = initiatedTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(initiatedTab.getSelectedId());
                     break;
                 case 2:
-                    id = worksheetTab.getSelectedId();
-                    if (id != null) {
-                        showCompletionScreen(id);
-                    }
+                    showCompletionScreen(worksheetTab.getSelectedId());
                     break;
                 case 3:
-                    id = completedTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(completedTab.getSelectedId());
                     break;
                 case 4:
-                    id = releasedTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(releasedTab.getSelectedId());
                     break;
                 case 5:
-                    id = toBeVerifiedTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(toBeVerifiedTab.getSelectedId());
                     break;
                 case 6:
-                    id = otherTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
-                    break;
-                case 7:
-                    id = instrumentTab.getSelectedId();
-                    if (id != null) {
-                        showTrackingScreen(id);
-                    }
+                    showTrackingScreen(otherTab.getSelectedId());
                     break;
             }
         } catch (Exception e) {
@@ -407,110 +201,34 @@ public class ToDoScreenUI extends Screen {
         }
     }
 
-    @UiHandler({"exportToXl"})
-    protected void exportToXl(ClickEvent event) {
-        createStatusBarPopup();
-        statusPanel.show();
-        statusScreen.setStatus(null);
-
+    @UiHandler({"exportButton"})
+    protected void export(ClickEvent event) {
+        ToDoReportScreen export;
+        
         setBusy("Exporting to Excel");
-        if (exportToExcelCall == null) {
-            exportToExcelCall = new AsyncCallbackUI<ReportStatus>() {
-                public void success(ReportStatus result) {
-                    statusPanel.hide();
-                    statusScreen.setStatus(null);
-
-                    if (result.getStatus() == ReportStatus.Status.SAVED) {
-                        String url = "/openelis/openelis/report?file=" + result.getMessage();
-                        Window.open(URL.encode(url), "ToDo", "resizable=yes");
-                    }
-                    window.clearStatus();
-                }
-
-                public void failure(Throwable e) {
-                    statusPanel.hide();
-                    statusScreen.setStatus(null);
-                    Window.alert("export to Excel: " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                }
-            };
-        }
-        service.exportToExcel("m".equals(displaySections.getSelectedItem().getKey()),
-                              exportToExcelCall);
-        /*
-         * refresh the status of exporting the worksheet to Excel every second,
-         * until the process successfully completes or is aborted because of an
-         * error
-         */
-        if (exportTimer == null) {
-            exportTimer = new Timer() {
-                public void run() {
-                    ReportStatus status;
-                    try {
-                        status = service.getExportToExcelStatus();
-                        /*
-                         * the status only needs to be refreshed while the
-                         * status panel is showing because once the job is
-                         * finished, the panel is closed
-                         */
-                        if (statusPanel.isShowing()) {
-                            statusScreen.setStatus(status);
-                            schedule(1000);
-                        }
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
-            };
-        }
-        exportTimer.schedule(1000);
-    }
-
-    protected void onAttach() {
-        super.onAttach();
-        drawTabs(true);
-    }
-
-    private void drawTabs(boolean reattachChart) {
-        String val;
-
-        if ( (window == null) || (displaySections == null)) {
-            return;
-        }
-        val = (String)displaySections.getSelectedItem().getKey();
-        if (reattachChart) {
-            loggedInTab.reattachChart();
-            initiatedTab.reattachChart();
-            completedTab.reattachChart();
-            toBeVerifiedTab.reattachChart();
-        }
-        loggedInTab.draw(val);
-        initiatedTab.draw(val);
-        worksheetTab.draw(val);
-        completedTab.draw(val);
-        releasedTab.draw(val);
-        toBeVerifiedTab.draw(val);
-        otherTab.draw(val);
-        instrumentTab.draw(val);
-    }
-
-    private void showTrackingScreen(final Integer id) throws Exception {
-        final ArrayList<Integer> ids;
-        org.openelis.ui.widget.Window window;
-        final SampleTrackingScreenUI trackingScreen;
-        ScheduledCommand cmd;
 
         try {
+            export = new ToDoReportScreen(window);
+            export.setMySectionOnly(mySection.isChecked());
+            export.runReport(null);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    private void showTrackingScreen(final Integer id) {
+        final ArrayList<Integer> ids;
+        final SampleTrackingScreenUI trackingScreen;
+        ScheduledCommand cmd;
+        SampleTrackingEntry entry;
+
+        try {
+            entry = new SampleTrackingEntry();
+            trackingScreen = entry.addScreen();
+            
             ids = new ArrayList<Integer>();
             ids.add(id);
-            window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().sampleTracking_tracking());
-            window.setSize("1074px", "435px");
-            trackingScreen = new SampleTrackingScreenUI(window);
-            window.setContent(trackingScreen);
-            OpenELIS.getBrowser().addWindow(window, "tracking");
             cmd = new ScheduledCommand() {
                 @Override
                 public void execute() {
@@ -524,48 +242,25 @@ public class ToDoScreenUI extends Screen {
         }
     }
 
-    private void showCompletionScreen(final Integer id) throws Exception {
+    private void showCompletionScreen(final Integer id) {
+        final WorksheetCompletionScreenUI worksheetScreen;
         ScheduledCommand cmd;
-        org.openelis.ui.widget.Window window;
-        final WorksheetCompletionScreenUI wcScreen;
+        WorksheetCompletionEntry entry;
 
-        window = new org.openelis.ui.widget.Window();
-        window.setName(Messages.get().worksheetCompletion());
-        window.setSize("1061px", "511px");
-        wcScreen = new WorksheetCompletionScreenUI(window);
-        window.setContent(wcScreen);
-        wcScreen.initialize();
-        OpenELIS.getBrowser().addWindow(window, "worksheetCompletionUI");
-
-        cmd = new ScheduledCommand() {
-            @Override
-            public void execute() {
-                wcScreen.query(id);
-            }
-        };
-        Scheduler.get().scheduleDeferred(cmd);
-    }
-
-    private void createStatusBarPopup() {
-        if (statusScreen == null) {
-            statusScreen = new StatusBarPopupScreenUI() {
-                public boolean isStopVisible() {
-                    return false;
-                }
-
-                public void stop() {
+        try {
+            entry = new WorksheetCompletionEntry();
+            worksheetScreen = entry.addScreen();
+            
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    worksheetScreen.query(id);
                 }
             };
-
-            /*
-             * initialize and show the popup screen
-             */
-            statusPanel = new PopupPanel();
-            statusPanel.setSize("450px", "125px");
-            statusPanel.setWidget(statusScreen);
-            statusPanel.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop());
-            statusPanel.setModal(true);
+            Scheduler.get().scheduleDeferred(cmd);
+        } catch (Throwable e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
-
 }

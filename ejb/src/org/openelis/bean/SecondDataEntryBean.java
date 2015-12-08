@@ -25,14 +25,8 @@
  */
 package org.openelis.bean;
 
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -45,17 +39,11 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.util.XMLUtil;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.ReportUtil;
-import org.w3c.dom.Document;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -69,19 +57,21 @@ public class SecondDataEntryBean {
 
     private static final SampleMeta meta = new SampleMeta();
 
-    private static final Logger     log  = Logger.getLogger("openelis");
-
     public ArrayList<SecondDataEntryVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Integer prevSamId, currSamId, accession, userId;
+        String loginName;
         Query query;
         QueryBuilderV2 builder;
         SystemUserVO user;
-        List<SecondDataEntryVO> list;
+        SecondDataEntryVO data;
+        List<Object[]> list;
+        ArrayList<SecondDataEntryVO> returnList;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.SecondDataEntryVO(" +
-                          SampleMeta.getId() + ", " + SampleMeta.getAccessionNumber() + ", " +
-                          SampleMeta.getHistorySystemUserId() + ", " + "''" + ") ");
+        builder.setSelect("distinct " + SampleMeta.getId() + ", " +
+                          SampleMeta.getAccessionNumber() + ", " +
+                          SampleMeta.getHistorySystemUserId());
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
@@ -99,7 +89,8 @@ public class SecondDataEntryBean {
         /*
          * fetch history records where the sample was either added or updated
          */
-        builder.addWhere(SampleMeta.getHistoryActivityId() + " in (" + 1 + ", " + 2 + ")");
+        builder.addWhere(SampleMeta.getHistoryActivityId() + " in (" + Constants.audit().ADD +
+                         ", " + Constants.audit().UPDATE + ")");
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -112,33 +103,32 @@ public class SecondDataEntryBean {
         if (list == null)
             throw new LastPageException();
 
-        for (SecondDataEntryVO h : list) {
-            if (h.getHistorySystemUserId() != null) {
-                user = userCache.getSystemUser(h.getHistorySystemUserId());
+        prevSamId = null;
+        returnList = new ArrayList<SecondDataEntryVO>();
+        data = null;
+        for (Object[] o : list) {
+            currSamId = (Integer)o[0];
+            accession = (Integer)o[1];
+            userId = (Integer)o[2];
+            loginName = null;
+            if (userId != null) {
+                user = userCache.getSystemUser(userId);
                 if (user != null)
-                    h.setHistorySystemUserLoginName(user.getLoginName());
+                    loginName = user.getLoginName();
             }
+
+            if ( !currSamId.equals(prevSamId)) {
+                data = new SecondDataEntryVO(currSamId, accession, loginName);
+                returnList.add(data);
+            } else {
+                data.setHistorySystemUserLoginName(DataBaseUtil.concatWithSeparator(data.getHistorysystemUserLoginName(),
+                                                                                    ", ",
+                                                                                    loginName));
+            }
+            
+            prevSamId = currSamId;
         }
-        return DataBaseUtil.toArrayList(list);
-    }
 
-    public ReportStatus getFields(String systemVariableName) throws Exception {
-        String url;
-        ReportStatus status;
-        Document doc;
-
-        url = ReportUtil.getSystemVariableValue(systemVariableName);
-        if (url == null)
-            throw new InconsistencyException("System variable " + "'" + systemVariableName +
-                                             "' not present.");
-        /*
-         * the convert the contents of the file to an xml string because the
-         * front-end can only work with that and not the file itself
-         */
-        doc = XMLUtil.load(url);
-        status = new ReportStatus();
-        status.setMessage(XMLUtil.toString(doc));
-
-        return status;
+        return returnList;
     }
 }

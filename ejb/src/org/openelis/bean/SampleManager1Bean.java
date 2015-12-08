@@ -1237,12 +1237,12 @@ public class SampleManager1Bean {
          * get the generic pattern for TRF's
          */
         try {
-            sys = systemVariable.fetchByName("attachment_pattern_generic");
+            sys = systemVariable.fetchByName("attachment_pattern_gen_java");
             trfPattern = sys.getValue();
         } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_pattern_generic'", any);
+            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_pattern_gen_java'", any);
             throw new FormErrorException(Messages.get()
-                                                 .systemVariable_missingInvalidSystemVariable("attachment_pattern_generic"));
+                                                 .systemVariable_missingInvalidSystemVariable("attachment_pattern_gen_java"));
         }
 
         /*
@@ -2988,6 +2988,12 @@ public class SampleManager1Bean {
                     DataBaseUtil.mergeException(e, err);
                 }
         }
+        
+        /*
+         * for display
+         */
+        if (accession == null)
+            accession = 0;
 
         /*
          * additional domain sample validation for sdwis, private well, ...

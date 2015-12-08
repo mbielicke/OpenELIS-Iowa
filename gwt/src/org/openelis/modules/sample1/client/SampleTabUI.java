@@ -731,7 +731,7 @@ public class SampleTabUI extends Screen {
                 isBusy = false;
             }
         });
-
+        
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();

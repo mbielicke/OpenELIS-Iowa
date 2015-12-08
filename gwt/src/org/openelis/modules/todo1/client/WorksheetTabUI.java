@@ -1,3 +1,28 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.todo1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
@@ -30,38 +55,42 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetTabUI extends Screen {
+
     @UiTemplate("WorksheetTab.ui.xml")
     interface WorksheetTabUiBinder extends UiBinder<Widget, WorksheetTabUI> {
     };
 
-    private static WorksheetTabUiBinder uiBinder = GWT.create(WorksheetTabUiBinder.class);
+    private static WorksheetTabUiBinder               uiBinder = GWT.create(WorksheetTabUiBinder.class);
 
     @UiField
-    protected Table                     table;
+    protected Table                                   table;
 
-    protected Screen                    parentScreen;
+    protected Screen                                  parentScreen;
 
-    protected EventBus                  parentBus;
+    protected EventBus                                parentBus;
 
-    private boolean                     loadedFromCache;
+    private boolean                                   visible, load, mySection;
 
-    private boolean                     isVisible;
+    private ArrayList<ToDoWorksheetVO>                worksheets;
 
-    private String                      loadBySection;
-
-    private ArrayList<ToDoWorksheetVO>  fullList;
+    private AsyncCallback<ArrayList<ToDoWorksheetVO>> getWorksheetCall;
 
     public WorksheetTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        parentBus = parentScreen.getEventBus();
-        initWidget((Widget)uiBinder.createAndBindUi(this));
+        this.parentBus = parentScreen.getEventBus();
+
+        initWidget(uiBinder.createAndBindUi(this));
         initialize();
     }
 
     private void initialize() {
+
+        mySection = true;
+        load = true;
+
         addScreenHandler(table, "worksheetTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                loadTableModel();
+                table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -77,96 +106,100 @@ public class WorksheetTabUI extends Screen {
 
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
-                isVisible = event.isVisible();
-                draw(loadBySection);
+                visible = event.isVisible();
+                update();
             }
         });
 
-        loadBySection = "N";
-    }
+        /*
+         * call for fetch data
+         */
+        getWorksheetCall = new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
+            public void onSuccess(ArrayList<ToDoWorksheetVO> result) {
+                worksheets = result;
+                fireDataChange();
+                parentScreen.clearStatus();
+            }
 
-    public void onDataChange(String mySection) {
-        loadedFromCache = false;
-        draw(mySection);
-    }
-
-    public Integer getSelectedId() {
-        Row row;
-        ToDoWorksheetVO data;
-
-        row = table.getRowAt(table.getSelectedRow());
-        if (row == null) {
-            return null;
-        }
-        data = (ToDoWorksheetVO)row.getData();
-        return data.getId();
-    }
-
-    public void draw(String loadBySection) {
-        if ( !isVisible) {
-            return;
-        }
-        if ( ( !loadedFromCache) || ( !loadBySection.equals(this.loadBySection))) {
-            this.loadBySection = loadBySection;
-            fireDataChange();
-        }
-        loadedFromCache = true;
-    }
-
-    private void loadTableModel() {
-        if (loadedFromCache) {
-            table.setModel(getTableModel());
-        } else {
-            parentScreen.setBusy(Messages.get().fetching());
-            ToDoService1Impl.INSTANCE.getWorksheet(new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
-                public void onSuccess(ArrayList<ToDoWorksheetVO> result) {
-                    fullList = result;
-                    table.setModel(getTableModel());
+            public void onFailure(Throwable error) {
+                worksheets = null;
+                fireDataChange();
+                if (error instanceof NotFoundException) {
+                    parentScreen.setDone(Messages.get().gen_noRecordsFound());
+                } else {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
                     parentScreen.clearStatus();
                 }
+            }
+        };
+    }
 
-                public void onFailure(Throwable error) {
-                    if (error instanceof NotFoundException) {
-                        parentScreen.setDone(Messages.get().gen_noRecordsFound());
-                    } else {
-                        Window.alert(error.getMessage());
-                        logger.log(Level.SEVERE, error.getMessage(), error);
-                        parentScreen.clearStatus();
-                    }
+    /*
+     * Returns the current selected records's id
+     */
+    public Integer getSelectedId() {
+        Row row;
 
-                }
-            });
+        row = table.getRowAt(table.getSelectedRow());
+        if (row != null)
+            return ((ToDoWorksheetVO)row.getData()).getId();
+
+        return null;
+    }
+
+    public void setMySectionOnly(boolean mySection) {
+        if (this.mySection != mySection) {
+            this.mySection = mySection;
+            fireDataChange();
         }
     }
 
+    /*
+     * Refetch's the data
+     */
+    public void refresh() {
+        load = true;
+        update();
+    }
+
+    /*
+     * update the data, chart, etc.
+     */
+    public void update() {
+        if (visible && load) {
+            load = false;
+            parentScreen.setBusy(Messages.get().gen_fetching());
+            ToDoService1Impl.INSTANCE.getWorksheet(getWorksheetCall);
+        }
+    }
+
+    /*
+     * Returns the fetched data as a table model
+     */
     private ArrayList<Row> getTableModel() {
-        boolean sectOnly;
-        String sectName;
         Row row;
-        SystemUserPermission perm;
         ArrayList<Row> model;
+        SystemUserPermission perm;
 
         model = new ArrayList<Row>();
-        perm = UserCache.getPermission();
-        sectOnly = "Y".equals(loadBySection);
-        try {
-            for (ToDoWorksheetVO data : fullList) {
-                sectName = data.getSectionName();
-                if ( ( !sectOnly) || (perm.getSection(sectName) != null)) {
-                    row = new Row(5);
-                    row.setCell(0, data.getId());
-                    row.setCell(1, data.getSystemUserName());
-                    row.setCell(2, sectName);
-                    row.setCell(3, data.getDescription());
-                    row.setCell(4, data.getCreatedDate());
-                    row.setData(data);
-                    model.add(row);
-                }
+        if (worksheets != null) {
+            perm = UserCache.getPermission();
+
+            for (ToDoWorksheetVO w : worksheets) {
+                if (mySection && perm.getSection(w.getSectionName()) == null)
+                    continue;
+
+                row = new Row(w.getId(),
+                              w.getSystemUserName(),
+                              w.getSectionName(),
+                              w.getDescription(),
+                              w.getCreatedDate());
+                row.setData(w);
+                model.add(row);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            Window.alert(e.getMessage());
         }
+
         return model;
     }
 }

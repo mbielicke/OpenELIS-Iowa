@@ -27,28 +27,33 @@ package org.openelis.modules.secondDataEntry.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.logging.Level;
 
+import org.openelis.cache.CacheProvider;
 import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SecondDataEntryVO;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
@@ -59,12 +64,14 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextArea;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
@@ -76,27 +83,22 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SecondDataEntryScreenUI extends Screen {
+public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     @UiTemplate("SecondDataEntry.ui.xml")
     interface SecondDataEntryUiBinder extends UiBinder<Widget, SecondDataEntryScreenUI> {
     };
 
-    public static final SecondDataEntryUiBinder             uiBinder         = GWT.create(SecondDataEntryUiBinder.class);
+    public static final SecondDataEntryUiBinder             uiBinder      = GWT.create(SecondDataEntryUiBinder.class);
 
     protected ModulePermission                              userPermission;
-
-    protected ScreenNavigator<SecondDataEntryVO>            nav;
 
     @UiField
     protected Table                                         table;
@@ -110,53 +112,67 @@ public class SecondDataEntryScreenUI extends Screen {
 
     @UiField
     protected TextBox<String>                               historySystemUser;
-    
+
     @UiField
-    protected Calendar                                     receivedDate;
+    protected Calendar                                      receivedDate;
 
     @UiField
     protected TextArea                                      orderMessage;
 
     @UiField
-    protected DeckPanel                                     deckPanel;
-    
-    @UiField(provided = true)
-    protected SampleNotesTabUI                          sampleNotesTab;
+    protected TabLayoutPanel                                tabPanel;
 
     @UiField(provided = true)
     protected EnvironmentalTabUI                            environmentalTab;
 
     @UiField(provided = true)
-    protected SDWISTabUI                                    sdwisTab;
+    protected SDWISTabUI                                   sdwisTab;
+
+    @UiField(provided = true)
+    protected ClinicalTabUI                                 clinicalTab;
+
+    @UiField(provided = true)
+    protected PTTabUI                                       ptTab;
+
+    @UiField(provided = true)
+    protected NoDomainTabUI                                 noDomainTab;
+
+    @UiField(provided = true)
+    protected SampleNotesTabUI                              sampleNotesTab;
+
+    protected ScreenNavigator<SecondDataEntryVO>            nav;
 
     protected SampleManager1                                manager;
 
-    protected HashMap<Integer, SampleManager1>              managers;
-
-    protected HashMap<Integer, ArrayList<Integer>>          userIds;
-
     protected SecondDataEntryScreenUI                       screen;
 
-    protected SecondDataEntryServiceImpl                    service          = SecondDataEntryServiceImpl.INSTANCE;
+    protected HashMap<String, Object>                       cache;
+
+    protected SecondDataEntryServiceImpl                    service       = SecondDataEntryServiceImpl.INSTANCE;
 
     protected AsyncCallbackUI<ArrayList<SecondDataEntryVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>               fetchForUpdateCall, updateCall,
                     unlockCall;
 
-    protected AsyncCallbackUI<ArrayList<SampleManager1>>    fetchByIdsCall;
+    protected AsyncCallbackUI<SampleManager1>               fetchByIdCall;
 
-    protected String                                        domain;
+    protected Query                                         query;
 
     protected boolean                                       envFieldsAdded, sdwisFieldsAdded;
 
-    protected static int                                    ROWS_PER_PAGE    = 23;
+    protected static int                                    ROWS_PER_PAGE = 23;
 
-    protected static final SampleManager1.Load              fetchElements[]  = {},
-                    updateElements[] = {SampleManager1.Load.AUXDATA,
-                    SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
-                    SampleManager1.Load.RESULT, SampleManager1.Load.EORDER,
-                    SampleManager1.Load.PROVIDER};
+    protected static final SampleManager1.Load              fetchElements[] = {
+                    SampleManager1.Load.QA, SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE},
+                    updateElements[] = {SampleManager1.Load.ORGANIZATION,
+                    SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
+                    SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                    SampleManager1.Load.EORDER};
+
+    protected enum Tab {
+        ENVIRONMENTAL, SDWIS, CLINICAL, PT, NO_DOMAIN, SAMPLE_NOTES
+    };
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -168,11 +184,15 @@ public class SecondDataEntryScreenUI extends Screen {
 
         environmentalTab = new EnvironmentalTabUI(this);
         sdwisTab = new SDWISTabUI(this);
+        clinicalTab = new ClinicalTabUI(this);
+        ptTab = new PTTabUI(this);
+        noDomainTab = new NoDomainTabUI(this);
         sampleNotesTab = new SampleNotesTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
+        showTabs();
         setData();
         setState(DEFAULT);
         fireDataChange();
@@ -186,9 +206,15 @@ public class SecondDataEntryScreenUI extends Screen {
     private void initialize() {
         screen = this;
 
-        //
-        // button panel buttons
-        //
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                nextPageButton.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        /*
+         * button panel buttons
+         */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 queryButton.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
@@ -250,36 +276,6 @@ public class SecondDataEntryScreenUI extends Screen {
         /*
          * screen fields and widgets
          */
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                table.setEnabled(true);
-            }
-        });
-
-        table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-            @Override
-            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-                Row row;
-
-                if ( !isState(UPDATE))
-                    return;
-
-                /*
-                 * in Update state, only the node that belongs to the locked
-                 * sample can be selected
-                 */
-                row = table.getRowAt(event.getItem());
-                if ( !manager.getSample().getId().equals(row.getData()))
-                    event.cancel();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                nextPageButton.setEnabled(isState(DISPLAY));
-            }
-        });
-
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
@@ -314,22 +310,20 @@ public class SecondDataEntryScreenUI extends Screen {
                              }
                          });
 
-        addScreenHandler(receivedDate,
-                         SampleMeta.getReceivedDate(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent<String> event) {
-                                 receivedDate.setValue(getReceivedDate());
-                             }
+        addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                receivedDate.setValue(getReceivedDate());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 receivedDate.setEnabled(isState(QUERY));
-                                 receivedDate.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                receivedDate.setEnabled(isState(QUERY));
+                receivedDate.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : historySystemUser;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : historySystemUser;
+            }
+        });
 
         addScreenHandler(orderMessage, "orderMessage", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
@@ -341,45 +335,266 @@ public class SecondDataEntryScreenUI extends Screen {
             }
         });
 
+        /*
+         * tabs
+         */
+        tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
+
         addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
-                environmentalTab.onDataChange();
+                if (Constants.domain().ENVIRONMENTAL.equals(getDomain()))
+                    environmentalTab.onDataChange();
             }
 
             public void onStateChange(StateChangeEvent event) {
-                environmentalTab.setState(event.getState());
+                if (Constants.domain().ENVIRONMENTAL.equals(getDomain()))
+                    environmentalTab.setState(event.getState());
+            }
+            
+            public void isValid(Validation validation) {
+                if (Constants.domain().ENVIRONMENTAL.equals(getDomain()))
+                    super.isValid(validation);
             }
         });
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
-                sdwisTab.onDataChange();
+                if (Constants.domain().SDWIS.equals(getDomain()))
+                    sdwisTab.onDataChange();
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sdwisTab.setState(event.getState());
+                if (Constants.domain().SDWIS.equals(getDomain()))
+                    sdwisTab.setState(event.getState());
+            }
+
+            public void isValid(Validation validation) {
+                if (Constants.domain().SDWIS.equals(getDomain()))
+                    super.isValid(validation);
             }
         });
 
-        //
-        // left hand navigation panel
-        //
+        addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                if (Constants.domain().CLINICAL.equals(getDomain()))
+                    clinicalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                if (Constants.domain().CLINICAL.equals(getDomain()))
+                    clinicalTab.setState(event.getState());
+            }
+            
+            public void isValid(Validation validation) {
+                if (Constants.domain().CLINICAL.equals(getDomain()))
+                    super.isValid(validation);
+            }
+        });
+
+        addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                if (Constants.domain().PT.equals(getDomain()))
+                    ptTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                if (Constants.domain().PT.equals(getDomain()))
+                    ptTab.setState(event.getState());
+            }
+            
+            public void isValid(Validation validation) {
+                if (Constants.domain().PT.equals(getDomain()))
+                    super.isValid(validation);
+            }
+        });
+
+        addScreenHandler(noDomainTab, "noDomainTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                noDomainTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                noDomainTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                sampleNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleNotesTab.setState(event.getState());
+            }
+        });
+
+        /*
+         * call for fetching a sample by its id
+         */
+        if (fetchByIdCall == null) {
+            fetchByIdCall = new AsyncCallbackUI<SampleManager1>() {
+                ScheduledCommand cmd;
+
+                /*
+                 * this command makes sure that widgets get initialized in the
+                 * tabs before any other action takes place e.g. the state being
+                 * set
+                 */
+                private void createCmd() {
+                    if (cmd == null) {
+                        cmd = new ScheduledCommand() {
+                            @Override
+                            public void execute() {
+                                showTabs();
+                                setData();
+                                setState(DISPLAY);
+                                fireDataChange();
+                            }
+                        };
+                    }
+                }
+
+                public void success(SampleManager1 result) {
+                    manager = result;
+
+                    createCmd();
+                    Scheduler.get().scheduleDeferred(cmd);
+                    clearStatus();
+
+                    displayTRF(manager.getSample().getId(),
+                               manager.getSample().getAccessionNumber(),
+                               Messages.get().secondDataEntry_secondDataEntry());
+                }
+
+                public void notFound() {
+                    fetchById(null);
+                    setDone(Messages.get().gen_noRecordsFound());
+                    clearStatus();
+                }
+
+                public void failure(Throwable e) {
+                    fetchById(null);
+                    Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for locking and fetching a sample
+         */
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    manager = result;
+
+                    /*
+                     * make sure that the sample is still not verified; if it is
+                     * verified, unlock it because the user can't be allowed to
+                     * change anything in it
+                     */
+                    if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
+                                                                                   .getStatusId())) {
+                        Window.alert(Messages.get().secondDataEntry_sampleAlreadyVerified());
+                        state = UPDATE;
+                        abort();
+                    }
+
+                    showTabs();
+                    buildCache();
+                    setData();
+                    setState(UPDATE);
+                    fireDataChange();
+                    clearStatus();
+                }
+
+                public void failure(Throwable e) {
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    Window.alert(e.getMessage());
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for updating a sample
+         */
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    manager = result;
+                    showTabs();
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    clearStatus();
+                    /*
+                     * the cache is cleared only if the update succeeds because
+                     * otherwise, it can't be used by any tabs if the user wants
+                     * to change any data
+                     */
+                    cache = null;
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+
+                public void failure(Throwable e) {
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for unlocking a sample
+         */
+        if (unlockCall == null) {
+            unlockCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    manager = result;
+                    showTabs();
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    setDone(Messages.get().gen_updateAborted());
+                    cache = null;
+                }
+
+                public void failure(Throwable e) {
+                    setData();
+                    setState(DEFAULT);
+                    fireDataChange();
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    Window.alert(e.getMessage());
+                    clearStatus();
+                    cache = null;
+                }
+            };
+        }
+
+        /*
+         * left hand navigation panel
+         */
         nav = new ScreenNavigator<SecondDataEntryVO>(table, nextPageButton) {
             public void executeQuery(final Query query) {
                 setBusy(Messages.get().gen_querying());
-
+                /*
+                 * this callback is not placed with the other callbacks because
+                 * it uses some protected methods of ScreenNavigator which can't
+                 * be accessed from outside
+                 */
                 if (queryCall == null) {
                     queryCall = new AsyncCallbackUI<ArrayList<SecondDataEntryVO>>() {
                         public void success(ArrayList<SecondDataEntryVO> result) {
                             ArrayList<SecondDataEntryVO> addedList;
-                            HashSet<Integer> ids;
-
-                            userIds = new HashMap<Integer, ArrayList<Integer>>();
 
                             clearStatus();
                             if (nav.getQuery().getPage() == 0) {
                                 setQueryResult(result);
-                                select(0);
                             } else {
                                 addedList = getQueryResult();
                                 addedList.addAll(result);
@@ -387,18 +602,9 @@ public class SecondDataEntryScreenUI extends Screen {
                                 select(table.getModel().size() - result.size());
                                 table.scrollToVisible(table.getModel().size() - 1);
                             }
-
-                            ids = new HashSet<Integer>();
-                            for (SecondDataEntryVO data : result)
-                                ids.add(data.getSampleId());
-                            fetchSamples(DataBaseUtil.toArrayList(ids));
                         }
 
                         public void notFound() {
-                            manager = null;
-                            setData();
-                            setState(DEFAULT);
-                            fireDataChange();
                             setQueryResult(null);
                             setDone(Messages.get().gen_noRecordsFound());
                         }
@@ -416,49 +622,24 @@ public class SecondDataEntryScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(ROWS_PER_PAGE);
+                query.setRowsPerPage(23);
                 service.query(query, queryCall);
             }
 
             public ArrayList<Item<Integer>> getModel() {
-                Integer prevId, currId;
-                Item<Integer> node;
-                ArrayList<Integer> ids;
                 ArrayList<SecondDataEntryVO> result;
                 ArrayList<Item<Integer>> model;
+                Item<Integer> row;
 
-                prevId = null;
-                node = null;
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<Item<Integer>>();
                     for (SecondDataEntryVO entry : result) {
-                        currId = entry.getSampleId();
-                        if ( !currId.equals(prevId)) {
-                            node = new Item<Integer>(2);
-                            node.setCell(0, entry.getSampleAccessionNumber());
-                            node.setCell(1, entry.getHistorysystemUserLoginName());
-                            node.setData(entry.getSampleId());
-                            model.add(node);
-                        } else {
-                            node.setCell(1,
-                                         DataBaseUtil.concatWithSeparator(node.getCell(1),
-                                                                          ", ",
-                                                                          entry.getHistorysystemUserLoginName()));
-                        }
-
-                        /*
-                         * this keeps track of which users added/updated which
-                         * sample
-                         */
-                        ids = userIds.get(currId);
-                        if (ids == null) {
-                            ids = new ArrayList<Integer>();
-                            userIds.put(currId, ids);
-                        }
-                        ids.add(entry.getHistorySystemUserId());
-                        prevId = currId;
+                        row = new Item<Integer>(entry.getSampleId(),
+                                                entry.getSampleAccessionNumber(),
+                                                entry.getHistorysystemUserLoginName());
+                        model.add(row);
                     }
                 }
                 return model;
@@ -466,19 +647,28 @@ public class SecondDataEntryScreenUI extends Screen {
 
             @Override
             public boolean fetch(SecondDataEntryVO entry) {
-                rowSelected(entry.getSampleId());
+                fetchById( (entry == null) ? null : entry.getSampleId());
                 return true;
             }
         };
 
-        //
-        // screen fields
-        //
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                nav.enable(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                if (isState(ADD, UPDATE)) {
+                if (isState(UPDATE)) {
                     event.cancel();
                     setError(Messages.get().gen_mustCommitOrAbort());
+                } else {
+                    /*
+                     * make sure that all detached tabs are closed when the main
+                     * screen is closed
+                     */
+                    tabPanel.close();
                 }
             }
         });
@@ -498,6 +688,10 @@ public class SecondDataEntryScreenUI extends Screen {
         validation = super.validate();
 
         if (isState(QUERY)) {
+            /*
+             * make sure that the login name the user wants to query by, is
+             * valid and of an employee
+             */
             loginName = historySystemUser.getText();
             if ( !DataBaseUtil.isEmpty(loginName)) {
                 try {
@@ -509,11 +703,13 @@ public class SecondDataEntryScreenUI extends Screen {
                     }
                 } catch (Exception anyE) {
                     Window.alert(anyE.getMessage());
-                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                    logger.log(Level.SEVERE,
+                               anyE.getMessage() != null ? anyE.getMessage() : "null",
+                               anyE);
                 }
             }
         }
-        
+
         return validation;
     }
 
@@ -527,7 +723,7 @@ public class SecondDataEntryScreenUI extends Screen {
         for (QueryData field : fields) {
             if (SampleMeta.getHistorySystemUserId().equals(field.getKey())) {
                 /*
-                 * Since we cannot join with the security database to link
+                 * since we cannot join with the security database to link
                  * system user's login name to the query, we need to lookup the
                  * matching id(s) from the UserCache to input into the query
                  */
@@ -545,13 +741,51 @@ public class SecondDataEntryScreenUI extends Screen {
                     field.setQuery(userIds.toString());
                 } catch (Exception anyE) {
                     Window.alert(anyE.getMessage());
-                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                    logger.log(Level.SEVERE,
+                               anyE.getMessage() != null ? anyE.getMessage() : "null",
+                               anyE);
                 }
                 break;
             }
         }
 
         return fields;
+    }
+
+    /**
+     * Returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == AuxFieldGroupManager.class)
+            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
     }
 
     /*
@@ -564,14 +798,9 @@ public class SecondDataEntryScreenUI extends Screen {
     @UiHandler("queryButton")
     protected void query(ClickEvent event) {
         manager = null;
-        managers = null;
-        userIds = null;
-        domain = null;
-
+        showTabs();
         setData();
         setState(QUERY);
-        table.setModel(null);
-        deckPanel.showWidget(deckPanel.getWidgetCount() - 1);
         fireDataChange();
         accessionNumber.setFocus(true);
         setDone(Messages.get().gen_enterFieldsToQuery());
@@ -595,60 +824,6 @@ public class SecondDataEntryScreenUI extends Screen {
     protected void update(ClickEvent event) {
         setBusy(Messages.get().lockForUpdate());
 
-        if (fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
-                public void success(SampleManager1 result) {
-                    ScheduledCommand cmd;
-
-                    manager = result;
-                    managers.put(manager.getSample().getId(), manager);
-
-                    /*
-                     * make sure that the sample is still not verified; if it is
-                     * verified, unlock it because the user can't be allowed to
-                     * change anything in it
-                     */
-                    if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
-                                                                                   .getStatusId())) {
-                        Window.alert(Messages.get().secondDataEntry_sampleAlreadyVerified());
-                        state = UPDATE;
-                        abort();
-                    }
-
-                    /*
-                     * this is done so that if the domain of the locked sample
-                     * was changed from when it was initially fetched, the
-                     * fields for the current domain are shown
-                     */
-                    addWidgets(manager.getSample().getDomain());
-
-                    /*
-                     * this command makes sure that widgets get added to the tab
-                     * before any other action takes place on the tab e.g. the
-                     * state being set
-                     */
-                    cmd = new ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            setData();
-                            setState(UPDATE);
-                            fireDataChange();
-                        }
-                    };
-                    Scheduler.get().scheduleDeferred(cmd);
-                }
-
-                public void failure(Throwable e) {
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    Window.alert(e.getMessage());
-                }
-
-                public void finish() {
-                    clearStatus();
-                }
-            };
-        }
-
         SampleService1.get().fetchForUpdate(manager.getSample().getId(),
                                             updateElements,
                                             fetchForUpdateCall);
@@ -665,17 +840,14 @@ public class SecondDataEntryScreenUI extends Screen {
         finishEditing();
 
         validation = validate();
-        if (Validation.Status.ERRORS.equals(validation.getStatus())) {
-            setError(Messages.get().gen_correctErrors());
+        if (validation.getStatus() == Validation.Status.ERRORS) {
+            showErrors(validation);
             return;
         }
 
         switch (state) {
             case QUERY:
                 commitQuery();
-                break;
-            case ADD:
-                commitUpdate();
                 break;
             case UPDATE:
                 commitUpdate();
@@ -692,34 +864,8 @@ public class SecondDataEntryScreenUI extends Screen {
     }
 
     protected void commitUpdate() {
-        if (isState(ADD))
-            setBusy(Messages.get().gen_adding());
-        else
-            setBusy(Messages.get().gen_updating());
-
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<SampleManager1>() {
-                public void success(SampleManager1 result) {
-                    manager = result;
-                    managers.put(manager.getSample().getId(), manager);
-                    setData();
-                    setState(DISPLAY);
-                    fireDataChange();
-                    clearStatus();
-                }
-
-                public void validationErrors(ValidationErrorsList e) {
-                    showErrors(e);
-                }
-
-                public void failure(Throwable e) {
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    Window.alert("commitUpdate(): " + e.getMessage());
-                    clearStatus();
-                }
-            };
-        }
-
+        setBusy(Messages.get().gen_updating());
+        manager.getSample().setStatusId(Constants.dictionary().SAMPLE_LOGGED_IN);
         SampleService1.get().update(manager, true, updateCall);
     }
 
@@ -735,6 +881,7 @@ public class SecondDataEntryScreenUI extends Screen {
 
         if (isState(QUERY)) {
             try {
+                showTabs();
                 setData();
                 setState(DEFAULT);
                 fireDataChange();
@@ -745,28 +892,6 @@ public class SecondDataEntryScreenUI extends Screen {
                 clearStatus();
             }
         } else if (isState(UPDATE)) {
-            if (unlockCall == null) {
-                unlockCall = new AsyncCallbackUI<SampleManager1>() {
-                    public void success(SampleManager1 result) {
-                        manager = result;
-                        managers.put(manager.getSample().getId(), manager);
-                        setData();
-                        setState(DISPLAY);
-                        fireDataChange();
-                        setDone(Messages.get().gen_updateAborted());
-                    }
-
-                    public void failure(Throwable e) {
-                        setData();
-                        setState(DEFAULT);
-                        fireDataChange();
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        Window.alert(e.getMessage());
-                        clearStatus();
-                    }
-                };
-            }
-
             SampleService1.get().unlock(manager.getSample().getId(), fetchElements, unlockCall);
         }
     }
@@ -777,87 +902,127 @@ public class SecondDataEntryScreenUI extends Screen {
     private void setData() {
         environmentalTab.setData(manager);
         sdwisTab.setData(manager);
+        clinicalTab.setData(manager);
+        ptTab.setData(manager);
+        sampleNotesTab.setData(manager);
     }
 
-    private void fetchSamples(ArrayList<Integer> ids) {
-        if (fetchByIdsCall == null) {
-            fetchByIdsCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
-                public void success(ArrayList<SampleManager1> result) {
-                    Item<Integer> row;
+    /**
+     * Returns the domain of the selected sample
+     */
+    private String getDomain() {
+        return manager != null ? manager.getSample().getDomain() : null;
+    }
 
-                    if (managers == null)
-                        managers = new HashMap<Integer, SampleManager1>();
+    /**
+     * Creates the cache of objects like AuxFieldGroupManager that are used
+     * frequently by the different parts of the screen
+     */
+    private void buildCache() {
+        int i;
+        Integer prevId;
+        ArrayList<Integer> ids;
+        AuxDataViewDO aux;
+        ArrayList<AuxFieldGroupManager> afgms;
 
-                    /*
-                     * this map is used to link a tree node with the manager
-                     * containing the sample and analysis that the node is
-                     * showing
-                     */
-                    for (SampleManager1 sm : result)
-                        managers.put(sm.getSample().getId(), sm);
+        cache = new HashMap<String, Object>();
 
-                    setState(DISPLAY);
-                    row = table.getRowAt(table.getSelectedRow());
-                    rowSelected((Integer)row.getData());
-                    clearStatus();
+        try {
+            /*
+             * the list of aux field groups to be fetched
+             */
+            ids = new ArrayList<Integer>();
+            prevId = null;
+            for (i = 0; i < manager.auxData.count(); i++ ) {
+                aux = manager.auxData.get(i);
+                if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                    ids.add(aux.getAuxFieldGroupId());
+                    prevId = aux.getAuxFieldGroupId();
                 }
+            }
 
-                public void notFound() {
-                    manager = null;
-                    setData();
-                    setState(DEFAULT);
-                    fireDataChange();
-                    setDone(Messages.get().gen_noRecordsFound());
-                }
+            if (ids.size() > 0) {
+                afgms = AuxiliaryService.get().fetchByIds(ids);
+                for (AuxFieldGroupManager afgm : afgms)
+                    cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
 
-                public void failure(Throwable e) {
-                    Window.alert("Error: Second Data Entry call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    setError(Messages.get().gen_queryFailed());
-                }
-            };
+    /**
+     * Makes the tabs applicable to the selected sample's domain visible and the
+     * others not visible; also sets the notifications on the tab
+     */
+    private void showTabs() {
+        int count1, count2;
+        String domain, label;
+        ArrayList<Tab> tabs;
+        EnumSet<Tab> el;
+
+        tabs = new ArrayList<Tab>();
+        label = null;
+        if (manager != null) {
+            /*
+             * find out which domain's tab is to be shown
+             */
+            domain = manager.getSample().getDomain();
+            if (Constants.domain().ENVIRONMENTAL.equals(domain))
+                tabs.add(Tab.ENVIRONMENTAL);
+            else if (Constants.domain().SDWIS.equals(domain))
+                tabs.add(Tab.SDWIS);
+            else if (Constants.domain().CLINICAL.equals(domain))
+                tabs.add(Tab.CLINICAL);
+            else if (Constants.domain().PT.equals(domain))
+                tabs.add(Tab.PT);
+            else
+                tabs.add(Tab.NO_DOMAIN);
+            /*
+             * create the notification for sample notes tab
+             */
+            count1 = manager.sampleExternalNote.get() == null ? 0 : 1;
+            count2 = manager.sampleInternalNote.count();
+            if (count1 > 0 || count2 > 0)
+                label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+        } else {
+            tabs.add(Tab.NO_DOMAIN);
         }
 
-        SampleService1.get().fetchByIds(ids, fetchElements, fetchByIdsCall);
-    }
+        /*
+         * sample notes tab is always shown
+         */
+        tabs.add(Tab.SAMPLE_NOTES);
 
-    private void rowSelected(Integer sampleId) {
-        ScheduledCommand cmd;
+        el = EnumSet.copyOf(tabs);
 
-        if (managers == null)
-            return;
+        for (Tab tab : Tab.values())
+            tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
+
+        tabPanel.setTabNotification(Tab.SAMPLE_NOTES.ordinal(), label);
 
         /*
-         * if a top level node is selected and if its sample has any
-         * attachments, open the first attachment whose description begins with
-         * "TRF"; if no such attachment is found, tell the user that an
-         * attachment should be selected to open it; if an attachment's node is
-         * selected, open it
+         * select the first visible tab if no tab is already selected
          */
-        manager = managers.get(sampleId);
-        
-        if (manager == null)
-            return;
+        if (tabs.get(0) != Tab.NO_DOMAIN && tabPanel.getSelectedIndex() < 0)
+            tabPanel.selectTab(tabs.get(0).ordinal());
+    }
 
-        displayTRF(sampleId,
-                   manager.getSample().getAccessionNumber(),
-                   Messages.get().secondDataEntry_secondDataEntry());
-
-        if ( !isState(UPDATE)) {
-            addWidgets(manager.getSample().getDomain());
-            /*
-             * this command makes sure that widgets get added to the tab before
-             * any other action takes place on the tab e.g. the state being set
-             */
-            cmd = new ScheduledCommand() {
-                @Override
-                public void execute() {
-                    setData();
-                    setState(state);
-                    fireDataChange();
-                }
-            };
-            Scheduler.get().scheduleDeferred(cmd);
+    /**
+     * Fetches the manager for the sample with this id, sets the manager to null
+     * if fetch fails or if the id is null
+     */
+    private void fetchById(Integer id) {
+        if (id == null) {
+            manager = null;
+            showTabs();
+            setData();
+            setState(DEFAULT);
+            fireDataChange();
+        } else {
+            setBusy(Messages.get().gen_fetching());
+            SampleService1.get().fetchById(id, fetchElements, fetchByIdCall);
         }
     }
 
@@ -881,6 +1046,28 @@ public class SecondDataEntryScreenUI extends Screen {
     }
 
     /**
+     * This method is called after validating the screen and finding errors;
+     * this can happen if the widgets are in error and/or if there were
+     * exceptions added in a tab; if there are exceptions present, they are
+     * shown in the bottom panel instead of the generic message
+     * "Please correct..."; otherwise the user wouldn't get a chance to see
+     * them; the generic message is shown if there are no exceptions; errors in
+     * the widgets can be seen in either case
+     */
+    private void showErrors(Validation validation) {
+        ArrayList<Exception> errors;
+
+        errors = validation.getExceptions();
+        if (errors != null && errors.size() > 0) {
+            setError(Messages.get().gen_errorOneOfMultiple(errors.size(),
+                                                           errors.get(0).getMessage()));
+            window.setMessagePopup(errors, "ErrorPanel");
+        } else {
+            setError(Messages.get().gen_correctErrors());
+        }
+    }
+
+    /**
      * Returns the accession number or null if the manager is null
      */
     private Integer getAccessionNumber() {
@@ -897,12 +1084,12 @@ public class SecondDataEntryScreenUI extends Screen {
         Row row;
 
         row = table.getRowAt(table.getSelectedRow());
-        if (row == null)
+        if (manager == null || row == null)
             return null;
 
         return row.getCell(1);
     }
-    
+
     /**
      * Returns the received date or null if the manager is null
      */
@@ -917,61 +1104,19 @@ public class SecondDataEntryScreenUI extends Screen {
      * from a send-out order or e-order
      */
     private String getOrderMessage() {
+        String domain;
+
         if (manager == null || manager.getSample().getOrderId() == null)
             return null;
-        else if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-                 Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain))
+
+        domain = manager.getSample().getDomain();
+        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+            Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain))
             return Messages.get().secondDataEntry_loadedWithSendoutOrder();
         else if (Constants.domain().CLINICAL.equals(domain) ||
                  Constants.domain().NEONATAL.equals(domain))
             return Messages.get().secondDataEntry_loadedWithEOrder();
 
         return null;
-    }
-
-    /**
-     * Adds widgets used for verification for the passed domain to the screen
-     */
-    private void addWidgets(String dom) {
-        ReportStatus status;
-
-        /*
-         * this is done to avoid clearing the widget table unless the current
-         * sample's domain is different from the previous one's
-         */
-        if (DataBaseUtil.isSame(domain, dom))
-            return;
-        else
-            domain = dom;
-
-        try {
-            /*
-             * if this is the first time that a sample with this domain has been
-             * selected in the tree, get the xml string for the passed domain
-             * from the back-end and add the widgets to the appropriate tab;
-             * otherwise just show the tab
-             */
-            if (Constants.domain().ENVIRONMENTAL.equals(dom)) {
-                if ( !envFieldsAdded) {
-                    status = service.getFields("env_verification_fields");
-                    environmentalTab.addWidgets(status.getMessage());
-                    envFieldsAdded = true;
-                }
-                deckPanel.showWidget(0);
-            } else if (Constants.domain().SDWIS.equals(dom)) {
-                if ( !sdwisFieldsAdded) {
-                    status = service.getFields("sdwis_verification_fields");
-                    sdwisTab.addWidgets(status.getMessage());
-                    sdwisFieldsAdded = true;
-                }
-                deckPanel.showWidget(1);
-            } else {
-                deckPanel.showWidget(deckPanel.getWidgetCount() - 1);
-                return;
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            Window.alert(e.getMessage());
-        }
     }
 }

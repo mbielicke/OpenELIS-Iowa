@@ -1,9 +1,33 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.todo1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -12,7 +36,6 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -25,6 +48,7 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.utilcommon.TurnaroundUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -42,41 +66,43 @@ public class ReleasedTabUI extends Screen {
     interface ReleasedTabUiBinder extends UiBinder<Widget, ReleasedTabUI> {
     };
 
-    private static ReleasedTabUiBinder uiBinder = GWT.create(ReleasedTabUiBinder.class);
+    private static ReleasedTabUiBinder               uiBinder = GWT.create(ReleasedTabUiBinder.class);
 
     @UiField
-    protected Table                    table;
+    protected Table                                  table;
 
     @UiField
-    protected Dropdown<String>         domain;
+    protected Dropdown<String>                       domain;
 
-    protected Screen                   parentScreen;
+    protected Screen                                 parentScreen;
 
-    protected EventBus                 parentBus;
+    protected EventBus                               parentBus;
 
-    private boolean                    loadedFromCache;
+    private boolean                                  visible, load, mySection;
 
-    private boolean                    isVisible;
+    private ArrayList<AnalysisViewVO>                analyses;
 
-    private String                     loadBySection;
-
-    private ArrayList<AnalysisViewVO>  fullList;
+    private AsyncCallback<ArrayList<AnalysisViewVO>> getReleasedCall;
 
     public ReleasedTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         parentBus = parentScreen.getEventBus();
+
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
     }
 
     private void initialize() {
-        ArrayList<Item<String>> model;
         Item<String> row;
         List<DictionaryDO> list;
+        ArrayList<Item<String>> model;
+
+        mySection = true;
+        load = true;
 
         addScreenHandler(table, "releasedTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                loadTableModel();
+                table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -92,135 +118,116 @@ public class ReleasedTabUI extends Screen {
 
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
-                isVisible = event.isVisible();
-                draw(loadBySection);
+                visible = event.isVisible();
+                update();
             }
         });
-
-        loadBySection = "N";
 
         model = new ArrayList<Item<String>>();
         list = CategoryCache.getBySystemName("sample_domain");
         for (DictionaryDO data : list) {
-            row = new Item<String>(data.getCode(), data.getEntry());
-            model.add(row);
+            if ("Y".equals(data.getIsActive())) {
+                row = new Item<String>(data.getCode(), data.getEntry());
+                model.add(row);
+            }
         }
         domain.setModel(model);
-    }
 
-    public void onDataChange(String mySection) {
-        loadedFromCache = false;
-        draw(mySection);
-    }
+        /*
+         * call for fetch data
+         */
+        getReleasedCall = new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+            public void onSuccess(ArrayList<AnalysisViewVO> result) {
+                analyses = result;
+                fireDataChange();
+                parentScreen.clearStatus();
+            }
 
-    public Integer getSelectedId() {
-        Row row;
-        AnalysisViewVO data;
-
-        row = table.getRowAt(table.getSelectedRow());
-        if (row == null) {
-            return null;
-        }
-        data = (AnalysisViewVO)row.getData();
-        return data.getSampleId();
-    }
-
-    public void draw(String loadBySection) {
-        if ( !isVisible) {
-            return;
-        }
-        if ( ( !loadedFromCache) || ( !loadBySection.equals(this.loadBySection))) {
-            this.loadBySection = loadBySection;
-            fireDataChange();
-        }
-        loadedFromCache = true;
-    }
-
-    private void loadTableModel() {
-        if (loadedFromCache) {
-            ArrayList<Row> model = getTableModel();
-            table.setModel(model);
-            sortRows(0, 1);
-        } else {
-            parentScreen.setBusy(Messages.get().fetching());
-            ToDoService1Impl.INSTANCE.getReleased(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
-                public void onSuccess(ArrayList<AnalysisViewVO> result) {
-                    fullList = result;
-                    table.setModel(getTableModel());
+            public void onFailure(Throwable error) {
+                analyses = null;
+                fireDataChange();
+                if (error instanceof NotFoundException) {
+                    parentScreen.setDone(Messages.get().gen_noRecordsFound());
+                } else {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
                     parentScreen.clearStatus();
                 }
+            }
+        };
+    }
 
-                public void onFailure(Throwable error) {
-                    if (error instanceof NotFoundException) {
-                        parentScreen.setDone(Messages.get().gen_noRecordsFound());
-                    } else {
-                        Window.alert(error.getMessage());
-                        logger.log(Level.SEVERE, error.getMessage(), error);
-                        parentScreen.clearStatus();
-                    }
+    /*
+     * Returns the current selected records's id
+     */
+    public Integer getSelectedId() {
+        Row row;
 
-                }
-            });
+        row = table.getRowAt(table.getSelectedRow());
+        if (row != null)
+            return ((AnalysisViewVO)row.getData()).getSampleId();
+
+        return null;
+    }
+
+    public void setMySectionOnly(boolean mySection) {
+        if (this.mySection != mySection) {
+            this.mySection = mySection;
+            fireDataChange();
         }
     }
 
+    /*
+     * Refetch's the data
+     */
+    public void refresh() {
+        load = true;
+        update();
+    }
+
+    /*
+     * update the data, chart, etc.
+     */
+    public void update() {
+        if (visible && load) {
+            load = false;
+            parentScreen.setBusy(Messages.get().gen_fetching());
+            ToDoService1Impl.INSTANCE.getReleased(getReleasedCall);
+        }
+    }
+
+    /*
+     * Returns the fetched data as a table model
+     */
     private ArrayList<Row> getTableModel() {
-        boolean sectOnly;
-        String sectName;
-        Date temp;
-        Datetime scd, sct;
         Row row;
-        SystemUserPermission perm;
         ArrayList<Row> model;
+        SystemUserPermission perm;
 
         model = new ArrayList<Row>();
-        perm = UserCache.getPermission();
-        sectOnly = "Y".equals(loadBySection);
-        try {
-            for (AnalysisViewVO data : fullList) {
-                sectName = data.getSectionName();
-                if ( ( !sectOnly) || (perm.getSection(sectName) != null)) {
-                    row = new Row(10);
-                    row.setCell(0, data.getAccessionNumber());
-                    row.setCell(1, data.getDomain());
-                    row.setCell(2, sectName);
-                    row.setCell(3, data.getTestName());
-                    row.setCell(4, data.getMethodName());
+        if (analyses != null) {
+            perm = UserCache.getPermission();
 
-                    scd = data.getCollectionDate();
-                    sct = data.getCollectionTime();
-                    if (scd != null) {
-                        temp = scd.getDate();
-                        if (sct == null) {
-                            temp.setHours(0);
-                            temp.setMinutes(0);
-                        } else {
-                            temp.setHours(sct.getDate().getHours());
-                            temp.setMinutes(sct.getDate().getMinutes());
-                        }
-                        row.setCell(5, Datetime.getInstance((byte)0, (byte)4, temp));
-                    }
-                    row.setCell(6, data.getReleasedDate());
-                    row.setCell(7, data.getAnalysisResultOverride());
-                    row.setCell(8, data.getToDoDescription());
-                    row.setCell(9, data.getPrimaryOrganizationName());
-                    row.setData(data);
-                    model.add(row);
-                }
+            for (AnalysisViewVO a : analyses) {
+                if (mySection && perm.getSection(a.getSectionName()) == null)
+                    continue;
+
+                row = new Row(a.getAccessionNumber(),
+                              a.getDomain(),
+                              a.getSectionName(),
+                              a.getTestName(),
+                              a.getMethodName(),
+                              TurnaroundUtil.getCombinedYM(a.getCollectionDate(),
+                                                           a.getCollectionTime()),
+                              a.getReleasedDate(),
+                              a.getAnalysisResultOverride(),
+                              a.getToDoDescription(),
+                              a.getPrimaryOrganizationName());
+                row.setData(a);
+                model.add(row);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            Window.alert(e.getMessage());
         }
-        return model;
-    }
 
-    private void sortRows(int col, int dir) {
-        try {
-            table.applySort(col, dir, null);
-        } catch (Exception e) {
-            Window.alert("error: " + e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        return model;
     }
 }

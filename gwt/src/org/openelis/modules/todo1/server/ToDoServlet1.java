@@ -112,11 +112,18 @@ public class ToDoServlet1 extends RemoteServlet implements ToDoService1 {
 
     @Override
     public ReportStatus exportToExcel(boolean mySection) throws Exception {
-        try {
-            return toDoExcelHelper.exportToExcel(mySection);
+        ReportStatus st;
+
+        try {        
+            st = toDoExcelHelper.exportToExcel(mySection);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
+
+        return st;
     }
 
     @Override

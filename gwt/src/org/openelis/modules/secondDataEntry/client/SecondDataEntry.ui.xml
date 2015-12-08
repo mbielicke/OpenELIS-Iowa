@@ -103,44 +103,61 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="75px" bottom="0px" left="0px" width="100%">
+        <g:layer top="85px" bottom="0px" left="0px" width="100%">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.secondDataEntry_verification}" />
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
-                <g:layer top="0px" height="25px" left="12%" width="100%">
-                  <g:HorizontalPanel horizontalAlignment="CENTER">
-                    <w:Label text="{msg.secondDataEntry_secondDataEntryHeading}" styleName="{res.style.Heading}" />
-                    <g:HorizontalPanel width="175px" />
-                    <w:Label text="{msg.secondDataEntry_firstDataEntryHeading}" styleName="{res.style.Heading}" />
-                  </g:HorizontalPanel>
-                </g:layer>
                 <g:layer>
-                  <g:DeckPanel ui:field="deckPanel">
-                    <g:LayoutPanel>
-                      <g:layer>
-                        <d:EnvironmentalTabUI ui:field="environmentalTab" />
-                      </g:layer>
-                    </g:LayoutPanel>
-                    <g:LayoutPanel>
-                      <g:layer>
-                        <d:SDWISTabUI ui:field="sdwisTab" />
-                      </g:layer>
-                    </g:LayoutPanel>
-                    <g:LayoutPanel>
-                      <g:layer>
-                        <g:HorizontalPanel />
-                      </g:layer>
-                    </g:LayoutPanel>
-                  </g:DeckPanel>
+                  <d:EnvironmentalTabUI ui:field="environmentalTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.sample_notes}" />
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:SDWISTabUI ui:field="sdwisTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:ClinicalTabUI ui:field="clinicalTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:PTTabUI ui:field="ptTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:NoDomainTabUI ui:field="noDomainTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.sample_notes}"  tabVisible="false" />
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>

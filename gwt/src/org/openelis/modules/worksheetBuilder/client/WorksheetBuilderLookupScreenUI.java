@@ -33,20 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
@@ -62,14 +48,12 @@ import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.GetMatchesEvent;
@@ -92,6 +76,21 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.UnselectionEvent;
 import org.openelis.ui.widget.table.event.UnselectionHandler;
+import org.openelis.utilcommon.TurnaroundUtil;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetBuilderLookupScreenUI extends Screen {
 
@@ -501,12 +500,12 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                 row.setCell(7, analysisRow.getCollectionDate());
                 row.setCell(8, analysisRow.getReceivedDate());
                 if (analysisRow.getPriority() != null)
-                    row.setCell(9, DataBaseUtil.getDueDays(analysisRow.getReceivedDate(),
+                    row.setCell(9, TurnaroundUtil.getDueDays(analysisRow.getReceivedDate(),
                                                            analysisRow.getPriority()));
                 else
-                    row.setCell(9, DataBaseUtil.getDueDays(analysisRow.getReceivedDate(), 
+                    row.setCell(9, TurnaroundUtil.getDueDays(analysisRow.getReceivedDate(), 
                                                            analysisRow.getTimeTaAverage()));
-                row.setCell(10, DataBaseUtil.getExpireDate(analysisRow.getCollectionDate(),
+                row.setCell(10, TurnaroundUtil.getExpireDate(analysisRow.getCollectionDate(),
                                                            analysisRow.getCollectionTime(),
                                                            analysisRow.getTimeHolding()));
                 if (analysisRow.getPriority() != null)

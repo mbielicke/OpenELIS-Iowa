@@ -58,13 +58,4 @@ public class SecondDataEntryServlet extends RemoteServlet implements SecondDataE
             throw serializeForGWT(anyE);
         }
     }
-
-    @Override
-    public ReportStatus getFields(String systemVariableName) throws Exception {
-        try {
-            return secondDataEntry.getFields(systemVariableName);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
 }

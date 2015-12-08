@@ -218,8 +218,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, reportToButton,
-                    billToButton, projectButton;
+                    abort, optionsButton, orderLookupButton, reportToButton, billToButton,
+                    projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -279,7 +279,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected TRFAttachmentScreenUI                      trfAttachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -311,14 +311,13 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
-    
+
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT
     };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
-                    BILL_TO_KEY = "billTo";
+    private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -554,7 +553,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                                      userPermission.hasAddPermission());
             }
         });
 
@@ -2017,7 +2017,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(SampleItemAddedEvent.getType(), new SampleItemAddedEvent.Handler() {
             @Override
             public void onSampleItemAdded(SampleItemAddedEvent event) {
@@ -2577,8 +2577,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     /**
      * If the checkbox of the menu item "Add With TRF" is checked, opens the
      * data entry attachment screen and executes the query to fetch unattached
-     * attachments for this domain; if the checkbox is unchecked, closes
-     * the attachment screen if it's open.
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
@@ -3057,8 +3057,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     private void addScriptlets() throws Exception {
         if (scriptletRunner == null)
-            scriptletRunner = new ScriptletRunner<SampleSO>();       
-        
+            scriptletRunner = new ScriptletRunner<SampleSO>();
+
         /*
          * add the scriptlet for the domain, which is the value of this system
          * variable; don't try to look up the system variable again if it's not
@@ -3078,8 +3078,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             /*
              * if the system variable was found, its value must point to an
              * existing dictionary entry; so if an exception is thrown on trying
-             * to look up the dictionary, the user must be informed of it
-             * even if it's a NotFoundException
+             * to look up the dictionary, the user must be informed of it even
+             * if it's a NotFoundException
              */
             if (domainScriptletVariable != null) {
                 try {
@@ -3126,7 +3126,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         }
 
         if ( !ids.contains(referenceId)) {
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
             ids.add(referenceId);
         }
     }
@@ -3145,7 +3146,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -4155,12 +4156,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
-            
+
             /*
              * add scriptlets for the newly added aux data
              */
             addAuxScriptlets();
-            
+
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
@@ -4201,12 +4202,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     private void displayAttachment(Integer id, boolean isSameWindow) {
         String name;
 
-        /*
-         * if isSameWindow is true then the name passed to displayAttachment is
-         * this screen's window's title because ReportScreen sets that as the
-         * title of the window passed to it, so if the name is not the same,
-         * then the screen's window's title will get changed
-         */
         name = isSameWindow ? Messages.get().sampleSDWIS_login() : null;
         try {
             AttachmentUtil.displayAttachment(id, name, window);
@@ -4253,7 +4248,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests
              */
@@ -4279,8 +4274,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -4319,14 +4314,14 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                     screen);
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
-            
+
             /*
              * add scriptlets for the changed test
              */
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4340,8 +4335,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

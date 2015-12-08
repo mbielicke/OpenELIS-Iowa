@@ -25,17 +25,9 @@ public class ToDoEntry implements EntryPoint, ShowScreenHandler {
     public void showScreen() {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
-                ToDoScreenUI screen;
-
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().toDo());
-                    window.setSize("650px", "700px");
-                    screen = new ToDoScreenUI(window);
-                    window.setContent(screen);
-                    OpenELIS.getBrowser().addWindow(window, "toDo");
+                    addScreen();
                 } catch (Throwable e) {
-                    e.printStackTrace();
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
                 }
@@ -48,4 +40,17 @@ public class ToDoEntry implements EntryPoint, ShowScreenHandler {
         });
     }
 
+    public ToDoScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        ToDoScreenUI screen;
+
+        window = new org.openelis.ui.widget.Window();
+        screen = new ToDoScreenUI(window);
+        window.setName(Messages.get().toDo());
+        window.setSize("650px", "700px");
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "toDo");
+        
+        return screen;
+    }
 }
