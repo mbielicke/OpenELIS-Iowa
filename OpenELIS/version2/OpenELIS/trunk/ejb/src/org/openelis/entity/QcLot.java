@@ -58,6 +58,11 @@ import org.openelis.utils.Auditable;
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
                       + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
                       + " from QcLot qcl where qcl.id = :id"),                       
+    @NamedQuery( name = "QcLot.FetchByIds",
+                query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
+                      + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
+                      + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
+                      + " from QcLot qcl where qcl.id in (:ids)"),                       
     @NamedQuery( name = "QcLot.FetchByQcId",
                 query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
