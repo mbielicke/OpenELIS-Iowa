@@ -77,10 +77,10 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.attachment.client.AttachmentAddedEvent;
-import org.openelis.modules.attachment.client.AttachmentScreenUI;
+import org.openelis.modules.attachment.client.AddAttachmentEvent;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -236,7 +236,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     historySampleQA, historyAnalysisQA, historyAuxData;
 
     @UiField
-    protected CheckMenuItem                             fromTRF;
+    protected CheckMenuItem                             addWithTRF;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -284,7 +284,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected AttachmentScreenUI                        attachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -316,14 +316,13 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
-    
+
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT
     };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
-                    BILL_TO_KEY = "billTo";
+    private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -559,18 +558,15 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disable until the new data entry attachment screen is ready
-                 * to be used
-                 */
-                fromTRF.setEnabled(false);
+                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                                      userPermission.hasAddPermission());
             }
         });
 
-        fromTRF.addCommand(new Command() {
+        addWithTRF.addCommand(new Command() {
             @Override
             public void execute() {
-                fromTRF();
+                addWithTRF();
             }
         });
 
@@ -2026,7 +2022,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(SampleItemAddedEvent.getType(), new SampleItemAddedEvent.Handler() {
             @Override
             public void onSampleItemAdded(SampleItemAddedEvent event) {
@@ -2143,7 +2139,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                          */
                         event.cancel();
                         closeLoginScreen = true;
-                        attachmentScreen.getWindow().close();
+                        trfAttachmentScreen.getWindow().close();
                         closeLoginScreen = false;
                     } else {
                         /*
@@ -2412,8 +2408,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                      */
                     cache = null;
                     clearScriptlets();
-                    if (attachmentScreen != null)
-                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2465,8 +2459,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             setDone(Messages.get().gen_addAborted());
             cache = null;
             clearScriptlets();
-            if (attachmentScreen != null)
-                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2588,23 +2580,24 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * If the checkbox of the menu item "From TRF" is checked, then opens the
-     * Attachment screen and executes the query to fetch unattached attachments
-     * for this domain; if it's unchecked then closes that screen if it's open.
+     * If the checkbox of the menu item "Add With TRF" is checked, opens the
+     * data entry attachment screen and executes the query to fetch unattached
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
-    protected void fromTRF() {
+    protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
 
-        if ( !fromTRF.isChecked()) {
+        if ( !addWithTRF.isChecked()) {
             /*
              * the user unchecked the checkbox for showing Attachment screen, so
              * try to close that screen if it's open, but recheck the checkbox
              * to make sure that if the screen can't be closed due to some
              * record locked on it, the checkbox doesn't stay unchecked
              */
-            fromTRF.setCheck(true);
-            if (attachmentScreen != null)
-                attachmentScreen.getWindow().close();
+            addWithTRF.setCheck(true);
+            if (trfAttachmentScreen != null)
+                trfAttachmentScreen.getWindow().close();
             return;
         }
 
@@ -2620,48 +2613,24 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
              */
-            if (attachmentScreen == null) {
-                attachmentScreen = new AttachmentScreenUI() {
+            if (trfAttachmentScreen == null) {
+                trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-
-                    @Override
-                    public void search() {
-                        QueryData field;
-
-                        /*
-                         * query for the TRFs for this domain
-                         */
-                        query = new Query();
-                        field = new QueryData();
-                        field.setQuery(attachmentPatternVariable.getValue());
-                        query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
-                        managers = null;
-
-                        executeQuery(query);
-                    }
-
-                    @Override
-                    public void searchSuccessful() {
-                        attachmentSearchSuccessful();
+                    public String getPattern() {
+                        return attachmentPatternVariable.getValue();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().attachment_attachment());
-            window.setSize("782px", "521px");
-            attachmentScreen.setWindow(window);
-            window.setContent(attachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "attachment");
+            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
+            window.setSize("670px", "520px");
+            trfAttachmentScreen.setWindow(window);
+            window.setContent(trfAttachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "sdwisTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            attachmentScreen.search();
+            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -2673,7 +2642,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                          */
                         screen.window.close();
                     else
-                        fromTRF.setCheck(false);
+                        addWithTRF.setCheck(false);
                 }
             });
         } catch (Throwable e) {
@@ -3162,7 +3131,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         }
 
         if ( !ids.contains(referenceId)) {
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
             ids.add(referenceId);
         }
     }
@@ -3181,7 +3151,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -3446,39 +3416,10 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     private void addReservedAttachment() {
         AttachmentManager am;
-        AttachmentDO att;
-        AttachmentItemViewDO atti;
 
-        am = attachmentScreen.getReserved();
-        /*
-         * add an attachment item for the record selected on the attachment
-         * screen
-         */
-        if (am != null) {
-            att = am.getAttachment();
-            atti = manager.attachment.add();
-            atti.setAttachmentId(att.getId());
-            atti.setAttachmentDescription(att.getDescription());
-            atti.setAttachmentCreatedDate(att.getCreatedDate());
-            atti.setAttachmentSectionId(att.getSectionId());
-        }
-    }
-
-    /**
-     * If the screen is in Add state then gets the next attachment reserved for
-     * the current user from Attachment screen, if any, and adds it to the
-     * sample.
-     */
-    private void attachmentSearchSuccessful() {
-        if (isState(ADD)) {
-            /*
-             * if the screen is already in Add state then reserve an attachment,
-             * add it to the sample and notify the tab
-             */
-            addReservedAttachment();
-            setData();
-            bus.fireEvent(new AttachmentAddedEvent());
-        }
+        am = trfAttachmentScreen.getSelected();
+        if (am != null)
+            bus.fireEvent(new AddAttachmentEvent(am.getAttachment()));
     }
 
     /*
@@ -4208,12 +4149,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
-            
+
             /*
              * add scriptlets for the newly added aux data
              */
             addAuxScriptlets();
-            
+
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
@@ -4254,12 +4195,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     private void displayAttachment(Integer id, boolean isSameWindow) {
         String name;
 
-        /*
-         * if isSameWindow is true then the name passed to displayAttachment is
-         * this screen's window's title because ReportScreen sets that as the
-         * title of the window passed to it, so if the name is not the same,
-         * then the screen's window's title will get changed
-         */
         name = isSameWindow ? Messages.get().sampleSDWIS_login() : null;
         try {
             AttachmentUtil.displayAttachment(id, name, window);
@@ -4306,7 +4241,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests
              */
@@ -4372,7 +4307,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                     screen);
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
-            
+
             /*
              * add scriptlets for the changed test
              */

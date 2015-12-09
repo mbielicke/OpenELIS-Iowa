@@ -25,35 +25,44 @@
  */
 package org.openelis.modules.attachment.client;
 
+import org.openelis.domain.AttachmentDO;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that attachments were added to a
- * record e.g. sample
+ * This class is used to notify the handler that an attachment should be added
+ * to a record e.g. sample; the attachment is specified by the AttachmentDO
  */
-public class AttachmentAddedEvent extends GwtEvent<AttachmentAddedEvent.Handler> {
+public class AddAttachmentEvent extends GwtEvent<AddAttachmentEvent.Handler> {
 
-    private static Type<AttachmentAddedEvent.Handler> TYPE;
+    private static Type<AddAttachmentEvent.Handler> TYPE;
+    
+    private AttachmentDO attachment;     
 
-    public AttachmentAddedEvent() {
+    public AddAttachmentEvent(AttachmentDO attachment) {
+        this.attachment = attachment;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AttachmentAddedEvent.Handler> getAssociatedType() {
+    public Type<AddAttachmentEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AttachmentAddedEvent.Handler> getType() {
+    public static Type<AddAttachmentEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AttachmentAddedEvent.Handler>();
+            TYPE = new Type<AddAttachmentEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onAttachmentAdded(AttachmentAddedEvent event);
+        public void onAttachmentAdded(AddAttachmentEvent event);
+    }
+    
+    public AttachmentDO getAttachment() {
+        return attachment;
     }
 
     @Override

@@ -710,11 +710,11 @@ public class Sample implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleClinical>      sampleClinical;
-    
+
     // sample pt
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
-    private Collection<SamplePT>             samplePT;
+    private Collection<SamplePT>            samplePT;
 
     // eorder
     @OneToOne(fetch = FetchType.LAZY)
@@ -754,11 +754,16 @@ public class Sample implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AuxData>             auxData;
-    
+
     // attachment item records
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AttachmentItem>      attachmentItem;
+
+    // history records
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+    private Collection<History>             history;
 
     @Transient
     private Sample                          original;
@@ -953,7 +958,7 @@ public class Sample implements Auditable, Cloneable {
     public void setSamplePrivateWell(Collection<SamplePrivateWell> samplePrivateWell) {
         this.samplePrivateWell = samplePrivateWell;
     }
-    
+
     public Collection<SampleSDWIS> getSampleSDWIS() {
         return sampleSDWIS;
     }
@@ -977,7 +982,7 @@ public class Sample implements Auditable, Cloneable {
     public void setSampleClinical(Collection<SampleClinical> sampleClinical) {
         this.sampleClinical = sampleClinical;
     }
-    
+
     public Collection<SamplePT> getSamplePT() {
         return samplePT;
     }
@@ -1008,6 +1013,14 @@ public class Sample implements Auditable, Cloneable {
 
     public void setEOrder(EOrder eorder) {
         this.eorder = eorder;
+    }
+
+    public Collection<History> getHistory() {
+        return history;
+    }
+
+    public void setHistory(Collection<History> history) {
+        this.history = history;
     }
 
     public void setClone() {

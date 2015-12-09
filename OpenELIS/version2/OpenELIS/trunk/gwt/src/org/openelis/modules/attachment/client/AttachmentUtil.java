@@ -26,6 +26,7 @@
 package org.openelis.modules.attachment.client;
 
 import org.openelis.meta.AttachmentMeta;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.report.client.AttachmentReportScreen;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -52,6 +53,30 @@ public class AttachmentUtil {
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
+        runReport(name, window, query);
+    }
+    
+    /**
+     * Shows the TRF linked to the sample with the passed id, in the
+     * browser; if "name" is not null and is the same as the previous time this
+     * method was called, then the current file is opened in the same browser
+     * window/tab as the previous one.
+     */
+    public static void displayTRF(Integer sampleId, String name, WindowInt window) throws Exception {
+        Query query;
+        QueryData field;
+
+        query = new Query();
+        field = new QueryData();
+        field.setKey(SampleMeta.getId());
+        field.setQuery(sampleId.toString());
+        field.setType(QueryData.Type.INTEGER);
+        query.setFields(field);
+
+        runReport(name, window, query);
+    }
+
+    private static void runReport(String name, WindowInt window, Query query) throws Exception {
         if (attachmentReportScreen == null)
             attachmentReportScreen = new AttachmentReportScreen(window);
 

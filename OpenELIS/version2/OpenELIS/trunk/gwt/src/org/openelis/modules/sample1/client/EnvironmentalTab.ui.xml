@@ -41,7 +41,7 @@
                   <ui:text from="{msg.sample_collector}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="collector" field="String" width="235px" maxLength="40" />
+                  <w:TextBox ui:field="collector" field="String" width="235px" case="LOWER" maxLength="40" />
                 </td>
               </tr>
               <tr>
