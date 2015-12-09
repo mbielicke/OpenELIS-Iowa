@@ -103,6 +103,15 @@ create table attachment
     storage_reference              varchar(255) not null
 );
 
+create table attachment_issue
+(
+    id                             serial not null,
+    attachment_id                  integer not null,
+    timestamp                      datetime year to second not null,
+    system_user_id                 integer not null,
+    text                           varchar(255) not null
+);
+
 create table attachment_item
 (
     id                             serial not null,
