@@ -80,6 +80,23 @@ public class QcLotBean {
     }
     
     @SuppressWarnings("unchecked")
+    public ArrayList<QcLotViewDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+        List<QcLotViewDO> q;
+        ArrayList<Integer> r;
+
+        query = manager.createNamedQuery("QcLot.FetchByIds");
+        q = new ArrayList<QcLotViewDO>();
+        r = DataBaseUtil.createSubsetRange(ids.size());
+        for (int i = 0; i < r.size() - 1; i++ ) {
+            query.setParameter("ids", ids.subList(r.get(i), r.get(i + 1)));
+            q.addAll(query.getResultList());
+        }
+
+        return DataBaseUtil.toArrayList(q);
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<QcLotViewDO> fetchByQcId(Integer id) throws Exception {
         Query query;
         List<QcLotViewDO> list;
