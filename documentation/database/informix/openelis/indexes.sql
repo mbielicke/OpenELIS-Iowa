@@ -28,6 +28,9 @@ create        index analyte_parameter_3_idx on analyte_parameter(analyte_id);
 
 create unique index attachment_1_idx on attachment(id);
 
+create unique index attachment_issue_1_idx on attachment_issue(id);
+create unique index attachment_issue_2_idx on attachment_issue(attachment_id);
+
 create unique index attachment_item_1_idx on attachment_item(id);
 create        index attachment_item_2_idx on attachment_item(reference_id, reference_table_id);
 
@@ -363,6 +366,7 @@ alter table analysis_user add constraint primary key(id) constraint analysis_use
 alter table analyte add constraint primary key(id) constraint analyte_pk;
 alter table analyte_parameter add constraint primary key(id) constraint analyte_parameter_pk;
 alter table attachment add constraint primary key(id) constraint attachment_pk;
+alter table attachment_issue add constraint primary key(id) constraint attachment_issue_pk;
 alter table attachment_item add constraint primary key(id) constraint attachment_item_pk;
 alter table aux_data add constraint primary key(id) constraint aux_data_pk;
 alter table aux_field add constraint primary key(id) constraint aux_field_pk;
@@ -492,6 +496,8 @@ alter table analyte_parameter add constraint foreign key(unit_of_measure_id) ref
 
 alter table attachment add constraint foreign key(type_id) references dictionary(id) constraint attachment_1_fk;
 alter table attachment add constraint foreign key(section_id) references section(id) constraint attachment_2_fk;
+
+alter table attachment_issue add constraint foreign key(attachment_id) references attachment(id) constraint attachment_issue_1_fk;
 
 alter table attachment_item add constraint foreign key(attachment_id) references attachment(id) constraint attachment_item_1_fk;
 

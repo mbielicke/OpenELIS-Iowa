@@ -28,6 +28,9 @@ create        index analyte_parameter_3_idx on analyte_parameter(analyte_id);
 
 create unique index attachment_1_idx on attachment(id);
 
+create unique index attachment_issue_1_idx on attachment_issue(id);
+create unique index attachment_issue_2_idx on attachment_issue(attachment_id);
+
 create unique index attachment_item_1_idx on attachment_item(id);
 create        index attachment_item_2_idx on attachment_item(reference_id, reference_table_id);
 
@@ -363,6 +366,7 @@ alter table analysis_user add primary key(id);
 alter table analyte add primary key(id);
 alter table analyte_parameter add primary key(id);
 alter table attachment add primary key(id);
+alter table attachment_issue add primary key(id);
 alter table attachment_item add primary key(id);
 alter table aux_data add primary key(id);
 alter table aux_field add primary key(id);
@@ -492,6 +496,8 @@ alter table analyte_parameter add foreign key(unit_of_measure_id) references dic
 
 alter table attachment add foreign key(type_id) references dictionary(id);
 alter table attachment add foreign key(section_id) references section(id);
+
+alter table attachment_issue add foreign key(attachment_id) references attachment(id);
 
 alter table attachment_item add foreign key(attachment_id) references attachment(id);
 
