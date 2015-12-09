@@ -55,7 +55,8 @@
 		<fileset dir="bin">
 			<include name="org/openelis/stfu/bean/*.class"/>
 			<include name="org/openelis/stfu/manager/*.class"/>
-			<include name="org/openelis/stfu/entity/*.class"/>
+            <include name="org/openelis/stfu/entity/*.class"/>
+            <include name="org/openelis/stfu/scanner/*.class"/>
 		</fileset>
 		<fileset dir="src/resources/">
 			<include name="META-INF/beans.xml"/>
@@ -116,4 +117,3 @@
 	<delete dir="deploylib"/>
 
 </project>
-
