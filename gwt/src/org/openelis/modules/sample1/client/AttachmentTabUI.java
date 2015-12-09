@@ -32,16 +32,19 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.meta.AttachmentMeta;
-import org.openelis.modules.attachment.client.AttachmentAddedEvent;
+import org.openelis.modules.attachment.client.AddAttachmentEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentService;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -313,11 +316,10 @@ public abstract class AttachmentTabUI extends Screen {
             }
         });
 
-        parentBus.addHandler(AttachmentAddedEvent.getType(), new AttachmentAddedEvent.Handler() {
+        parentBus.addHandler(AddAttachmentEvent.getType(), new AddAttachmentEvent.Handler() {
             @Override
-            public void onAttachmentAdded(AttachmentAddedEvent event) {
-                redraw = true;
-                displayAttachments();
+            public void onAttachmentAdded(AddAttachmentEvent event) {
+                addAttachment(event.getAttachment());
             }
         });
 
@@ -424,15 +426,22 @@ public abstract class AttachmentTabUI extends Screen {
 
     /**
      * Deletes the selected row from the table showing the sample's attachment
-     * items
+     * items if the user has permission to do so; shows an error otherwise
      */
     @UiHandler("detachButton")
     protected void detach(ClickEvent event) {
         int r;
+        AttachmentItemViewDO data;
 
         r = currentTable.getSelectedRow();
-        if (r > -1 && currentTable.getRowCount() > 0)
-            currentTable.removeRowAt(r);
+        if (r > -1 && currentTable.getRowCount() > 0) {
+            data = get(r);
+            if (hasPermission(data.getAttachmentSectionId(), SectionFlags.CANCEL))
+                currentTable.removeRowAt(r);
+            else
+                Window.alert(Messages.get()
+                                     .attachment_detachPermException(data.getAttachmentDescription()));
+        }
     }
 
     /**
@@ -441,10 +450,6 @@ public abstract class AttachmentTabUI extends Screen {
      */
     @UiHandler("displayButton")
     protected void display(ClickEvent event) {
-        /*
-         * passing the same name to displayAttachment makes the files opened by
-         * it open in the same window
-         */
         displayAttachment(currentTable.getSelectedRow(), true);
     }
 
@@ -455,22 +460,22 @@ public abstract class AttachmentTabUI extends Screen {
     @UiHandler("moveLeftButton")
     protected void moveLeft(ClickEvent event) {
         AttachmentDO att;
-        AttachmentItemViewDO atti;
 
         if (searchTable.getSelectedRow() < 0)
             return;
 
         /*
          * add the attachment selected in the table showing search results, to
-         * the sample
+         * the record e.g. sample, if the user has permission to attach it; show
+         * an error otherwise
          */
         att = (AttachmentDO)searchTable.getRowAt(searchTable.getSelectedRow()).getData();
-        atti = createAttachmentItem(att);
-
-        currentTable.addRow(createAttachmentRow(atti));
-        currentTable.selectRowAt(currentTable.getRowCount() - 1);
-        detachButton.setEnabled(true);
-        displayButton.setEnabled(true);
+        addAttachment(att);
+        if (currentTable.getRowCount() > 0) {
+            currentTable.selectRowAt(currentTable.getRowCount() - 1);
+            detachButton.setEnabled(true);
+            displayButton.setEnabled(true);
+        }
     }
 
     /**
@@ -529,18 +534,33 @@ public abstract class AttachmentTabUI extends Screen {
 
                     @Override
                     public void attach(ArrayList<AttachmentDO> attachments) {
+                        String fullMsg, msg;
                         AttachmentItemViewDO atti;
 
                         if (attachments == null)
                             return;
 
                         /*
-                         * add the selected attachments to the sample
+                         * add the selected attachments to the record; if the
+                         * user doesn't have permission to attach any attachment
+                         * show an error for it
                          */
+                        fullMsg = "";
                         for (AttachmentDO att : attachments) {
-                            atti = createAttachmentItem(att);
-                            currentTable.addRow(createAttachmentRow(atti));
+                            if (canAttach(att)) {
+                                atti = createAttachmentItem(att);
+                                currentTable.addRow(createAttachmentRow(atti));
+                            } else {
+                                msg = Messages.get()
+                                              .attachment_attachPermException(att.getDescription());
+                                if (fullMsg.length() == 0)
+                                    fullMsg = msg;
+                                else
+                                    fullMsg = DataBaseUtil.concatWithSeparator(fullMsg, "\n", msg);
+                            }
                         }
+                        if (fullMsg.length() > 0)
+                            Window.alert(fullMsg);
                     }
                 };
             } catch (Exception e) {
@@ -613,6 +633,31 @@ public abstract class AttachmentTabUI extends Screen {
         return model;
     }
 
+    /**
+     * Returns true if the user has permission to attach the passed attachment;
+     * returns false otherwise
+     */
+    private boolean canAttach(AttachmentDO att) {
+        return hasPermission(att.getSectionId(), SectionFlags.ASSIGN);
+    }
+
+    /**
+     * Returns true if the user has the passed permission for the section with
+     * the passed id; returns false otherwise
+     */
+    private boolean hasPermission(Integer sectionId, SectionFlags perm) {
+        SectionViewDO sect;
+
+        try {
+            sect = SectionCache.getById(sectionId);
+            return UserCache.getPermission().has(sect.getName(), perm);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
+    }
+
     private Row createAttachmentRow(AttachmentItemViewDO data) {
         Row row;
 
@@ -638,5 +683,20 @@ public abstract class AttachmentTabUI extends Screen {
          */
         data = currentTable.getRowAt(index).getData();
         parentBus.fireEvent(new DisplayAttachmentEvent(data.getAttachmentId(), isSameWindow));
+    }
+
+    /**
+     * Adds the passed attachment to the record e.g. sample or worksheet if the
+     * user has permission to do so; otherwise shows an error
+     */
+    private void addAttachment(AttachmentDO att) {
+        AttachmentItemViewDO atti;
+
+        if ( !canAttach(att)) {
+            Window.alert(Messages.get().attachment_attachPermException(att.getDescription()));
+            return;
+        }
+        atti = createAttachmentItem(att);
+        currentTable.addRow(createAttachmentRow(atti));
     }
 }

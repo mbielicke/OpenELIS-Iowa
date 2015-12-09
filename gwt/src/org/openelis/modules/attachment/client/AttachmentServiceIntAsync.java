@@ -28,13 +28,13 @@ package org.openelis.modules.attachment.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
 
 /**
  * ScreenServiceIntAsync is the Asynchronous version of the ScreenServiceInt
@@ -44,21 +44,41 @@ public interface AttachmentServiceIntAsync {
 
     public void get(Integer id, AsyncCallback<ReportStatus> callback);
     
+    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback);
+
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                      AsyncCallback<ArrayList<AttachmentManager>> callback);
+                             AsyncCallback<ArrayList<AttachmentManager>> callback);
     
+    public void fetchByQueryUnattached(ArrayList<QueryData> fields, int first, int max,
+                                         AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
+    public void fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max,
+                                       AsyncCallback<ArrayList<AttachmentManager>> callback);
+
     public void fetchUnattachedByDescription(String description, int first, int max,
-                                      AsyncCallback<ArrayList<AttachmentManager>> callback);
+                                             AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
+    public void fetchIssues(AsyncCallback<ArrayList<AttachmentIssueViewDO>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
+    public void fetchForReserve(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
+
+    public void fetchIssueForUpdate(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
-    
-    public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
 
+    public void addIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback);
+
+    public void updateIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
+    public void unlockIssue(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback);
+
     public void put(AsyncCallback<ArrayList<AttachmentManager>> callback);
+
+    public void deleteIssue(AttachmentIssueViewDO data, AsyncCallback<Void> callback);
 }

@@ -1157,6 +1157,7 @@ public class SampleManager1Bean {
     public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
         int dep, ldep;
         boolean nodep;
+        String trfPattern;
         Integer tmpid, id, so, maxAccession;
         NoteViewDO ext;
         SystemVariableDO sys;
@@ -1231,6 +1232,18 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
+        
+        /*
+         * get the generic pattern for TRF's
+         */
+        try {
+            sys = systemVariable.fetchByName("attachment_pattern_gen_java");
+            trfPattern = sys.getValue();
+        } catch (Exception any) {
+            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_pattern_gen_java'", any);
+            throw new FormErrorException(Messages.get()
+                                                 .systemVariable_missingInvalidSystemVariable("attachment_pattern_gen_java"));
+        }
 
         /*
          * this map is used to validate analysis qa events
@@ -1250,7 +1263,7 @@ public class SampleManager1Bean {
                  */
                 scriptletHelper.runScriptlets(sm, cache, null, null, Action_Before.UPDATE);
 
-                validate(sm, permission, maxAccession, tms, ams, qas);
+                validate(sm, permission, maxAccession, trfPattern, tms, ams, qas);
                 /*
                  * the status will be the lowest of the statuses of the analyses
                  */
@@ -2948,6 +2961,7 @@ public class SampleManager1Bean {
      * of exceptions/warnings listing all the problems for each sample.
      */
     private void validate(SampleManager1 sm, SystemUserPermission permission, Integer maxAccession,
+                          String trfPattern,
                           HashMap<Integer, TestManager> tms,
                           HashMap<Integer, AuxFieldGroupManager> ams,
                           HashMap<Integer, QaEventDO> qas) throws Exception {
@@ -2974,6 +2988,12 @@ public class SampleManager1Bean {
                     DataBaseUtil.mergeException(e, err);
                 }
         }
+        
+        /*
+         * for display
+         */
+        if (accession == null)
+            accession = 0;
 
         /*
          * additional domain sample validation for sdwis, private well, ...
@@ -3050,6 +3070,22 @@ public class SampleManager1Bean {
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
+            }
+        }
+        
+        /*
+         * a sample can't have more than one TRF
+         */
+        cnt = 0;
+        if (getAttachments(sm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(sm)) {
+                if (data.getAttachmentDescription().matches(trfPattern))
+                    cnt++;                
+                if (cnt > 1) {
+                    e.add(new FormErrorException(Messages.get()
+                                                 .sample_moreThanOneTRFException(accession)));
+                    break;
+                }
             }
         }
 

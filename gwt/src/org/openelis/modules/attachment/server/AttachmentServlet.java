@@ -33,8 +33,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.AttachmentBean;
+import org.openelis.bean.AttachmentIssueBean;
 import org.openelis.bean.AttachmentManagerBean;
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.modules.attachment.client.AttachmentServiceInt;
 import org.openelis.ui.common.ReportStatus;
@@ -49,9 +51,44 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
 
     @EJB
     private AttachmentManagerBean attachmentManager;
-    
+
     @EJB
-    private AttachmentBean attachment;
+    private AttachmentBean        attachment;
+
+    @EJB
+    private AttachmentIssueBean   attachmentIssue;
+
+    @Override
+    public ReportStatus get(Integer id) throws Exception {
+        ReportStatus st;
+
+        try {
+            st = attachmentManager.get(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+    
+    @Override
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        ReportStatus st;
+
+        try {
+            st = attachmentManager.getTRF(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
 
     @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -63,7 +100,37 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
 
     @Override
-    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception {
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        try {
+            return attachmentManager.fetchByQueryUnattached(fields, first, max);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        try {
+            return attachmentManager.fetchByQueryDescending(fields, first, max);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public ArrayList<AttachmentIssueViewDO> fetchIssues() throws Exception {
+        try {
+            return attachmentIssue.fetchList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first,
+                                                                     int max) throws Exception {
         try {
             return attachmentManager.fetchUnattachedByDescription(description, first, max);
         } catch (Exception anyE) {
@@ -79,21 +146,31 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
             throw serializeForGWT(anyE);
         }
     }
-    
-    public ArrayList<AttachmentDO> query(Query query) throws Exception {
+
+    @Override
+    public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception {
         try {
-            return attachment.query(query.getFields(),
-                                query.getPage() * query.getRowsPerPage(),
-                                query.getRowsPerPage());
+            return attachmentManager.fetchForReserve(attachmentId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     @Override
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
+    public AttachmentIssueViewDO fetchIssueForUpdate(Integer attachmentId) throws Exception {
         try {
-            return attachmentManager.getReserved(attachmentId);
+            return attachmentIssue.fetchForUpdate(attachmentId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+        
+    }
+
+    public ArrayList<AttachmentDO> query(Query query) throws Exception {
+        try {
+            return attachment.query(query.getFields(),
+                                    query.getPage() * query.getRowsPerPage(),
+                                    query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -109,9 +186,36 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
 
     @Override
+    public AttachmentIssueViewDO addIssue(AttachmentIssueViewDO data) throws Exception {
+        try {
+            return attachmentIssue.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public AttachmentIssueViewDO updateIssue(AttachmentIssueViewDO data) throws Exception {
+        try {
+            return attachmentIssue.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
     public AttachmentManager unlock(Integer attachmentId) throws Exception {
         try {
             return attachmentManager.unlock(attachmentId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public AttachmentIssueViewDO unlockIssue(Integer attachmentId) throws Exception {
+        try {
+            return attachmentIssue.unlock(attachmentId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -134,18 +238,11 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
 
     @Override
-    public ReportStatus get(Integer id) throws Exception {
-        ReportStatus st;
-
+    public void deleteIssue(AttachmentIssueViewDO data) throws Exception {
         try {
-            st = attachmentManager.get(id);
+            attachmentIssue.delete(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
-        
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
-
-        return st;
     }
 }

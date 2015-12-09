@@ -48,12 +48,12 @@ import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserPermission;
@@ -85,15 +85,22 @@ public class AttachmentManagerBean {
 
     @EJB
     private SectionCacheBean    sectionCache;
-    
+
     @EJB
     private WorksheetBean       worksheet;
 
-    private static final Logger log = Logger.getLogger("openelis");
+    private static final Logger log                      = Logger.getLogger("openelis");
+
+    protected static long       RESERVE_LOCK_TIME_MILLIS = 30 * 60 * 1000;
 
     /**
-     * Returns an attachment manager for specified primary id and requested load
-     * elements
+     * Fetches the attachment whose id is "attachmentId" and its attachment
+     * items; fills a manager from those
+     * 
+     * @param attachmentId
+     *        the id of an attachment
+     * @return the filled manager
+     * @throws Exception
      */
     public AttachmentManager fetchById(Integer attachmentId) throws Exception {
         ArrayList<Integer> ids;
@@ -106,128 +113,92 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Returns attachment managers for specified primary ids. The returned
-     * managers are sorted in descending order of the ids because this method
-     * can be called for the front-end and there the most recent attachments are
-     * shown first.
+     * Fetches the attachments whose ids are in "attachmentIds" and their
+     * attachment items; fills managers from those; the attachments are sorted
+     * in ascending order of their ids
+     * 
+     * @param attachmentIds
+     *        the ids of attachments whose managers are to be returned
+     * @return the filled managers
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds) throws Exception {
-        AttachmentManager am;
-        SampleDO s;
-        WorksheetViewDO w;
-        ArrayList<Integer> ids, sids, wids;
-        ArrayList<AttachmentManager> ams;
-        ArrayList<AttachmentDO> attachments;
-        ArrayList<SampleDO> samples;
-        ArrayList<WorksheetViewDO> worksheets;
-        HashMap<Integer, AttachmentManager> map;
-        HashMap<Integer, SampleDO> smap;
-        HashMap<Integer, WorksheetViewDO> wmap;
-
-        /*
-         * to reduce database select calls, we are going to fetch everything for
-         * a given select and unroll through loops.
-         */
-        ams = new ArrayList<AttachmentManager>();
-
-        /*
-         * return an empty list if there are no attachments; AttachmentBean's
-         * fetchByIdsDescending is called instead of fetchByIds, because the
-         * current method needs to return the managers sorted in descending
-         * order as explained at the top
-         */
-        attachments = attachment.fetchByIdsDescending(attachmentIds);
-        if (attachments.size() < 1)
-            return ams;
-
-        /*
-         * build level 1, everything is based on attachment ids
-         */
-        ids = new ArrayList<Integer>();
-        map = new HashMap<Integer, AttachmentManager>();
-
-        for (AttachmentDO data : attachments) {
-            am = new AttachmentManager();
-            setAttachment(am, data);
-            ams.add(am);
-
-            ids.add(data.getId()); // for fetch
-            map.put(data.getId(), am); // for linking
-        }
-
-        sids = new ArrayList<Integer>();
-        wids = new ArrayList<Integer>(); 
-        for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(ids)) {
-            am = map.get(data.getAttachmentId());
-            addItem(am, data);
-            if (Constants.table().SAMPLE.equals(data.getReferenceTableId()))
-                sids.add(data.getReferenceId());
-            else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId()))
-                wids.add(data.getReferenceId());
-        }
-
-        /*
-         * fetch all the samples, worksheets linked to the attachments
-         */
-        smap = new HashMap<Integer, SampleDO>();        
-        if (sids.size() > 0) {
-            samples = sample.fetchByIds(sids);
-            for (SampleDO data : samples)
-                smap.put(data.getId(), data);
-        }
-        
-        wmap = new HashMap<Integer, WorksheetViewDO>();
-        if (wids.size() > 0) {
-            worksheets = worksheet.fetchByIds(wids);
-            for (WorksheetViewDO data : worksheets)
-                wmap.put(data.getId(), data);
-        }
-
-        /*
-         * go through the items in all managers and set the reference
-         * description based on the reference table
-         */
-        for (AttachmentManager am1 : ams) {
-            if (getItems(am1) != null) {
-                for (AttachmentItemViewDO data : getItems(am1)) {
-                    am = map.get(data.getAttachmentId());
-                    if (Constants.table().SAMPLE.equals(data.getReferenceTableId())) {
-                        s = smap.get(data.getReferenceId());
-                        data.setReferenceDescription(Messages.get()
-                                                             .attachment_sampleDescription(s.getAccessionNumber()));
-                    } else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId())) {
-                        w = wmap.get(data.getReferenceId());
-                        data.setReferenceDescription(Messages.get()
-                                                             .attachment_worksheetDescription(w.getId()));
-                    }
-                }
-            }
-        }
-
-        return ams;
+        return fetchByIds(attachmentIds, false);
     }
 
     /**
-     * Returns attachment managers based on the specified query. The returned
-     * managers are sorted in descending order of the ids because this method
-     * can be called from the front-end and there the most recent attachments
-     * are shown first.
+     * Fetches attachments and their attachment items based on the query
+     * specified in "fields"; fills managers from those
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the filled managers
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        ArrayList<Integer> ids;
-
-        ids = new ArrayList<Integer>();
-
-        for (AttachmentDO data : attachment.query(fields, first, max))
-            ids.add(data.getId());
-        return fetchByIds(ids);
+        return fetchByQuery(fields, first, max, false, false);
     }
 
     /**
-     * Returns attachment managers based on the specified description. The
-     * returned managers are sorted in descending order of the ids because this
-     * method can be called from the front-end and there the most recent
-     * attachments are shown first.
+     * Fetches attachments and their attachment items based on the query
+     * specified in "fields"; fills managers from those; the attachments don't
+     * have any attachment items
+     * 
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the filled managers
+     * @throws Exception
+     */
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        return fetchByQuery(fields, first, max, true, false);
+    }
+
+    /**
+     * Fetches attachments and their attachment items based on the query
+     * specified in "fields"; fills managers from those; the attachments are
+     * sorted in descending order of their ids
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the filled managers
+     * @throws Exception
+     */
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        return fetchByQuery(fields, first, max, false, true);
+    }
+
+    /**
+     * Fetches the attachments with no attachment items based on "description";
+     * fills managers from those
+     * 
+     * @param description
+     *        the value specified to find attachments with the matching
+     *        description
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @return the filled managers
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first,
                                                                      int max) throws Exception {
@@ -241,7 +212,14 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Returns a locked attachment manager with specified attachment id
+     * Fetches and locks the attachment whose id is "attachmentId"; also fetches
+     * its attachment items; fills a manager from those; the attachment is
+     * locked for the default duration
+     * 
+     * @param attachmentId
+     *        the id of the attachment record whose manager is to be returned
+     * @return the filled manager
+     * @throws Exception
      */
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception {
         ArrayList<Integer> ids;
@@ -249,36 +227,41 @@ public class AttachmentManagerBean {
 
         ids = new ArrayList<Integer>(1);
         ids.add(attachmentId);
-        ams = fetchForUpdate(ids);
+        ams = fetchForUpdate(ids, null);
         return ams.size() == 0 ? null : ams.get(0);
     }
 
     /**
-     * Returns a list of locked attachment managers with specified sample ids
-     * and requested load elements
+     * Fetches and locks the attachment whose id is "attachmentId"; also fetches
+     * its attachment items; fills a manager from those; the attachment is
+     * locked for longer than the default duration
+     * 
+     * @param attachmentId
+     *        the id of the attachment record whose manager is to be returned
+     * @return the filled manager
+     * @throws Exception
      */
-    public ArrayList<AttachmentManager> fetchForUpdate(ArrayList<Integer> attachmentIds) throws Exception {
-        lock.lock(Constants.table().ATTACHMENT, attachmentIds);
-        return fetchByIds(attachmentIds);
+    public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception {
+        ArrayList<Integer> ids;
+        ArrayList<AttachmentManager> ams;
+
+        ids = new ArrayList<Integer>(1);
+        ids.add(attachmentId);
+        ams = fetchForUpdate(ids, RESERVE_LOCK_TIME_MILLIS);
+        return ams.size() == 0 ? null : ams.get(0);
     }
 
     /**
-     * Returns the manager for the passed id if the attachment has either been
-     * attached at least once or if it can be locked
-     */
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
-        AttachmentManager am;
-
-        am = fetchById(attachmentId);
-        if (getItems(am) != null)
-            return am;
-        return fetchForUpdate(attachmentId);
-    }
-
-    /**
-     * Adds/updates the attachment and related records in the database. The
+     * Adds/updates the attachment and related records in the database; the
      * records are validated before add/update and the attachment record must
-     * have a lock record if it has an id.
+     * have a lock record if it has an id
+     * 
+     * @param am
+     *        the manager whose attachment and related records are to be
+     *        added/updated
+     * @return a manager with the added/updated records; added records in the
+     *         manager have ids
+     * @throws Exception
      */
     public AttachmentManager update(AttachmentManager am) throws Exception {
         ArrayList<AttachmentManager> ams;
@@ -290,22 +273,63 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Adds/updates all the attachments and related records in the database. All
-     * the records are validated before add/update and the attachment records
-     * must each have a lock record if they have an id.
+     * Adds/updates the attachment and related records in the database; the
+     * records are validated before add/update and the attachment record must
+     * have a lock record if it has an id
+     * 
+     * @param ams
+     *        the managers whose attachment and related records are to be
+     *        added/updated
+     * @return a list of manager with the added/updated records; added records
+     *         in the managers have ids
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> update(ArrayList<AttachmentManager> ams) throws Exception {
+        Integer sid;
+        String sname;
         ValidationErrorsList e;
         HashSet<Integer> ids;
-        ArrayList<Integer> locks;
+        ArrayList<Integer> fetchIds, locks;
+        ArrayList<AttachmentDO> as;
+        HashMap<Integer, AttachmentDO> amap;
+
+        /*
+         * get the id of the "system" section
+         */
+        try {
+            sname = systemVariable.fetchByName("system_section").getValue();
+            sid = sectionCache.getByName(sname).getId();
+        } catch (Exception ex) {
+            log.severe("No 'system_section' system variable defined");
+            throw new InconsistencyException(Messages.get()
+                                                     .systemVariable_missingInvalidSystemVariable("system_section"));
+        }
+
+        ids = new HashSet<Integer>();
+        for (AttachmentManager am : ams) {
+            if (getAttachment(am).getId() != null)
+                ids.add(getAttachment(am).getId());
+        }
+
+        amap = new HashMap<Integer, AttachmentDO>();
+        fetchIds = null;
+        /*
+         * fetch from the database, the data for the records being updated
+         */
+        if (ids.size() > 0) {
+            fetchIds = new ArrayList<Integer>(ids);
+            as = attachment.fetchByIds(fetchIds);
+            for (AttachmentDO data : as)
+                amap.put(data.getId(), data);
+        }
 
         e = new ValidationErrorsList();
         /*
-         * validate each sample and re-evaluate its status
+         * validate each attachment
          */
         for (AttachmentManager am : ams) {
             try {
-                validate(am);
+                validate(am, amap.get(getAttachment(am).getId()), sid);
             } catch (ValidationErrorsList err) {
                 if (err.hasErrors())
                     DataBaseUtil.mergeException(e, err);
@@ -320,21 +344,26 @@ public class AttachmentManagerBean {
         /*
          * check all the locks
          */
-        ids = new HashSet<Integer>();
-        for (AttachmentManager am : ams) {
-            if (getAttachment(am).getId() != null)
-                ids.add(getAttachment(am).getId());
-        }
         if (ids.size() > 0) {
-            locks = new ArrayList<Integer>(ids);
+            locks = fetchIds;
             lock.validateLock(Constants.table().ATTACHMENT, locks);
         } else {
             locks = null;
         }
-        ids = null;
 
-        for (AttachmentManager am : ams)
-            attachment.update(getAttachment(am));
+        ids = null;
+        fetchIds = null;
+        amap = null;
+
+        /*
+         * add/update attachment
+         */
+        for (AttachmentManager am : ams) {
+            if (getAttachment(am).getId() == null)
+                attachment.add(getAttachment(am));
+            else
+                attachment.update(getAttachment(am));
+        }
 
         if (locks != null)
             lock.unlock(Constants.table().ATTACHMENT, locks);
@@ -343,12 +372,19 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Creates attachment records using the passed paths where the file name is
-     * set as the description. Returns the managers for the attachment records
-     * created.
+     * Creates attachment records using "paths"; the description of each created
+     * attachment is the name of the file that it points to
+     * 
+     * @param paths
+     *        list of paths to specific files
+     * @param sectionId
+     *        the id used to set the section permission for each created
+     *        attachment
+     * @return the list of managers containing the created attachment records
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> put(List<String> paths, Integer sectionId) throws Exception {
-        String base;
+        String base, name;
         AttachmentDO data;
         ArrayList<Integer> ids;
 
@@ -358,6 +394,18 @@ public class AttachmentManagerBean {
             log.severe("No 'attachment_directory' system variable defined");
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
         }
+
+        if (sectionId == null) {
+            try {
+                name = ReportUtil.getSystemVariableValue("internal_section");
+                sectionId = sectionCache.getByName(name).getId();
+            } catch (Exception e) {
+                log.severe("No 'internal_section' system variable defined");
+                throw new InconsistencyException(Messages.get()
+                                                         .systemVariable_missingInvalidSystemVariable("internal_section"));
+            }
+        }
+
         ids = new ArrayList<Integer>();
         /*
          * create attachment records by saving the uploaded files and fetch the
@@ -372,13 +420,31 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Creates an attachment record using the filename and description. The file
-     * specified by file is renamed and moved to the attachment directory. The
-     * filename is stored in storage reference field.
+     * Creates an attachment record; the file specified by "file" is renamed and
+     * moved to the attachment directory; if "getNameFromFile" is true, the
+     * attachment record's storage reference field is set to the name of the
+     * file at "file", otherwise the field is set as "fileName"; the attachment
+     * record's description field is set as "description" if it's not null,
+     * otherwise the field is set to the same value as the storage reference
+     * 
+     * @param file
+     *        the full path to a file
+     * @param getNameFromFile
+     *        the flag that determines what should be set as the storage
+     *        reference of the created record
+     * @param filename
+     *        the value that could be set as the storage reference of the
+     *        created record
+     * @param description
+     *        if not null, this is set as the description of the created record
+     * @param sectionId
+     *        the id used to set the section permission for the created record
+     * @return the DO corresponding to the created record
+     * @throws Exception
      */
     public AttachmentDO put(String file, boolean getNameFromFile, String filename,
                             String description, Integer sectionId) throws Exception {
-        String base;
+        String base, name;
 
         try {
             base = systemVariable.fetchByName("attachment_directory").getValue();
@@ -387,13 +453,44 @@ public class AttachmentManagerBean {
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
         }
 
+        if (sectionId == null) {
+            try {
+                name = ReportUtil.getSystemVariableValue("internal_section");
+                sectionId = sectionCache.getByName(name).getId();
+            } catch (Exception e) {
+                log.severe("No 'internal_section' system variable defined");
+                throw new InconsistencyException(Messages.get()
+                                                         .systemVariable_missingInvalidSystemVariable("internal_section"));
+            }
+        }
+
         return put(base, file, getNameFromFile, filename, description, sectionId);
     }
 
     /**
-     * Creates an attachment record using the filename and description. The file
-     * specified by file is renamed and moved to the attachment directory, which
-     * is specified by base. The filename is stored in storage reference field.
+     * Creates an attachment record; the file specified by "file" is renamed and
+     * moved to the directory specified by "base"; if "getNameFromFile" is true,
+     * the attachment record's storage reference field is set to the name of the
+     * file at "file", otherwise the field is set as "fileName"; the attachment
+     * record's description field is set as "description" if it's not null,
+     * otherwise the field is set to the same value as the storage reference
+     * 
+     * @param base
+     *        the directory to which the file specified by "file" is moved
+     * @param file
+     *        the full path to a file
+     * @param getNameFromFile
+     *        the flag that determines what should be set as the storage
+     *        reference of the created record
+     * @param filename
+     *        the value that could be set as the storage reference of the
+     *        created record
+     * @param description
+     *        if not null, this is set as the description of the created record
+     * @param sectionId
+     *        the id used to set the section permission for the created record
+     * @return the DO corresponding to the created record
+     * @throws Exception
      */
     public AttachmentDO put(String base, String file, boolean getNameFromFile, String filename,
                             String description, Integer sectionId) throws Exception {
@@ -424,10 +521,16 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Returns the ReportStatus containing the path and name of the file that is
-     * linked to the attachment with the passed id
+     * Copies to the upload directory, the file linked to the attachment record
+     * whose id is "attachmentId"; creates a ReportStatus containing the path
+     * and name of the copied file
+     * 
+     * @param attachmentId
+     *        the id of an attachment record
+     * @return the created ReportStatus
+     * @throws Exception
      */
-    public ReportStatus get(Integer id) throws Exception {
+    public ReportStatus get(Integer attachmentId) throws Exception {
         String base;
 
         try {
@@ -437,15 +540,22 @@ public class AttachmentManagerBean {
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
         }
 
-        return get(base, id);
+        return get(base, attachmentId);
     }
 
     /**
-     * Returns the ReportStatus containing the path and name of the file that is
-     * linked to the attachment with the passed id. The attachment directory is
-     * specified by base.
+     * Copies to the upload directory, the file linked to the attachment record
+     * whose id is "attachmentId"; creates a ReportStatus containing the path
+     * and name of the copied file
+     * 
+     * @param base
+     *        the name of the attachment directory
+     * @param attachmentId
+     *        the id of an attachment record
+     * @return the created ReportStatus
+     * @throws Exception
      */
-    public ReportStatus get(String base, Integer id) throws Exception {
+    public ReportStatus get(String base, Integer attachmentId) throws Exception {
         Integer index;
         String ref, prefix, suffix;
         AttachmentDO data;
@@ -456,7 +566,7 @@ public class AttachmentManagerBean {
         SectionViewDO sect;
         OutputStream out;
 
-        data = attachment.fetchById(id);
+        data = attachment.fetchById(attachmentId);
 
         /*
          * check whether the user has permission to view this attachment and
@@ -469,17 +579,19 @@ public class AttachmentManagerBean {
 
             if (sp == null || !sp.hasViewPermission())
                 throw new InconsistencyException(Messages.get()
-                                                         .attachment_viewPermException(data.getStorageReference()));
+                                                         .attachment_viewPermException(data.getDescription()));
         }
 
-        src = Paths.get(base, ReportUtil.getAttachmentSubdirectory(id), id.toString());
+        src = Paths.get(base,
+                        ReportUtil.getAttachmentSubdirectory(attachmentId),
+                        attachmentId.toString());
         ref = data.getStorageReference();
         index = ref.lastIndexOf(".");
         /*
-         * Get the file name and extension from the storage reference if there
+         * get the file name and extension from the storage reference if there
          * is a "." in the reference and there's something to the left and right
          * of it; otherwise, use the whole reference as the prefix and let the
-         * suffix be empty. Last index is used instead of splitting on the "."
+         * suffix be empty; last index is used instead of splitting on the "."
          * because the reference could have multiple of them.
          */
         if (index > 0 && index < ref.length() - 1) {
@@ -512,7 +624,46 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Unlocks and returns an attachment manager with specified attachment id
+     * Finds the TRF for the sample with the passed id and copies the file to
+     * the upload directory; creates a ReportStatus containing the path and name
+     * of the copied file
+     * 
+     * @param sampleId
+     *        the id of a sample
+     * @return the created ReportStatus
+     * @throws Exception
+     */
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        String pattern;
+        ArrayList<AttachmentDO> attachments;
+
+        try {
+            pattern = systemVariable.fetchByName("attachment_pattern_gen_sql").getValue();
+            pattern = pattern.replaceAll("\\*", "\\%");
+        } catch (Exception e) {
+            log.severe("No 'attachment_pattern_gen_sql' system variable defined");
+            throw new InconsistencyException(Messages.get()
+                                                     .attachment_missingGenericPatternException());
+        }
+
+        try {
+            attachments = attachment.fetchByDescriptionReferenceIdReferenceTableId(pattern,
+                                                                                   sampleId,
+                                                                                   Constants.table().SAMPLE);
+        } catch (NotFoundException e) {
+            throw new InconsistencyException(Messages.get().attachment_trfNotFoundException());
+        }
+
+        return get(attachments.get(0).getId());
+    }
+
+    /**
+     * Unlocks the attachment record whose id is "attachmentId"
+     * 
+     * @param attachmentId
+     *        the id of the attachment record to be unlocked
+     * @return the manager for the unlocked attachment record
+     * @throws Exception
      */
     public AttachmentManager unlock(Integer attachmentId) throws Exception {
         ArrayList<Integer> ids;
@@ -525,22 +676,214 @@ public class AttachmentManagerBean {
     }
 
     /**
-     * Unlocks and returns list of attachment managers with specified attachment
-     * ids
+     * Unlocks the attachment record whose ids are "attachmentIds"
+     * 
+     * @param attachmentIds
+     *        the ids of the attachment records to be unlocked
+     * @return the managers for the unlocked attachment records
+     * @throws Exception
      */
     public ArrayList<AttachmentManager> unlock(ArrayList<Integer> attachmentIds) throws Exception {
         lock.unlock(Constants.table().ATTACHMENT, attachmentIds);
         return fetchByIds(attachmentIds);
     }
 
-    private void validate(AttachmentManager am) throws Exception {
+    /**
+     * Fetches the attachment whose ids are "attachmentIds"; also fetches their
+     * attachment items; fills a manager from those; if "isDescending" is true,
+     * the returned managers are sorted in descending order of the ids;
+     * otherwise they're sorted in ascending order
+     * 
+     * @param attachmentIds
+     *        the ids of the attachment records whose managers are to be
+     *        returned
+     * @param isDescending
+     *        a flag that determines whether the returned managers are sorted in
+     *        descending or ascending order
+     * @return the created managers
+     * @throws Exception
+     */
+    private ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds,
+                                                    boolean isDescending) throws Exception {
+        AttachmentManager am;
+        SampleDO s;
+        WorksheetViewDO w;
+        ArrayList<Integer> ids, sids, wids;
+        ArrayList<AttachmentManager> ams;
+        ArrayList<AttachmentDO> as;
+        ArrayList<SampleDO> samples;
+        ArrayList<WorksheetViewDO> ws;
+        HashMap<Integer, AttachmentManager> map;
+        HashMap<Integer, SampleDO> smap;
+        HashMap<Integer, WorksheetViewDO> wmap;
+
+        /*
+         * to reduce database select calls, we are going to fetch everything for
+         * a given select and unroll through loops.
+         */
+        ams = new ArrayList<AttachmentManager>();
+
+        /*
+         * return an empty list if there are no attachments; AttachmentBean's
+         * fetchByIdsDescending is called instead of fetchByIds, because the
+         * current method needs to return the managers sorted in descending
+         * order as explained at the top
+         */
+        if (isDescending)
+            as = attachment.fetchByIds(attachmentIds, true);
+        else
+            as = attachment.fetchByIds(attachmentIds);
+
+        /*
+         * build level 1, everything is based on attachment ids
+         */
+        ids = new ArrayList<Integer>();
+        map = new HashMap<Integer, AttachmentManager>();
+
+        for (AttachmentDO data : as) {
+            am = new AttachmentManager();
+            setAttachment(am, data);
+            ams.add(am);
+
+            ids.add(data.getId()); // for fetch
+            map.put(data.getId(), am); // for linking
+        }
+
+        sids = new ArrayList<Integer>();
+        wids = new ArrayList<Integer>();
+        for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(ids)) {
+            am = map.get(data.getAttachmentId());
+            addItem(am, data);
+            if (Constants.table().SAMPLE.equals(data.getReferenceTableId()))
+                sids.add(data.getReferenceId());
+            else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId()))
+                wids.add(data.getReferenceId());
+        }
+
+        /*
+         * fetch all the samples, worksheets linked to the attachments
+         */
+        smap = new HashMap<Integer, SampleDO>();
+        if (sids.size() > 0) {
+            samples = sample.fetchByIds(sids);
+            for (SampleDO data : samples)
+                smap.put(data.getId(), data);
+        }
+
+        wmap = new HashMap<Integer, WorksheetViewDO>();
+        if (wids.size() > 0) {
+            ws = worksheet.fetchByIds(wids);
+            for (WorksheetViewDO data : ws)
+                wmap.put(data.getId(), data);
+        }
+
+        /*
+         * go through the items in all managers and set the reference
+         * description based on the reference table
+         */
+        for (AttachmentManager am1 : ams) {
+            if (getItems(am1) != null) {
+                for (AttachmentItemViewDO data : getItems(am1)) {
+                    am = map.get(data.getAttachmentId());
+                    if (Constants.table().SAMPLE.equals(data.getReferenceTableId())) {
+                        s = smap.get(data.getReferenceId());
+                        data.setReferenceDescription(Messages.get()
+                                                             .attachment_sampleDescription(s.getAccessionNumber()));
+                    } else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId())) {
+                        w = wmap.get(data.getReferenceId());
+                        data.setReferenceDescription(Messages.get()
+                                                             .attachment_worksheetDescription(w.getId()));
+                    }
+                }
+            }
+        }
+
+        return ams;
+    }
+
+    /**
+     * Fetches the attachments and their attachment items based on the query
+     * specified in "fields"; fills managers from those; if "isDescending" is
+     * true, the returned managers are sorted in descending order of the ids;
+     * otherwise they're sorted in ascending order
+     * 
+     * @param fields
+     *        the fields used in the query
+     * @param first
+     *        the index of the first record to be returned by the query i.e. the
+     *        first record in the current "page"
+     * @param max
+     *        the maximum number of records to be returned by the query
+     * @param isDescending
+     *        a flag that determines whether the returned managers are sorted in
+     *        descending or ascending order
+     * @return the filled managers
+     * @throws Exception
+     */
+    private ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first,
+                                                      int max, boolean isUnattached,
+                                                      boolean isDescending) throws Exception {
+        ArrayList<Integer> ids;
+        ArrayList<AttachmentDO> attachments;
+
+        ids = new ArrayList<Integer>();
+        /*
+         * if (isDescending) attachments = attachment.query(fields, first, max,
+         * false, true); else attachments = attachment.query(fields, first,
+         * max);
+         */
+        attachments = attachment.query(fields, first, max, isUnattached, isDescending);
+        for (AttachmentDO data : attachments)
+            ids.add(data.getId());
+
+        return fetchByIds(ids, isDescending);
+    }
+
+    /**
+     * Fetches and locks the attachment whose ids are "attachmentIds"; also
+     * fetches its attachment items; fills a manager from those; if "expires" is
+     * not null, the attachment is locked for the duration specified by it;
+     * otherwise it's locked for the default duration
+     * 
+     * @param attachmentIds
+     *        the ids of the attachment records whose managers are to be
+     *        returned
+     * @param expires
+     *        a number that specifies for how many milliseconds records should
+     *        be locked
+     * @return the filled managers
+     * @throws Exception
+     */
+    private ArrayList<AttachmentManager> fetchForUpdate(ArrayList<Integer> attachmentIds,
+                                                        Long expires) throws Exception {
+        if (expires == null)
+            lock.lock(Constants.table().ATTACHMENT, attachmentIds);
+        else
+            lock.lock(Constants.table().ATTACHMENT, attachmentIds, expires);
+        return fetchByIds(attachmentIds);
+    }
+
+    /**
+     * Validates the attachment record in "am"
+     * 
+     * @param am
+     *        the manager whose attachment record is to be validated
+     * @param dbData
+     *        the DO containing the data from the database for the attachment
+     *        record with the same id as "data"; this will be null if a record
+     *        doesn't exist for "data" yet, i.e. if "data" has a null id
+     * @param systemId
+     *        the id of the "system" section
+     * @throws Exception
+     */
+    private void validate(AttachmentManager am, AttachmentDO dbData, Integer systemId) throws Exception {
         ValidationErrorsList e;
 
         e = new ValidationErrorsList();
 
         if (getAttachment(am).isChanged())
             try {
-                attachment.validate(getAttachment(am));
+                attachment.validate(getAttachment(am), dbData, systemId);
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
             }

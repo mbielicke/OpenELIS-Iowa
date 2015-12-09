@@ -91,10 +91,18 @@ public class AttachmentImportBean {
         dirStream = null;
         try {
             /*
-             * get the id of the passed section
+             * get the id of the passed section; use the section "internal" if
+             * the name is not specified
              */
-            sectionId = !DataBaseUtil.isEmpty(sectionName) ? section.getByName(sectionName).getId()
-                                                          : null;
+            if (DataBaseUtil.isEmpty(sectionName)) {
+                try {
+                    sectionName = ReportUtil.getSystemVariableValue("internal_section");
+                } catch (Exception e) {
+                    log.severe("No 'internal_section' system variable defined");
+                    return;
+                } 
+            }
+            sectionId = section.getByName(sectionName).getId();
             /*
              * go through the files in the directory and create attachments from
              * them
@@ -146,7 +154,7 @@ public class AttachmentImportBean {
              */
             attachments = attachment.fetchUnattachedBeforeCreatedDate(cal.getTime());
             for (AttachmentDO data : attachments) {
-                log.fine("Deleting attachment id: "+data.getId());
+                log.fine("Deleting attachment id: " + data.getId());
                 src = Paths.get(base,
                                 ReportUtil.getAttachmentSubdirectory(data.getId()),
                                 data.getId().toString());

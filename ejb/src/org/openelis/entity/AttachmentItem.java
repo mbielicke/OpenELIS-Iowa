@@ -41,13 +41,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "AttachmentItem.FetchById",
@@ -66,7 +62,7 @@ import org.openelis.utils.Auditable;
 @Entity
 @Table(name = "attachment_item")
 @EntityListeners({AuditUtil.class})
-public class AttachmentItem implements Auditable, Cloneable {
+public class AttachmentItem implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,9 +81,6 @@ public class AttachmentItem implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attachment_id", insertable = false, updatable = false)
     private Attachment     attachment;
-
-    @Transient
-    private AttachmentItem original;
 
     public Integer getId() {
         return id;
@@ -131,29 +124,5 @@ public class AttachmentItem implements Auditable, Cloneable {
 
     public void setAttachment(Attachment attachment) {
         this.attachment = attachment;
-    }
-
-    public void setClone() {
-        try {
-            original = (AttachmentItem)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit(Integer activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ATTACHMENT_ITEM);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("reference_id", referenceId, original.referenceId)
-                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
-                 .setField("attachment_id", attachmentId, original.attachmentId);
-
-        return audit;
-
     }
 }

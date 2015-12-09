@@ -28,6 +28,7 @@ package org.openelis.modules.attachment.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
@@ -64,6 +65,34 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
+    public ReportStatus get(Integer attachmentId) throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.get(attachmentId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void get(Integer attachmentId, AsyncCallback<ReportStatus> callback) {
+        service.get(attachmentId, callback);
+    }
+
+    @Override
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getTRF(sampleId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback) {
+        service.getTRF(sampleId, callback);
+    }
+
+    @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Callback<ArrayList<AttachmentManager>> callback;
 
@@ -76,6 +105,39 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              AsyncCallback<ArrayList<AttachmentManager>> callback) {
         service.fetchByQuery(fields, first, max, callback);
+    }
+
+    @Override
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        Callback<ArrayList<AttachmentManager>> callback;
+
+        callback = new Callback<ArrayList<AttachmentManager>>();
+        service.fetchByQueryUnattached(fields, first, max, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchByQueryUnattached(ArrayList<QueryData> fields, int first, int max,
+                                       AsyncCallback<ArrayList<AttachmentManager>> callback) {
+        service.fetchByQueryUnattached(fields, first, max, callback);
+    }
+    
+    @Override
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception {
+        Callback<ArrayList<AttachmentManager>> callback;
+
+        callback = new Callback<ArrayList<AttachmentManager>>();
+        service.fetchByQueryDescending(fields, first, max, callback);
+        return callback.getResult();
+    }
+
+    
+    @Override
+    public void fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max,
+                                       AsyncCallback<ArrayList<AttachmentManager>> callback) {
+        service.fetchByQueryDescending(fields, first, max, callback);
     }
 
     @Override
@@ -92,6 +154,20 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
                                              AsyncCallback<ArrayList<AttachmentManager>> callback) {
         service.fetchUnattachedByDescription(description, first, max, callback);
     }
+    
+    @Override
+    public ArrayList<AttachmentIssueViewDO> fetchIssues() throws Exception {
+        Callback<ArrayList<AttachmentIssueViewDO>> callback;
+
+        callback = new Callback<ArrayList<AttachmentIssueViewDO>>();
+        service.fetchIssues(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchIssues(AsyncCallback<ArrayList<AttachmentIssueViewDO>> callback) {
+        service.fetchIssues(callback);
+    }
 
     @Override
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception {
@@ -105,6 +181,35 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     @Override
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
         service.fetchForUpdate(attachmentId, callback);
+    }
+
+    @Override
+    public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception {
+        Callback<AttachmentManager> callback;
+
+        callback = new Callback<AttachmentManager>();
+        service.fetchForReserve(attachmentId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchForReserve(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
+        service.fetchForReserve(attachmentId, callback);
+    }
+    
+    @Override
+    public AttachmentIssueViewDO fetchIssueForUpdate(Integer attachmentId) throws Exception {
+        Callback<AttachmentIssueViewDO> callback;
+
+        callback = new Callback<AttachmentIssueViewDO>();
+        service.fetchIssueForUpdate(attachmentId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchIssueForUpdate(Integer attachmentId,
+                                    AsyncCallback<AttachmentIssueViewDO> callback) {
+        service.fetchIssueForUpdate(attachmentId, callback);
     }
     
     @Override
@@ -122,20 +227,6 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
-    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
-        Callback<AttachmentManager> callback;
-
-        callback = new Callback<AttachmentManager>();
-        service.getReserved(attachmentId, callback);
-        return callback.getResult();
-    }
-    
-    @Override
-    public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
-        service.getReserved(attachmentId, callback);
-    }
-
-    @Override
     public AttachmentManager update(AttachmentManager data) throws Exception {
         Callback<AttachmentManager> callback;
 
@@ -150,6 +241,35 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
+    public AttachmentIssueViewDO addIssue(AttachmentIssueViewDO data) throws Exception {
+        Callback<AttachmentIssueViewDO> callback;
+
+        callback = new Callback<AttachmentIssueViewDO>();
+        service.addIssue(data, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void addIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback) {
+        service.addIssue(data, callback);
+    }
+
+    @Override
+    public AttachmentIssueViewDO updateIssue(AttachmentIssueViewDO data) throws Exception {
+        Callback<AttachmentIssueViewDO> callback;
+
+        callback = new Callback<AttachmentIssueViewDO>();
+        service.updateIssue(data, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void updateIssue(AttachmentIssueViewDO data,
+                            AsyncCallback<AttachmentIssueViewDO> callback) {
+        service.updateIssue(data, callback);
+    }
+
+    @Override
     public AttachmentManager unlock(Integer attachmentId) throws Exception {
         Callback<AttachmentManager> callback;
 
@@ -161,6 +281,20 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     @Override
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
         service.unlock(attachmentId, callback);
+    }
+    
+    @Override
+    public AttachmentIssueViewDO unlockIssue(Integer attachmentId) throws Exception {
+        Callback<AttachmentIssueViewDO> callback;
+
+        callback = new Callback<AttachmentIssueViewDO>();
+        service.unlockIssue(attachmentId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void unlockIssue(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback) {
+        service.unlockIssue(attachmentId, callback);
     }
 
     @Override
@@ -178,16 +312,15 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
-    public ReportStatus get(Integer attachmentId) throws Exception {
-        Callback<ReportStatus> callback;
+    public void deleteIssue(AttachmentIssueViewDO data) throws Exception {
+        Callback<Void> callback;
 
-        callback = new Callback<ReportStatus>();
-        service.get(attachmentId, callback);
-        return callback.getResult();
+        callback = new Callback<Void>();
+        service.deleteIssue(data, callback);
     }
 
     @Override
-    public void get(Integer attachmentId, AsyncCallback<ReportStatus> callback) {
-        service.get(attachmentId, callback);
+    public void deleteIssue(AttachmentIssueViewDO data, AsyncCallback<Void> callback) {
+        service.deleteIssue(data, callback);
     }
 }

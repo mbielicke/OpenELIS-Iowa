@@ -90,3 +90,7 @@
     font-weight:bold;
     white-space: nowrap;
 }
+
+.WidgetTableAlternateRow {
+    background: #f0f0f0;
+}

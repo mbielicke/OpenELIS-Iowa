@@ -77,10 +77,10 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.attachment.client.AttachmentAddedEvent;
-import org.openelis.modules.attachment.client.AttachmentScreenUI;
+import org.openelis.modules.attachment.client.AddAttachmentEvent;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -255,7 +255,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     historyAuxData;
 
     @UiField
-    protected CheckMenuItem                             fromTRF;
+    protected CheckMenuItem                             addWithTRF;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -307,7 +307,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected PatientLookupUI                           patientLookup;
 
-    protected AttachmentScreenUI                        attachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected EOrderLookupUI                            eorderLookup;
 
@@ -590,18 +590,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disable until the new data entry attachment screen is ready
-                 * to be used
-                 */
-                fromTRF.setEnabled(false);
+                addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                                      userPermission.hasAddPermission());
             }
         });
 
-        fromTRF.addCommand(new Command() {
+        addWithTRF.addCommand(new Command() {
             @Override
             public void execute() {
-                fromTRF();
+                addWithTRF();
             }
         });
 
@@ -3013,7 +3010,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          */
                         event.cancel();
                         closeLoginScreen = true;
-                        attachmentScreen.getWindow().close();
+                        trfAttachmentScreen.getWindow().close();
                         closeLoginScreen = false;
                     } else {
                         /*
@@ -3424,8 +3421,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                      */
                     cache = null;
                     clearScriptlets();
-                    if (attachmentScreen != null)
-                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -3497,8 +3492,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setDone(Messages.get().gen_addAborted());
             cache = null;
             clearScriptlets();
-            if (attachmentScreen != null)
-                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             /*
              * unlock the patient if it's locked
@@ -3639,23 +3632,24 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * If the checkbox of the menu item "From TRF" is checked, then opens the
-     * Attachment screen and executes the query to fetch unattached attachments
-     * for this domain, if it's unchecked then closes that screen if it's open.
+     * If the checkbox of the menu item "Add With TRF" is checked, opens the
+     * data entry attachment screen and executes the query to fetch unattached
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
-    protected void fromTRF() {
+    protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
 
-        if ( !fromTRF.isChecked()) {
+        if ( !addWithTRF.isChecked()) {
             /*
              * the user unchecked the checkbox for showing Attachment screen, so
              * try to close that screen if it's open, but recheck the checkbox
              * to make sure that if the screen can't be closed due to some
              * record locked on it, the checkbox doesn't stay unchecked
              */
-            fromTRF.setCheck(true);
-            if (attachmentScreen != null)
-                attachmentScreen.getWindow().close();
+            addWithTRF.setCheck(true);
+            if (trfAttachmentScreen != null)
+                trfAttachmentScreen.getWindow().close();
             return;
         }
 
@@ -3671,48 +3665,24 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
              */
-            if (attachmentScreen == null) {
-                attachmentScreen = new AttachmentScreenUI() {
+            if (trfAttachmentScreen == null) {
+                trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-
-                    @Override
-                    public void search() {
-                        QueryData field;
-
-                        /*
-                         * query for the TRFs for this domain
-                         */
-                        query = new Query();
-                        field = new QueryData();
-                        field.setQuery(attachmentPatternVariable.getValue());
-                        query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
-                        managers = null;
-
-                        executeQuery(query);
-                    }
-
-                    @Override
-                    public void searchSuccessful() {
-                        attachmentSearchSuccessful();
+                    public String getPattern() {
+                        return attachmentPatternVariable.getValue();
                     }
                 };
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().attachment_attachment());
-            window.setSize("782px", "521px");
-            attachmentScreen.setWindow(window);
-            window.setContent(attachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "attachment");
+            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
+            window.setSize("670px", "520px");
+            trfAttachmentScreen.setWindow(window);
+            window.setContent(trfAttachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "neoTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            attachmentScreen.search();
+            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -3724,7 +3694,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          */
                         screen.window.close();
                     else
-                        fromTRF.setCheck(false);
+                        addWithTRF.setCheck(false);
                 }
             });
         } catch (Throwable e) {
@@ -4632,38 +4602,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void addReservedAttachment() {
         AttachmentManager am;
-        AttachmentDO att;
-        AttachmentItemViewDO atti;
 
-        am = attachmentScreen.getReserved();
-        /*
-         * add an attachment item for the record selected on the attachment
-         * screen
-         */
-        if (am != null) {
-            att = am.getAttachment();
-            atti = manager.attachment.add();
-            atti.setAttachmentId(att.getId());
-            atti.setAttachmentDescription(att.getDescription());
-            atti.setAttachmentCreatedDate(att.getCreatedDate());
-            atti.setAttachmentSectionId(att.getSectionId());
-        }
-    }
-
-    /**
-     * If the screen is in Add state then gets the next attachment reserved for
-     * the current user on Attachment screen, if any, and adds it to the sample.
-     */
-    private void attachmentSearchSuccessful() {
-        if (isState(ADD)) {
-            /*
-             * if the screen is already in Add state then reserve an attachment,
-             * add it to the sample and notify the tab
-             */
-            addReservedAttachment();
-            setData();
-            bus.fireEvent(new AttachmentAddedEvent());
-        }
+        am = trfAttachmentScreen.getSelected();
+        if (am != null)
+            bus.fireEvent(new AddAttachmentEvent(am.getAttachment()));
     }
 
     /*

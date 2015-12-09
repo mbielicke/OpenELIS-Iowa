@@ -1,0 +1,173 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:d='urn:import:org.openelis.modules.secondDataEntry.client' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:west size="220">
+      <g:LayoutPanel>
+        <g:layer top="0px" bottom="0px" left="0px" right="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="25px">
+              <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
+                <t:Column width="80" label="{msg.sample_accessionNum}">
+                  <t:LabelCell>
+                    <w:Label field="Integer" />
+                  </t:LabelCell>
+                </t:Column>
+                <t:Column width="110" label="{msg.gen_username}">
+                  <t:LabelCell>
+                    <w:Label field="Integer" />
+                  </t:LabelCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="25px">
+              <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+                <g:HorizontalPanel>
+                  <w:Button ui:field="nextPageButton" image="{res.nextPage}" disabledImage="{res.nextPageDisabled}"
+                    enabled="false" css="{res.atozButton}" />
+                </g:HorizontalPanel>
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:west>
+    <g:center>
+      <g:LayoutPanel>
+        <g:layer top="0px" height="30px">
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+            <g:HorizontalPanel>
+              <w:Button css="{res.buttonPanel}" ui:field="queryButton" image="{res.query}"
+                disabledImage="{res.queryDisabled}" rightText="{msg.gen_query}" toggles="true" />
+              <w:Button css="{res.buttonPanel}" ui:field="previousButton" image="{res.previous}"
+                disabledImage="{res.previousDisabled}" rightText="{msg.gen_previous}" />
+              <w:Button css="{res.buttonPanel}" ui:field="nextButton" image="{res.next}"
+                disabledImage="{res.nextDisabled}" rightText="{msg.gen_next}" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="updateButton" image="{res.update}"
+                disabledImage="{res.updateDisabled}" rightText="{msg.gen_update}" toggles="true" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="commitButton" image="{res.commit}"
+                disabledImage="{res.commitDisabled}" rightText="{msg.gen_commit}" />
+              <w:Button css="{res.buttonPanel}" ui:field="abortButton" image="{res.abort}"
+                disabledImage="{res.abortDisabled}" rightText="{msg.gen_abort}" />
+            </g:HorizontalPanel>
+          </g:AbsolutePanel>
+        </g:layer>
+        <g:layer top="30px" height="60px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" width="100%">
+              <g:HTMLPanel>
+                <table class="{res.style.Form}">
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_accessionNum}:" />
+                    </td>
+                    <td>
+                      <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
+                    </td>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_username}:" />
+                    </td>
+                    <td colspan="3">
+                      <w:TextBox ui:field="historySystemUser" width="165px" field="String" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_received}:" />
+                    </td>
+                    <td>
+                      <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextArea ui:field="orderMessage" height="18px" width="231px" />
+                    </td>
+                  </tr>
+                </table>
+              </g:HTMLPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+        <g:layer top="85px" bottom="0px" left="0px" width="100%">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:EnvironmentalTabUI ui:field="environmentalTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:SDWISTabUI ui:field="sdwisTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:ClinicalTabUI ui:field="clinicalTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:PTTabUI ui:field="ptTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:NoDomainTabUI ui:field="noDomainTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.sample_notes}"  tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <s:SampleNotesTabUI ui:field="sampleNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+          </w:TabLayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:center>
+  </g:SplitLayoutPanel>
+</ui:UiBinder>

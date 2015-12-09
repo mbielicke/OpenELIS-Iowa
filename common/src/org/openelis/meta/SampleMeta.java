@@ -36,7 +36,7 @@ import org.openelis.ui.common.Meta;
 import org.openelis.ui.common.MetaMap;
 
 public class SampleMeta implements Meta, MetaMap {
-    private static final String    ID = "_sample.id",
+    public static final String    ID = "_sample.id",
                     NEXT_ITEM_SEQUENCE = "_sample.nextItemSequence",
                     DOMAIN = "_sample.domain",
                     ACCESSION_NUMBER = "_sample.accessionNumber",
@@ -226,7 +226,7 @@ public class SampleMeta implements Meta, MetaMap {
                     CLIN_PATIENT_ADDR_FAX_PHONE = "_clinicalPatientAddress.faxPhone",
                     CLIN_PATIENT_ADDR_EMAIL = "_clinicalPatientAddress.email",
                     CLIN_PATIENT_ADDR_COUNTRY = "_clinicalPatientAddress.country",
-                    
+
                     // sample pt
                     PT_ID = "_samplePT.id",
                     PT_SAMPLE_ID = "_samplePT.sampleId",
@@ -360,11 +360,15 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_REFERENCE_TABLE_ID = "_auxData.referenceTableId",
                     AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
                     AUX_DATA_TYPE_ID = "_auxData.typeId", AUX_DATA_VALUE = "_auxData.value",
-                    
+
                     ATT_ITEM_ID = "_attachmentItem.id",
                     ATT_ITEM_REFERENCE_ID = "_attachmentItem.referenceId",
                     ATT_ITEM_REFERENCE_TABLE_ID = "_attachmentItem.referenceTableId",
                     ATT_ITEM_ATTACHMENT_ID = "_attachmentItem.attachmentId",
+
+                    HISTORY_REFERENCE_TABLE_ID = "_history.referenceTableId",
+                    HISTORY_ACTIVITY_ID = "_history.activityId",
+                    HISTORY_SYSTEM_USER_ID = "_history.systemUserId",
 
                     SAMPLE_ORG_ORGANIZATION_NAME = "_sampleOrganizationOrganization.name",
 
@@ -385,9 +389,9 @@ public class SampleMeta implements Meta, MetaMap {
 
                     ORG_PARAM_TYPE_ID = "_organizationParameter.typeId",
                     ORG_PARAM_VALUE = "_organizationParameter.value",
-                    
+
                     EORDER_PAPER_ORDER_VALIDATOR = "_eorder.paperOrderValidator",
-                                    
+
                     ATT_ITEM_ATTACHMENT_CREATED_DATE = "_attachmentItem.attachment.createdDate",
                     ATT_ITEM_ATTACHMENT_SECTION_ID = "_attachmentItem.attachment.sectionId",
                     ATT_ITEM_ATTACHMENT_DESCRIPTION = "_attachmentItem.attachment.description";
@@ -700,7 +704,10 @@ public class SampleMeta implements Meta, MetaMap {
                                                   EORDER_PAPER_ORDER_VALIDATOR,
                                                   ATT_ITEM_ATTACHMENT_CREATED_DATE,
                                                   ATT_ITEM_ATTACHMENT_SECTION_ID,
-                                                  ATT_ITEM_ATTACHMENT_DESCRIPTION));
+                                                  ATT_ITEM_ATTACHMENT_DESCRIPTION,
+                                                  HISTORY_REFERENCE_TABLE_ID,
+                                                  HISTORY_ACTIVITY_ID,
+                                                  HISTORY_SYSTEM_USER_ID));
     }
 
     public static String getId() {
@@ -1018,7 +1025,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getSDWISPriority() {
         return SDWIS_PRIORITY;
     }
-    
+
     public static String getSDWISLocation() {
         return SDWIS_LOCATION;
     }
@@ -1322,7 +1329,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getClinicalPatientEthnicityId() {
         return CLIN_PATIENT_ETHNICITY_ID;
     }
-    
+
     public static String getClinicalPatientNationalId() {
         return CLIN_PATIENT_NATIONAL_ID;
     }
@@ -1366,15 +1373,15 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getClinPatientAddrCountry() {
         return CLIN_PATIENT_ADDR_COUNTRY;
     }
-    
+
     public static String getPTSampleId() {
         return PT_SAMPLE_ID;
     }
-    
+
     public static String getPTPTProviderId() {
         return PT_PT_PROVIDER_ID;
     }
-    
+
     public static String getPTSeries() {
         return PT_SERIES;
     }
@@ -1382,11 +1389,10 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getPTDueDate() {
         return PT_DUE_DATE;
     }
-    
+
     public static String getPTAdditionalDomain() {
         return PT_ADDITIONAL_DOMAIN;
     }
-                    
     public static String getItemId() {
         return ITEM_ID;
     }
@@ -1830,19 +1836,19 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAuxDataValue() {
         return AUX_DATA_VALUE;
     }
-    
+
     public static String getAttachmentItemId() {
         return ATT_ITEM_ID;
     }
-    
+
     public static String getAttachmentItemReferenceId() {
         return ATT_ITEM_REFERENCE_ID;
     }
-    
+
     public static String getAttachmentItemReferenceTableId() {
         return ATT_ITEM_REFERENCE_TABLE_ID;
     }
-    
+
     public static String getAttachmentItemAttachmentId() {
         return ATT_ITEM_ATTACHMENT_ID;
     }
@@ -1906,21 +1912,33 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getOrgParamValue() {
         return ORG_PARAM_VALUE;
     }
-    
+
     public static String getAttachmentItemAttachmentCreatedDate() {
         return ATT_ITEM_ATTACHMENT_CREATED_DATE;
     }
-    
+
     public static String getAttachmentItemAttachmentSectionId() {
         return ATT_ITEM_ATTACHMENT_SECTION_ID;
     }
-    
+
     public static String getAttachmentItemAttachmentDescription() {
         return ATT_ITEM_ATTACHMENT_DESCRIPTION;
     }
 
     public static String getEorderPaperOrderValidator() {
         return EORDER_PAPER_ORDER_VALIDATOR;
+    }
+
+    public static String getHistoryReferenceTableId() {
+        return HISTORY_REFERENCE_TABLE_ID;
+    }
+
+    public static String getHistoryActivityId() {
+        return HISTORY_ACTIVITY_ID;
+    }
+
+    public static String getHistorySystemUserId() {
+        return HISTORY_SYSTEM_USER_ID;
     }
 
     public boolean hasColumn(String columnName) {
@@ -1933,9 +1951,9 @@ public class SampleMeta implements Meta, MetaMap {
         // sample env
         if (where.indexOf("sampleEnvironmental.") > -1 || where.indexOf("locationAddress.") > -1)
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
-        
+
         if (where.indexOf("locationAddress.") > -1)
-            from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";        
+            from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";
 
         // sample private well
         if (where.indexOf("samplePrivateWell.") > -1 ||
@@ -1997,7 +2015,7 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("clinicalProvider.") > -1)
             from += " LEFT JOIN _sampleClinical.provider _clinicalProvider ";
-        
+
         // sample pt
         if (where.indexOf("samplePT.") > -1)
             from += ", IN (_sample.samplePT) _samplePT ";
@@ -2077,9 +2095,12 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("auxData.") > -1)
             from += ", IN (_sample.auxData) _auxData ";
-        
+
         if (where.indexOf("attachmentItem.") > -1)
             from += ", IN (_sample.attachmentItem) _attachmentItem ";
+
+        if (where.indexOf("history.") > -1)
+            from += ", IN (_sample.history) _history ";
 
         return from;
     }

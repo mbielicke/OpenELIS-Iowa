@@ -55,7 +55,7 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="5%" left="47%" top="44%" bottom="46%">
+        <g:layer width="5%" left="47%" top="42%" bottom="46%">
           <g:VerticalPanel>
             <w:Button ui:field="moveLeftButton" text="{msg.gen_moveLeft}" />
           </g:VerticalPanel>
