@@ -141,6 +141,16 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             public void onAttachmentIssue(AttachmentIssueEvent event) {
                 if (screen == event.getSource())
                     return;
+                /*
+                 * handle the events fired by the tabs; "originalSource" is used
+                 * to keep track of which tab fired the event; it's used when
+                 * the screen fires an event, to tell the tabs which or their
+                 * events is the screen responding; this is done because all
+                 * tabs have some common operations e.g. lock, unlock etc. and
+                 * they fire events to the main screen to perform these
+                 * operations; but a tab may not want to do something in
+                 * response to an operation that it did not request
+                 */
                 originalSource = event.getOriginalSource();
                 switch (event.getAction()) {
                     case FETCH:
@@ -255,17 +265,20 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         tabPanel.close();
     }
 
+    /**
+     * Fetches all attachment issues in the database and notifies the tabs to
+     * refresh their data
+     */
     private void fetchIssues() {
         setBusy(Messages.get().gen_fetching());
 
-        issueList = null;
-        issueMap = null;
+        issueList = new ArrayList<AttachmentIssueViewDO>();
+        issueMap = new HashMap<Integer, AttachmentIssueViewDO>();
 
         if (fetchIssuesCall == null) {
             fetchIssuesCall = new AsyncCallbackUI<ArrayList<AttachmentIssueViewDO>>() {
                 public void success(ArrayList<AttachmentIssueViewDO> result) {
                     issueList = result;
-                    issueMap = new HashMap<Integer, AttachmentIssueViewDO>();
 
                     for (AttachmentIssueViewDO data : result)
                         issueMap.put(data.getAttachmentId(), data);
@@ -291,6 +304,9 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         AttachmentService.get().fetchIssues(fetchIssuesCall);
     }
 
+    /**
+     * Locks and fetches the issue for the attachment with the passed id
+     */
     protected void fetchForUpdate(Integer attachmentId) {
         setBusy(Messages.get().gen_lockForUpdate());
 
@@ -298,7 +314,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
                 public void success(AttachmentIssueViewDO result) {
-                    refreshIssues(result, false);
+                    refreshIssues(screen.attachmentId, result);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, screen.attachmentId);
                 }
 
@@ -334,7 +350,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             updateCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
                 public void success(AttachmentIssueViewDO result) {
                     clearStatus();
-                    refreshIssues(result, false);
+                    refreshIssues(result.getAttachmentId(), result);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.UPDATE,
                                         result.getAttachmentId());
                 }
@@ -372,7 +388,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             deleteCall = new AsyncCallbackUI<Void>() {
                 public void success(Void result) {
                     clearStatus();
-                    refreshIssues(issueMap.get(screen.attachmentId), true);
+                    refreshIssues(screen.attachmentId, null);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.DELETE, screen.attachmentId);
                 }
 
@@ -400,7 +416,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             unlockCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
                 public void success(AttachmentIssueViewDO result) {
                     setDone(Messages.get().gen_updateAborted());
-                    refreshIssues(result, false);
+                    refreshIssues(screen.attachmentId, result);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.UNLOCK, screen.attachmentId);
                 }
 
@@ -423,16 +439,19 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                                                          originalSource), screen);
     }
 
-    private void refreshIssues(AttachmentIssueViewDO data, boolean remove) {
+    /**
+     * If the passed attachment issue is null, removes it from the list and map
+     * of issues; if those structures already contain an issue for the
+     * attachment with the passed id, replaces it with the passed issue;
+     * otherwise, adds the passed issue to those structures
+     */
+    private void refreshIssues(Integer attachmentId, AttachmentIssueViewDO data) {
         boolean found;
-
-        if (data == null)
-            return;
 
         found = false;
         for (int i = 0; i < issueList.size(); i++ ) {
-            if (data.getAttachmentId().equals(issueList.get(i).getAttachmentId())) {
-                if (remove)
+            if (attachmentId.equals(issueList.get(i).getAttachmentId())) {
+                if (data == null)
                     issueList.remove(i);
                 else
                     issueList.set(i, data);
@@ -441,15 +460,20 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             }
         }
 
-        if ( !found && !remove)
-            issueList.add(data);
-
-        if (remove)
-            issueMap.remove(data.getAttachmentId());
-        else
-            issueMap.put(data.getAttachmentId(), data);
+        if (data != null) {
+            if ( !found)
+                issueList.add(data);
+            issueMap.put(attachmentId, data);
+        } else {
+            issueMap.remove(attachmentId);
+        }
     }
 
+    /**
+     * Returns true if any of the tabs is in a state where new data can't be
+     * loaded in it; this is could be because a record is locked or if it's in
+     * query state
+     */
     private boolean isAnyTabLocked() {
         State trfState, issueState;
 
