@@ -50,6 +50,7 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.TextBox;
@@ -261,7 +262,7 @@ public abstract class TRFTabUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Integer id;
-                Object val;
+                String val;
                 AttachmentIssueViewDO ai;
                 AttachmentDO a;
                 AttachmentManager am;
@@ -269,21 +270,31 @@ public abstract class TRFTabUI extends Screen {
                 r = event.getRow();
                 c = event.getCol();
 
-                val = table.getValueAt(r, c);
+                val = (String)table.getValueAt(r, c);
                 id = table.getRowAt(r).getData();
                 am = managerMap.get(id);
                 ai = issueMap.get(id);
 
                 switch (c) {
                     case 3:
-                        if ( !DataBaseUtil.isEmpty(val) && ai == null) {
-                            ai = new AttachmentIssueViewDO();
-                            a = am.getAttachment();
-                            ai.setAttachmentId(a.getId());
-                            ai.setAttachmentDescription(a.getDescription());
-                            issueMap.put(id, ai);
+                        if (ai == null) {
+                            /*
+                             * if there's no attachment issue for this row's
+                             * attachment and the user entered some text, create
+                             * a new issue
+                             */
+                            if ( !DataBaseUtil.isEmpty(val)) {
+                                ai = new AttachmentIssueViewDO();
+                                a = am.getAttachment();
+                                ai.setAttachmentId(a.getId());
+                                ai.setAttachmentDescription(a.getDescription());
+                                ai.setText(val);
+                                issueMap.put(id, ai);
+                                table.getRowAt(r).setData(a.getId());
+                            }
+                        } else {
+                            ai.setText(val);
                         }
-                        ai.setText((String)val);
                         break;
                 }
             }
@@ -312,24 +323,69 @@ public abstract class TRFTabUI extends Screen {
         parentBus.addHandler(AttachmentIssueEvent.getType(), new AttachmentIssueEvent.Handler() {
             @Override
             public void onAttachmentIssue(AttachmentIssueEvent event) {
+                Query q;
+                AttachmentManager am;
+
                 if (parentScreen != event.getSource())
                     return;
 
+                /*
+                 * the tab fires events to the main screen to request it to do
+                 * various operations e.g. fetch, lock, unlock etc; that's
+                 * because the main screen maintains the data structures used by
+                 * all tabs; if the operation was successful, the main screen
+                 * fires an event to let the tab know; that event is handled
+                 * here; the tab can find out if this event was fired to respond
+                 * to a previous event fired by it or some other tab by checking
+                 * if it's the event's "originalSource"; it can then perform
+                 * some operation or ignore the event
+                 */
                 issueMap = event.getIssueMap();
                 switch (event.getAction()) {
                     case FETCH:
                         if (screen1 == event.getOriginalSource()) {
                             if (query) {
+                                /*
+                                 * the user wants to query; set the screen in
+                                 * Query state
+                                 */
                                 query = false;
                                 description.setFocus(true);
                                 setState(QUERY);
                                 parentScreen.getWindow().setDone(Messages.get()
                                                                          .gen_enterFieldsToQuery());
                             } else if (refresh) {
+                                /*
+                                 * the user wants to refresh the list of
+                                 * attachments; fetch unattached attachments for
+                                 * the default pattern
+                                 */
                                 refresh = false;
-                                fetchUnattached(getPattern(), false);
+                                description.setValue(getPattern());
+                                unattached.setValue("Y");
+
+                                /*
+                                 * find out which attachment if any is selected
+                                 * in the table, so that, that attachment can be
+                                 * selected on reloading the table if it's still
+                                 * in the table
+                                 */
+                                am = getSelected();
+                                prevSelected = am != null ? am.getAttachment() : null;
+
+                                managerMap = null;
+
+                                q = new Query();
+                                q.setFields(getQueryFields());
+                                q.setRowsPerPage(MAX_ATTACHMENTS);
+
+                                executeQuery(q);
                             }
                         } else {
+                            /*
+                             * refresh the issues in the table because they were
+                             * fetched from the database by some other tab
+                             */
                             query = false;
                             refresh = false;
                             refreshIssues();
@@ -338,11 +394,19 @@ public abstract class TRFTabUI extends Screen {
                     case ADD:
                     case UPDATE:
                     case DELETE:
+                        /*
+                         * refresh the issues in the table because some were
+                         * added, updated or deleted
+                         */
                         refreshIssues();
                         setState(DISPLAY);
                         break;
                     case LOCK:
                         if (screen1 == event.getOriginalSource()) {
+                            /*
+                             * an issue is locked to be updated; refresh the tab
+                             * to show the latest data
+                             */
                             refreshSelectedRow();
                             setState(UPDATE);
                             table.startEditing(table.getSelectedRow(), 3);
@@ -350,6 +414,10 @@ public abstract class TRFTabUI extends Screen {
                         break;
                     case UNLOCK:
                         if (screen1 == event.getOriginalSource()) {
+                            /*
+                             * an issue was unlocked; refresh the tab to show
+                             * the previously deleted or changed issues again
+                             */
                             refreshIssues();
                             setState(DISPLAY);
                         }
@@ -390,16 +458,24 @@ public abstract class TRFTabUI extends Screen {
         AttachmentIssueViewDO data;
         Validation validation;
 
+        table.clearEndUserExceptions();
+
         validation = super.validate();
 
         if (isState(UPDATE)) {
+            /*
+             * don't allow the user to commit if there's no attachment issue for
+             * the selected row; this can happen if the attachment didn't have
+             * an issue to begin with and the user never entered any any text in
+             * the row
+             */
             row = table.getRowAt(table.getSelectedRow());
             data = issueMap.get(row.getData());
 
             if (data == null) {
                 table.addException(table.getSelectedRow(),
                                    3,
-                                   new Exception(Messages.get().fieldRequiredException()));
+                                   new Exception(Messages.get().gen_fieldRequiredException()));
                 validation.setStatus(Validation.Status.ERRORS);
             }
         }
@@ -412,7 +488,9 @@ public abstract class TRFTabUI extends Screen {
      * the domain is specified by the passed pattern
      */
     public void fetchUnattached(String pattern) {
-        fetchUnattached(pattern, true);
+        refresh = true;
+        query = false;
+        fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
     }
 
     /**
@@ -447,6 +525,9 @@ public abstract class TRFTabUI extends Screen {
         return reserved;
     }
 
+    /**
+     * Returns the tab's current state
+     */
     public State getState() {
         return state;
     }
@@ -516,9 +597,9 @@ public abstract class TRFTabUI extends Screen {
          */
         am = getSelected();
         prevSelected = am != null ? am.getAttachment() : null;
-        
+
         managerMap = null;
-        
+
         query = new Query();
         query.setFields(getQueryFields());
         query.setRowsPerPage(MAX_ATTACHMENTS);
@@ -623,39 +704,9 @@ public abstract class TRFTabUI extends Screen {
         parentScreen.getWindow().clearStatus();
     }
 
-    private void fetchUnattached(String pattern, boolean fetchIssues) {
-        Query q;
-        AttachmentManager am;
-
-        description.setValue(pattern);
-        unattached.setValue("Y");
-
-        if (fetchIssues) {
-            refresh = true;
-            query = false;
-            fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
-        } else {
-            /*
-             * find out which attachment if any is selected in the table so that,
-             * that attachment can be selected on reloading the table if it's still
-             * there
-             */
-            am = getSelected();
-            prevSelected = am != null ? am.getAttachment() : null;
-            
-            managerMap = null;
-            
-            q = new Query();
-            q.setFields(getQueryFields());
-            q.setRowsPerPage(MAX_ATTACHMENTS);
-
-            executeQuery(q);
-        }
-    }
-
     /**
      * Uses the passed query to fetch attachments and refreshes the screen with
-     * the returned data; if the checkbox "unattached" is checkec, fetches only
+     * the returned data; if the checkbox "unattached" is checked, fetches only
      * unattached attachments; otherwise fetches all possible attachments
      * complying with the query
      */
@@ -826,7 +877,7 @@ public abstract class TRFTabUI extends Screen {
      * Refreshes the row at the passed index with passed arguments; the values
      * in the first two columns are set to "lock" and "status" respectively; the
      * values in the other columns are set as the corresponding fields in the
-     * passed manager
+     * attachment issue whose attachment id is "attachmentId"
      */
     private void refreshRow(int index, String lock, String status, Integer attachmentId) {
         Row row;
@@ -865,6 +916,10 @@ public abstract class TRFTabUI extends Screen {
         refreshRow(r, (String)row.getCell(0), (String)row.getCell(1), id);
     }
 
+    /**
+     * Refreshes the rows in the table to show the latest data in the attachment
+     * issues for the attachments in the table
+     */
     private void refreshIssues() {
         Integer id;
         AttachmentIssueViewDO data;
@@ -892,11 +947,17 @@ public abstract class TRFTabUI extends Screen {
             parentBus.fireEventFromSource(new DisplayAttachmentEvent(id, true), screen1);
     }
 
+    /**
+     * Fires an AttachmentIssueEvent to the main screen to request it to do
+     * various operations like fetch, lock, unlock etc. for an attachment issue;
+     * the operation is specified by "action" and "attachmentId" is used by the
+     * main screen to find the attachment issue
+     */
     private void fireAttachmentIssue(Action action, Integer attachmentId) {
         parentBus.fireEventFromSource(new AttachmentIssueEvent(action,
                                                                attachmentId,
                                                                null,
-                                                               issueMap,
+                                                               null,
                                                                screen1), screen1);
     }
 }

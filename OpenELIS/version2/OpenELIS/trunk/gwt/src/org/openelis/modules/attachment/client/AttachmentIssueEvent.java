@@ -37,7 +37,16 @@ import com.google.gwt.event.shared.GwtEvent;
  * This class is used to notify the handler that some operation related to
  * attachment issues needs to be or was performed e.g. fetching or removing
  * issue(s). If the operation needs to be or was performed on a particular
- * issue, its attachment id is specified by "attachmentId".
+ * issue, its attachment id is specified by "attachmentId". The list "issueList"
+ * is used to keep track of the order is which the issues were fetched from the
+ * database. The map "issueMap" is used to find an issue for a specific
+ * attachment by the attachment's id. The object "originalSource" specifies that
+ * this event is fired to respond to a previous event, and the previous event's
+ * source was "originalSource". It's used by a tab to know if it should handle
+ * this event or ignore it, based on whether the tab is the "originalSource" of
+ * the event or another tab is. The "source" can't be used for that purpose
+ * because the "source" would be the main screen and not the other tab as the
+ * event is fired by the main screen and not the other tab.
  */
 public class AttachmentIssueEvent extends GwtEvent<AttachmentIssueEvent.Handler> {
 

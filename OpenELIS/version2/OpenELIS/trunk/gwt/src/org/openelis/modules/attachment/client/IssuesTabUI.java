@@ -254,6 +254,17 @@ public class IssuesTabUI extends Screen {
                 if (parentScreen != event.getSource())
                     return;
 
+                /*
+                 * the tab fires events to the main screen to request it to do
+                 * various operations e.g. fetch, lock, unlock etc; that's
+                 * because the main screen maintains the data structures used by
+                 * all tabs; if the operation was successful, the main screen
+                 * fires an event to let the tab know; that event is handled
+                 * here; the tab can find out if this event was fired to respond
+                 * to a previous event fired by it or some other tab by checking
+                 * if it's the event's "originalSource"; it can then perform
+                 * some operation or ignore the event
+                 */
                 r = table.getSelectedRow();
                 row = null;
                 if (r >= 0)
@@ -268,8 +279,9 @@ public class IssuesTabUI extends Screen {
                     case UPDATE:
                     case DELETE:
                         /*
-                         * find which issue is selected in the table before
-                         * reloading the table
+                         * attachment issues were fetched, added etc; refresh
+                         * the tab; find which attachment issue is selected in
+                         * the table before reloading the table
                          */
                         if (row != null)
                             data = row.getData();
@@ -278,11 +290,16 @@ public class IssuesTabUI extends Screen {
                         break;
                     case LOCK:
                         if (screen1 == event.getOriginalSource()) {
+                            /*
+                             * an issue is locked to be updated or deleted;
+                             * refresh the tab to show the latest data; set the
+                             * state based on which operation is to be performed
+                             */
                             if (lockForUpdate) {
                                 setState(UPDATE);
                                 data = issueMap.get(event.getAttachmentId());
                                 row.setData(data);
-                                table.setValueAt(r, 3, data.getText());
+                                table.setValueAt(r, 2, data.getText());
                                 table.startEditing(r, 2);
                             } else if (lockForDelete) {
                                 setState(DELETE);
@@ -292,6 +309,10 @@ public class IssuesTabUI extends Screen {
                         break;
                     case UNLOCK:
                         if (screen1 == event.getOriginalSource()) {
+                            /*
+                             * an issue was unlocked;refresh the tab to show the
+                             * previously deleted or changed issues again
+                             */
                             if (removed != null)
                                 removed = null;
                             data = issueMap.get(event.getAttachmentId());
@@ -325,8 +346,7 @@ public class IssuesTabUI extends Screen {
     @UiHandler("deleteButton")
     protected void delete(ClickEvent event) {
         lockForDelete = true;
-        if (removed == null)
-            removed = table.getRowAt(table.getSelectedRow()).getData();
+        removed = table.getRowAt(table.getSelectedRow()).getData();
 
         fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, removed.getAttachmentId());
     }
@@ -383,6 +403,9 @@ public class IssuesTabUI extends Screen {
         fireAttachmentIssue(AttachmentIssueEvent.Action.DELETE, removed.getAttachmentId());
     }
 
+    /**
+     * Returns the tab's current state
+     */
     public State getState() {
         return state;
     }
@@ -412,10 +435,7 @@ public class IssuesTabUI extends Screen {
     }
 
     /**
-     * Opens the file linked to the attachment showing on the passed row; if
-     * "name" is null or if it's different from the previous time this method
-     * was called then the file is opened in a new window, otherwise it's opened
-     * in the same window as before.
+     * Opens the file linked to the attachment showing in the selected row
      */
     @UiHandler("displayButton")
     protected void displayAttachment(ClickEvent event) {
@@ -459,24 +479,32 @@ public class IssuesTabUI extends Screen {
         table.setModel(model);
     }
 
+    /**
+     * Fires an AttachmentIssueEvent to the main screen to request it to do
+     * various operations e.g. fetch, lock, unlock etc. for an attachment issue;
+     * the operation is specified by "action" and "attachmentId" is used by the
+     * main screen to find the attachment issue
+     */
     private void fireAttachmentIssue(Action action, Integer attachmentId) {
         parentBus.fireEventFromSource(new AttachmentIssueEvent(action,
                                                                attachmentId,
-                                                               issueList,
+                                                               null,
                                                                null,
                                                                screen1), this);
     }
 
+    /**
+     * If the passed issue is still in the table, selects the row that's showing
+     * it; otherwise, selects the first row; sets the state to Display if there
+     * are any rows in the table, so that they can be updated or deleted; sets
+     * the state to Default otherwise
+     */
     private void refresh(AttachmentIssueViewDO data) {
         int i, j;
         AttachmentIssueViewDO tdata;
 
         if (table.getRowCount() > 0) {
             i = 0;
-            /*
-             * if the issue selected previously is still in the table, find and
-             * select the row that's showing it; otherwise, select the first row
-             */
             if (data != null) {
                 for (j = 0; j < table.getRowCount(); j++ ) {
                     tdata = table.getRowAt(j).getData();
