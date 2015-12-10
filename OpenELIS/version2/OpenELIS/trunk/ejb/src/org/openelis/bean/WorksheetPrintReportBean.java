@@ -503,7 +503,8 @@ public class WorksheetPrintReportBean {
                 for (WorksheetAnalysisViewDO waVDO : waVDOMap.get(wiDO.getId())) {
                     if (i == -1 || i == formCapacity) {
                         if (i != -1) {
-                            stamper.setFormFlattening(true); 
+                            stamper.setFormFlattening(true);
+                            flattenFilledFields(stamper, formCapacity);
                             stamper.close();
                             reader.close();
                             
@@ -642,7 +643,8 @@ public class WorksheetPrintReportBean {
                     i++;
                 }
             }
-            stamper.setFormFlattening(true); 
+            stamper.setFormFlattening(true);
+            flattenFilledFields(stamper, formCapacity);
             stamper.close();
             reader.close();
             
@@ -659,5 +661,38 @@ public class WorksheetPrintReportBean {
             }
         }
         return path;
+    }
+
+    private void flattenFilledFields(PdfStamper stamper, int formCapacity) {
+        int i;
+        
+        for (i = 1; i <= formCapacity; i++) {
+            stamper.partialFormFlattening("worksheet_id_"+i);
+            stamper.partialFormFlattening("created_date_"+i);
+            stamper.partialFormFlattening("position_"+i);
+            stamper.partialFormFlattening("accession_number_"+i);
+            stamper.partialFormFlattening("collection_date_"+i);
+            stamper.partialFormFlattening("received_date_"+i);
+            stamper.partialFormFlattening("patient_last_"+i);
+            stamper.partialFormFlattening("patient_first_"+i);
+            stamper.partialFormFlattening("provider_last_"+i);
+            stamper.partialFormFlattening("provider_first_"+i);
+            stamper.partialFormFlattening("env_location_"+i);
+            stamper.partialFormFlattening("env_description_"+i);
+            stamper.partialFormFlattening("organization_name_"+i);
+            stamper.partialFormFlattening("bill_to_name_"+i);
+            stamper.partialFormFlattening("type_of_sample_"+i);
+            stamper.partialFormFlattening("source_of_sample_"+i);
+            stamper.partialFormFlattening("source_other_"+i);
+            stamper.partialFormFlattening("test_"+i);
+            stamper.partialFormFlattening("method_"+i);
+            stamper.partialFormFlattening("sample_qaevent_"+i);
+            stamper.partialFormFlattening("analysis_qaevent_"+i);
+            stamper.partialFormFlattening("sample_note_"+i);
+            stamper.partialFormFlattening("analysis_note_"+i);
+            stamper.partialFormFlattening("qc_name_"+i);
+            stamper.partialFormFlattening("qc_lot_"+i);
+            stamper.partialFormFlattening("qc_expiration_"+i);
+        }
     }
 }
