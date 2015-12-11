@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -18509,6 +18509,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Loaded with Send-out Order")
   @Key("secondDataEntry.loadedWithSendoutOrder")
   String secondDataEntry_loadedWithSendoutOrder();
+
+  /**
+   * Translated "The sample must have at least one analysis assigned".
+   * 
+   * @return translated "The sample must have at least one analysis assigned"
+   */
+  @DefaultMessage("The sample must have at least one analysis assigned")
+  @Key("secondDataEntry.mustHaveAnalysesToVerify")
+  String secondDataEntry_mustHaveAnalysesToVerify();
 
   /**
    * Translated "QA Event ''{0}'' has not been verified".
