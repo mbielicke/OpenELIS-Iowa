@@ -93,10 +93,10 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
-	<group name="organization" keepTogether="true">
+	<group name="organization">
 		<groupExpression><![CDATA[$F{o_id}]]></groupExpression>
-		<groupFooter>
-			<band height="36">
+		<groupHeader>
+			<band height="24">
 				<textField pattern="">
 					<reportElement key="orgName" mode="Opaque" x="0" y="0" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
@@ -119,7 +119,7 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 					<text><![CDATA[Phone:]]></text>
 				</staticText>
 				<subreport>
-					<reportElement key="orgPhone" isPrintRepeatedValues="false" mode="Transparent" x="529" y="0" width="227" height="12"/>
+					<reportElement key="orgPhone" mode="Transparent" x="529" y="0" width="227" height="12"/>
 					<subreportParameter name="ORGANIZATION_ID">
 						<subreportParameterExpression><![CDATA[$F{o_id}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -147,7 +147,7 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 					<text><![CDATA[Fax:]]></text>
 				</staticText>
 				<subreport>
-					<reportElement key="orgFax" isPrintRepeatedValues="false" mode="Transparent" x="529" y="12" width="227" height="12"/>
+					<reportElement key="orgFax" mode="Transparent" x="529" y="12" width="227" height="12"/>
 					<subreportParameter name="ORGANIZATION_ID">
 						<subreportParameterExpression><![CDATA[$F{o_id}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -155,6 +155,9 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"orgFax.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
 		</groupFooter>
 	</group>
 	<pageHeader>
@@ -273,7 +276,7 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="resultValue" isPrintRepeatedValues="false" mode="Transparent" x="571" y="12" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF">
+				<reportElement key="resultValue" mode="Transparent" x="571" y="12" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{result_type})]]></printWhenExpression>
 				</reportElement>
 				<textElement>

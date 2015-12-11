@@ -16,7 +16,7 @@ WHERE  oc.organization_id = $P{ORGANIZATION_ID} and
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="phoneNumber" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="227" height="12" forecolor="#FFFFFF" backcolor="#000000">
+				<reportElement key="phoneNumber" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="227" height="12" isRemoveLineWhenBlank="true" forecolor="#FFFFFF" backcolor="#000000">
 					<printWhenExpression><![CDATA[$V{REPORT_COUNT} == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement>
