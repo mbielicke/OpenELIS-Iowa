@@ -27,7 +27,6 @@ package org.openelis.modules.secondDataEntry.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -64,7 +64,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
-import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -486,18 +485,48 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
-                    manager = result;
+                    int i;
+                    SampleItemViewDO item;
 
+                    manager = result;
                     /*
-                     * make sure that the sample is still not verified; if it is
-                     * verified, unlock it because the user can't be allowed to
-                     * change anything in it
+                     * the sample must still be not-verified
                      */
                     if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
                                                                                    .getStatusId())) {
                         Window.alert(Messages.get().secondDataEntry_sampleAlreadyVerified());
+                        /*
+                         * this resets the "busy" counter to 0, which is set to
+                         * 1 when setBusy is called by update; otherwise, when
+                         * abort calls setBusy, the counter will be incremented
+                         * and won't be 0 even when setDone is called; if the
+                         * counter is not 0, the screen will stay locked
+                         */
+                        clearStatus();
+
                         state = UPDATE;
                         abort();
+                        return;
+                    }
+
+                    /*
+                     * samples with no analyses can't be verified
+                     */
+                    for (i = 0; i < manager.item.count(); i++ ) {
+                        item = manager.item.get(i);
+                        if (manager.analysis.count(item) > 0)
+                            break;
+                    }
+                    if (i >= manager.item.count()) {
+                        Window.alert(Messages.get().secondDataEntry_mustHaveAnalysesToVerify());
+                        /*
+                         * this is done for the same reason as above
+                         */
+                        clearStatus();
+
+                        state = UPDATE;
+                        abort();
+                        return;
                     }
 
                     showTabs();
@@ -527,7 +556,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     setData();
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    setDone(Messages.get().gen_updatingComplete());
                     /*
                      * the cache is cleared only if the update succeeds because
                      * otherwise, it can't be used by any tabs if the user wants
@@ -821,7 +850,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     @UiHandler("updateButton")
     protected void update(ClickEvent event) {
-        setBusy(Messages.get().lockForUpdate());
+        setBusy(Messages.get().gen_lockForUpdate());
 
         SampleService1.get().fetchForUpdate(manager.getSample().getId(),
                                             updateElements,
