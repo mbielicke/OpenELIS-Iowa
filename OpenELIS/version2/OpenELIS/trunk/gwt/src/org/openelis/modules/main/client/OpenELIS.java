@@ -65,7 +65,7 @@ public class OpenELIS extends Screen {
 
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
-                    sampleLoginLabelAdditionalReport, quickEntry, tracking,
+                    sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, secondDataEntry, project, provider, organization, worksheetBuilder,
@@ -141,6 +141,12 @@ public class OpenELIS extends Screen {
         addCommand(quickEntry, "quickentry", new Command() {
             public void execute() {
                 showScreen(QUICK_ENTRY);
+            }
+        });
+        
+        addCommand(verification, "verification", new Command() {
+            public void execute() {
+                showScreen(VERIFICATION);
             }
         });
 
