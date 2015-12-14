@@ -69,6 +69,7 @@ public class InternalOrderFillTabUI extends Screen {
     public InternalOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 

@@ -42,6 +42,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SecondDataEntryVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
@@ -50,6 +51,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -158,9 +160,11 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected Query                                         query;
 
-    protected boolean                                       envFieldsAdded, sdwisFieldsAdded;
-
     protected static int                                    ROWS_PER_PAGE = 23;
+
+    protected SystemVariableDO                              verWithScanTrfVariable;
+
+    protected boolean                                       allowVerWithScanTrf;
 
     protected static final SampleManager1.Load              fetchElements[] = {
                     SampleManager1.Load.QA, SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE},
@@ -460,8 +464,23 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     Scheduler.get().scheduleDeferred(cmd);
                     clearStatus();
 
-                    displayTRF(manager.getSample().getId(),
-                               Messages.get().secondDataEntry_secondDataEntry());
+                    /*
+                     * find out if verification by scanned TRF is allowed; don't
+                     * look up the TRF if it's not allowed
+                     */
+                    if (verWithScanTrfVariable == null) {
+                        try {
+                            verWithScanTrfVariable = SystemVariableService.get()
+                                                                          .fetchByExactName("second_ver_with_scanned_trf");
+                            allowVerWithScanTrf = new Boolean(verWithScanTrfVariable.getValue());
+                        } catch (Exception e) {
+                            allowVerWithScanTrf = false;
+                        }
+                    }
+
+                    if (allowVerWithScanTrf)
+                        displayTRF(manager.getSample().getId(),
+                                   Messages.get().secondDataEntry_secondDataEntry());
                 }
 
                 public void notFound() {

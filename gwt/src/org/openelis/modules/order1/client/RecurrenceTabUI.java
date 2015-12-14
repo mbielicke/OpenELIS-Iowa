@@ -102,13 +102,14 @@ public class RecurrenceTabUI extends Screen {
 
     protected boolean                    isVisible, canEdit, redraw;
 
-    protected IOrderManager1              manager;
+    protected IOrderManager1             manager;
 
-    protected IOrderRecurrenceDO          recurrence;
+    protected IOrderRecurrenceDO         recurrence;
 
     public RecurrenceTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -545,9 +546,7 @@ public class RecurrenceTabUI extends Screen {
                     switch (nmon) {
                         case 1:
                             if (nday > 29 || ( (nyr % 4 != 0) && nday > 28)) {
-                                parentScreen.getWindow()
-                                            .setError(Messages.get()
-                                                              .order_notAllDatesValid(orderId));
+                                setError(Messages.get().order_notAllDatesValid(orderId));
                                 return false;
                             }
                             break;
@@ -556,9 +555,7 @@ public class RecurrenceTabUI extends Screen {
                         case 8:
                         case 10:
                             if (nday > 30) {
-                                parentScreen.getWindow()
-                                            .setError(Messages.get()
-                                                              .order_notAllDatesValid(orderId));
+                                setError(Messages.get().order_notAllDatesValid(orderId));
                                 return false;
                             }
                             break;
@@ -586,8 +583,7 @@ public class RecurrenceTabUI extends Screen {
             while (nyr < eyr) {
                 nyr += freq;
                 if (nyr % 4 != 0) {
-                    parentScreen.getWindow().setError(Messages.get()
-                                                              .order_notAllDatesValid(orderId));
+                    setError(Messages.get().order_notAllDatesValid(orderId));
                     return false;
                 }
             }

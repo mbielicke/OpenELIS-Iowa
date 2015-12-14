@@ -84,6 +84,7 @@ public class SampleNotesTabUI extends Screen {
     public SampleNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 

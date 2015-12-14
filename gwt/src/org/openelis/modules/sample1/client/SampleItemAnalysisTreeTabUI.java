@@ -127,6 +127,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     public SampleItemAnalysisTreeTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -372,7 +373,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 item = (SampleItemViewDO)manager.getObject((String)node.getData());
 
                 if (item.getTypeOfSampleId() == null) {
-                    parentScreen.setError(Messages.get().sample_sampleItemTypeRequired());
+                    setError(Messages.get().sample_sampleItemTypeRequired());
                     return;
                 }
 
@@ -390,7 +391,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                     query.setFields(fields);
 
-                    parentScreen.setBusy();
+                    setBusy();
 
                     tests = PanelService1Impl.INSTANCE.fetchByNameSampleTypeWithTests(query);
 
@@ -424,7 +425,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                parentScreen.clearStatus();
+                clearStatus();
             }
         });
 

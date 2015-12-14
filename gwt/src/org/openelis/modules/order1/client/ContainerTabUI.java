@@ -95,11 +95,12 @@ public class ContainerTabUI extends Screen {
 
     protected boolean                   isVisible, redraw;
 
-    protected IOrderManager1             manager;
+    protected IOrderManager1            manager;
 
     public ContainerTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -304,8 +305,7 @@ public class ContainerTabUI extends Screen {
             orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow().setError(Messages.get()
-                                                      .order_multiRowDuplicateNotAllowed(orderId));
+            setError(Messages.get().order_multiRowDuplicateNotAllowed(orderId));
             return;
         }
 
@@ -337,7 +337,7 @@ public class ContainerTabUI extends Screen {
             orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
+            setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 
@@ -364,7 +364,7 @@ public class ContainerTabUI extends Screen {
             orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
+            setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 
