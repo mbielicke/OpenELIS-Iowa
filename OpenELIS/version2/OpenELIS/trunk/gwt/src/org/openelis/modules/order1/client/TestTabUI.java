@@ -25,11 +25,8 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +40,6 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.order1.client.AddTestEvent.AddType;
-import org.openelis.modules.panel1.client.PanelService1;
 import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
@@ -103,13 +99,14 @@ public class TestTabUI extends Screen {
 
     protected boolean              isVisible, redraw;
 
-    protected IOrderManager1        manager;
+    protected IOrderManager1       manager;
 
     private static final String    TEST_LEAF = "test", ANALYTE_LEAF = "analyte";
 
     public TestTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -326,8 +323,7 @@ public class TestTabUI extends Screen {
             orderId = 0;
 
         if (tree.getSelectedNodes().length > 1) {
-            parentScreen.getWindow().setError(Messages.get()
-                                                      .order_multiTestCheckNotAllowed(orderId));
+            setError(Messages.get().order_multiTestCheckNotAllowed(orderId));
             return;
         }
         index = tree.getSelectedNode();
@@ -425,7 +421,7 @@ public class TestTabUI extends Screen {
         ArrayList<TestMethodVO> tests;
 
         try {
-            parentScreen.getWindow().setBusy();
+            setBusy();
             tests = PanelService1Impl.INSTANCE.fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
                                                                                                      "%"));
 
@@ -458,6 +454,6 @@ public class TestTabUI extends Screen {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
-        parentScreen.getWindow().clearStatus();
+        clearStatus();
     }
 }

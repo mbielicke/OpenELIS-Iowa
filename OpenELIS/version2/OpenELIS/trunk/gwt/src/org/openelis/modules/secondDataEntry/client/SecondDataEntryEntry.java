@@ -26,11 +26,7 @@ public class SecondDataEntryEntry implements EntryPoint, ShowScreenHandler {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().secondDataEntry_secondDataEntry());
-                    window.setSize("980px", "550px");
-                    window.setContent(new SecondDataEntryScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "secondDataEntry");
+                    addScreen();
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -42,7 +38,19 @@ public class SecondDataEntryEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
-        
     }
-
+    
+    public SecondDataEntryScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        SecondDataEntryScreenUI screen;
+        
+        window = new org.openelis.ui.widget.Window();
+        screen = new SecondDataEntryScreenUI(window);
+        window.setName(Messages.get().secondDataEntry_secondDataEntry());
+        window.setSize("980px", "550px");
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "secondDataEntry");
+        
+        return screen;
+    }
 }

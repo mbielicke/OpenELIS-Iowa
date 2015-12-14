@@ -169,6 +169,7 @@ public class AnalysisTabUI extends Screen {
     public AnalysisTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -905,7 +906,7 @@ public class AnalysisTabUI extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
-            parentScreen.getWindow().close();
+            window.close();
         }
 
         model = new ArrayList<Item<Integer>>();

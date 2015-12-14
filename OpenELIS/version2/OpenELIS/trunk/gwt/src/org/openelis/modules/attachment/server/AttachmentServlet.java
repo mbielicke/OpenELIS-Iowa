@@ -73,7 +73,7 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
 
         return st;
     }
-    
+
     @Override
     public ReportStatus getTRF(Integer sampleId) throws Exception {
         ReportStatus st;
@@ -163,7 +163,7 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
-        
+
     }
 
     public ArrayList<AttachmentDO> query(Query query) throws Exception {

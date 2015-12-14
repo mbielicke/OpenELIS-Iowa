@@ -8,6 +8,7 @@ import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
+import org.openelis.modules.todo1.client.ToDoScreenUI;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -26,11 +27,7 @@ public class AttachmentEntry implements EntryPoint, ShowScreenHandler {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
-                    window.setName(Messages.get().attachment_attachment());
-                    window.setSize("782px", "521px");
-                    window.setContent(new AttachmentScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "attachment");
+                    addScreen();
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -42,5 +39,19 @@ public class AttachmentEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
+    }
+    
+    public AttachmentScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        AttachmentScreenUI screen;
+
+        window = new org.openelis.ui.widget.Window();
+        screen = new AttachmentScreenUI(window);
+        window.setName(Messages.get().attachment_attachment());
+        window.setSize("782px", "521px");
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "attachment");
+        
+        return screen;
     }
 }

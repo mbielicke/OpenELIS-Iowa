@@ -111,6 +111,7 @@ public class InternalOrderItemTabUI extends Screen {
     public InternalOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -380,7 +381,7 @@ public class InternalOrderItemTabUI extends Screen {
         ArrayList<InventoryItemDO> list;
         ArrayList<Item<Integer>> model;
 
-        parentScreen.getWindow().setBusy();
+        setBusy();
         try {
             list = InventoryItemService.get()
                                        .fetchActiveByName(QueryFieldUtil.parseAutocomplete(match));
@@ -403,6 +404,6 @@ public class InternalOrderItemTabUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        parentScreen.getWindow().clearStatus();
+        clearStatus();
     }
 }

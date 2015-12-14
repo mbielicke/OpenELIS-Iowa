@@ -119,6 +119,7 @@ public class QAEventTabUI extends Screen {
     public QAEventTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 

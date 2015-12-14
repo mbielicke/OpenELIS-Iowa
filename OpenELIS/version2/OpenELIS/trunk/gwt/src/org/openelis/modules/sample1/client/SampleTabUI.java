@@ -124,6 +124,7 @@ public class SampleTabUI extends Screen {
     public SampleTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
