@@ -55,6 +55,7 @@ import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -162,9 +163,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected static int                                    ROWS_PER_PAGE = 23;
 
-    protected SystemVariableDO                              verWithScanTrfVariable;
-
-    protected boolean                                       allowVerWithScanTrf;
+    protected boolean                                       allowScanTrf, scanTrfFetchTried;
 
     protected static final SampleManager1.Load              fetchElements[] = {
                     SampleManager1.Load.QA, SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE},
@@ -464,6 +463,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 }
 
                 public void success(SampleManager1 result) {
+                    SystemVariableDO data;
+
                     manager = result;
 
                     createCmd();
@@ -472,19 +473,26 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
                     /*
                      * find out if verification by scanned TRF is allowed; don't
-                     * look up the TRF if it's not allowed
+                     * look up the TRF if it's not allowed; don't try to fetch
+                     * the system variable if it was tried to be fetched before
+                     * but could not be fetched
                      */
-                    if (verWithScanTrfVariable == null) {
+                    if ( !scanTrfFetchTried) {
                         try {
-                            verWithScanTrfVariable = SystemVariableService.get()
-                                                                          .fetchByExactName("second_ver_with_scanned_trf");
-                            allowVerWithScanTrf = new Boolean(verWithScanTrfVariable.getValue());
+                            data = SystemVariableService.get()
+                                                        .fetchByExactName("second_ver_with_scanned_trf");
+                            allowScanTrf = new Boolean(data.getValue());
+                        } catch (NotFoundException e) {
+                            // ignore
                         } catch (Exception e) {
-                            allowVerWithScanTrf = false;
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
+                                                                           : "null", e);
                         }
+                        scanTrfFetchTried = true;
                     }
 
-                    if (allowVerWithScanTrf)
+                    if (allowScanTrf)
                         displayTRF(manager.getSample().getId(),
                                    Messages.get().secondDataEntry_secondDataEntry());
                 }
