@@ -99,7 +99,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     public static final SecondDataEntryUiBinder             uiBinder      = GWT.create(SecondDataEntryUiBinder.class);
 
-    protected ModulePermission                              userPermission;
+    protected ModulePermission                              samplePermission;
 
     @UiField
     protected Table                                         table;
@@ -178,12 +178,18 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     };
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
+        ModulePermission userPermission;
+
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sampletracking");
+        userPermission = UserCache.getPermission().getModule("verification");
         if (userPermission == null)
             throw new PermissionException(Messages.get()
                                                   .gen_screenPermException("Second Data Entry"));
+
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         environmentalTab = new EnvironmentalTabUI(this);
         sdwisTab = new SDWISTabUI(this);
@@ -221,7 +227,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 queryButton.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                       userPermission.hasSelectPermission());
+                                       samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     queryButton.lock();
                     queryButton.setPressed(true);
@@ -250,7 +256,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 updateButton.setEnabled(isState(UPDATE, DISPLAY) &&
-                                        userPermission.hasUpdatePermission());
+                                        samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     updateButton.lock();
                     updateButton.setPressed(true);
@@ -701,7 +707,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                nav.enable(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                nav.enable(isState(DEFAULT, DISPLAY) && samplePermission.hasSelectPermission());
             }
         });
 
