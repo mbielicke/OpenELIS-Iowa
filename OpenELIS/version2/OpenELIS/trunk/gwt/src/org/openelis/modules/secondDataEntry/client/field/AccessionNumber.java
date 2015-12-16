@@ -76,39 +76,7 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
                                           }
 
                                           public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              /*
-                                               * update the number of times the
-                                               * widget has been edited
-                                               */
-                                              numEdit++ ;
-
-                                              /*
-                                               * verify whether the value
-                                               * entered is different from the
-                                               * one in the manager; if it is
-                                               * and this widget has been edited
-                                               * multiple times, show the value
-                                               * in the manager in the widget on
-                                               * the right; blank the icon for
-                                               * the direction of copy because
-                                               * the current value was not
-                                               * copied to or from the manager
-                                               */
-                                              verify();
-                                              if ( !isVerified) {
-                                                  copyImage.setResource(OpenELISResources.INSTANCE.blankIcon());
-                                                  if (numEdit > 1)
-                                                      nonEditableWidget.setValue(parentScreen.getManager()
-                                                                                             .getSample()
-                                                                                             .getAccessionNumber());
-                                                  /*
-                                                   * set the focus back on the
-                                                   * widget if the user pressed
-                                                   * Tab
-                                                   */
-                                                  if (parentScreen.getTabFocusLostWidget() == editableWidget)
-                                                      refocus();
-                                              }
+                                              valueChanged();
                                               parentScreen.setTabFocusLostWidget(null);
                                           }
 
@@ -157,12 +125,12 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
         if (accession != null) {
             try {
                 sm1 = SampleService1.get().fetchByAccession(accession);
-                if (!sm1.getSample().getId().equals(sm.getSample().getId())) {
+                if ( !sm1.getSample().getId().equals(sm.getSample().getId())) {
                     Window.alert(Messages.get().sample_accessionNumberDuplicate(accession));
                     return;
                 }
             } catch (NotFoundException e) {
-                //ignore
+                // ignore
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -187,6 +155,42 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
                                                            .getAccessionNumber());
         matchImage.setResource(isVerified ? OpenELISResources.INSTANCE.commit()
                                          : OpenELISResources.INSTANCE.abort());
+    }
+
+    /**
+     * Verifies whether the value entered by the user is the same as the
+     * sample's accession number; increments the number of times the value has
+     * been changed; if the values are different and the value has been changed
+     * more than once, shows the sample's accession number to the user
+     */
+    public void valueChanged() {
+        /*
+         * increment the number of times the value has been changed
+         */
+        numEdit++ ;
+
+        /*
+         * verify whether the value entered is different from the one in the
+         * manager; if it is and this widget has been edited multiple times,
+         * show the value in the manager in the widget on the right; blank the
+         * icon for the direction of copy because the current value was not
+         * copied to or from the manager
+         */
+        verify();
+        if ( !isVerified) {
+            copyImage.setResource(OpenELISResources.INSTANCE.blankIcon());
+            if (numEdit > 1)
+                nonEditableWidget.setValue(parentScreen.getManager()
+                                                       .getSample()
+                                                       .getAccessionNumber());
+            /*
+             * set the focus back to the editable widget if the value entered by
+             * the user doesn't match the value in the manager and the widget
+             * lost focus by pressing Tab
+             */
+            if ( !isVerified && parentScreen.getTabFocusLostWidget() == editableWidget)
+                refocus();
+        }
     }
 
     /**

@@ -28,6 +28,7 @@ package org.openelis.modules.secondDataEntry.client.field;
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.modules.secondDataEntry.client.VerificationScreen;
 
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.user.client.ui.Widget;
@@ -41,6 +42,7 @@ public abstract class MultiField<T> implements VerificationField<T> {
     protected TableRowElement    tableRowElement;
     protected T                  editableWidget;
     protected Widget             prevTabWidget, nextTabWidget;
+    protected ScheduledCommand   focusCommand;
     protected int                rowIndex, numEdit[];
     protected boolean            isVerified[];
 
@@ -51,7 +53,7 @@ public abstract class MultiField<T> implements VerificationField<T> {
         this.editableWidget = editableWidget;
         this.rowIndex = rowIndex;
     }
-    
+
     public T getEditableWidget() {
         return editableWidget;
     }
@@ -100,7 +102,12 @@ public abstract class MultiField<T> implements VerificationField<T> {
      * Verifies the item at the passed index
      */
     protected abstract void verify(int i);
-    
+
+    /**
+     * Sets the focus back to the item at the passed index
+     */
+    protected abstract void refocus(int i);
+
     /**
      * Makes the field's TableRowElement visible and sets its style based on
      * whether it's at an even or odd position among the visible rows
@@ -108,7 +115,8 @@ public abstract class MultiField<T> implements VerificationField<T> {
     protected void setRowVisible() {
         tableRowElement.getStyle().setDisplay(Display.TABLE_ROW);
         if (rowIndex % 2 == 0)
-            tableRowElement.setClassName(OpenELISResources.INSTANCE.style().WidgetTableAlternateRow());
+            tableRowElement.setClassName(OpenELISResources.INSTANCE.style()
+                                                                   .WidgetTableAlternateRow());
     }
 
     /**

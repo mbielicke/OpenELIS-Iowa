@@ -127,7 +127,7 @@ public class SDWISTabUI extends VerificationScreen {
 
     @UiField
     protected Dropdown<Integer>                         sdwisSampleTypeId, sdwisSampleTypeId1,
-                    sdwisSampleCategoryId, sdwisSampleCategoryId1, sampleQaType;
+                    sdwisSampleCategoryId, sdwisSampleCategoryId1;
 
     @UiField
     protected AutoComplete                              reportToName, reportToName1, billToName,
@@ -160,7 +160,7 @@ public class SDWISTabUI extends VerificationScreen {
                     BILL_TO = "bill_to", AUX_DATA = "auxData";
 
     protected enum Operation {
-        COPY_FROM_SAMPLE, COPY_TO_SAMPLE
+        COPY_FROM_SAMPLE, COPY_TO_SAMPLE, VALUE_CHANGED
     }
 
     public SDWISTabUI(Screen parentScreen) {
@@ -209,8 +209,10 @@ public class SDWISTabUI extends VerificationScreen {
         });
 
         /*
-         * these methods make a row visible and set its background if the
-         * editable widget in the row is used in verification
+         * get the category that defines which fields for this domain need to be
+         * verified; make the rows visible that show those fields and initialize
+         * the widgets in those rows; also keep track of the visible editable
+         * widgets so that their tabbing order can be set
          */
         i = -1;
         fields = new HashMap<String, VerificationField>();
@@ -455,21 +457,28 @@ public class SDWISTabUI extends VerificationScreen {
         tabs = null;
 
         /*
-         * add handlers for the shortcuts "Ctrl+1" and "Ctrl+2"
+         * add handlers for the shortcuts "Ctrl+1", "Ctrl+2" and "Ctrl+3"
          */
         addShortcut(new ShortcutHandler() {
             @Override
             public void onShortcut() {
-                copyValue(Operation.COPY_FROM_SAMPLE);
+                execute(Operation.COPY_FROM_SAMPLE);
             }
         }, '1', CTRL);
 
         addShortcut(new ShortcutHandler() {
             @Override
             public void onShortcut() {
-                copyValue(Operation.COPY_TO_SAMPLE);
+                execute(Operation.COPY_TO_SAMPLE);
             }
         }, '2', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                execute(Operation.VALUE_CHANGED);
+            }
+        }, '3', CTRL);
     }
 
     public void setData(SampleManager1 manager) {
@@ -544,15 +553,18 @@ public class SDWISTabUI extends VerificationScreen {
     /**
      * If a widget has focus, copies the value of a specific field from the
      * manager to the widget if operation is COPY_FROM_SAMPLE (first data entry)
-     * or vice-versa if it the operation is COPY_TO_SAMPLE (second data entry)
+     * or vice-versa if it is COPY_TO_SAMPLE (second data entry); if operation
+     * is VALUE_CHANGED, forces the widget to act as if its value was changed by
+     * the user so that the value can be verified and the value in the manager
+     * can be shown in the non editable widget
      */
-    private void copyValue(Operation operation) {
+    private void execute(Operation operation) {
         VerificationField field;
 
         field = null;
         if (auxDataTable.isEditing()) {
             /*
-             * the focused widget is not set if a table has focus because the
+             * the "focused" widget is not set if a table has focus because the
              * focus gets set to the editable cell's widget and not the table
              */
             field = fields.get(AUX_DATA);
@@ -572,6 +584,9 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case COPY_TO_SAMPLE:
                     field.copyToSample();
+                    break;
+                case VALUE_CHANGED:
+                    field.valueChanged();
                     break;
             }
         }

@@ -156,6 +156,9 @@ public class SampleQAEvent extends MultiField<Table> {
 
     public void copyToSample() {
     }
+    
+    public void valueChanged() {
+    }
 
     /**
      * Marks the qa event at the passed index as verified if the user checks the
@@ -172,6 +175,9 @@ public class SampleQAEvent extends MultiField<Table> {
                         .addException(new Exception(Messages.get()
                                                             .secondDataEntry_qaEventNotVerified(sqa.getQaEventName())));
         }
+    }
+    
+    protected void refocus(int i) {
     }
 
     /**

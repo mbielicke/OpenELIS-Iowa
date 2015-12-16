@@ -61,8 +61,6 @@ import org.openelis.utilcommon.ResultHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.Window;
@@ -73,6 +71,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class AuxData extends MultiField<Table> {
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
+    protected int                                       row;
 
     public AuxData(VerificationScreen parentScreen, TableRowElement tableRowElement,
                    Table editableWidget, int rowIndex) {
@@ -162,57 +161,11 @@ public class AuxData extends MultiField<Table> {
         });
 
         editableWidget.addCellEditedHandler(new CellEditedHandler() {
-            int              r;
-            ScheduledCommand cmd;
-
-            /*
-             * set the focus back to the editable cell if there's no match
-             */
-            private void createCmd() {
-                if (cmd == null) {
-                    cmd = new ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            editableWidget.startEditing(r, 1);
-                        }
-                    };
-                }
-            }
-
             @Override
             public void onCellUpdated(CellEditedEvent event) {
-                Value value;
-                AuxDataViewDO data;
-
-                r = event.getRow();
-                data = parentScreen.getManager().auxData.get(r);
                 switch (event.getCol()) {
                     case 1:
-                        /*
-                         * update the number of times the value for this aux
-                         * data has been edited
-                         */
-                        numEdit[r]++ ;
-
-                        /*
-                         * if there's no match and the value has been changed by
-                         * the user more than once, show the value in the
-                         * manager to the user
-                         */
-                        verify(r);
-                        if ( !isVerified[r]) {
-                            if (numEdit[r] > 1) {
-                                if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
-                                    value = new ResultCell.Value(null, data.getValue());
-                                else
-                                    value = new ResultCell.Value(data.getValue(), null);
-
-                                editableWidget.setValueAt(r, 4, value);
-                            }
-
-                            createCmd();
-                            Scheduler.get().scheduleDeferred(cmd);
-                        }
+                        valueChanged(event.getRow(), false);
                         break;
                 }
             }
@@ -301,6 +254,17 @@ public class AuxData extends MultiField<Table> {
     }
 
     /**
+     * Verifies whether the value entered by the user in the row at the passed
+     * index is the same as the value in the aux data DO at the same index;
+     * increments the number of times the value has been changed; if the values
+     * are different and the value has been changed more than once, shows the
+     * DO's value to the user
+     */
+    public void valueChanged() {
+        valueChanged(editableWidget.getEditingRow(), true);
+    }
+
+    /**
      * Marks the aux data in the sample at the passed index as verified if its
      * value is the same as the value entered by the user; shows the image for
      * "match" or "no match" based on whether the two values are same or
@@ -320,12 +284,34 @@ public class AuxData extends MultiField<Table> {
         data = parentScreen.getManager().auxData.get(i);
         match = !DataBaseUtil.isDifferent(userVal, data.getValue());
         /*
-         * set the style for match/no match
+         * set the icon for match/no match
          */
         editableWidget.setValueAt(i, 2, match ? OpenELISResources.INSTANCE.icon()
                                                                           .CommitButtonImage()
                                              : OpenELISResources.INSTANCE.icon().AbortButtonImage());
         isVerified[i] = match;
+    }
+
+    /**
+     * Sets the focus to the editable cell in the row at the passed index
+     */
+    protected void refocus(int i) {
+        /*
+         * "row" is a class-level variable because if it's a simple local
+         * variable it won't be in the scope of the ScheduledCommand below; it
+         * can't be final either because then its value in the command won't
+         * change after the command has been created
+         */
+        row = i;
+        if (focusCommand == null) {
+            focusCommand = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    editableWidget.startEditing(row, 1);
+                }
+            };
+        }
+        Scheduler.get().scheduleDeferred(focusCommand);
     }
 
     /**
@@ -420,5 +406,60 @@ public class AuxData extends MultiField<Table> {
             else
                 tb.setCase(TextBase.Case.MIXED);
         }
+    }
+
+    /**
+     * Verifies whether the value entered by the user in the row at the passed
+     * index is the same as the value in the aux data DO at the same index; if
+     * the values are different and the value has been changed by the user more
+     * than once, shows the DO's value to the user; increments the number of
+     * times the value has been changed; if the boolean flag is true, the user
+     * wants the entered value to be treated as changed even though it wasn't
+     * actually changed; this could be to verify the entered value again and see
+     * the DO's value without needing to the enter some other value
+     */
+    private void valueChanged(int r, boolean isForced) {
+        Value value;
+        AuxDataViewDO data;
+
+        if (r < 0)
+            return;
+        data = parentScreen.getManager().auxData.get(r);
+
+        /*
+         * increment the number of times the value for this aux data has been
+         * changed
+         */
+        numEdit[r]++ ;
+
+        /*
+         * if there's no match and the value has been changed by the user more
+         * than once, show the value in the manager to the user
+         */
+        verify(r);
+        if ( !isVerified[r]) {
+            /*
+             * blank the icon for the direction of copy because the current
+             * value was not copied to or from the manager
+             */
+            editableWidget.setValueAt(r, 3, OpenELISResources.INSTANCE.icon().blankIcon());
+            if (numEdit[r] > 1) {
+                if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
+                    value = new ResultCell.Value(null, data.getValue());
+                else
+                    value = new ResultCell.Value(data.getValue(), null);
+
+                editableWidget.setValueAt(r, 4, value);
+            }
+        }
+
+        /*
+         * reset the focus to the cell most recently edited, to allow the user
+         * to change the value; this needs to be done because either that cell
+         * didn't have focus when this method was called or it lost focus when
+         * the icon for match/no match was set in verify()
+         */
+        if ( !isVerified[r] || isForced)
+            refocus(r);
     }
 }
