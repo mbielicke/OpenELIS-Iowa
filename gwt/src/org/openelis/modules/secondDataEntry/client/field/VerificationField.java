@@ -42,6 +42,8 @@ public interface VerificationField<T> {
     public void copyFromSample();
 
     public void copyToSample();
+    
+    public void valueChanged();
 
     public void verify();
 }

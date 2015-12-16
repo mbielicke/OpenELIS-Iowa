@@ -77,39 +77,7 @@ public class SDWISSampleTypeId extends SingleField<Dropdown<Integer>> {
                                           }
 
                                           public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              /*
-                                               * update the number of times the
-                                               * widget has been edited
-                                               */
-                                              numEdit++ ;
-
-                                              /*
-                                               * verify whether the value
-                                               * entered is different from the
-                                               * one in the manager; if it is
-                                               * and this widget has been edited
-                                               * multiple times, show the value
-                                               * in the manager in the widget on
-                                               * the right; blank the icon for
-                                               * the direction of copy because
-                                               * the current value was not
-                                               * copied to or from the manager
-                                               */
-                                              verify();
-                                              if ( !isVerified) {
-                                                  copyImage.setResource(OpenELISResources.INSTANCE.blankIcon());
-                                                  if (numEdit > 1)
-                                                      nonEditableWidget.setValue(parentScreen.getManager()
-                                                                                             .getSampleSDWIS()
-                                                                                             .getSampleTypeId());
-                                                  /*
-                                                   * set the focus back on the
-                                                   * widget if the user pressed
-                                                   * Tab
-                                                   */
-                                                  if (parentScreen.getTabFocusLostWidget() == editableWidget)
-                                                      refocus();
-                                              }
+                                              valueChanged();
                                               parentScreen.setTabFocusLostWidget(null);
                                           }
 
@@ -167,6 +135,41 @@ public class SDWISSampleTypeId extends SingleField<Dropdown<Integer>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+        }
+    }
+
+    /**
+     * Verifies whether the value entered by the user is the same as the
+     * sample's sdwis sample type id; increments the number of times the value
+     * has been changed; if the values are different and the value has been
+     * changed more than once, shows the sample's sdwis sample type id to the
+     * user
+     */
+    public void valueChanged() {
+        /*
+         * increment the number of times the value has been changed
+         */
+        numEdit++ ;
+
+        /*
+         * verify whether the value entered is different from the one in the
+         * manager; if it is and this widget has been edited multiple times,
+         * show the value in the manager in the widget on the right; blank the
+         * icon for the direction of copy because the current value was not
+         * copied to or from the manager
+         */
+        verify();
+        if ( !isVerified) {
+            copyImage.setResource(OpenELISResources.INSTANCE.blankIcon());
+            if (numEdit > 1)
+                nonEditableWidget.setValue(parentScreen.getManager()
+                                                       .getSampleSDWIS()
+                                                       .getSampleTypeId());
+            /*
+             * set the focus back on the widget if the user pressed Tab
+             */
+            if (parentScreen.getTabFocusLostWidget() == editableWidget)
+                refocus();
         }
     }
 

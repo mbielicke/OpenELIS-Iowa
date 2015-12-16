@@ -483,8 +483,6 @@
               </td>
               <td colspan="5">
                 <g:LayoutPanel height="250px" width="540px">
-                  <!-- <g:layer top="0px" height="25px"> <w:Label text="{msg.aux_data}" styleName="{res.style.Heading}" 
-                    /> </g:layer> -->
                   <g:layer top="0px" bottom="0px">
                     <t:Table ui:field="auxDataTable" header="true"
                       styleName="{res.table.ScreenTableWithSides}"
