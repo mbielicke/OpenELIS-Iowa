@@ -160,7 +160,7 @@ public class LockBean {
         if (lock.expires > System.currentTimeMillis() && !ownsLock(lock, user, session)) {
             expires = new Date(lock.expires).toString();
             msg = Messages.get().entityLockException(lock.username, expires);
-            throw new EntityLockedException(msg);
+            throw new EntityLockedException(msg, lock.username, lock.expires);
         }
     }
 
