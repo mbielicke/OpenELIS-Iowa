@@ -50,6 +50,7 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -89,7 +90,23 @@ public class VerificationScreenUI extends Screen {
         initialize();
         setState(DEFAULT);
         fireDataChange();
-        barcode.setFocus(true);
+
+        /*
+         * the following is used instead of a ScheduledCommand to make sure
+         * that the focus gets set after the widget gets attached to the DOM,
+         * which ScheduledCommand doesn't do, as it executes after the creation
+         * of the widget, which doesn't mean that the widget is attached
+         */
+        Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
+            @Override
+            public boolean execute() {
+                if (barcode.isAttached()) {
+                    barcode.setFocus(true);
+                    return false;
+                }
+                return true;
+            }
+        });
 
         logger.fine("Verification Screen Opened");
     }
@@ -104,6 +121,10 @@ public class VerificationScreenUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 barcode.setEnabled(isState(DEFAULT));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return barcode;
             }
         });
 
