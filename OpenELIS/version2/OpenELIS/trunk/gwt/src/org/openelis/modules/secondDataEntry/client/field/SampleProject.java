@@ -132,9 +132,6 @@ public class SampleProject extends SingleField<AutoComplete> {
         String sprojName;
         SampleProjectViewDO sproj;
 
-        /*
-         * copy value from the manager to the editable widget
-         */
         projId = editableWidget.getValue() != null ? editableWidget.getValue().getId() : null;
         sproj = getFirstProject();
         sprojId = sproj != null ? sproj.getProjectId() : null;
@@ -156,9 +153,6 @@ public class SampleProject extends SingleField<AutoComplete> {
         ProjectDO proj;
         SampleProjectViewDO sproj;
 
-        /*
-         * copy value from the editable widget to the manager
-         */
         proj = editableWidget.getValue() != null ? (ProjectDO)editableWidget.getValue().getData()
                                                 : null;
         projId = proj != null ? proj.getId() : null;
@@ -207,7 +201,8 @@ public class SampleProject extends SingleField<AutoComplete> {
                 nonEditableWidget.setValue(id, name);
             }
             /*
-             * set the focus back on the widget if the user pressed Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
             if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();
@@ -222,10 +217,6 @@ public class SampleProject extends SingleField<AutoComplete> {
         Integer projId, sprojId;
         SampleProjectViewDO sproj;
 
-        /*
-         * verify whether the project entered by the user is the same as the
-         * first project in the sample
-         */
         projId = editableWidget.getValue() != null ? editableWidget.getValue().getId() : null;
         sproj = getFirstProject();
         sprojId = sproj != null ? sproj.getProjectId() : null;

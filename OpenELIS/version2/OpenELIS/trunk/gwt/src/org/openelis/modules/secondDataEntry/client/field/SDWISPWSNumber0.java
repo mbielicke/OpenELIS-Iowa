@@ -54,8 +54,8 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * This class manages the widgets used for verifying sdwis pws number0
  */
-public class SDWISPwsNumber0 extends SingleField<TextBox<String>> {
-    public SDWISPwsNumber0(VerificationScreen parentScreen, TableRowElement tableRowElement,
+public class SDWISPWSNumber0 extends SingleField<TextBox<String>> {
+    public SDWISPWSNumber0(VerificationScreen parentScreen, TableRowElement tableRowElement,
                            TextBox<String> editableWidget, TextBox<String> nonEditableWidget,
                            Image matchImage, Image copyImage, int rowIndex) {
         super(parentScreen, tableRowElement, editableWidget, nonEditableWidget, matchImage,
@@ -186,7 +186,8 @@ public class SDWISPwsNumber0 extends SingleField<TextBox<String>> {
                                                        .getSampleSDWIS()
                                                        .getPwsNumber0());
             /*
-             * set the focus back on the widget if the user pressed Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
             if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();

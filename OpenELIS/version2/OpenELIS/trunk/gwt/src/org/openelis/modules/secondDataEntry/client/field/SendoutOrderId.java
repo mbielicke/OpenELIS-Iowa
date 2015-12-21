@@ -177,7 +177,8 @@ public class SendoutOrderId extends SingleField<TextBox<Integer>> {
             if (numEdit > 1)
                 nonEditableWidget.setValue(parentScreen.getManager().getSample().getOrderId());
             /*
-             * set the focus back on the widget if the user pressed Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
             if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();
