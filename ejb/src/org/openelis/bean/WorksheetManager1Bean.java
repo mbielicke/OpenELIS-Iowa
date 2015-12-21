@@ -678,14 +678,22 @@ public class WorksheetManager1Bean {
          * go through remove list and delete all the unwanted records
          */
         if (getRemoved(wm) != null) {
+            /*
+             * we need to remove objects in the correct order so that referential
+             * integrity is maintained
+             */
             for (DataObject data : getRemoved(wm)) {
                 if (data instanceof WorksheetResultViewDO)
                     wResult.delete((WorksheetResultViewDO)data);
                 else if (data instanceof WorksheetQcResultViewDO)
                     wqResult.delete((WorksheetQcResultViewDO)data);
-                else if (data instanceof WorksheetAnalysisViewDO)
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetAnalysisViewDO)
                     analysis.delete((WorksheetAnalysisViewDO)data);
-                else if (data instanceof WorksheetItemDO)
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetItemDO)
                     item.delete((WorksheetItemDO)data);
                 else if (data instanceof WorksheetReagentViewDO)
                     reagent.delete((WorksheetReagentViewDO)data);
