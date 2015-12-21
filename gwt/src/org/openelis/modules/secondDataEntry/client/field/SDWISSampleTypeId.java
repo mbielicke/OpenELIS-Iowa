@@ -166,7 +166,8 @@ public class SDWISSampleTypeId extends SingleField<Dropdown<Integer>> {
                                                        .getSampleSDWIS()
                                                        .getSampleTypeId());
             /*
-             * set the focus back on the widget if the user pressed Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
             if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();

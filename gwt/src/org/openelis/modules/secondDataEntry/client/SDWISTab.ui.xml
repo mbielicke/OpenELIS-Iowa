@@ -27,7 +27,7 @@
       <g:ScrollPanel width="100%" height="100%">
         <g:HTMLPanel>
           <table class="{res.style.Form}">
-            <tr ui:field="verSdwisAccessionNumber" style="display:none">
+            <tr ui:field="verSDWISAccessionNumber" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_accessionNum}:" />
               </td>
@@ -44,7 +44,7 @@
                 <w:TextBox ui:field="accessionNumber1" width="75px" field="Integer" />
               </td>
             </tr>
-            <tr ui:field="verSdwisOrderId" style="display:none">
+            <tr ui:field="verSDWISOrderId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.order_orderNum}:" />
               </td>
@@ -61,7 +61,7 @@
                 <w:TextBox ui:field="orderId1" width="75px" field="Integer" />
               </td>
             </tr>
-            <tr ui:field="verSdwisCollectionDate" style="display:none">
+            <tr ui:field="verSDWISCollectionDate" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_collected}:" />
               </td>
@@ -78,7 +78,7 @@
                 <c:Calendar ui:field="collectionDate1" width="90px" begin="0" end="2" />
               </td>
             </tr>
-            <tr ui:field="verSdwisCollectionTime" style="display:none">
+            <tr ui:field="verSDWISCollectionTime" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.gen_time}:" />
               </td>
@@ -95,7 +95,7 @@
                 <c:Calendar ui:field="collectionTime1" width="60px" begin="3" end="4" />
               </td>
             </tr>
-            <tr ui:field="verSdwisReceivedDate" style="display:none">
+            <tr ui:field="verSDWISReceivedDate" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_received}:" />
               </td>
@@ -112,7 +112,7 @@
                 <c:Calendar ui:field="receivedDate1" width="125px" begin="0" end="4" />
               </td>
             </tr>
-            <tr ui:field="verSdwisClientReference" style="display:none">
+            <tr ui:field="verSDWISClientReference" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_clntRef}:" />
               </td>
@@ -131,26 +131,26 @@
                   maxLength="20" />
               </td>
             </tr>
-            <tr ui:field="verSdwisPwsNumber0" style="display:none">
+            <tr ui:field="verSDWISPWSNumber0" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.pws_id}:" />
               </td>
               <td>
                 <g:HorizontalPanel>
-                  <w:TextBox ui:field="sdwisPwsNumber0" width="75px" case="UPPER" field="String"
+                  <w:TextBox ui:field="sdwisPWSNumber0" width="75px" case="UPPER" field="String"
                     maxLength="9" />
-                  <g:Image ui:field="sdwisPwsNumber0IM" />
+                  <g:Image ui:field="sdwisPWSNumber0IM" />
                 </g:HorizontalPanel>
               </td>
               <td>
-                <g:Image ui:field="sdwisPwsNumber0IC" />
+                <g:Image ui:field="sdwisPWSNumber0IC" />
               </td>
               <td>
-                <w:TextBox ui:field="sdwisPwsNumber01" width="75px" case="UPPER" field="String"
+                <w:TextBox ui:field="sdwisPWSNumber01" width="75px" case="UPPER" field="String"
                   maxLength="9" />
               </td>
             </tr>
-            <tr ui:field="verSdwisStateLabId" style="display:none">
+            <tr ui:field="verSDWISStateLabId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleSDWIS_stateLabNo}:" />
               </td>
@@ -167,7 +167,7 @@
                 <w:TextBox ui:field="sdwisStateLabId1" width="109px" field="Integer" />
               </td>
             </tr>
-            <tr ui:field="verSdwisFacilityId" style="display:none">
+            <tr ui:field="verSDWISFacilityId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleSDWIS_facilityId}:" />
               </td>
@@ -186,7 +186,7 @@
                   maxLength="12" />
               </td>
             </tr>
-            <tr ui:field="verSdwisSampleTypeId" style="display:none">
+            <tr ui:field="verSDWISSampleTypeId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.gen_sampleType}:" />
               </td>
@@ -203,7 +203,7 @@
                 <w:Dropdown ui:field="sdwisSampleTypeId1" width="120px" field="Integer" />
               </td>
             </tr>
-            <tr ui:field="verSdwisSampleCategoryId" style="display:none">
+            <tr ui:field="verSDWISSampleCategoryId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleSDWIS_sampleCat}:" />
               </td>
@@ -220,7 +220,7 @@
                 <w:Dropdown ui:field="sdwisSampleCategoryId1" width="120px" field="Integer" />
               </td>
             </tr>
-            <tr ui:field="verSdwisSamplePointId" style="display:none">
+            <tr ui:field="verSDWISSamplePointId" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleSDWIS_samplePtId}:" />
               </td>
@@ -239,7 +239,7 @@
                   maxLength="11" />
               </td>
             </tr>
-            <tr ui:field="verSdwisLocation" style="display:none">
+            <tr ui:field="verSDWISLocation" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.gen_location}:" />
               </td>
@@ -258,7 +258,7 @@
                   maxLength="40" />
               </td>
             </tr>
-            <tr ui:field="verSdwisPriority" style="display:none">
+            <tr ui:field="verSDWISPriority" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.gen_priority}:" />
               </td>
@@ -275,7 +275,7 @@
                 <w:TextBox ui:field="sdwisPriority1" field="Integer" width="24px" />
               </td>
             </tr>
-            <tr ui:field="verSdwisCollector" style="display:none">
+            <tr ui:field="verSDWISCollector" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_collector}:" />
               </td>
@@ -294,7 +294,7 @@
                   maxLength="20" />
               </td>
             </tr>
-            <tr ui:field="verSdwisReportTo" style="display:none">
+            <tr ui:field="verSDWISReportTo" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleOrganization_reportTo}:" />
               </td>
@@ -355,7 +355,7 @@
                 </table>
               </td>
             </tr>
-            <tr ui:field="verSdwisBillTo" style="display:none">
+            <tr ui:field="verSDWISBillTo" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sampleOrganization_billTo}:" />
               </td>
@@ -416,7 +416,7 @@
                 </table>
               </td>
             </tr>
-            <tr ui:field="verSdwisProject" style="display:none">
+            <tr ui:field="verSDWISProject" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.project_project}:" />
               </td>
@@ -446,16 +446,14 @@
                 <w:AutoComplete ui:field="projectName1" width="190px" case="LOWER" />
               </td>
             </tr>
-            <tr ui:field="verSdwisSampleQaEvents" style="display:none">
+            <tr ui:field="verSDWISSampleQAEvents" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.sample_qaEvents}:" />
               </td>
               <td colspan="5">
                 <g:LayoutPanel height="100px" width="430px">
-                  <!-- <g:layer top="0px" height="25px"> <w:Label text="{msg.sample_qaEvents}" styleName="{res.style.Heading}" 
-                    /> </g:layer> -->
                   <g:layer top="0px" bottom="0px">
-                    <t:Table ui:field="sampleQaTable" header="true"
+                    <t:Table ui:field="sampleQATable" header="true"
                       styleName="{res.table.ScreenTableWithSides}"
                     >
                       <t:Column width="51" label="{msg.secondDataEntry_verified}">
@@ -466,7 +464,7 @@
                       </t:Column>
                       <t:Column width="110" label="{msg.gen_type}">
                         <t:DropdownCell>
-                          <w:Dropdown ui:field="sampleQaType" field="Integer" dropWidth="110" />
+                          <w:Dropdown field="Integer" dropWidth="110" />
                         </t:DropdownCell>
                       </t:Column>
                       <t:Column width="51" label="{msg.gen_billable}">
@@ -477,7 +475,7 @@
                 </g:LayoutPanel>
               </td>
             </tr>
-            <tr ui:field="verSdwisAuxData" style="display:none">
+            <tr ui:field="verSDWISAuxData" style="display:none">
               <td class="{res.style.Prompt}">
                 <ui:text from="{msg.aux_data}:" />
               </td>

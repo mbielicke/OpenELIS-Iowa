@@ -184,11 +184,10 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
                                                        .getSample()
                                                        .getAccessionNumber());
             /*
-             * set the focus back to the editable widget if the value entered by
-             * the user doesn't match the value in the manager and the widget
-             * lost focus by pressing Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
-            if ( !isVerified && parentScreen.getTabFocusLostWidget() == editableWidget)
+            if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();
         }
     }

@@ -48,7 +48,7 @@ import org.openelis.modules.secondDataEntry.client.field.SDWISCollector;
 import org.openelis.modules.secondDataEntry.client.field.SDWISFacilityId;
 import org.openelis.modules.secondDataEntry.client.field.SDWISLocation;
 import org.openelis.modules.secondDataEntry.client.field.SDWISPriority;
-import org.openelis.modules.secondDataEntry.client.field.SDWISPwsNumber0;
+import org.openelis.modules.secondDataEntry.client.field.SDWISPWSNumber0;
 import org.openelis.modules.secondDataEntry.client.field.SDWISSampleCategoryId;
 import org.openelis.modules.secondDataEntry.client.field.SDWISSamplePointId;
 import org.openelis.modules.secondDataEntry.client.field.SDWISSampleTypeId;
@@ -64,7 +64,6 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.Dropdown;
-import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextArea;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
@@ -91,13 +90,13 @@ public class SDWISTabUI extends VerificationScreen {
     private static SDWISTabUiBinder                     uiBinder = GWT.create(SDWISTabUiBinder.class);
 
     @UiField
-    protected TableRowElement                           verSdwisAccessionNumber, verSdwisOrderId,
-                    verSdwisCollectionDate, verSdwisCollectionTime, verSdwisReceivedDate,
-                    verSdwisClientReference, verSdwisPwsNumber0, verSdwisStateLabId,
-                    verSdwisFacilityId, verSdwisSampleTypeId, verSdwisSampleCategoryId,
-                    verSdwisSamplePointId, verSdwisLocation, verSdwisPriority, verSdwisCollector,
-                    verSdwisReportTo, verSdwisBillTo, verSdwisProject, verSdwisSampleQaEvents,
-                    verSdwisAuxData;
+    protected TableRowElement                           verSDWISAccessionNumber, verSDWISOrderId,
+                    verSDWISCollectionDate, verSDWISCollectionTime, verSDWISReceivedDate,
+                    verSDWISClientReference, verSDWISPWSNumber0, verSDWISStateLabId,
+                    verSDWISFacilityId, verSDWISSampleTypeId, verSDWISSampleCategoryId,
+                    verSDWISSamplePointId, verSDWISLocation, verSDWISPriority, verSDWISCollector,
+                    verSDWISReportTo, verSDWISBillTo, verSDWISProject, verSDWISSampleQAEvents,
+                    verSDWISAuxData;
 
     @UiField
     protected TextBox<Integer>                          accessionNumber, accessionNumber1, orderId,
@@ -107,7 +106,7 @@ public class SDWISTabUI extends VerificationScreen {
     protected Image                                     accessionNumberIM, accessionNumberIC,
                     orderIdIM, orderIdIC, collectionDateIM, collectionDateIC, collectionTimeIM,
                     collectionTimeIC, receivedDateIM, receivedDateIC, clientReferenceIM,
-                    clientReferenceIC, sdwisPwsNumber0IM, sdwisPwsNumber0IC, sdwisStateLabIdIM,
+                    clientReferenceIC, sdwisPWSNumber0IM, sdwisPWSNumber0IC, sdwisStateLabIdIM,
                     sdwisStateLabIdIC, sdwisFacilityIdIM, sdwisFacilityIdIC, sdwisSampleTypeIdIM,
                     sdwisSampleTypeIdIC, sdwisSampleCategoryIdIM, sdwisSampleCategoryIdIC,
                     sdwisSamplePointIdIM, sdwisSamplePointIdIC, sdwisLocationIM, sdwisLocationIC,
@@ -121,7 +120,7 @@ public class SDWISTabUI extends VerificationScreen {
 
     @UiField
     protected TextBox<String>                           clientReference, clientReference1,
-                    sdwisPwsNumber0, sdwisPwsNumber01, sdwisFacilityId, sdwisFacilityId1,
+                    sdwisPWSNumber0, sdwisPWSNumber01, sdwisFacilityId, sdwisFacilityId1,
                     sdwisSamplePointId, sdwisSamplePointId1, sdwisLocation, sdwisLocation1,
                     sdwisCollector, sdwisCollector1;
 
@@ -138,7 +137,7 @@ public class SDWISTabUI extends VerificationScreen {
                     billToDetails, billToDetails1;
 
     @UiField
-    protected Table                                     sampleQaTable, auxDataTable;
+    protected Table                                     sampleQATable, auxDataTable;
 
     protected SampleManager1                            manager;
 
@@ -148,8 +147,6 @@ public class SDWISTabUI extends VerificationScreen {
 
     protected Focusable                                 firstFocusWidget;
 
-    protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
-
     protected HashMap<String, VerificationField>        fields;
 
     protected boolean                                   isInitialized;
@@ -157,7 +154,7 @@ public class SDWISTabUI extends VerificationScreen {
     protected Validation                                validation;
 
     protected static final String                       REPORT_TO = "report_to",
-                    BILL_TO = "bill_to", AUX_DATA = "auxData";
+                    BILL_TO = "bill_to", AUX_DATA = "auxData", SAMPLE_QA_EVENTS = "sampleQAEvents";
 
     protected enum Operation {
         COPY_FROM_SAMPLE, COPY_TO_SAMPLE, VALUE_CHANGED
@@ -223,7 +220,7 @@ public class SDWISTabUI extends VerificationScreen {
             switch (d.getSystemName()) {
                 case "ver_sdwis_accession_number":
                     field = new AccessionNumber(this,
-                                                verSdwisAccessionNumber,
+                                                verSDWISAccessionNumber,
                                                 accessionNumber,
                                                 accessionNumber1,
                                                 accessionNumberIM,
@@ -234,7 +231,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_order_id":
                     field = new SendoutOrderId(this,
-                                               verSdwisOrderId,
+                                               verSDWISOrderId,
                                                orderId,
                                                orderId1,
                                                orderIdIM,
@@ -245,7 +242,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_collection_date":
                     field = new CollectionDate(this,
-                                               verSdwisCollectionDate,
+                                               verSDWISCollectionDate,
                                                collectionDate,
                                                collectionDate1,
                                                collectionDateIM,
@@ -256,7 +253,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_collection_time":
                     field = new CollectionTime(this,
-                                               verSdwisCollectionTime,
+                                               verSDWISCollectionTime,
                                                collectionTime,
                                                collectionTime1,
                                                collectionTimeIM,
@@ -267,7 +264,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_received_date":
                     field = new ReceivedDate(this,
-                                             verSdwisReceivedDate,
+                                             verSDWISReceivedDate,
                                              receivedDate,
                                              receivedDate1,
                                              receivedDateIM,
@@ -278,7 +275,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_client_reference":
                     field = new ClientReference(this,
-                                                verSdwisClientReference,
+                                                verSDWISClientReference,
                                                 clientReference,
                                                 clientReference1,
                                                 clientReferenceIM,
@@ -288,19 +285,19 @@ public class SDWISTabUI extends VerificationScreen {
                     tabs.add(field);
                     break;
                 case "ver_sdwis_pws_number0":
-                    field = new SDWISPwsNumber0(this,
-                                                verSdwisPwsNumber0,
-                                                sdwisPwsNumber0,
-                                                sdwisPwsNumber01,
-                                                sdwisPwsNumber0IM,
-                                                sdwisPwsNumber0IC,
+                    field = new SDWISPWSNumber0(this,
+                                                verSDWISPWSNumber0,
+                                                sdwisPWSNumber0,
+                                                sdwisPWSNumber01,
+                                                sdwisPWSNumber0IM,
+                                                sdwisPWSNumber0IC,
                                                 ++i);
                     fields.put(SampleMeta.SDWIS_PWS_NUMBER0, field);
                     tabs.add(field);
                     break;
                 case "ver_sdwis_state_lab_id":
                     field = new SDWISStateLabId(this,
-                                                verSdwisStateLabId,
+                                                verSDWISStateLabId,
                                                 sdwisStateLabId,
                                                 sdwisStateLabId1,
                                                 sdwisStateLabIdIM,
@@ -311,7 +308,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_facility_id":
                     field = new SDWISFacilityId(this,
-                                                verSdwisFacilityId,
+                                                verSDWISFacilityId,
                                                 sdwisFacilityId,
                                                 sdwisFacilityId1,
                                                 sdwisFacilityIdIM,
@@ -322,7 +319,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_sample_type_id":
                     field = new SDWISSampleTypeId(this,
-                                                  verSdwisSampleTypeId,
+                                                  verSDWISSampleTypeId,
                                                   sdwisSampleTypeId,
                                                   sdwisSampleTypeId1,
                                                   sdwisSampleTypeIdIM,
@@ -333,7 +330,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_sample_category_id":
                     field = new SDWISSampleCategoryId(this,
-                                                      verSdwisSampleCategoryId,
+                                                      verSDWISSampleCategoryId,
                                                       sdwisSampleCategoryId,
                                                       sdwisSampleCategoryId1,
                                                       sdwisSampleCategoryIdIM,
@@ -344,7 +341,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_sample_point_id":
                     field = new SDWISSamplePointId(this,
-                                                   verSdwisSamplePointId,
+                                                   verSDWISSamplePointId,
                                                    sdwisSamplePointId,
                                                    sdwisSamplePointId1,
                                                    sdwisSamplePointIdIM,
@@ -355,7 +352,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_location":
                     field = new SDWISLocation(this,
-                                              verSdwisLocation,
+                                              verSDWISLocation,
                                               sdwisLocation,
                                               sdwisLocation1,
                                               sdwisLocationIM,
@@ -366,7 +363,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_priority":
                     field = new SDWISPriority(this,
-                                              verSdwisPriority,
+                                              verSDWISPriority,
                                               sdwisPriority,
                                               sdwisPriority1,
                                               sdwisPriorityIM,
@@ -377,7 +374,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_collector":
                     field = new SDWISCollector(this,
-                                               verSdwisCollector,
+                                               verSDWISCollector,
                                                sdwisCollector,
                                                sdwisCollector1,
                                                sdwisCollectorIM,
@@ -388,7 +385,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_report_to":
                     field = new SampleOrganization(this,
-                                                   verSdwisReportTo,
+                                                   verSDWISReportTo,
                                                    reportToName,
                                                    reportToName1,
                                                    reportToNameIM,
@@ -402,7 +399,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_bill_to":
                     field = new SampleOrganization(this,
-                                                   verSdwisBillTo,
+                                                   verSDWISBillTo,
                                                    billToName,
                                                    billToName1,
                                                    billToNameIM,
@@ -416,7 +413,7 @@ public class SDWISTabUI extends VerificationScreen {
                     break;
                 case "ver_sdwis_project":
                     field = new SampleProject(this,
-                                              verSdwisProject,
+                                              verSDWISProject,
                                               projectName,
                                               projectName1,
                                               projectNameIM,
@@ -426,12 +423,12 @@ public class SDWISTabUI extends VerificationScreen {
                     tabs.add(field);
                     break;
                 case "ver_sdwis_sample_qa_events":
-                    field = new SampleQAEvent(this, verSdwisSampleQaEvents, sampleQaTable, ++i);
-                    fields.put("sampleQAEvents", field);
+                    field = new SampleQAEvent(this, verSDWISSampleQAEvents, sampleQATable, ++i);
+                    fields.put(SAMPLE_QA_EVENTS, field);
                     tabs.add(field);
                     break;
                 case "ver_sdwis_aux_data":
-                    field = new AuxData(this, verSdwisAuxData, auxDataTable, ++i);
+                    field = new AuxData(this, verSDWISAuxData, auxDataTable, ++i);
                     fields.put(AUX_DATA, field);
                     tabs.add(field);
                     break;

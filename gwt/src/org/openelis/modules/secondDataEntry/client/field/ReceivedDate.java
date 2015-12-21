@@ -106,15 +106,15 @@ public class ReceivedDate extends SingleField<Calendar> {
      * Copies received date from the editable widget to the manager
      */
     public void copyToSample() {
-        Datetime cdt;
+        Datetime rdt;
         SampleManager1 sm;
 
         sm = parentScreen.getManager();
-        cdt = editableWidget.getValue();
+        rdt = editableWidget.getValue();
         if (numEdit > 1 && !editableWidget.hasExceptions() &&
-            DataBaseUtil.isDifferentYM(cdt, sm.getSample().getReceivedDate())) {
-            sm.getSample().setReceivedDate(cdt);
-            nonEditableWidget.setValue(cdt);
+            DataBaseUtil.isDifferentYM(rdt, sm.getSample().getReceivedDate())) {
+            sm.getSample().setReceivedDate(rdt);
+            nonEditableWidget.setValue(rdt);
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
@@ -146,7 +146,8 @@ public class ReceivedDate extends SingleField<Calendar> {
             if (numEdit > 1)
                 nonEditableWidget.setValue(parentScreen.getManager().getSample().getReceivedDate());
             /*
-             * set the focus back on the widget if the user pressed Tab
+             * set the focus back to the editable widget if it lost focus by
+             * pressing Tab
              */
             if (parentScreen.getTabFocusLostWidget() == editableWidget)
                 refocus();
