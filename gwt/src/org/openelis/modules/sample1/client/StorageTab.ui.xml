@@ -22,9 +22,7 @@
       <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="8"
         horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="155" label="{msg.gen_user}">
-          <t:LabelCell>
-            <w:Label field="Integer" />
-          </t:LabelCell>
+          <t:LabelCell/>
         </t:Column>
         <t:Column width="259" label="{msg.gen_location}" required="true">
           <t:AutoCompleteCell>

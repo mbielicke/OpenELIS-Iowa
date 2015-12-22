@@ -70,6 +70,7 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -130,6 +131,13 @@ public class StorageTabUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? addStorageButton : removeStorageButton;
+            }
+        });
+        
+        table.addSelectionHandler(new SelectionHandler<Integer>() {
+            @Override
+            public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                removeStorageButton.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
