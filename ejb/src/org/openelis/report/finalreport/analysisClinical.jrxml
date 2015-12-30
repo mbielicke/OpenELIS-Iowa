@@ -187,14 +187,14 @@ ORDER BY dsm.system_name,
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_released_date}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="Corrected Report ##" isBlankWhenNull="true">
 				<reportElement positionType="Float" mode="Transparent" x="452" y="36" width="98" height="12">
 					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{a_revision}]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="370" y="48" width="180" height="12"/>
