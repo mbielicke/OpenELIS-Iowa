@@ -33,11 +33,13 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SectionDO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -86,7 +88,7 @@ public class QueryTabUI extends Screen {
                     analysisMethodName;
 
     @UiField
-    protected MultiDropdown<Integer>  projectId, analysisStatusId;
+    protected MultiDropdown<Integer>  projectId, analysisStatusId, analysisSectionId;
 
     @UiField
     protected Dropdown<String>        domain, analysisIsReportable, result, auxData;
@@ -126,7 +128,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(accessionNumberFrom,
                          SampleWebMeta.getAccessionNumberFrom(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberFrom.setValue(getAccessionNumberFrom());
                              }
 
@@ -142,7 +144,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(accessionNumberTo,
                          SampleWebMeta.getAccessionNumberTo(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberTo.setValue(getAccessionNumberTo());
                              }
 
@@ -158,7 +160,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(collectionDateFrom,
                          SampleWebMeta.getCollectionDateFrom(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateFrom.setValue(getCollectionDateFrom());
                              }
 
@@ -174,7 +176,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(collectionDateTo,
                          SampleWebMeta.getCollectionDateTo(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateTo.setValue(getCollectionDateTo());
                              }
 
@@ -190,7 +192,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(receivedDateFrom,
                          SampleWebMeta.getReceivedDateFrom(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateFrom.setValue(getReceivedDateFrom());
                              }
 
@@ -206,7 +208,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(receivedDateTo,
                          SampleWebMeta.getReceivedDateTo(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateTo.setValue(getReceivedDateTo());
                              }
 
@@ -222,7 +224,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(enteredDateFrom,
                          SampleWebMeta.getEnteredDateFrom(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateFrom.setValue(getEnteredDateFrom());
                              }
 
@@ -238,7 +240,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(enteredDateTo,
                          SampleWebMeta.getEnteredDateTo(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateTo.setValue(getEnteredDateTo());
                              }
 
@@ -254,7 +256,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(releasedDateFrom,
                          SampleWebMeta.getReleasedDateFrom(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  releasedDateFrom.setValue(getReleasedDateFrom());
                              }
 
@@ -270,7 +272,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(releasedDateTo,
                          SampleWebMeta.getReleasedDateTo(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  releasedDateTo.setValue(getReleasedDateTo());
                              }
 
@@ -286,7 +288,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(clientReference,
                          SampleWebMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -302,7 +304,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(projectId,
                          SampleWebMeta.getProjectId(),
                          new ScreenHandler<ArrayList<Integer>>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<ArrayList<Integer>> event) {
                                  projectId.setValue(getProjectId());
                              }
 
@@ -318,7 +320,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(reportTo,
                          SampleWebMeta.getSampleOrgOrganizationName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  reportTo.setValue(getSampleOrgOrganizationName());
                              }
 
@@ -332,7 +334,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(domain, SampleWebMeta.getDomain(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 domain.setValue(getDomain());
             }
 
@@ -356,7 +358,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(analysisTestName,
                          SampleWebMeta.getAnalysisTestName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  analysisTestName.setValue(getAnalysisTestName());
                              }
 
@@ -372,7 +374,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(analysisMethodName,
                          SampleWebMeta.getAnalysisMethodName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  analysisMethodName.setValue(getAnalysisMethodName());
                              }
 
@@ -388,7 +390,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(analysisIsReportable,
                          SampleWebMeta.getAnalysisIsReportable(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  analysisIsReportable.setValue(getAnalysisIsReportable());
                              }
 
@@ -404,7 +406,7 @@ public class QueryTabUI extends Screen {
         addScreenHandler(analysisStatusId,
                          SampleWebMeta.getAnalysisStatusId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  analysisStatusId.setValue(getAnalysisStatusId());
                              }
 
@@ -419,8 +421,8 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(analysisCompletedDateFrom,
                          SampleWebMeta.getAnalysisCompletedDateFrom(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateFrom.setValue(getAnalysisCompletedDateFrom());
                              }
 
@@ -435,8 +437,8 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(analysisCompletedDateTo,
                          SampleWebMeta.getAnalysisCompletedDateTo(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateTo.setValue(getAnalysisCompletedDateTo());
                              }
 
@@ -452,8 +454,8 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(analysisReleasedDateFrom,
                          SampleWebMeta.getAnalysisReleasedDateFrom(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateFrom.setValue(getAnalysisReleasedDateFrom());
                              }
 
@@ -468,8 +470,8 @@ public class QueryTabUI extends Screen {
 
         addScreenHandler(analysisReleasedDateTo,
                          SampleWebMeta.getAnalysisReleasedDateTo(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateTo.setValue(getAnalysisReleasedDateTo());
                              }
 
@@ -478,14 +480,30 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? excludeResultOverride : analysisReleasedDateFrom;
+                                 return forward ? analysisSectionId : analysisReleasedDateFrom;
+                             }
+                         });
+        
+        addScreenHandler(analysisSectionId,
+                         SampleWebMeta.getAnalysisSectionId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
+                                 analysisSectionId.setValue(getAnalysisSectionId());
+                             }
+
+                            public void onStateChange(StateChangeEvent event) {
+                                 analysisSectionId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? excludeResultOverride : analysisReleasedDateTo;
                              }
                          });
 
         addScreenHandler(excludeResultOverride,
                          "excludeResultOverride",
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  excludeResultOverride.setValue(getExcludeResultOverride());
                              }
 
@@ -498,12 +516,12 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? result : analysisReleasedDateTo;
+                                 return forward ? result : analysisSectionId;
                              }
                          });
 
         addScreenHandler(result, "results", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 result.setValue(getResult());
             }
 
@@ -521,7 +539,7 @@ public class QueryTabUI extends Screen {
         });
 
         addScreenHandler(auxData, "auxData", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 auxData.setValue(getAuxData());
             }
 
@@ -584,6 +602,14 @@ public class QueryTabUI extends Screen {
         }
 
         analysisStatusId.setModel(model);
+        
+        model = new ArrayList<Item<Integer>>();
+        for (SectionDO s : SectionCache.getList()) {
+            row = new Item<Integer>(s.getId(), s.getName());
+            model.add(row);
+        }
+        
+        analysisSectionId.setModel(model);
 
         stmodel = new ArrayList<Item<String>>();
         stmodel.add(new Item<String>("Y", Messages.get().gen_yes()));
@@ -721,6 +747,7 @@ public class QueryTabUI extends Screen {
         addQueryData(domain, SampleWebMeta.getDomain(), fields);
         addQueryData(analysisTestName, SampleWebMeta.getAnalysisTestName(), fields);
         addQueryData(analysisMethodName, SampleWebMeta.getAnalysisMethodName(), fields);
+        addQueryData(analysisIsReportable, SampleWebMeta.getAnalysisIsReportable(), fields);
         addQueryData(analysisStatusId, SampleWebMeta.getAnalysisStatusId(), fields);
 
         addQueryData(analysisCompletedDateFrom,
@@ -734,8 +761,8 @@ public class QueryTabUI extends Screen {
                      SampleWebMeta.getAnalysisReleasedDate(),
                      QueryData.Type.DATE,
                      fields);
-
-        addQueryData(analysisIsReportable, SampleWebMeta.getAnalysisIsReportable(), fields);
+        
+        addQueryData(analysisSectionId, SampleWebMeta.getAnalysisSectionId(), fields);
 
         return fields;
     }
@@ -951,6 +978,10 @@ public class QueryTabUI extends Screen {
     private Datetime getAnalysisReleasedDateTo() {
         return getDatetime(SampleWebMeta.getAnalysisReleasedDateTo(), analysisReleasedDateTo);
     }
+
+    private ArrayList<Integer> getAnalysisSectionId() {
+        return getSelectedIds(SampleWebMeta.getAnalysisSectionId());
+   }
 
     private String getExcludeResultOverride() {
         if (data == null)

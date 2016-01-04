@@ -91,8 +91,7 @@
                   <ui:text from="{msg.gen_released}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="releasedDateFrom" begin="0" end="4"
-                    width="125px" />
+                  <c:Calendar ui:field="releasedDateFrom" begin="0" end="4" width="125px" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_to}:" />
@@ -136,7 +135,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="235px" bottom="30px">
+    <g:layer top="225px" bottom="35px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>
@@ -179,7 +178,8 @@
                   <ui:text from="{msg.gen_status}:" />
                 </td>
                 <td>
-                  <w:MultiDropdown ui:field="analysisStatusId" field="Integer" width="125px" />
+                  <w:MultiDropdown ui:field="analysisStatusId" field="Integer"
+                    width="125px" />
                 </td>
               </tr>
               <tr>
@@ -212,6 +212,15 @@
                   <c:Calendar ui:field="analysisReleasedDateTo" begin="0" end="4" width="125px" />
                 </td>
               </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_section}:" />
+                </td>
+                <td>
+                  <w:MultiDropdown ui:field="analysisSectionId" field="Integer"
+                    width="151px" />
+                </td>
+              </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
@@ -234,7 +243,6 @@
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
-              
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.dataView_excludeResultOverride}:" />
                 </td>
