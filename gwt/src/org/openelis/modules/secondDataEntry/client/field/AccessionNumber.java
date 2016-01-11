@@ -68,28 +68,27 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
     protected void init() {
         setRowVisible();
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.ACCESSION_NUMBER,
-                                      new ScreenHandler<Integer>() {
-                                          public void onDataChange(DataChangeEvent<Integer> event) {
-                                              clear();
-                                          }
+        key = SampleMeta.ACCESSION_NUMBER;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                clear();
+            }
 
-                                          public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
     }
 
     /**
@@ -105,6 +104,7 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -142,6 +142,7 @@ public class AccessionNumber extends SingleField<TextBox<Integer>> {
         matchImage.setResource(OpenELISResources.INSTANCE.commit());
         copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
         isVerified = true;
+        operation = 2;
     }
 
     /**

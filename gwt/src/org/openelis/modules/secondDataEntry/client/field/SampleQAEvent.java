@@ -95,9 +95,6 @@ public class SampleQAEvent extends MultiField<Table> {
                                       new ScreenHandler<ArrayList<Row>>() {
                                           public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                                               clear();
-                                              editableWidget.setModel(getTableModel());
-                                              setCount(parentScreen.getManager() != null ? parentScreen.getManager().qaEvent.count()
-                                                                                        : 0);
                                           }
 
                                           public void onStateChange(StateChangeEvent event) {
@@ -156,7 +153,7 @@ public class SampleQAEvent extends MultiField<Table> {
 
     public void copyToSample() {
     }
-    
+
     public void valueChanged() {
     }
 
@@ -166,24 +163,47 @@ public class SampleQAEvent extends MultiField<Table> {
      * for it
      */
     protected void verify(int i) {
-        SampleQaEventViewDO sqa;
+        SampleQaEventViewDO data;
 
-        isVerified[i] = "Y".equals(editableWidget.getValueAt(i, 0));
-        if ( !isVerified[i] && parentScreen.getValidation() != null) {
-            sqa = parentScreen.getManager().qaEvent.get(i);
+        if ( !getIsVerified(i) && parentScreen.getValidation() != null) {
+            data = parentScreen.getManager().qaEvent.get(i);
             parentScreen.getValidation()
                         .addException(new Exception(Messages.get()
-                                                            .secondDataEntry_qaEventNotVerified(sqa.getQaEventName())));
+                                                            .secondDataEntry_qaEventNotVerified(data.getQaEventName())));
         }
     }
     
-    protected void refocus(int i) {
+    /**
+     * Returns whether the aux data at the passed index is verified or not
+     */
+    protected boolean getIsVerified(int i) {
+        return "Y".equals(editableWidget.getRowAt(i).getCell(0));
+    }
+
+    /**
+     * Sets all the widgets and class fields to their default values
+     */
+    protected void clear() {
+        SampleManager1 sm;
+
+        editableWidget.setModel(getTableModel());
+        sm = parentScreen.getManager();
+        setCount(sm != null ? sm.qaEvent.count() : 0);
+    }
+    
+    protected Integer getOperation(int i) {
+        return null;
+    }
+
+    protected String getKey(int i) {
+        return parentScreen.getManager().qaEvent.get(i).getQaEventName();
     }
 
     /**
      * Creates and returns the model for the table
      */
     private ArrayList<Row> getTableModel() {
+        Row row;
         SampleQaEventViewDO data;
         SampleManager1 sm;
         ArrayList<Row> model;
@@ -195,7 +215,8 @@ public class SampleQAEvent extends MultiField<Table> {
 
         for (int i = 0; i < sm.qaEvent.count(); i++ ) {
             data = sm.qaEvent.get(i);
-            model.add(new Row("N", data.getQaEventName(), data.getTypeId(), data.getIsBillable()));
+            row = new Row("N", data.getQaEventName(), data.getTypeId(), data.getIsBillable());
+            model.add(row);
         }
 
         return model;

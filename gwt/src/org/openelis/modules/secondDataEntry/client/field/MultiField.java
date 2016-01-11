@@ -27,6 +27,7 @@ package org.openelis.modules.secondDataEntry.client.field;
 
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.modules.secondDataEntry.client.VerificationScreen;
+import org.openelis.ui.common.DataBaseUtil;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Display;
@@ -43,8 +44,7 @@ public abstract class MultiField<T> implements VerificationField<T> {
     protected T                  editableWidget;
     protected Widget             prevTabWidget, nextTabWidget;
     protected ScheduledCommand   focusCommand;
-    protected int                rowIndex, numEdit[];
-    protected boolean            isVerified[];
+    protected int                rowIndex, count;
 
     public MultiField(VerificationScreen parentScreen, TableRowElement tableRowElement,
                       T editableWidget, int rowIndex) {
@@ -71,10 +71,8 @@ public abstract class MultiField<T> implements VerificationField<T> {
      * otherwise
      */
     public boolean getIsVerified() {
-        if (isVerified == null)
-            return true;
-        for (boolean verified : isVerified) {
-            if ( !verified)
+        for (int i = 0; i < count; i++ ) {
+            if ( !getIsVerified(i))
                 return false;
         }
         return true;
@@ -84,29 +82,32 @@ public abstract class MultiField<T> implements VerificationField<T> {
      * Verifies all items in the list
      */
     public void verify() {
-        if (isVerified != null) {
-            for (int i = 0; i < isVerified.length; i++ )
-                verify(i);
+        for (int i = 0; i < count; i++ )
+            verify(i);
+    }
+
+    /**
+     * Returns the text to be added for this field to the event log for this
+     * sample; the text contains the operation performed on any items in the
+     * list and the key for the item
+     */
+    public String getLogText() {
+        Integer op;
+        String itemText, fullText;
+
+        fullText = null;
+        for (int i = 0; i < count; i++ ) {
+            op = getOperation(i);
+            itemText = op != null ? DataBaseUtil.concatWithSeparator(op, "-", getKey(i)) : null;
+            if (itemText != null) {
+                if (fullText == null)
+                    fullText = itemText;
+                else
+                    fullText = DataBaseUtil.concatWithSeparator(fullText, ", ", itemText);
+            }
         }
+        return fullText;
     }
-
-    /**
-     * Sets the count of items in the lists
-     */
-    public void setCount(int count) {
-        numEdit = new int[count];
-        isVerified = new boolean[count];
-    }
-
-    /**
-     * Verifies the item at the passed index
-     */
-    protected abstract void verify(int i);
-
-    /**
-     * Sets the focus back to the item at the passed index
-     */
-    protected abstract void refocus(int i);
 
     /**
      * Makes the field's TableRowElement visible and sets its style based on
@@ -120,10 +121,34 @@ public abstract class MultiField<T> implements VerificationField<T> {
     }
 
     /**
-     * Clears the lists
+     * Sets the count of items in the lists
      */
-    protected void clear() {
-        numEdit = null;
-        isVerified = null;
+    protected void setCount(int count) {
+        this.count = count;
     }
+
+    /**
+     * Verifies the item at the passed index
+     */
+    protected abstract void verify(int i);
+
+    /**
+     * Verifies the item at the passed index
+     */
+    protected abstract boolean getIsVerified(int i);
+
+    /**
+     * Sets all the widgets and class fields to their default values
+     */
+    protected abstract void clear();
+
+    /**
+     * Returns the operation performed on the item at the passed index
+     */
+    protected abstract Integer getOperation(int i);
+
+    /**
+     * Returns the key for the item at the passed index
+     */
+    protected abstract String getKey(int i);
 }

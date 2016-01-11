@@ -42,6 +42,7 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventDO;
@@ -84,6 +85,7 @@ import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.patient.client.PatientLookupUI;
@@ -224,8 +226,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
                     abort, optionsButton, orderLookupButton, emptySearchButton, fieldSearchButton,
-                    unlinkPatientButton, editPatientButton, reportToButton,
-                    billToButton, projectButton;
+                    unlinkPatientButton, editPatientButton, reportToButton, billToButton,
+                    projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -274,7 +276,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEditSample, canEditPatient,
-                    isPatientLocked, isBusy, closeLoginScreen, isAttachmentScreenOpen, revalidate;
+                    isPatientLocked, isBusy, closeLoginScreen, isAttachmentScreenOpen, revalidate,
+                    isFullLogin;
 
     protected ModulePermission                          userPermission;
 
@@ -290,7 +293,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected EOrderLookupUI                            eorderLookup;
 
-    protected TRFAttachmentScreenUI                        trfAttachmentScreen;
+    protected TRFAttachmentScreenUI                     trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -2422,6 +2425,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result;
                     if (isAttachmentScreenOpen)
@@ -2643,7 +2647,30 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * if either a new sample or a quick entered one was fully
+                     * logged in, create an event log to record that
+                     */
+                    if (isFullLogin) {
+                        try {
+                            id = DictionaryCache.getIdBySystemName("log_type_sample_login");
+                            EventLogService.get().add(id,
+                                                      Messages.get().sample_login(),
+                                                      Constants.table().SAMPLE,
+                                                      manager.getSample().getId(),
+                                                      Constants.dictionary().LOG_LEVEL_INFO,
+                                                      null);
+                            isFullLogin = false;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
+                            return;
+                        }
+                    }
                     evaluateEdit();
                     setData();
                     setState(DISPLAY);
@@ -2717,6 +2744,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            isFullLogin = false;
             clearScriptlets();
         } else if (isState(UPDATE)) {
             /*
@@ -2752,6 +2780,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
 
@@ -2760,6 +2789,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
                 };
@@ -2850,8 +2880,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     /**
      * If the checkbox of the menu item "Add With TRF" is checked, opens the
      * data entry attachment screen and executes the query to fetch unattached
-     * attachments for this domain; if the checkbox is unchecked, closes
-     * the attachment screen if it's open.
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
@@ -3876,7 +3906,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         showEOrderLookup(ordId);
     }
 
-    private void showEOrderLookup(String ordId) {
+    private void showEOrderLookup(String pov) {
         ModalWindow modal;
 
         if (eorderLookup == null) {
@@ -3989,7 +4019,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         eorderLookup.setWindow(modal);
         eorderLookup.setState(state);
-        eorderLookup.setPaperOrderValidator(ordId);
+        eorderLookup.setPaperOrderValidator(pov, manager.getSample().getOrderId());
     }
 
     /**

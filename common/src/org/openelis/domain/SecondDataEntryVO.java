@@ -31,26 +31,27 @@ import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class is used to carry the data returned by the query executed on
- * "Second Data Entry" screen; the query returns the accession numbers of not
- * verified and not quick-entry samples along with the users who made any
- * changes to the samples, according to the history; HistoryVO is not used
- * because to get the accession number, its "changes" will have to be parsed and
- * the accession number may not be one of the changed fields
+ * "Second Data Entry" screen; the query returns the accession numbers and
+ * domains of not verified and not quick-entry samples along with the users who
+ * made any changes to the samples, according to the history; HistoryVO is not
+ * used because to get the accession number, its "changes" will have to be
+ * parsed and the accession number may not be one of the changed fields
  */
 public class SecondDataEntryVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected Integer         sampleId, sampleAccessionNumber;
-    protected String          historySystemUserLoginName;
+    protected String          sampleDomain, historySystemUserLoginName;
 
     public SecondDataEntryVO() {
     }
 
-    public SecondDataEntryVO(Integer sampleId, Integer sampleAccessionNumber,
+    public SecondDataEntryVO(Integer sampleId, Integer sampleAccessionNumber, String sampleDomain,
                              String historysystemUserLoginName) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
+        setSampleDomain(sampleDomain);
         setHistorySystemUserLoginName(historysystemUserLoginName);
     }
 
@@ -68,6 +69,14 @@ public class SecondDataEntryVO implements Serializable {
 
     public void setSampleAccessionNumber(Integer sampleAccessionNumber) {
         this.sampleAccessionNumber = sampleAccessionNumber;
+    }
+
+    public String getSampleDomain() {
+        return sampleDomain;
+    }
+
+    public void setSampleDomain(String sampleDomain) {
+        this.sampleDomain = DataBaseUtil.trim(sampleDomain);
     }
 
     public String getHistorysystemUserLoginName() {

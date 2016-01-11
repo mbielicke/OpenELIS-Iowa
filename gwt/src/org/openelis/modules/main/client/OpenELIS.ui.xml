@@ -45,9 +45,7 @@
               </w:Menu>
               <w:Menu label="{msg.sample}" ui:field="sampleMenu">
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"
-                  display="{msg.quickEntry}" />
-                <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
-                  display="{msg.verification_verification}" />
+                  display="{msg.quickEntry}" />                
                 <w:MenuItem description="{msg.sampleTracking_description}" enabled="false" icon="{res.icon.trackingIcon}" ui:field="tracking"
                   display="{msg.sampleTracking_tracking}" />
                 <g:HTML>
@@ -66,7 +64,9 @@
                 <w:MenuItem description="{msg.animalSampleLoginDescription}" enabled="false" ui:field="animalSampleLogin"
                   display="{msg.animalSampleLogin}" />
                 <w:MenuItem description="{msg.ptSampleLoginDescription}" enabled="false" ui:field="ptSampleLogin" display="{msg.ptSampleLogin}" />
-                <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="secondDataEntry" display="{msg.secondDataEntry_secondDataEntry}" />
+                <w:MenuItem description="{msg.verification_description}" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
+                  display="{msg.verification_verification}" />
+                <w:MenuItem description="{msg.secondDataEntry_description}" enabled="false" icon="{res.icon.QCIcon}" ui:field="secondDataEntry" display="{msg.secondDataEntry_secondDataEntry}" />
                 <g:HTML>
                   <hr />
                 </g:HTML>

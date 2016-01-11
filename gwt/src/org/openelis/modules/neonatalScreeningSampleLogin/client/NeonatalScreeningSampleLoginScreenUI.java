@@ -86,6 +86,7 @@ import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.patient.client.PatientLookupUI;
@@ -293,7 +294,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected boolean                                   canEditSample, canEditPatient,
                     isPatientLocked, canEditNextOfKin, isNextOfKinLocked, isBusy,
                     setSelectedAsNextOfKin, closeLoginScreen, isAttachmentScreenOpen, revalidate,
-                    hasDomainScriptlet;
+                    hasDomainScriptlet, isFullLogin;
 
     protected ModulePermission                          userPermission;
 
@@ -3149,6 +3150,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result;
                     setNeonatalNextOfKinRelationId(Constants.dictionary().PATIENT_RELATION_MOTHER);
@@ -3407,7 +3409,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * if either a new sample or a quick entered one was fully
+                     * logged in, create an event log to record that
+                     */
+                    if (isFullLogin) {
+                        try {
+                            id = DictionaryCache.getIdBySystemName("log_type_sample_login");
+                            EventLogService.get().add(id,
+                                                      Messages.get().sample_login(),
+                                                      Constants.table().SAMPLE,
+                                                      manager.getSample().getId(),
+                                                      Constants.dictionary().LOG_LEVEL_INFO,
+                                                      null);
+                            isFullLogin = false;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
+                            return;
+                        }
+                    }
                     evaluateEdit();
                     setData();
                     setState(DISPLAY);
@@ -3491,6 +3516,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            isFullLogin = false;
             clearScriptlets();
         } else if (isState(UPDATE)) {
             /*
@@ -3536,6 +3562,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
 
@@ -3544,6 +3571,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
                 };
@@ -4782,7 +4810,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         showEOrderLookup(ordId);
     }
 
-    private void showEOrderLookup(String ordId) {
+    private void showEOrderLookup(String pov) {
         ModalWindow modal;
 
         if (eorderLookup == null) {
@@ -4895,7 +4923,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         eorderLookup.setWindow(modal);
         eorderLookup.setState(state);
-        eorderLookup.setPaperOrderValidator(ordId);
+        eorderLookup.setPaperOrderValidator(pov, manager.getSample().getOrderId());
     }
 
     /**

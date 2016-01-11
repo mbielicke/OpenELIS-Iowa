@@ -75,28 +75,27 @@ public class SampleProject extends SingleField<AutoComplete> {
     protected void init() {
         setRowVisible();
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.PROJECT_NAME,
-                                      new ScreenHandler<AutoCompleteValue>() {
-                                          public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
-                                              clear();
-                                          }
+        key = SampleMeta.PROJECT_NAME;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<AutoCompleteValue>() {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                clear();
+            }
 
-                                          public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
 
         editableWidget.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
@@ -141,6 +140,7 @@ public class SampleProject extends SingleField<AutoComplete> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -165,6 +165,7 @@ public class SampleProject extends SingleField<AutoComplete> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+            operation = 2;
         }
     }
 

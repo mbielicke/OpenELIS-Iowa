@@ -46,4 +46,6 @@ public interface VerificationField<T> {
     public void valueChanged();
 
     public void verify();
+    
+    public String getLogText();
 }

@@ -16828,6 +16828,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_itemAnalyses();
 
   /**
+   * Translated "Sample Login".
+   * 
+   * @return translated "Sample Login"
+   */
+  @DefaultMessage("Sample Login")
+  @Key("sample.login")
+  String sample_login();
+
+  /**
    * Translated "Accession # {0,number,#0}: The sample must have at least one sample item".
    * 
    * @return translated "Accession # {0,number,#0}: The sample must have at least one sample item"
@@ -18457,6 +18466,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String search();
 
   /**
+   * Translated "aux_{0,number,#0}".
+   * 
+   * @return translated "aux_{0,number,#0}"
+   */
+  @DefaultMessage("aux_{0,number,#0}")
+  @Key("secondDataEntry.auxLogText")
+  String secondDataEntry_auxLogText(Integer arg0);
+
+  /**
+   * Translated "Double entry for sample verification.".
+   * 
+   * @return translated "Double entry for sample verification."
+   */
+  @DefaultMessage("Double entry for sample verification.")
+  @Key("secondDataEntry.description")
+  String secondDataEntry_description();
+
+  /**
    * Translated "This domain has not been implemented yet".
    * 
    * @return translated "This domain has not been implemented yet"
@@ -18484,13 +18511,22 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String secondDataEntry_firstDataEntryHeading();
 
   /**
+   * Translated "Accession # {0,number,#0} : {1} must be the paper order validator of an existing E-Order".
+   * 
+   * @return translated "Accession # {0,number,#0} : {1} must be the paper order validator of an existing E-Order"
+   */
+  @DefaultMessage("Accession # {0,number,#0} : {1} must be the paper order validator of an existing E-Order")
+  @Key("secondDataEntry.invalidPOVException")
+  String secondDataEntry_invalidPOVException(Integer arg0,  String arg1);
+
+  /**
    * Translated "Accession # {0,number,#0} : {1} must be the id of an existing PWS".
    * 
    * @return translated "Accession # {0,number,#0} : {1} must be the id of an existing PWS"
    */
   @DefaultMessage("Accession # {0,number,#0} : {1} must be the id of an existing PWS")
-  @Key("secondDataEntry.invalidPwsException")
-  String secondDataEntry_invalidPwsException(Integer arg0,  String arg1);
+  @Key("secondDataEntry.invalidPWSException")
+  String secondDataEntry_invalidPWSException(Integer arg0,  String arg1);
 
   /**
    * Translated "Loaded with E-Order".
@@ -18520,6 +18556,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String secondDataEntry_mustHaveAnalysesToVerify();
 
   /**
+   * Translated "This patient is locked by {0} until {1}".
+   * 
+   * @return translated "This patient is locked by {0} until {1}"
+   */
+  @DefaultMessage("This patient is locked by {0} until {1}")
+  @Key("secondDataEntry.patientLockException")
+  String secondDataEntry_patientLockException(String arg0,  String arg1);
+
+  /**
    * Translated "QA Event ''{0}'' has not been verified".
    * 
    * @return translated "QA Event ''{0}'' has not been verified"
@@ -18536,6 +18581,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("This sample has been already verified")
   @Key("secondDataEntry.sampleAlreadyVerified")
   String secondDataEntry_sampleAlreadyVerified();
+
+  /**
+   * Translated "Sample Verification".
+   * 
+   * @return translated "Sample Verification"
+   */
+  @DefaultMessage("Sample Verification")
+  @Key("secondDataEntry.sampleVerification")
+  String secondDataEntry_sampleVerification();
 
   /**
    * Translated "Second Data Entry".
@@ -21967,6 +22021,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String verification_closeVerifyWindow();
 
   /**
+   * Translated "Paper verification using barcode.".
+   * 
+   * @return translated "Paper verification using barcode."
+   */
+  @DefaultMessage("Paper verification using barcode.")
+  @Key("verification.description")
+  String verification_description();
+
+  /**
    * Translated "The sample must have at least one analysis assigned.".
    * 
    * @return translated "The sample must have at least one analysis assigned."
@@ -21983,6 +22046,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("2. Repeat the above process for every sample record.")
   @Key("verification.repeatVerifyProcess")
   String verification_repeatVerifyProcess();
+
+  /**
+   * Translated "Sample Paper Verification".
+   * 
+   * @return translated "Sample Paper Verification"
+   */
+  @DefaultMessage("Sample Paper Verification")
+  @Key("verification.samplePaperVerification")
+  String verification_samplePaperVerification();
 
   /**
    * Translated "1. Scan in the barcode for the sample accession number to be verified.".

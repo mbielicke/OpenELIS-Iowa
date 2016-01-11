@@ -59,7 +59,7 @@ public class SecondDataEntryBean {
 
     public ArrayList<SecondDataEntryVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Integer prevSamId, currSamId, accession, userId;
-        String loginName;
+        String domain, loginName;
         Query query;
         QueryBuilderV2 builder;
         SystemUserVO user;
@@ -69,9 +69,8 @@ public class SecondDataEntryBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct " + SampleMeta.getId() + ", " +
-                          SampleMeta.getAccessionNumber() + ", " +
-                          SampleMeta.getHistorySystemUserId());
+        builder.setSelect("distinct " + SampleMeta.ID + ", " + SampleMeta.ACCESSION_NUMBER + ", " +
+                          SampleMeta.DOMAIN + ", " + SampleMeta.HISTORY_SYSTEM_USER_ID);
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
@@ -79,18 +78,16 @@ public class SecondDataEntryBean {
          * fetched samples must be not-verified and not quick-entered anymore
          * i.e. they should have a particular domain
          */
-        builder.addWhere(SampleMeta.getStatusId() + " = " +
-                         Constants.dictionary().SAMPLE_NOT_VERIFIED);
-        builder.addWhere(SampleMeta.getDomain() + " != " + "'" + Constants.domain().QUICKENTRY +
-                         "'");
+        builder.addWhere(SampleMeta.STATUS_ID + " = " + Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        builder.addWhere(SampleMeta.DOMAIN + " != " + "'" + Constants.domain().QUICKENTRY + "'");
 
-        builder.addWhere(SampleMeta.getHistoryReferenceTableId() + " = " + Constants.table().SAMPLE);
+        builder.addWhere(SampleMeta.HISTORY_REFERENCE_TABLE_ID + " = " + Constants.table().SAMPLE);
 
         /*
          * fetch history records where the sample was either added or updated
          */
-        builder.addWhere(SampleMeta.getHistoryActivityId() + " in (" + Constants.audit().ADD +
-                         ", " + Constants.audit().UPDATE + ")");
+        builder.addWhere(SampleMeta.HISTORY_ACTIVITY_ID + " in (" + Constants.audit().ADD + ", " +
+                         Constants.audit().UPDATE + ")");
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -106,10 +103,16 @@ public class SecondDataEntryBean {
         prevSamId = null;
         returnList = new ArrayList<SecondDataEntryVO>();
         data = null;
+        /*
+         * create SecondDataEntryVOs from the fetched data; there's only one VO
+         * for each sample; so if a sample has been added/updated by multiple
+         * users, their login names are combined into one VO
+         */
         for (Object[] o : list) {
             currSamId = (Integer)o[0];
             accession = (Integer)o[1];
-            userId = (Integer)o[2];
+            domain = (String)o[2];
+            userId = (Integer)o[3];
             loginName = null;
             if (userId != null) {
                 user = userCache.getSystemUser(userId);
@@ -118,14 +121,14 @@ public class SecondDataEntryBean {
             }
 
             if ( !currSamId.equals(prevSamId)) {
-                data = new SecondDataEntryVO(currSamId, accession, loginName);
+                data = new SecondDataEntryVO(currSamId, accession, domain, loginName);
                 returnList.add(data);
             } else {
                 data.setHistorySystemUserLoginName(DataBaseUtil.concatWithSeparator(data.getHistorysystemUserLoginName(),
                                                                                     ", ",
                                                                                     loginName));
             }
-            
+
             prevSamId = currSamId;
         }
 

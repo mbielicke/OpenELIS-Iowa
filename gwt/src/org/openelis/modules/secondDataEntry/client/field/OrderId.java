@@ -54,10 +54,10 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * This class manages the widgets used for verifying send-out order id
  */
-public class SendoutOrderId extends SingleField<TextBox<Integer>> {
-    public SendoutOrderId(VerificationScreen parentScreen, TableRowElement tableRowElement,
-                          TextBox<Integer> editableWidget, TextBox<Integer> nonEditableWidget,
-                          Image matchImage, Image copyImage, int rowIndex) {
+public class OrderId extends SingleField<TextBox<Integer>> {
+    public OrderId(VerificationScreen parentScreen, TableRowElement tableRowElement,
+                   TextBox<Integer> editableWidget, TextBox<Integer> nonEditableWidget,
+                   Image matchImage, Image copyImage, int rowIndex) {
         super(parentScreen, tableRowElement, editableWidget, nonEditableWidget, matchImage,
               copyImage, rowIndex);
         init();
@@ -70,28 +70,27 @@ public class SendoutOrderId extends SingleField<TextBox<Integer>> {
     protected void init() {
         setRowVisible();
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.ORDER_ID,
-                                      new ScreenHandler<Integer>() {
-                                          public void onDataChange(DataChangeEvent<Integer> event) {
-                                              clear();
-                                          }
+        key = SampleMeta.ORDER_ID;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                clear();
+            }
 
-                                          public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
     }
 
     /**
@@ -107,6 +106,7 @@ public class SendoutOrderId extends SingleField<TextBox<Integer>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -150,6 +150,7 @@ public class SendoutOrderId extends SingleField<TextBox<Integer>> {
         matchImage.setResource(OpenELISResources.INSTANCE.commit());
         copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
         isVerified = true;
+        operation = 2;
     }
 
     /**

@@ -16,21 +16,26 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:west size="220">
+    <g:west size="190">
       <g:LayoutPanel>
         <g:layer top="0px" bottom="0px" left="0px" right="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="25px">
               <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
-                <t:Column width="80" label="{msg.sample_accessionNum}">
+                <t:Column width="60" label="{msg.sample_accessionNum}">
                   <t:LabelCell>
                     <w:Label field="Integer" />
                   </t:LabelCell>
                 </t:Column>
-                <t:Column width="110" label="{msg.gen_username}">
+                <t:Column width="70" label="{msg.gen_username}">
                   <t:LabelCell>
                     <w:Label field="Integer" />
                   </t:LabelCell>
+                </t:Column>
+                <t:Column width="50" label="{msg.sample_domain}">
+                  <t:DropdownCell>
+                    <w:Dropdown field="String" width="50px" />
+                  </t:DropdownCell>
                 </t:Column>
               </t:Table>
             </g:layer>
@@ -83,8 +88,8 @@
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.gen_username}:" />
                     </td>
-                    <td colspan="3">
-                      <w:TextBox ui:field="historySystemUser" width="165px" field="String" />
+                    <td colspan="5">
+                      <w:TextBox ui:field="historySystemUser" width="125px" field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -94,7 +99,13 @@
                     <td>
                       <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
                     </td>
-                    <td colspan="5">
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_domain}:" />
+                    </td>
+                    <td>
+                      <w:Dropdown ui:field="domain" field="String" width="125px" />
+                    </td>
+                    <td>
                       <w:TextArea ui:field="orderMessage" height="18px" width="231px" />
                     </td>
                   </tr>
@@ -141,6 +152,16 @@
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
+                  <d:NeonatalTabUI ui:field="neonatalTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
                   <d:PTTabUI ui:field="ptTab" />
                 </g:layer>
               </g:LayoutPanel>
@@ -157,7 +178,7 @@
             </w:tab>
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.sample_notes}"  tabVisible="false" />
+                <w:TabWidget text="{msg.sample_notes}" tabVisible="false" />
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>

@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.environmentalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -81,6 +77,7 @@ import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
@@ -220,8 +217,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, reportToButton,
-                    billToButton, projectButton;
+                    abort, optionsButton, orderLookupButton, reportToButton, billToButton,
+                    projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -269,7 +266,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
-                    isAttachmentScreenOpen, hasDomainScriptlet;
+                    isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
 
     protected ModulePermission                          userPermission;
 
@@ -1590,7 +1587,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 billToButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
-        
+
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
@@ -2324,6 +2321,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result;
                     if (isAttachmentScreenOpen)
@@ -2487,7 +2485,30 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * if either a new sample or a quick entered one was fully
+                     * logged in, create an event log to record that
+                     */
+                    if (isFullLogin) {
+                        try {
+                            id = DictionaryCache.getIdBySystemName("log_type_sample_login");
+                            EventLogService.get().add(id,
+                                                      Messages.get().sample_login(),
+                                                      Constants.table().SAMPLE,
+                                                      manager.getSample().getId(),
+                                                      Constants.dictionary().LOG_LEVEL_INFO,
+                                                      null);
+                            isFullLogin = false;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
+                            return;
+                        }
+                    }
                     evaluateEdit();
                     setData();
                     setState(DISPLAY);
@@ -2551,6 +2572,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            isFullLogin = false;
             clearScriptlets();
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
@@ -2576,6 +2598,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
 
@@ -2584,6 +2607,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
                 };
@@ -2674,8 +2698,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     /**
      * If the checkbox of the menu item "Add With TRF" is checked, opens the
      * data entry attachment screen and executes the query to fetch unattached
-     * attachments for this domain; if the checkbox is unchecked, closes
-     * the attachment screen if it's open.
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
@@ -2736,7 +2760,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         screen.window.close();
                     else
                         addWithTRF.setCheck(false);
-                    
+
                     /*
                      * make sure that all detached tabs are closed when the
                      * attachment screen is closed
@@ -3453,7 +3477,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
     }
-    
+
     /**
      * Gets the next attachment reserved for the current user on Attachment
      * screen, if any, and adds it to the sample
@@ -4317,8 +4341,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -4364,7 +4388,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4378,8 +4402,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

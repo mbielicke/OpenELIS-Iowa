@@ -38,6 +38,7 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventDO;
@@ -76,6 +77,7 @@ import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
@@ -257,7 +259,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
-                    isAttachmentScreenOpen;
+                    isAttachmentScreenOpen, isFullLogin;
 
     protected ModulePermission                          userPermission;
 
@@ -1976,6 +1978,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result;
                     if (isAttachmentScreenOpen)
@@ -2139,7 +2142,30 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * if either a new sample or a quick entered one was fully
+                     * logged in, create an event log to record that
+                     */
+                    if (isFullLogin) {
+                        try {
+                            id = DictionaryCache.getIdBySystemName("log_type_sample_login");
+                            EventLogService.get().add(id,
+                                                      Messages.get().sample_login(),
+                                                      Constants.table().SAMPLE,
+                                                      manager.getSample().getId(),
+                                                      Constants.dictionary().LOG_LEVEL_INFO,
+                                                      null);
+                            isFullLogin = false;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
+                            return;
+                        }
+                    }
                     evaluateEdit();
                     setData();
                     setState(DISPLAY);
@@ -2203,6 +2229,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            isFullLogin = false;
             clearScriptlets();
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
@@ -2228,6 +2255,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
 
@@ -2236,6 +2264,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
                 };
