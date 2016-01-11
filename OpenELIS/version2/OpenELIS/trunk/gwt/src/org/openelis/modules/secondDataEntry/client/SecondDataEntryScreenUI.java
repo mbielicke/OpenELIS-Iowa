@@ -30,16 +30,22 @@ import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.PatientDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.domain.SystemVariableDO;
@@ -48,12 +54,16 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
@@ -72,6 +82,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextArea;
@@ -119,22 +130,28 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     protected Calendar                                      receivedDate;
 
     @UiField
+    protected Dropdown<String>                              domain;
+
+    @UiField
     protected TextArea                                      orderMessage;
 
     @UiField
     protected TabLayoutPanel                                tabPanel;
 
     @UiField(provided = true)
-    protected EnvironmentalTabUI                            environmentalTab;
+    protected EnvironmentalTabUI                           environmentalTab;
 
     @UiField(provided = true)
     protected SDWISTabUI                                    sdwisTab;
 
     @UiField(provided = true)
-    protected ClinicalTabUI                                 clinicalTab;
+    protected ClinicalTabUI                                clinicalTab;
 
     @UiField(provided = true)
-    protected PTTabUI                                       ptTab;
+    protected NeonatalTabUI                                 neonatalTab;
+
+    @UiField(provided = true)
+    protected PTTabUI                                      ptTab;
 
     @UiField(provided = true)
     protected NoDomainTabUI                                 noDomainTab;
@@ -146,7 +163,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected SampleManager1                                manager;
 
-    protected SecondDataEntryScreenUI                       screen;
+    protected SecondDataEntryScreenUI                      screen;
 
     protected HashMap<String, Object>                       cache;
 
@@ -163,17 +180,17 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected static int                                    ROWS_PER_PAGE = 23;
 
-    protected boolean                                       allowScanTrf, scanTrfFetchTried;
+    protected boolean                                       allowScanTrf, scanTrfFetched;
 
     protected static final SampleManager1.Load              fetchElements[] = {
                     SampleManager1.Load.QA, SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE},
                     updateElements[] = {SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
-                    SampleManager1.Load.EORDER};
+                    SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
 
     protected enum Tab {
-        ENVIRONMENTAL, SDWIS, CLINICAL, PT, NO_DOMAIN, SAMPLE_NOTES
+        ENVIRONMENTAL, SDWIS, CLINICAL, NEONATAL, PT, NO_DOMAIN, SAMPLE_NOTES
     };
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
@@ -193,6 +210,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         environmentalTab = new EnvironmentalTabUI(this);
         sdwisTab = new SDWISTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
+        neonatalTab = new NeonatalTabUI(this);
         ptTab = new PTTabUI(this);
         noDomainTab = new NoDomainTabUI(this);
         sampleNotesTab = new SampleNotesTabUI(this);
@@ -212,6 +230,10 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        String dom;
+        Item<String> row;
+        ArrayList<Item<String>> model;
+        
         screen = this;
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
@@ -285,7 +307,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
          * screen fields and widgets
          */
         addScreenHandler(accessionNumber,
-                         SampleMeta.getAccessionNumber(),
+                         SampleMeta.ACCESSION_NUMBER,
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
@@ -297,12 +319,12 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? historySystemUser : receivedDate;
+                                 return forward ? historySystemUser : domain;
                              }
                          });
 
         addScreenHandler(historySystemUser,
-                         SampleMeta.getHistorySystemUserId(),
+                         SampleMeta.HISTORY_SYSTEM_USER_ID,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
                                  historySystemUser.setValue(getUsers());
@@ -318,7 +340,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                              }
                          });
 
-        addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<String>() {
+        addScreenHandler(receivedDate, SampleMeta.RECEIVED_DATE, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
                 receivedDate.setValue(getReceivedDate());
             }
@@ -329,7 +351,22 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? accessionNumber : historySystemUser;
+                return forward ? domain : historySystemUser;
+            }
+        });
+        
+        addScreenHandler(domain, SampleMeta.DOMAIN, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                domain.setValue(getDomain());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                domain.setEnabled(isState(QUERY));
+                domain.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : receivedDate;
             }
         });
 
@@ -395,6 +432,23 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
             public void isValid(Validation validation) {
                 if (Constants.domain().CLINICAL.equals(getDomain()))
+                    super.isValid(validation);
+            }
+        });
+
+        addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                if (Constants.domain().NEONATAL.equals(getDomain()))
+                    neonatalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                if (Constants.domain().NEONATAL.equals(getDomain()))
+                    neonatalTab.setState(event.getState());
+            }
+
+            public void isValid(Validation validation) {
+                if (Constants.domain().NEONATAL.equals(getDomain()))
                     super.isValid(validation);
             }
         });
@@ -477,10 +531,10 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                      * the system variable if it was tried to be fetched before
                      * but could not be fetched
                      */
-                    if ( !scanTrfFetchTried) {
+                    if ( !scanTrfFetched) {
                         try {
                             data = SystemVariableService.get()
-                                                        .fetchByExactName("second_ver_with_scanned_trf");
+                                                        .fetchByExactName("ver_with_scanned_trf");
                             allowScanTrf = new Boolean(data.getValue());
                         } catch (NotFoundException e) {
                             // ignore
@@ -489,7 +543,6 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                             logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
                                                                            : "null", e);
                         }
-                        scanTrfFetchTried = true;
                     }
 
                     if (allowScanTrf)
@@ -506,7 +559,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 public void failure(Throwable e) {
                     fetchById(null);
                     Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };
@@ -530,10 +583,11 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                         Window.alert(Messages.get().secondDataEntry_sampleAlreadyVerified());
                         /*
                          * this resets the "busy" counter to 0, which is set to
-                         * 1 when setBusy is called by update; otherwise, when
-                         * abort calls setBusy, the counter will be incremented
-                         * and won't be 0 even when setDone is called; if the
-                         * counter is not 0, the screen will stay locked
+                         * 1 when setBusy() is called by update(); otherwise,
+                         * when abort() calls setBusy(), the counter will be
+                         * incremented and won't be 0 even when setDone() is
+                         * called; if the counter is not 0, the screen will stay
+                         * locked
                          */
                         clearStatus();
 
@@ -571,8 +625,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 }
 
                 public void failure(Throwable e) {
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };
@@ -584,7 +638,31 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         if (updateCall == null) {
             updateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * create an event log to record that the sample was
+                     * verified; if a field was verified using an operation like
+                     * copying from the widget to the sample, the log's text
+                     * would have the meta key of the field and the code for the
+                     * operation
+                     */
+                    try {
+                        id = DictionaryCache.getIdBySystemName("log_type_sample_verification");
+                        EventLogService.get().add(id,
+                                                  Messages.get()
+                                                          .secondDataEntry_sampleVerification(),
+                                                  Constants.table().SAMPLE,
+                                                  manager.getSample().getId(),
+                                                  Constants.dictionary().LOG_LEVEL_INFO,
+                                                  getLogText());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                        return;
+                    }
                     showTabs();
                     setData();
                     setState(DISPLAY);
@@ -603,8 +681,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 }
 
                 public void failure(Throwable e) {
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                 }
             };
@@ -629,8 +707,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     setData();
                     setState(DEFAULT);
                     fireDataChange();
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                     clearStatus();
                     cache = null;
                 }
@@ -699,7 +777,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     for (SecondDataEntryVO entry : result) {
                         row = new Item<Integer>(entry.getSampleId(),
                                                 entry.getSampleAccessionNumber(),
-                                                entry.getHistorysystemUserLoginName());
+                                                entry.getHistorysystemUserLoginName(),
+                                                entry.getSampleDomain());
                         model.add(row);
                     }
                 }
@@ -733,6 +812,31 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
+        
+        model = new ArrayList<Item<String>>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_domain")) {
+            dom = null;
+            if (Constants.dictionary().ENVIRONMENTAL.equals(d.getId()))
+                dom = Constants.domain().ENVIRONMENTAL;
+            else if (Constants.dictionary().PRIVATE_WELL.equals(d.getId()))
+                dom = Constants.domain().PRIVATEWELL;
+            else if (Constants.dictionary().SDWIS.equals(d.getId()))
+                dom = Constants.domain().SDWIS;
+            else if (Constants.dictionary().CLINICAL.equals(d.getId()))
+                dom = Constants.domain().CLINICAL;
+            else if (Constants.dictionary().NEWBORN.equals(d.getId()))
+                dom = Constants.domain().NEONATAL;
+            else if (Constants.dictionary().PT.equals(d.getId()))
+                dom = Constants.domain().PT;
+
+            if (dom != null) {
+                row = new Item<String>(dom, d.getEntry());
+                model.add(row);
+            }
+        }
+
+        domain.setModel(model);
+        ((Dropdown<String>)table.getColumnWidget(2)).setModel(model);
     }
 
     public void setState(State state) {
@@ -782,7 +886,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
         fields = super.getQueryFields();
         for (QueryData field : fields) {
-            if (SampleMeta.getHistorySystemUserId().equals(field.getKey())) {
+            if (SampleMeta.HISTORY_SYSTEM_USER_ID.equals(field.getKey())) {
                 /*
                  * since we cannot join with the security database to link
                  * system user's login name to the query, we need to lookup the
@@ -844,7 +948,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             cache.put(cacheKey, obj);
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
         }
         return (T)obj;
     }
@@ -895,7 +999,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         commit();
     }
 
-    private void commit() {
+    protected void commit() {
         Validation validation;
 
         finishEditing();
@@ -925,7 +1029,77 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     }
 
     protected void commitUpdate() {
+        Integer accession;
+        String prefix, expires;
+        PatientDO data;
+        ValidationErrorsList e1;
+
         setBusy(Messages.get().gen_updating());
+        /*
+         * lock and update patient(s)
+         */
+        if (manager.getSampleClinical() != null) {
+            data = manager.getSampleClinical().getPatient();
+
+            /*
+             * try to lock the patient if its fields were changed; update it if
+             * locking succeeded
+             */
+            if (data.isChanged() || data.getAddress().isChanged()) {
+                try {
+                    PatientService.get().fetchForUpdate(data.getId());
+                } catch (EntityLockedException e) {
+                    expires = new Date(e.getExpires()).toString();
+                    Window.alert(Messages.get()
+                                         .secondDataEntry_patientLockException(e.getUserName(),
+                                                                               expires));
+                    clearStatus();
+                    return;
+                } catch (Exception e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                    return;
+                }
+
+                try {
+                    PatientService.get().validate(data);
+                    data = PatientService.get().update(data);
+                    manager.getSampleClinical().setPatient(data);
+                } catch (ValidationErrorsList e) {
+                    /*
+                     * for display
+                     */
+                    accession = manager.getSample().getAccessionNumber();
+                    if (accession == null)
+                        accession = 0;
+
+                    /*
+                     * new FormErrorExceptions are created to prepend accession
+                     * number to the messages of FormErrorExceptions returned by
+                     * patient validation; other exceptions are shown as is
+                     */
+                    e1 = new ValidationErrorsList();
+                    prefix = Messages.get().sample_accessionPrefix(accession);
+                    for (Exception ex : e.getErrorList()) {
+                        if (ex instanceof FormErrorException)
+                            e1.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
+                                                                                           " ",
+                                                                                           ex.getMessage())));
+                        else
+                            e1.add(ex);
+                    }
+
+                    showErrors(e1);
+                    return;
+                } catch (Exception e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                    return;
+                }
+            }
+        }
         manager.getSample().setStatusId(Constants.dictionary().SAMPLE_LOGGED_IN);
         SampleService1.get().update(manager, true, updateCall);
     }
@@ -936,6 +1110,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     }
 
     protected void abort() {
+        SampleClinicalViewDO data;
+
         finishEditing();
         clearErrors();
         setBusy(Messages.get().gen_cancelChanges());
@@ -948,11 +1124,25 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 fireDataChange();
                 setDone(Messages.get().gen_queryAborted());
             } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
                 Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
                 clearStatus();
             }
         } else if (isState(UPDATE)) {
+            /*
+             * unlock any locked or changed patient
+             */
+            data = manager.getSampleClinical();
+            if (data != null && data.getPatient().isChanged()) {
+                try {
+                    PatientService.get().abortUpdate(data.getPatientId());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                    return;
+                }
+            }
             SampleService1.get().unlock(manager.getSample().getId(), fetchElements, unlockCall);
         }
     }
@@ -964,6 +1154,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         environmentalTab.setData(manager);
         sdwisTab.setData(manager);
         clinicalTab.setData(manager);
+        neonatalTab.setData(manager);
         ptTab.setData(manager);
         sampleNotesTab.setData(manager);
     }
@@ -1009,7 +1200,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
         }
     }
 
@@ -1036,6 +1227,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 tabs.add(Tab.SDWIS);
             else if (Constants.domain().CLINICAL.equals(domain))
                 tabs.add(Tab.CLINICAL);
+            else if (Constants.domain().NEONATAL.equals(domain))
+                tabs.add(Tab.NEONATAL);
             else if (Constants.domain().PT.equals(domain))
                 tabs.add(Tab.PT);
             else
@@ -1102,7 +1295,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             AttachmentUtil.displayTRF(sampleId, name, window);
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
         }
     }
 
@@ -1126,6 +1319,27 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         } else {
             setError(Messages.get().gen_correctErrors());
         }
+    }
+
+    /**
+     * Returns the text for the event log for this sample; the text shows which
+     * operation, e.g. copy from or to the sample, was performed on which field
+     */
+    private String getLogText() {
+        String domain;
+
+        domain = manager.getSample().getDomain();
+        if (Constants.domain().ENVIRONMENTAL.equals(domain))
+            return environmentalTab.getLogText();
+        else if (Constants.domain().SDWIS.equals(domain))
+            return sdwisTab.getLogText();
+        else if (Constants.domain().CLINICAL.equals(domain))
+            return clinicalTab.getLogText();
+        else if (Constants.domain().NEONATAL.equals(domain))
+            return neonatalTab.getLogText();
+        else if (Constants.domain().PT.equals(domain))
+            return ptTab.getLogText();
+        return null;
     }
 
     /**

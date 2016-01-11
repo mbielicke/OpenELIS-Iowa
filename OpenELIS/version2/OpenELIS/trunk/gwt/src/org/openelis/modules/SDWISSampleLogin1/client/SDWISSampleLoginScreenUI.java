@@ -85,6 +85,7 @@ import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
@@ -223,8 +224,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, reportToButton,
-                    billToButton, projectButton;
+                    abort, optionsButton, orderLookupButton, reportToButton, billToButton,
+                    projectButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -272,7 +273,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
-                    isAttachmentScreenOpen, hasDomainScriptlet;
+                    isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
 
     protected ModulePermission                          userPermission;
 
@@ -2231,6 +2232,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result;
                     if (isAttachmentScreenOpen)
@@ -2394,7 +2396,30 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    Integer id;
+
                     manager = result;
+                    /*
+                     * if either a new sample or a quick entered one was fully
+                     * logged in, create an event log to record that
+                     */
+                    if (isFullLogin) {
+                        try {
+                            id = DictionaryCache.getIdBySystemName("log_type_sample_login");
+                            EventLogService.get().add(id,
+                                                      Messages.get().sample_login(),
+                                                      Constants.table().SAMPLE,
+                                                      manager.getSample().getId(),
+                                                      Constants.dictionary().LOG_LEVEL_INFO,
+                                                      null);
+                            isFullLogin = false;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
+                            return;
+                        }
+                    }
                     evaluateEdit();
                     setData();
                     setState(DISPLAY);
@@ -2458,6 +2483,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            isFullLogin = false;
             clearScriptlets();
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
@@ -2483,6 +2509,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
 
@@ -2491,6 +2518,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        isFullLogin = false;
                         clearScriptlets();
                     }
                 };
@@ -3062,8 +3090,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     private void addScriptlets() throws Exception {
         if (scriptletRunner == null)
-            scriptletRunner = new ScriptletRunner<SampleSO>();       
-        
+            scriptletRunner = new ScriptletRunner<SampleSO>();
+
         /*
          * add the scriptlet for the domain, which is the value of this system
          * variable; don't try to look up the system variable again if it's not
@@ -3083,8 +3111,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             /*
              * if the system variable was found, its value must point to an
              * existing dictionary entry; so if an exception is thrown on trying
-             * to look up the dictionary, the user must be informed of it
-             * even if it's a NotFoundException
+             * to look up the dictionary, the user must be informed of it even
+             * if it's a NotFoundException
              */
             if (domainScriptletVariable != null) {
                 try {
@@ -4267,8 +4295,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -4314,7 +4342,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -4328,8 +4356,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

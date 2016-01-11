@@ -56,8 +56,9 @@ import org.openelis.modules.secondDataEntry.client.field.SDWISStateLabId;
 import org.openelis.modules.secondDataEntry.client.field.SampleOrganization;
 import org.openelis.modules.secondDataEntry.client.field.SampleProject;
 import org.openelis.modules.secondDataEntry.client.field.SampleQAEvent;
-import org.openelis.modules.secondDataEntry.client.field.SendoutOrderId;
+import org.openelis.modules.secondDataEntry.client.field.OrderId;
 import org.openelis.modules.secondDataEntry.client.field.VerificationField;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.ShortcutHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -87,10 +88,10 @@ public class SDWISTabUI extends VerificationScreen {
     interface SDWISTabUiBinder extends UiBinder<Widget, SDWISTabUI> {
     };
 
-    private static SDWISTabUiBinder                     uiBinder = GWT.create(SDWISTabUiBinder.class);
+    private static SDWISTabUiBinder              uiBinder = GWT.create(SDWISTabUiBinder.class);
 
     @UiField
-    protected TableRowElement                           verSDWISAccessionNumber, verSDWISOrderId,
+    protected TableRowElement                    verSDWISAccessionNumber, verSDWISOrderId,
                     verSDWISCollectionDate, verSDWISCollectionTime, verSDWISReceivedDate,
                     verSDWISClientReference, verSDWISPWSNumber0, verSDWISStateLabId,
                     verSDWISFacilityId, verSDWISSampleTypeId, verSDWISSampleCategoryId,
@@ -99,12 +100,12 @@ public class SDWISTabUI extends VerificationScreen {
                     verSDWISAuxData;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, accessionNumber1, orderId,
+    protected TextBox<Integer>                   accessionNumber, accessionNumber1, orderId,
                     orderId1, sdwisStateLabId, sdwisStateLabId1, sdwisPriority, sdwisPriority1;
 
     @UiField
-    protected Image                                     accessionNumberIM, accessionNumberIC,
-                    orderIdIM, orderIdIC, collectionDateIM, collectionDateIC, collectionTimeIM,
+    protected Image                              accessionNumberIM, accessionNumberIC, orderIdIM,
+                    orderIdIC, collectionDateIM, collectionDateIC, collectionTimeIM,
                     collectionTimeIC, receivedDateIM, receivedDateIC, clientReferenceIM,
                     clientReferenceIC, sdwisPWSNumber0IM, sdwisPWSNumber0IC, sdwisStateLabIdIM,
                     sdwisStateLabIdIC, sdwisFacilityIdIM, sdwisFacilityIdIC, sdwisSampleTypeIdIM,
@@ -115,46 +116,48 @@ public class SDWISTabUI extends VerificationScreen {
                     projectNameIC;
 
     @UiField
-    protected Calendar                                  collectionDate, collectionDate1,
-                    collectionTime, collectionTime1, receivedDate, receivedDate1;
+    protected Calendar                           collectionDate, collectionDate1, collectionTime,
+                    collectionTime1, receivedDate, receivedDate1;
 
     @UiField
-    protected TextBox<String>                           clientReference, clientReference1,
+    protected TextBox<String>                    clientReference, clientReference1,
                     sdwisPWSNumber0, sdwisPWSNumber01, sdwisFacilityId, sdwisFacilityId1,
                     sdwisSamplePointId, sdwisSamplePointId1, sdwisLocation, sdwisLocation1,
                     sdwisCollector, sdwisCollector1;
 
     @UiField
-    protected Dropdown<Integer>                         sdwisSampleTypeId, sdwisSampleTypeId1,
+    protected Dropdown<Integer>                  sdwisSampleTypeId, sdwisSampleTypeId1,
                     sdwisSampleCategoryId, sdwisSampleCategoryId1;
 
     @UiField
-    protected AutoComplete                              reportToName, reportToName1, billToName,
+    protected AutoComplete                       reportToName, reportToName1, billToName,
                     billToName1, projectName, projectName1;
 
     @UiField
-    protected TextArea                                  reportToDetails, reportToDetails1,
-                    billToDetails, billToDetails1;
+    protected TextArea                           reportToDetails, reportToDetails1, billToDetails,
+                    billToDetails1;
 
     @UiField
-    protected Table                                     sampleQATable, auxDataTable;
+    protected Table                              sampleQATable, auxDataTable;
 
-    protected SampleManager1                            manager;
+    protected SampleManager1                     manager;
 
-    protected Screen                                    parentScreen;
+    protected Screen                             parentScreen;
 
-    protected EventBus                                  parentBus;
+    protected EventBus                           parentBus;
 
-    protected Focusable                                 firstFocusWidget;
+    protected Focusable                          firstFocusWidget;
 
-    protected HashMap<String, VerificationField>        fields;
+    protected HashMap<String, VerificationField> fields;
 
-    protected boolean                                   isInitialized;
+    protected boolean                            isInitialized;
 
-    protected Validation                                validation;
+    protected Validation                         validation;
 
-    protected static final String                       REPORT_TO = "report_to",
-                    BILL_TO = "bill_to", AUX_DATA = "auxData", SAMPLE_QA_EVENTS = "sampleQAEvents";
+    protected String                             logText;
+
+    protected static final String                REPORT_TO = "report_to", BILL_TO = "bill_to",
+                    AUX_DATA = "auxData", SAMPLE_QA_EVENTS = "sampleQAEvents";
 
     protected enum Operation {
         COPY_FROM_SAMPLE, COPY_TO_SAMPLE, VALUE_CHANGED
@@ -214,7 +217,7 @@ public class SDWISTabUI extends VerificationScreen {
         i = -1;
         fields = new HashMap<String, VerificationField>();
         tabs = new ArrayList<VerificationField>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("2nd_ver_sdwis_fields")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("ver_sdwis_fields")) {
             if ("N".equals(d.getIsActive()))
                 continue;
             switch (d.getSystemName()) {
@@ -230,13 +233,13 @@ public class SDWISTabUI extends VerificationScreen {
                     tabs.add(field);
                     break;
                 case "ver_sdwis_order_id":
-                    field = new SendoutOrderId(this,
-                                               verSDWISOrderId,
-                                               orderId,
-                                               orderId1,
-                                               orderIdIM,
-                                               orderIdIC,
-                                               ++i);
+                    field = new OrderId(this,
+                                        verSDWISOrderId,
+                                        orderId,
+                                        orderId1,
+                                        orderIdIM,
+                                        orderIdIC,
+                                        ++i);
                     fields.put(SampleMeta.ORDER_ID, field);
                     tabs.add(field);
                     break;
@@ -501,7 +504,8 @@ public class SDWISTabUI extends VerificationScreen {
     }
 
     public Validation validate() {
-        boolean verified;
+        boolean isVerified;
+        String fieldText;
 
         validation = super.validate();
 
@@ -510,16 +514,29 @@ public class SDWISTabUI extends VerificationScreen {
         /*
          * verify all fields; show an error if some fields are not verified
          */
-        verified = true;
+        isVerified = true;
+        logText = null;
         for (VerificationField field : fields.values()) {
             if ( !field.getIsVerified()) {
                 field.verify();
-                if (verified)
-                    verified = field.getIsVerified();
+                if (isVerified)
+                    isVerified = field.getIsVerified();
+            }
+            /*
+             * create the text for the event log for this sample; the text would
+             * show which operation e.g. copy from or to the sample was
+             * performed on which field
+             */
+            fieldText = field.getLogText();
+            if (fieldText != null) {
+                if (logText == null)
+                    logText = fieldText;
+                else
+                    logText = DataBaseUtil.concatWithSeparator(logText, ", ", fieldText);
             }
         }
 
-        if ( !verified) {
+        if ( !isVerified) {
             validation.setStatus(Validation.Status.ERRORS);
             validation.addException(new Exception(Messages.get().secondDataEntry_verifyAllFields()));
         }
@@ -527,24 +544,28 @@ public class SDWISTabUI extends VerificationScreen {
         return validation;
     }
 
-    @Override
     public SampleManager1 getManager() {
         return manager;
     }
 
-    @Override
     public WindowInt getWindow() {
         return window;
     }
 
-    @Override
     public CacheProvider getCacheProvider() {
         return (CacheProvider)parentScreen;
     }
 
-    @Override
     public Validation getValidation() {
         return validation;
+    }
+
+    /**
+     * Returns the text for the event log for this sample; the text shows which
+     * operation, e.g. copy from or to the sample, was performed on which field
+     */
+    public String getLogText() {
+        return logText;
     }
 
     /**

@@ -11,4 +11,7 @@ public interface EventLogServiceIntAsync {
 
     void query(Query query, AsyncCallback<ArrayList<EventLogDO>> callback);
 
+    void add(Integer typeId, String source, Integer referenceTableId, Integer referenceId,
+             Integer levelId, String text, AsyncCallback<EventLogDO> callback);
+
 }

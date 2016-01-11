@@ -69,29 +69,27 @@ public class SDWISSampleCategoryId extends SingleField<Dropdown<Integer>> {
         ArrayList<Item<Integer>> model;
 
         setRowVisible();
+        key = SampleMeta.SDWIS_SAMPLE_CATEGORY_ID;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                clear();
+            }
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.SDWIS_SAMPLE_CATEGORY_ID,
-                                      new ScreenHandler<Integer>() {
-                                          public void onDataChange(DataChangeEvent<Integer> event) {
-                                              clear();
-                                          }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
-
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("sdwis_sample_category")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -116,6 +114,7 @@ public class SDWISSampleCategoryId extends SingleField<Dropdown<Integer>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -135,6 +134,7 @@ public class SDWISSampleCategoryId extends SingleField<Dropdown<Integer>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+            operation = 2;
         }
     }
 

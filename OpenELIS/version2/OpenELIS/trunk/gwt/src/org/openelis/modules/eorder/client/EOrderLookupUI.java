@@ -79,6 +79,8 @@ public abstract class EOrderLookupUI extends Screen {
 
     protected EOrderDO                  selectedEOrder;
 
+    protected Integer                   eorderId;
+
     public EOrderLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -173,7 +175,7 @@ public abstract class EOrderLookupUI extends Screen {
             return;
         }
         /*
-         * convert the string entered by the user to the database's format 
+         * convert the string entered by the user to the database's format
          */
         util = new QueryFieldUtil();
         try {
@@ -184,23 +186,27 @@ public abstract class EOrderLookupUI extends Screen {
             logger.log(Level.SEVERE, e.getMessage(), e);
             return;
         }
-        
-        setBusy(Messages.get().gen_querying());
-        EOrderService.get().fetchByPaperOrderValidator(pov, new AsyncCallback<ArrayList<EOrderDO>>() {
-            public void onSuccess(ArrayList<EOrderDO> list) {
-                setQueryResult(list);
-            }
 
-            public void onFailure(Throwable error) {
-                setQueryResult(null);
-                if (error instanceof NotFoundException) {
-                    setDone(Messages.get().gen_noRecordsFound());
-                } else {
-                    Window.alert("Error: EOrderLookup call query failed; "+error.getMessage());
-                    setError(Messages.get().gen_queryFailed());
-                }
-            }
-        });
+        setBusy(Messages.get().gen_querying());
+        EOrderService.get().fetchByPaperOrderValidator(pov,
+                                                       new AsyncCallback<ArrayList<EOrderDO>>() {
+                                                           public void onSuccess(ArrayList<EOrderDO> list) {
+                                                               setQueryResult(list);
+                                                           }
+
+                                                           public void onFailure(Throwable error) {
+                                                               setQueryResult(null);
+                                                               if (error instanceof NotFoundException) {
+                                                                   setDone(Messages.get()
+                                                                                   .gen_noRecordsFound());
+                                                               } else {
+                                                                   Window.alert("Error: EOrderLookup call query failed; " +
+                                                                                error.getMessage());
+                                                                   setError(Messages.get()
+                                                                                    .gen_queryFailed());
+                                                               }
+                                                           }
+                                                       });
     }
 
     private void setQueryResult(ArrayList<EOrderDO> list) {
@@ -211,14 +217,15 @@ public abstract class EOrderLookupUI extends Screen {
         if (list == null || list.size() == 0) {
             setDone(Messages.get().gen_noRecordsFound());
         } else {
-            for (EOrderDO eorderRow : list) {
-                row = new Item<Integer>(4);
-                row.setKey(eorderRow.getId());
-                row.setCell(0, eorderRow.getId());
-                row.setCell(1, eorderRow.getEnteredDate());
-                row.setCell(2, eorderRow.getPaperOrderValidator());
-                row.setCell(3, eorderRow.getDescription());
-                row.setData(eorderRow);
+            for (EOrderDO data : list) {
+                row = new Item<Integer>(5);
+                row.setKey(data.getId());
+                row.setCell(0, data.getId().equals(eorderId) ? "Y" : "N");
+                row.setCell(1, data.getId());
+                row.setCell(2, data.getEnteredDate());
+                row.setCell(3, data.getPaperOrderValidator());
+                row.setCell(4, data.getDescription());
+                row.setData(data);
                 model.add(row);
             }
 
@@ -266,7 +273,8 @@ public abstract class EOrderLookupUI extends Screen {
         cancel();
     }
 
-    public void setPaperOrderValidator(String pov) {
+    public void setPaperOrderValidator(String pov, Integer eorderId) {
+        this.eorderId = eorderId;
         paperOrderValidator.setText(pov);
         executeQuery(pov);
     }

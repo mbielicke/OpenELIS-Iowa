@@ -1,10 +1,7 @@
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -909,7 +906,7 @@ public class SampleTabUI extends Screen {
         }
     }
 
-    private void showEOrderLookup(String ordId) {
+    private void showEOrderLookup(String pov) {
         ModalWindow modal;
 
         if (eorderLookup == null) {
@@ -932,7 +929,7 @@ public class SampleTabUI extends Screen {
 
         eorderLookup.setWindow(modal);
         eorderLookup.setState(state);
-        eorderLookup.setPaperOrderValidator(ordId);
+        eorderLookup.setPaperOrderValidator(pov, manager.getSample().getOrderId());
     }
 
     /*

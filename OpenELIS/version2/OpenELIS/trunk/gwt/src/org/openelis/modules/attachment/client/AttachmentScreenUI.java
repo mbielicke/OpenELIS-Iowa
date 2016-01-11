@@ -42,7 +42,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
-import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
@@ -934,7 +933,7 @@ public class AttachmentScreenUI extends Screen {
          * current nodes
          */
         for (AttachmentManager am : ams) {
-            node = new AttachmentNode(6);
+            node = new Node(6);
             loadAttachment(node, am);
             if (reloadTree)
                 root.add(node);
@@ -951,7 +950,7 @@ public class AttachmentScreenUI extends Screen {
                  * it won't have the blank icon and so the alignment of the text
                  * won't be like the other nodes at the top level
                  */
-                node = new AttachmentNode(1);
+                node = new Node(1);
                 node.setCell(0, Messages.get().gen_clickForMore());
                 node.setType(CLICK_FOR_MORE_LEAF);
                 root.add(node);
@@ -974,7 +973,7 @@ public class AttachmentScreenUI extends Screen {
     private void loadAttachment(Node anode, AttachmentManager am) {
         int i;
         AttachmentDO data;
-        AttachmentNode inode;
+        Node inode;
 
         data = am.getAttachment();
         /*
@@ -995,7 +994,7 @@ public class AttachmentScreenUI extends Screen {
          * at the top level
          */
         for (i = 0; i < am.item.count(); i++ ) {
-            inode = new AttachmentNode(1);
+            inode = new Node(1);
             inode.setCell(0, am.item.get(i).getReferenceDescription());
             inode.setType(ATTACHMENT_ITEM_LEAF);
             anode.add(inode);
@@ -1028,36 +1027,5 @@ public class AttachmentScreenUI extends Screen {
 
         tree.refreshNode(node);
         tree.selectNodeAt(node);
-    }
-
-    /**
-     * This class allows changing the image shown on the node for attachment
-     * depending upon the various operations being performed for that attachment
-     * e.g. locked by other or attached etc.
-     */
-    private static class AttachmentNode extends Node {
-        enum Status {
-            LOCKED_BY_OTHER, LOCKED_BY_SELF, ATTACHED, UNATTACHED
-        }
-
-        Status status;
-
-        AttachmentNode(int columns) {
-            super(columns);
-            status = Status.UNATTACHED;
-        }
-
-        public String getImage() {
-            switch (status) {
-                case LOCKED_BY_OTHER:
-                    return OpenELISResources.INSTANCE.icon().lockedByOtherIcon();
-                case LOCKED_BY_SELF:
-                    return OpenELISResources.INSTANCE.icon().lockedBySelfIcon();
-                case ATTACHED:
-                    return OpenELISResources.INSTANCE.icon().attachedIcon();
-                default:
-                    return OpenELISResources.INSTANCE.icon().blankIcon();
-            }
-        }
     }
 }

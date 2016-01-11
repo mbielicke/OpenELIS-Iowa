@@ -61,28 +61,27 @@ public class SDWISLocation extends SingleField<TextBox<String>> {
     protected void init() {
         setRowVisible();
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.SDWIS_LOCATION,
-                                      new ScreenHandler<String>() {
-                                          public void onDataChange(DataChangeEvent<String> event) {
-                                              clear();
-                                          }
+        key = SampleMeta.SDWIS_LOCATION;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                clear();
+            }
 
-                                          public void onValueChange(ValueChangeEvent<String> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
     }
 
     /**
@@ -98,6 +97,7 @@ public class SDWISLocation extends SingleField<TextBox<String>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -117,6 +117,7 @@ public class SDWISLocation extends SingleField<TextBox<String>> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+            operation = 2;
         }
     }
 

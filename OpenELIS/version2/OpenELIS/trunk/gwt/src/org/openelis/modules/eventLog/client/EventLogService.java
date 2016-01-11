@@ -42,6 +42,20 @@ public class EventLogService implements EventLogServiceInt, EventLogServiceIntAs
         service.query(query, callback);
         return callback.getResult();
     }
-    
-    
+
+    @Override
+    public void add(Integer typeId, String source, Integer referenceTableId, Integer referenceId,
+                    Integer levelId, String text, AsyncCallback<EventLogDO> callback) {
+        service.add(typeId, source, referenceTableId, referenceId, levelId, text, callback);
+    }
+
+    @Override
+    public EventLogDO add(Integer typeId, String source, Integer referenceTableId,
+                          Integer referenceId, Integer levelId, String text) throws Exception {
+        Callback<EventLogDO> callback;
+        
+        callback = new Callback<EventLogDO>();
+        service.add(typeId, source, referenceTableId, referenceId, levelId, text, callback);
+        return callback.getResult();
+    }
 }

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
@@ -108,9 +109,6 @@ public class AuxData extends MultiField<Table> {
                                       new ScreenHandler<ArrayList<Row>>() {
                                           public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                                               clear();
-                                              editableWidget.setModel(getTableModel());
-                                              setCount(parentScreen.getManager() != null ? parentScreen.getManager().auxData.count()
-                                                                                        : 0);
                                           }
 
                                           public void onStateChange(StateChangeEvent event) {
@@ -178,6 +176,7 @@ public class AuxData extends MultiField<Table> {
     public void copyFromSample() {
         int r;
         Value userVal, manVal;
+        VerificationData vd;
 
         r = editableWidget.getEditingRow();
         if (r < 0)
@@ -190,7 +189,8 @@ public class AuxData extends MultiField<Table> {
          */
         userVal = (Value)editableWidget.getValueAt(r, 1);
         manVal = (Value)editableWidget.getValueAt(r, 4);
-        if (numEdit[r] > 1 && DataBaseUtil.isDifferent(userVal, manVal)) {
+        vd = editableWidget.getRowAt(r).getData();
+        if (vd.numEdit > 1 && DataBaseUtil.isDifferent(userVal, manVal)) {
             editableWidget.setValueAt(r, 1, manVal);
             editableWidget.setValueAt(r, 2, OpenELISResources.INSTANCE.icon().CommitButtonImage());
             editableWidget.setValueAt(r, 3, OpenELISResources.INSTANCE.icon().arrowLeftImage());
@@ -199,7 +199,8 @@ public class AuxData extends MultiField<Table> {
              * focus when setValueAt is called
              */
             editableWidget.startEditing(r, 1);
-            isVerified[r] = true;
+            vd.isVerified = true;
+            vd.operation = 1;
         }
     }
 
@@ -212,6 +213,7 @@ public class AuxData extends MultiField<Table> {
         AuxFieldGroupManager agm;
         ResultFormatter rf;
         Value userVal, manVal;
+        VerificationData vd;
 
         r = editableWidget.getEditingRow();
         if (r < 0)
@@ -228,7 +230,8 @@ public class AuxData extends MultiField<Table> {
         userVal = (Value)editableWidget.getValueAt(r, 1);
         manVal = (Value)editableWidget.getValueAt(r, 4);
         data = parentScreen.getManager().auxData.get(r);
-        if (numEdit[r] > 1 && DataBaseUtil.isDifferent(userVal, manVal)) {
+        vd = editableWidget.getRowAt(r).getData();
+        if (vd.numEdit > 1 && DataBaseUtil.isDifferent(userVal, manVal)) {
             try {
                 agm = parentScreen.getCacheProvider().get(data.getAuxFieldGroupId(),
                                                           AuxFieldGroupManager.class);
@@ -249,7 +252,8 @@ public class AuxData extends MultiField<Table> {
              * when setValueAt is called
              */
             editableWidget.startEditing(r, 1);
-            isVerified[r] = true;
+            vd.isVerified = true;
+            vd.operation = 2;
         }
     }
 
@@ -289,29 +293,33 @@ public class AuxData extends MultiField<Table> {
         editableWidget.setValueAt(i, 2, match ? OpenELISResources.INSTANCE.icon()
                                                                           .CommitButtonImage()
                                              : OpenELISResources.INSTANCE.icon().AbortButtonImage());
-        isVerified[i] = match;
+        ((VerificationData)editableWidget.getRowAt(i).getData()).isVerified = match;
     }
 
     /**
-     * Sets the focus to the editable cell in the row at the passed index
+     * Returns true if the aux data at the passed index is verified;
      */
-    protected void refocus(int i) {
-        /*
-         * "row" is a class-level variable because if it's a simple local
-         * variable it won't be in the scope of the ScheduledCommand below; it
-         * can't be final either because then its value in the command won't
-         * change after the command has been created
-         */
-        row = i;
-        if (focusCommand == null) {
-            focusCommand = new ScheduledCommand() {
-                @Override
-                public void execute() {
-                    editableWidget.startEditing(row, 1);
-                }
-            };
-        }
-        Scheduler.get().scheduleDeferred(focusCommand);
+    protected boolean getIsVerified(int i) {
+        return ((VerificationData)editableWidget.getRowAt(i).getData()).isVerified;
+    }
+
+    /**
+     * Sets all the widgets and class fields to their default values
+     */
+    protected void clear() {
+        SampleManager1 sm;
+
+        editableWidget.setModel(getTableModel());
+        sm = parentScreen.getManager();
+        setCount(sm != null ? sm.auxData.count() : 0);
+    }
+
+    protected Integer getOperation(int i) {
+        return ((VerificationData)editableWidget.getRowAt(i).getData()).operation;
+    }
+
+    protected String getKey(int i) {
+        return Messages.get().secondDataEntry_auxLogText(parentScreen.getManager().auxData.get(i).getId());
     }
 
     /**
@@ -335,6 +343,7 @@ public class AuxData extends MultiField<Table> {
                           null,
                           null,
                           new ResultCell.Value(null, null));
+            row.setData(new VerificationData());
             model.add(row);
         }
 
@@ -421,29 +430,31 @@ public class AuxData extends MultiField<Table> {
     private void valueChanged(int r, boolean isForced) {
         Value value;
         AuxDataViewDO data;
+        VerificationData vd;
 
         if (r < 0)
             return;
         data = parentScreen.getManager().auxData.get(r);
+        vd = editableWidget.getRowAt(r).getData();
 
         /*
          * increment the number of times the value for this aux data has been
          * changed
          */
-        numEdit[r]++ ;
+        vd.numEdit++ ;
 
         /*
          * if there's no match and the value has been changed by the user more
          * than once, show the value in the manager to the user
          */
         verify(r);
-        if ( !isVerified[r]) {
+        if ( !vd.isVerified) {
             /*
              * blank the icon for the direction of copy because the current
              * value was not copied to or from the manager
              */
             editableWidget.setValueAt(r, 3, OpenELISResources.INSTANCE.icon().blankIcon());
-            if (numEdit[r] > 1) {
+            if (vd.numEdit > 1) {
                 if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
                     value = new ResultCell.Value(null, data.getValue());
                 else
@@ -459,7 +470,40 @@ public class AuxData extends MultiField<Table> {
          * didn't have focus when this method was called or it lost focus when
          * the icon for match/no match was set in verify()
          */
-        if ( !isVerified[r] || isForced)
+        if ( !vd.isVerified || isForced)
             refocus(r);
+    }
+
+    /**
+     * Sets the focus to the editable cell in the row at the passed index
+     */
+    private void refocus(int i) {
+        /*
+         * "row" is a class-level variable because if it's a simple local
+         * variable it won't be in the scope of the ScheduledCommand below; it
+         * can't be final either because then its value in the command won't
+         * change after the command has been created
+         */
+        row = i;
+        if (focusCommand == null) {
+            focusCommand = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    editableWidget.startEditing(row, 1);
+                }
+            };
+        }
+        Scheduler.get().scheduleDeferred(focusCommand);
+    }
+
+    /**
+     * This class is used to keep track of the data related to verifcation for
+     * each analyte in the table e.g. the number of times its value has been
+     * edited, whether the value is verified etc.
+     */
+    private class VerificationData {
+        int     numEdit;
+        boolean isVerified;
+        Integer operation;
     }
 }

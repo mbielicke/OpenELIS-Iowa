@@ -25,8 +25,10 @@
  */
 package org.openelis.modules.secondDataEntry.client.field;
 
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.modules.secondDataEntry.client.VerificationScreen;
+import org.openelis.ui.common.DataBaseUtil;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -48,10 +50,12 @@ public abstract class SingleField<T> implements VerificationField<T> {
     protected ScheduledCommand   focusCommand;
     protected int                rowIndex, numEdit;
     protected boolean            isVerified;
+    protected Integer            operation;
+    protected String             key;
 
     public SingleField(VerificationScreen parentScreen, TableRowElement tableRowElement,
-                             T editableWidget, T nonEditableWidget, Image matchImage,
-                             Image copyImage, int rowIndex) {
+                       T editableWidget, T nonEditableWidget, Image matchImage, Image copyImage,
+                       int rowIndex) {
         this.parentScreen = parentScreen;
         this.tableRowElement = tableRowElement;
         this.editableWidget = editableWidget;
@@ -77,13 +81,10 @@ public abstract class SingleField<T> implements VerificationField<T> {
         return isVerified;
     }
 
-    public abstract void copyFromSample();
-
-    public abstract void copyToSample();
-
-    public abstract void verify();
-
-    protected abstract void init();
+    public String getLogText() {
+        return operation != null ? DataBaseUtil.concatWithSeparator(operation, "-", key)
+                                    : null;
+    }
 
     /**
      * Makes the field's TableRowElement visible and sets its style based on
@@ -92,12 +93,14 @@ public abstract class SingleField<T> implements VerificationField<T> {
     protected void setRowVisible() {
         tableRowElement.getStyle().setDisplay(Display.TABLE_ROW);
         if (rowIndex % 2 == 0)
-            tableRowElement.setClassName(OpenELISResources.INSTANCE.style().WidgetTableAlternateRow());
+            tableRowElement.setClassName(OpenELISResources.INSTANCE.style()
+                                                                   .WidgetTableAlternateRow());
     }
-    
+
     protected void clear() {
         numEdit = 0;
         isVerified = false;
+        operation = null;
     }
 
     /**

@@ -30,12 +30,14 @@ import static org.openelis.ui.screen.State.*;
 
 import java.util.logging.Level;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
@@ -92,10 +94,10 @@ public class VerificationScreenUI extends Screen {
         fireDataChange();
 
         /*
-         * the following is used instead of a ScheduledCommand to make sure
-         * that the focus gets set after the widget gets attached to the DOM,
-         * which ScheduledCommand doesn't do, as it executes after the creation
-         * of the widget, which doesn't mean that the widget is attached
+         * the following is used instead of a ScheduledCommand to make sure that
+         * the focus gets set after the widget gets attached to the DOM, which
+         * ScheduledCommand doesn't do, as it executes after the creation of the
+         * widget, which doesn't mean that the widget is attached
          */
         Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
             @Override
@@ -122,7 +124,7 @@ public class VerificationScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 barcode.setEnabled(isState(DEFAULT));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return barcode;
             }
@@ -149,6 +151,7 @@ public class VerificationScreenUI extends Screen {
 
     private void verifySample(String code) {
         int i;
+        Integer id;
         SampleManager1 sm;
         SampleItemViewDO item;
 
@@ -205,6 +208,23 @@ public class VerificationScreenUI extends Screen {
             sm.getSample().setStatusId(Constants.dictionary().SAMPLE_LOGGED_IN);
             try {
                 SampleService1.get().update(sm, false);
+                /*
+                 * create an event log to record that the sample was verified
+                 */
+                try {
+                    id = DictionaryCache.getIdBySystemName("log_type_sample_verification");
+                    EventLogService.get().add(id,
+                                              Messages.get().verification_samplePaperVerification(),
+                                              Constants.table().SAMPLE,
+                                              sm.getSample().getId(),
+                                              Constants.dictionary().LOG_LEVEL_INFO,
+                                              null);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                    return;
+                }
                 setDone(Messages.get().gen_updatingComplete());
             } catch (ValidationErrorsList e) {
                 if (e.hasErrors()) {

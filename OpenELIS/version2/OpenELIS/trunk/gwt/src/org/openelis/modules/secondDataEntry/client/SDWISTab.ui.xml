@@ -480,7 +480,7 @@
                 <ui:text from="{msg.aux_data}:" />
               </td>
               <td colspan="5">
-                <g:LayoutPanel height="250px" width="540px">
+                <g:LayoutPanel height="250px" width="560px">
                   <g:layer top="0px" bottom="0px">
                     <t:Table ui:field="auxDataTable" header="true"
                       styleName="{res.table.ScreenTableWithSides}"

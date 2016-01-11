@@ -83,21 +83,17 @@ public class SampleOrganization extends SingleField<AutoComplete> {
      * adds handlers to the widgets in the row
      */
     protected void init() {
-        String key;
-
         setRowVisible();
 
         /*
          * set the key in the handler according to the type
          */
-        key = null;
         if (Constants.dictionary().ORG_REPORT_TO.equals(type))
             key = "reportTo";
         else if (Constants.dictionary().ORG_BILL_TO.equals(type))
             key = "billTo";
         else if (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(type))
             key = "birthHospital";
-
         parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 clear();
@@ -127,7 +123,7 @@ public class SampleOrganization extends SingleField<AutoComplete> {
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
 
-                parentScreen.getWindow().setBusy();
+                parentScreen.setBusy();
                 try {
                     list = OrganizationService1Impl.INSTANCE.fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
@@ -146,7 +142,7 @@ public class SampleOrganization extends SingleField<AutoComplete> {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
-                parentScreen.getWindow().clearStatus();
+                parentScreen.clearStatus();
             }
         });
     }
@@ -160,9 +156,6 @@ public class SampleOrganization extends SingleField<AutoComplete> {
         String sorgName;
         SampleOrganizationViewDO sorg;
 
-        /*
-         * copy value from the manager to the editable widget
-         */
         orgId = editableWidget.getValue() != null ? editableWidget.getValue().getId() : null;
         sorg = getSampleOrganization();
         sorgId = sorg != null ? sorg.getOrganizationId() : null;
@@ -173,6 +166,7 @@ public class SampleOrganization extends SingleField<AutoComplete> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -185,9 +179,6 @@ public class SampleOrganization extends SingleField<AutoComplete> {
         OrganizationDO org;
         SampleOrganizationViewDO sorg;
 
-        /*
-         * copy value from the editable widget to the manager
-         */
         org = editableWidget.getValue() != null ? (OrganizationDO)editableWidget.getValue()
                                                                                 .getData() : null;
         orgId = org != null ? org.getId() : null;
@@ -201,6 +192,7 @@ public class SampleOrganization extends SingleField<AutoComplete> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+            operation = 2;
         }
     }
 

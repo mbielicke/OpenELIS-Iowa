@@ -62,28 +62,27 @@ public class ReceivedDate extends SingleField<Calendar> {
     protected void init() {
         setRowVisible();
 
-        parentScreen.addScreenHandler(editableWidget,
-                                      SampleMeta.RECEIVED_DATE,
-                                      new ScreenHandler<Integer>() {
-                                          public void onDataChange(DataChangeEvent<Integer> event) {
-                                              clear();
-                                          }
+        key = SampleMeta.RECEIVED_DATE;
+        parentScreen.addScreenHandler(editableWidget, key, new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                clear();
+            }
 
-                                          public void onValueChange(ValueChangeEvent<Integer> event) {
-                                              valueChanged();
-                                              parentScreen.setTabFocusLostWidget(null);
-                                          }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                valueChanged();
+                parentScreen.setTabFocusLostWidget(null);
+            }
 
-                                          public void onStateChange(StateChangeEvent event) {
-                                              editableWidget.setEnabled(parentScreen.isState(UPDATE));
-                                              nonEditableWidget.setEnabled(false);
-                                          }
+            public void onStateChange(StateChangeEvent event) {
+                editableWidget.setEnabled(parentScreen.isState(UPDATE));
+                nonEditableWidget.setEnabled(false);
+            }
 
-                                          public Widget onTab(boolean forward) {
-                                              parentScreen.setTabFocusLostWidget(editableWidget);
-                                              return forward ? nextTabWidget : prevTabWidget;
-                                          }
-                                      });
+            public Widget onTab(boolean forward) {
+                parentScreen.setTabFocusLostWidget(editableWidget);
+                return forward ? nextTabWidget : prevTabWidget;
+            }
+        });
     }
 
     /**
@@ -99,6 +98,7 @@ public class ReceivedDate extends SingleField<Calendar> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
+            operation = 1;
         }
     }
 
@@ -118,6 +118,7 @@ public class ReceivedDate extends SingleField<Calendar> {
             matchImage.setResource(OpenELISResources.INSTANCE.commit());
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
+            operation = 2;
         }
     }
 

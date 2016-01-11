@@ -240,7 +240,7 @@
                       </td>
                       <td>
                         <w:Dropdown ui:field="patientGender" width="75px" dropHeight="100px"
-                          field="String" />
+                          field="Integer" />
                       </td>
                     </tr>
                     <tr>
@@ -249,7 +249,7 @@
                       </td>
                       <td colspan="3">
                         <w:Dropdown ui:field="patientRace" width="233px" dropWidth="235px"
-                          field="String" />
+                          field="Integer" />
                       </td>
                     </tr>
                     <tr>
@@ -257,7 +257,7 @@
                         <ui:text from="{msg.patient_ethnicity}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="patientEthnicity" width="100px" field="String"
+                        <w:Dropdown ui:field="patientEthnicity" width="100px" field="Integer"
                           dropHeight="120px" />
                       </td>
                     </tr>
