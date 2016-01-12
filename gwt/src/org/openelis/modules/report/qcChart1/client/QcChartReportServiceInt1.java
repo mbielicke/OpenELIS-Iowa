@@ -12,8 +12,6 @@ public interface QcChartReportServiceInt1 extends XsrfProtectedService {
 
     QcChartReportViewVO fetchData(Query query) throws Exception;
 
-    QcChartReportViewVO recompute(QcChartReportViewVO data) throws Exception;
-
     ReportStatus runReport(QcChartReportViewVO data) throws Exception;
 
 }

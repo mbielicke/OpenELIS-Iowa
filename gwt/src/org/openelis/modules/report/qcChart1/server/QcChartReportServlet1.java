@@ -51,14 +51,6 @@ public class QcChartReportServlet1 extends RemoteServlet implements QcChartRepor
         }
     }
     
-    public QcChartReportViewVO recompute(QcChartReportViewVO data) throws Exception {
-        try {        
-            return qcChartReport.recompute(data);  
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-    
     public ReportStatus runReport(QcChartReportViewVO data) throws Exception { 
         ReportStatus st;
         

@@ -34,11 +34,6 @@ public class QcChartReportService1 implements QcChartReportServiceInt1, QcChartR
     }
 
     @Override
-    public void recompute(QcChartReportViewVO data, AsyncCallback<QcChartReportViewVO> callback) {
-        service.recompute(data, callback);
-    }
-
-    @Override
     public void runReport(QcChartReportViewVO data, AsyncCallback<ReportStatus> callback) {
         service.runReport(data, callback);
     }
@@ -49,15 +44,6 @@ public class QcChartReportService1 implements QcChartReportServiceInt1, QcChartR
         
         callback = new Callback<QcChartReportViewVO>();
         service.fetchData(query, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public QcChartReportViewVO recompute(QcChartReportViewVO data) throws Exception {
-        Callback<QcChartReportViewVO> callback;
-        
-        callback = new Callback<QcChartReportViewVO>();
-        service.recompute(data, callback);
         return callback.getResult();
     }
 
