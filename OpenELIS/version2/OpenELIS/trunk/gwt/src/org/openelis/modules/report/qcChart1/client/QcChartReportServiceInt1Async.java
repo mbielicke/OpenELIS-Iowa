@@ -10,8 +10,6 @@ public interface QcChartReportServiceInt1Async {
 
     void fetchData(Query query, AsyncCallback<QcChartReportViewVO> callback);
 
-    void recompute(QcChartReportViewVO data, AsyncCallback<QcChartReportViewVO> callback);
-
     void runReport(QcChartReportViewVO data, AsyncCallback<ReportStatus> callback);
 
 }

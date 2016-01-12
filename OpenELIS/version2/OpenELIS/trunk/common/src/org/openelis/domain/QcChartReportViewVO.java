@@ -34,7 +34,7 @@ import org.openelis.ui.common.Datetime;
 public class QcChartReportViewVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public enum ReportType {EXCEL, SPIKE_CONC, SPIKE_PERCENT};
+    public enum ReportType {SPIKE_CONC, SPIKE_PERCENT};
     
     protected ReportType reportType;
     protected Integer plotType, qcType;
