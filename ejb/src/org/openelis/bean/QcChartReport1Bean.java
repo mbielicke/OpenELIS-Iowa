@@ -25,8 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.io.FileInputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,21 +46,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
-
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFName;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterViewDO;
@@ -68,11 +68,10 @@ import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcChartReportViewVO;
-import org.openelis.domain.QcChartReportViewVO.ReportType;
 import org.openelis.domain.QcChartReportViewVO.Value;
 import org.openelis.domain.QcChartResultVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.meta.QcChartMeta;
-import org.openelis.report.qcchart.QcChartDataSource;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
@@ -80,7 +79,6 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
-import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -97,24 +95,35 @@ public class QcChartReport1Bean {
 
     @EJB
     private CategoryCacheBean                           categoryCache;
+    
+    @EJB
+    private DictionaryCacheBean                         dictionaryCache;
 
     @EJB
     private AnalyteParameterBean                        analyteParameter;
+    
+    @EJB
+    private SystemVariableBean                          systemVariable;
 
-    protected HashMap<String, ArrayList<String>>        formatHeaderMap;
-    protected HashMap<String, HashMap<String, Integer>> formatColumnMap;
+    protected ArrayList<Integer>                        maxChars;
+    protected ArrayList<DictionaryDO>                   qcColumns;
+    protected ArrayList<String>                         worksheetHeaders, worksheetHeaderNames;
+    protected CellStyle                                 baseStyle, headerStyle;
+    protected Font                                      baseFont, headerFont;
+    protected HashMap<String, HashMap<String, Integer>> worksheetColumnMap;
 
     private static final Logger                         log = Logger.getLogger("openelis");
 
     public QcChartReportViewVO fetchData(ArrayList<QueryData> paramList) throws Exception {
-        Integer plot, qc, number, location;
-        String qcName;
-        Date startDate, endDate;
-        QcChartReportViewVO.Value vo;
-        QcChartReportViewVO data;
-        ArrayList<Value> qcList;
         ArrayList<QcChartResultVO> resultList;
+        ArrayList<Value> qcList;
+        Date startDate, endDate;
+        DictionaryDO qcTypeDO;
         HashMap<String, QueryData> param;
+        Integer plot, qc, number, location;
+        QcChartReportViewVO data;
+        String qcName;
+        Value vo;
 
         param = ReportUtil.getMapParameter(paramList);
 
@@ -148,110 +157,41 @@ public class QcChartReport1Bean {
         }
 
         try {
-            formatColumnMap = new HashMap<String, HashMap<String, Integer>>();
+            qcTypeDO = dictionaryCache.getById(qc);
+            qcColumns = categoryCache.getBySystemName(qcTypeDO.getSystemName()).getDictionaryList();
+
+            worksheetColumnMap = new HashMap<String, HashMap<String, Integer>>();
             data = new QcChartReportViewVO();
             qcList = new ArrayList<Value>();
 
             Collections.sort(resultList, new ResultComparator());
             for (QcChartResultVO result : resultList) {
                 vo = getCommonFields(result);
-                if (DataBaseUtil.isSame(Constants.dictionary().QC_SPIKE, qc)) {
-                    if ("wf_rad1".equals(result.getWorksheetFormat())) {
-                        vo = getQCSpikePercent(result, vo);
-                        data.setReportType(ReportType.SPIKE_PERCENT);
-                    } else {
-                        vo = getQCSpikeConc(result, vo);
-                        data.setReportType(ReportType.SPIKE_CONC);
-                    }
-                } else {
-                    data.setReportType(ReportType.EXCEL);
-                }
-    
+                vo = loadScreenValues(vo, qcTypeDO.getSystemName(), result.getWorksheetFormat());
                 if (vo != null)
                     qcList.add(vo);
             }
         } finally {
-            formatColumnMap = null;
+            qcColumns = null;
+            worksheetColumnMap = null;
         }
 
         data.setQcList(qcList);
         data.setPlotType(plot);
         data.setQcType(qc);
+        data.setQcName(qcName);
         return data;
-    }
-
-    public QcChartReportViewVO recompute(QcChartReportViewVO dataPoints) throws Exception {
-        String analyteName;
-        QcChartReportViewVO vo;
-        ArrayList<Value> list, qcList;
-        QcChartReportViewVO voList;
-        HashMap<String, QcChartReportViewVO> analyteMap;
-
-        qcList = dataPoints.getQcList();
-        analyteMap = new HashMap<String, QcChartReportViewVO>();
-        list = null;
-        for (Value data : qcList) {
-            if (data.getPlotValue() == null || "N".equals(data.getIsPlot())) {
-                data.setMean(null);
-                data.setMeanRecovery(null);
-                data.setLCL(null);
-                data.setUCL(null);
-                data.setLWL(null);
-                data.setUWL(null);
-                data.setSd(null);
-                continue;
-            }
-
-            // for each new analyte create a new entry in map.
-            analyteName = data.getAnalyteName();
-            voList = analyteMap.get(analyteName);
-            if (voList == null) {
-                list = new ArrayList<Value>();
-                voList = new QcChartReportViewVO();
-                voList.setReportType(dataPoints.getReportType());
-                voList.setQcList(list);
-                analyteMap.put(analyteName, voList);
-            } else {
-                list = voList.getQcList();
-            }
-            list.add(data);
-        }
-
-        /*
-         * Compute values for each analyte
-         */
-        for (Entry<String, QcChartReportViewVO> entry : analyteMap.entrySet())
-            if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_DYNAMIC,
-                                    dataPoints.getPlotType()))
-                calculateDynamicStatistics(entry.getValue());
-            else if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_FIXED,
-                                         dataPoints.getPlotType()))
-                calculateStaticStatistics(entry.getValue());
-        vo = new QcChartReportViewVO();
-        vo.setQcList(qcList);
-        vo.setPlotType(dataPoints.getPlotType());
-        vo.setQcType(dataPoints.getQcType());
-        vo.setReportType(dataPoints.getReportType());
-        vo.setQcName(dataPoints.getQcName());
-        return vo;
     }
 
     public ReportStatus runReport(QcChartReportViewVO dataPoints) throws Exception {
         ArrayList<Value> list;
-        HashMap<String, Object> jparam;
-        JasperPrint jprint;
-        JasperReport jreport;
+        DictionaryDO qcTypeDO;
+        FileInputStream in;
+        HSSFWorkbook wb;
+        Integer plotType;
         Path path;
-        QcChartDataSource ds;
-        QcChartReportViewVO result;
         ReportStatus status;
-        String qcName, userName;
-        URL url;
-        XSSFWorkbook wb;
-
-        result = recompute(dataPoints);
-
-        qcName = result.getQcName();
+        String qcName, qcType;
 
         /*
          * push status into session so we can query it while the report is
@@ -259,51 +199,47 @@ public class QcChartReport1Bean {
          */
         status = new ReportStatus();
         session.setAttribute("qcChartReport", status);
-        list = result.getQcList();
 
+        list = dataPoints.getQcList();
         if (list.size() > 1)
             Collections.sort(list, new ValueComparator());
-        ds = new QcChartDataSource();
-        ds.setValues(list);
 
-        url = null;
+        plotType = dataPoints.getPlotType();
+        if (Constants.dictionary().CHART_TYPE_FIXED.equals(plotType))
+            calculateStaticStatistics(dataPoints);
+        
+        qcName = dataPoints.getQcName();
         wb = null;
         try {
             status.setMessage("Initializing report");
             session.setAttribute("qcChartReport", status);
-            if ((ReportType.SPIKE_CONC).equals(result.getReportType()))
-                url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikeConc.jasper");
-            else if ((ReportType.SPIKE_PERCENT).equals(result.getReportType()))
-                url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
+
+            qcTypeDO = dictionaryCache.getById(dataPoints.getQcType());
+            qcType = qcTypeDO.getEntry();
+            qcColumns = categoryCache.getBySystemName(qcTypeDO.getSystemName()).getDictionaryList();
+            
+            if (qcColumns != null && qcColumns.size() > 0) {
+                in = new FileInputStream(getChartTemplateFileName(qcType));
+                wb = new HSSFWorkbook(in);
+            } else {
+                wb = new HSSFWorkbook();
+            }
 
             status.setMessage(Messages.get().report_outputReport()).setPercentComplete(20);
             session.setAttribute("qcChartReport", status);
             
-            if (url != null) {
-                userName = User.getName(ctx);
-    
-                jparam = new HashMap<String, Object>();
-                jparam.put("LOGNAME", userName);
-                jparam.put("QCNAME", qcName);
-                jparam.put("USER_NAME", userName);
-    
-                jreport = (JasperReport)JRLoader.loadObject(url);
-                jprint = JasperFillManager.fillReport(jreport, jparam, ds);
-                path = export(jprint, "upload_stream_directory");
-            } else {
-                wb = getWorkbook(list, status);
-                for (XSSFSheet sheet : wb)
-                    setTitleCell(sheet, wb, qcName);
-                path = export(wb, "upload_stream_directory");
-            }
+            fillWorkbook(wb, list, qcName, qcType, qcTypeDO.getSystemName(), plotType, status);
+            path = export(wb, "upload_stream_directory");
 
             status.setPercentComplete(100)
                   .setMessage(path.getFileName().toString())
                   .setPath(path.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage(), e);
             throw e;
+        } finally {
+            qcColumns = null;
         }
         return status;
     }
@@ -311,11 +247,11 @@ public class QcChartReport1Bean {
     /*
      * Copies common fields to the data VO for plotting
      */
-    protected QcChartReportViewVO.Value getCommonFields(QcChartResultVO result) throws Exception {
+    protected Value getCommonFields(QcChartResultVO result) throws Exception {
         int i;
-        QcChartReportViewVO.Value vo;
+        Value vo;
 
-        vo = new QcChartReportViewVO.Value();
+        vo = new Value();
         vo.setIsPlot("Y");
         vo.setAccessionNumber(result.getAccessionNumber());
         vo.setLotNumber(result.getLotNumber());
@@ -336,87 +272,83 @@ public class QcChartReport1Bean {
      * Depending on the worksheet format, the data is recovered from different
      * fields and computed/stored in plotValue.
      */
-    protected QcChartReportViewVO.Value getQCSpikeConc(QcChartResultVO result,
-                                                       QcChartReportViewVO.Value value) throws Exception {
-
-        String worksheetFormat;
-
-        worksheetFormat = result.getWorksheetFormat();
-        value.setValue1(getValue(worksheetFormat, "expected_value", result));
-        value.setValue2(getValue(worksheetFormat, "percent_recovery", result));
-        try {
-            value.setPlotValue(Double.parseDouble(getValue(worksheetFormat,
-                                                           "final_value",
-                                                           result)));
-        } catch (Exception e) {
-            value.setPlotValue(null);
-            value.setIsPlot("N");
-        }
-        if (value.getPlotValue() == null)
-            value = null;
-
-        return value;
-    }
-
-    protected QcChartReportViewVO.Value getQCSpikePercent(QcChartResultVO result,
-                                                          QcChartReportViewVO.Value value) throws Exception {
-        Double plotValue;
-        String value1, value2;
-        String worksheetFormat;
-
-        plotValue = null;
-        worksheetFormat = result.getWorksheetFormat();
-
-        value1 = getValue(worksheetFormat, "final_value", result);
-        value2 = getValue(worksheetFormat, "expected_value", result);
-        if (value1 != null && value2 != null) {
-            try {
-                plotValue = Double.parseDouble(value1) / Double.parseDouble(value2) * 100;
-            } catch (Exception e) {
-                value.setPlotValue(null);
-                value.setIsPlot("N");
+    protected Value loadScreenValues(Value value, String qcFormat, String worksheetFormat) throws Exception {
+        if (qcColumns == null || qcColumns.size() == 0)
+            return value;
+        
+        for (DictionaryDO dict : qcColumns) {
+            if (!DataBaseUtil.isEmpty(dict.getCode())) {
+                switch (dict.getCode()) {
+                    case "Value1":
+                        value.setValue1(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value));
+                        break;
+                        
+                    case "Value2":
+                        value.setValue2(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value));
+                        break;
+                        
+                    case "PlotValue":
+                        try {
+                            value.setPlotValue(Double.parseDouble(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value)));
+                        } catch (Exception e) {
+                            value.setPlotValue(null);
+                            value.setIsPlot("N");
+                        }
+                        break;
+                }
             }
-            value.setValue1(value1);
-            value.setValue2(value2);
-            value.setPlotValue(plotValue);
-        } else {
-            // discard vo's that don't have values.
-            value = null;
         }
 
         return value;
     }
 
-    /*
-     * Retrieves values from columns of the worksheet depending on the
-     * appropriate worksheet format and the column name.
-     */
-    protected String getValue(String worksheetFormat, String columnName, QcChartResultVO result) throws Exception {
-        int i;
-        ArrayList<DictionaryDO> list;
-        CategoryCacheVO vo;
+    protected String getValue(String qcFormat, String worksheetFormat, String columnName, Value data) throws Exception {
         HashMap<String, Integer> columnMap;
         Integer column;
         String value;
-
-        columnMap = formatColumnMap.get(worksheetFormat);
-        if (columnMap == null) {
-            vo = categoryCache.getBySystemName(worksheetFormat);
-            list = vo.getDictionaryList();
-            columnMap = new HashMap<String, Integer>();
-            for (i = 0; i < list.size(); i++)
-                columnMap.put(list.get(i).getSystemName(), i);
-            formatColumnMap.put(worksheetFormat, columnMap);
-        }
         
         value = null;
-        column = columnMap.get(worksheetFormat + "_" + columnName);
+        
+        columnMap = worksheetColumnMap.get(worksheetFormat);
+        if (columnMap == null)
+            columnMap = loadWorksheetFormat(worksheetFormat);
+        
+        if (qcFormat != null)
+            column = columnMap.get(worksheetFormat + "_" + columnName.substring(qcFormat.length() + 1));
+        else
+            column = columnMap.get(columnName);
+        
         if (column != null)
-            value = result.getValueAt(column);
-
+            value = data.getValueAt(column);
+        
         return value;
     }
 
+    protected HashMap<String, Integer> loadWorksheetFormat(String worksheetFormat) throws Exception {
+        int i;
+        ArrayList<DictionaryDO> list;
+        CategoryCacheVO vo;
+        DictionaryDO column;
+        HashMap<String, Integer> columnMap;
+
+        vo = categoryCache.getBySystemName(worksheetFormat);
+        list = vo.getDictionaryList();
+        columnMap = new HashMap<String, Integer>();
+        for (i = 0; i < list.size(); i++) {
+            column = list.get(i);
+            columnMap.put(column.getSystemName(), i);
+            if (worksheetHeaders != null && worksheetHeaderNames != null) {
+                if (!worksheetHeaders.contains(column.getEntry())) {
+                    worksheetHeaders.add(column.getEntry());
+                    worksheetHeaderNames.add(column.getSystemName());
+                }
+            }
+        }
+        worksheetColumnMap.put(worksheetFormat, columnMap);
+
+        return columnMap;
+    }
+    
     @SuppressWarnings("unchecked")
     private ArrayList<QcChartResultVO> fetchByDate(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
         Query query;
@@ -487,86 +419,48 @@ public class QcChartReport1Bean {
         }
     }
 
-    private void calculateDynamicStatistics(QcChartReportViewVO list) throws Exception {
-        int i, numValue;
-        Double mean, meanRecovery, sd, diff, sqDiffSum, sum, recovery, uWL, uCL, lWL, lCL;
-        Value value;
-        ArrayList<Value> qcList;
-
-        qcList = list.getQcList();
-
-        numValue = qcList.size();
-        sum = 0.0;
-        recovery = 0.0;
-        for (i = 0; i < numValue; i++ )
-            sum += qcList.get(i).getPlotValue();
-
-        if (QcChartReportViewVO.ReportType.SPIKE_CONC.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++ ) {
-                if (qcList.get(i).getValue2() != null)
-                    recovery += Double.valueOf(qcList.get(i).getValue2());
-            }
-        } else if (QcChartReportViewVO.ReportType.SPIKE_PERCENT.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++ )
-                recovery += qcList.get(i).getPlotValue();
-        }
-
-        mean = sum / numValue;
-        meanRecovery = recovery / numValue;
-        sqDiffSum = 0.0;
-        if (numValue > 1) {
-            for (i = 0; i < numValue; i++ ) {
-                diff = qcList.get(i).getPlotValue() - mean;
-                sqDiffSum += diff * diff;
-            }
-            sd = Math.sqrt(sqDiffSum / (numValue - 1));
-            uWL = mean + 2 * sd;
-            uCL = mean + 3 * sd;
-            lWL = mean - 2 * sd;
-            lCL = mean - 3 * sd;
-        } else {
-            sd = null;
-            uWL = mean;
-            uCL = mean;
-            lWL = mean;
-            lCL = mean;
-        }
-        for (i = 0; i < numValue; i++ ) {
-            value = qcList.get(i);
-            value.setMean(mean);
-            value.setMeanRecovery(meanRecovery);
-            value.setUWL(uWL);
-            value.setUCL(uCL);
-            value.setLWL(lWL);
-            value.setLCL(lCL);
-            value.setSd(sd);
-        }
-    }
-    
-    private XSSFWorkbook getWorkbook(ArrayList<Value> values, ReportStatus status) throws Exception {
-        int i, colIndex, rowIndex, valueIndex;
-        ArrayList<Integer> maxChars;
-        ArrayList<String> headers, formatHeaders;
-        Cell cell;
-        HashMap<String, Integer> analyteColumnMap;
+    private HSSFWorkbook fillWorkbook(HSSFWorkbook wb, ArrayList<Value> values,
+                                      String qcName, String qcType, String qcFormat,
+                                      Integer plotType, ReportStatus status) throws Exception {
+        int rowIndex, sheetIndex, valueIndex;
+        HSSFSheet sheet;
         Row row;
         String lastAnalyte, lastFormat;
-        XSSFSheet sheet;
-        XSSFWorkbook wb;
         
-        analyteColumnMap = new HashMap<String, Integer>();
-        formatHeaders = null;
-        headers = new ArrayList<String>();
         lastAnalyte = "___";
         lastFormat = "___";
-        maxChars = new ArrayList<Integer>();
-        rowIndex = 32;
         sheet = null;
+        sheetIndex = 1;
         valueIndex = 0;
-        wb = new XSSFWorkbook();
 
         try {
-            formatHeaderMap = new HashMap<String, ArrayList<String>>();
+            baseFont = wb.createFont();
+            baseFont.setFontName("Arial");
+            baseFont.setFontHeightInPoints((short)8);
+            baseStyle = wb.createCellStyle();
+            baseStyle.setFont(baseFont);
+
+            headerFont = wb.createFont();
+            headerFont.setColor(IndexedColors.WHITE.getIndex());
+            headerFont.setFontName("Arial");
+            headerFont.setFontHeightInPoints((short)8);
+            headerStyle = wb.createCellStyle();
+            headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
+            headerStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+            headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
+            headerStyle.setFont(headerFont);
+
+            maxChars = new ArrayList<Integer>();
+            worksheetColumnMap = new HashMap<String, HashMap<String, Integer>>();
+            worksheetHeaders = new ArrayList<String>();
+            worksheetHeaderNames = new ArrayList<String>();
+
+            if (qcColumns != null && !qcColumns.isEmpty())
+                rowIndex = 32;
+            else
+                rowIndex = 3;
+
             for (Value value : values) {
                 valueIndex++;
                 
@@ -574,80 +468,243 @@ public class QcChartReport1Bean {
                     continue;
                 
                 if (!lastAnalyte.equals(value.getAnalyteName())) {
-                    if (!"___".equals(lastAnalyte))
-                        finishSheet(sheet, wb, maxChars, headers, analyteColumnMap);
-    
-                    sheet = wb.createSheet(value.getAnalyteName());
+                    if (!"___".equals(lastAnalyte)) {
+                        while (rowIndex < sheet.getLastRowNum()) {
+                            sheet.removeRow(sheet.getRow(rowIndex));
+                            rowIndex++;
+                        }
+                        finishSheet(sheet, wb, qcName, qcType, lastAnalyte);
+                    }
+                    sheet = wb.getSheet("Sheet"+(sheetIndex++));
+                    if (sheet == null)
+                        sheet = wb.createSheet();
                     lastAnalyte = value.getAnalyteName();
-                    rowIndex = 32;
+                    if (qcColumns != null && !qcColumns.isEmpty())
+                        rowIndex = 32;
+                    else
+                        rowIndex = 3;
                     lastFormat = "___";
+                    
+                    if (Constants.dictionary().CHART_TYPE_FIXED.equals(plotType))
+                        setStatisticCells(wb, sheet, value);
                 }
                 
                 if (!lastFormat.equals(value.getWorksheetFormat())) {
                     lastFormat = value.getWorksheetFormat();
-                    formatHeaders = loadHeaders(headers, analyteColumnMap, lastFormat);    
+                    if (qcColumns == null || qcColumns.isEmpty())
+                        loadWorksheetFormat(lastFormat);    
                 }
                 
                 row = sheet.createRow(rowIndex++);
-                /*
-                 * fill the passed row's cells for all columns except the ones for
-                 * result values
-                 */
-                setBaseCells(value, row, maxChars);
-                
-                for (i = 0; i < formatHeaders.size(); i++) {
-                    colIndex = analyteColumnMap.get(formatHeaders.get(i));
-                    cell = row.createCell(colIndex);
-                    setCellValue(cell, value.getValueAt(i));
-                    setMaxChars(cell, maxChars);
-                }
+                setBaseCells(value, row);
+                setResultCells(value, row, qcFormat, lastFormat);
     
                 status.setPercentComplete(70 * (valueIndex / values.size()) + 20);
                 session.setAttribute("qcChartReport", status);
             }
             
-            finishSheet(sheet, wb, maxChars, headers, analyteColumnMap);
+            finishSheet(sheet, wb, qcName, qcType, lastAnalyte);
+            
+            while (sheetIndex < wb.getNumberOfSheets())
+                wb.removeSheetAt(sheetIndex);
         } finally {
-            formatHeaderMap = null;
+            baseFont = null;
+            baseStyle = null;
+            headerFont = null;
+            headerStyle = null;
+            maxChars = null;
+            worksheetColumnMap = null;
+            worksheetHeaders = null;
+            worksheetHeaderNames = null;
         }
         
         return wb;
     }
     
-    /**
-     * Loads the list of header labels for the sheet based on the specified worksheet
-     * format.  If the passed list is empty, we first add the static headers.
-     * 
-     * @param headers
-     *        the list that will be loaded with the headers for the sheet
-     * @param analyteColumnMap
-     *        the map of column names to indices for the current sheet
-     * @param format
-     *        the name of the worksheet format from which to load columns
-     * @return formatHeaders
-     *         the list of headers, in order, for the specified format
-     */
-    private ArrayList<String> loadHeaders(ArrayList<String> headers, HashMap<String, Integer> analyteColumnMap,
-                                          String format) throws Exception {
-        ArrayList<String> formatHeaders;
+    private void finishSheet(HSSFSheet sheet, HSSFWorkbook wb, String qcName, String qcType,
+                             String sheetName) {
+        int i, columnIndex;
+        ArrayList<DictionaryDO> tempQcColumns;
+        DictionaryDO dict;
+        HashSet<Integer> emptyColumns;
+        Name rangeName;
+        Row row;
+        String rangeFormula;
         
-        if (headers.isEmpty()) {
-            headers.add("Accession #");
-            headers.add("Lot #");
-            headers.add("Created Date");
+        if (qcColumns != null && !qcColumns.isEmpty())
+            row = sheet.getRow(32);
+        else
+            row = sheet.getRow(3);
+        emptyColumns = new HashSet<Integer>();
+        for (i = 0; i < row.getLastCellNum(); i++) {
+            if (i >= maxChars.size() || maxChars.get(i) == 0)
+                emptyColumns.add(i);
         }
         
-        formatHeaders = getFormatHeaders(format);
-        for (String header : formatHeaders) {
-            if (!analyteColumnMap.containsKey(header)) {
-                analyteColumnMap.put(header, headers.size());
-                headers.add(header);
+        setHeaderCells(sheet, qcName, qcType, sheetName);
+
+        if (qcColumns != null && !qcColumns.isEmpty()) {
+            tempQcColumns = new ArrayList<DictionaryDO>();
+            tempQcColumns.addAll(qcColumns);
+            for (i = tempQcColumns.size() - 1; i > -1; i--) {
+                if (emptyColumns.contains(i + 3)) {
+                    tempQcColumns.remove(i);
+                    removeColumn(sheet, i + 3);
+                    maxChars.remove(i + 3);
+                }
+            }
+            
+            /*
+             * Create named ranges for the graph to be able to locate the appropriate
+             * data
+             */
+            columnIndex = 3;
+            for (i = 0; i < tempQcColumns.size(); i++) {
+                dict = tempQcColumns.get(i);
+                if (!DataBaseUtil.isEmpty(dict.getCode())) {
+                    rangeName = getName(wb, sheet, dict.getCode());
+                    if (rangeName == null) {
+                        rangeName = wb.createName();
+                        rangeName.setSheetIndex(wb.getSheetIndex(sheet));
+                        rangeName.setNameName(dict.getCode());
+                    }
+                    rangeFormula = rangeName.getRefersToFormula();
+                    if (rangeFormula != null && rangeFormula.length() > 0 && !"$A$2".equals(rangeFormula.substring(rangeFormula.indexOf("!") + 1)))
+                        rangeFormula += ",";
+                    else
+                        rangeFormula = "";
+                    rangeFormula += sheet.getSheetName()+"!$" + CellReference.convertNumToColString(columnIndex) +
+                                    "$33:" + "$" + CellReference.convertNumToColString(columnIndex) +
+                                    "$" + (sheet.getLastRowNum() + 1);
+                    rangeName.setRefersToFormula(rangeFormula);
+                }
+                columnIndex++;
+            }
+            /*
+             * make each column wide enough to show the longest string in it; the
+             * width for each column is set as the maximum number of characters in
+             * that column multiplied by 256; this is because the default width of
+             * one character is 1/256 units in Excel
+             */
+            for (i = 3; i < maxChars.size(); i++)
+                sheet.setColumnWidth(i, maxChars.get(i) * 256);
+        } else if (worksheetHeaders != null && worksheetHeaders.size() > 0) {
+            /*
+             * make each column wide enough to show the longest string in it; the
+             * width for each column is set as the maximum number of characters in
+             * that column multiplied by 256; this is because the default width of
+             * one character is 1/256 units in Excel
+             */
+            for (i = 0; i < maxChars.size(); i++)
+                sheet.setColumnWidth(i, maxChars.get(i) * 256);
+        }
+        
+        wb.setSheetName(wb.getSheetIndex(sheet), sheetName);
+        sheet.setForceFormulaRecalculation(true);
+        maxChars.clear();
+    }
+    
+    private void setStatisticCells(HSSFWorkbook wb, HSSFSheet sheet, Value value) {
+        Cell cell;
+        
+        cell = getCellForName(sheet, getName(wb, sheet, "Mean"));
+        if (cell != null) {
+            cell.setCellFormula(null);
+            setCellValue(cell, DataBaseUtil.toString(value.getMean()));
+            setMaxChars(cell, maxChars);
+        }
+        
+        cell = getCellForName(sheet, getName(wb, sheet, "UCL"));
+        if (cell != null) {
+            cell.setCellFormula(null);
+            setCellValue(cell, DataBaseUtil.toString(value.getUCL()));
+            setMaxChars(cell, maxChars);
+        }
+        
+        cell = getCellForName(sheet, getName(wb, sheet, "LCL"));
+        if (cell != null) {
+            cell.setCellFormula(null);
+            setCellValue(cell, DataBaseUtil.toString(value.getLCL()));
+            setMaxChars(cell, maxChars);
+        }
+    }
+    
+    private void setHeaderCells(HSSFSheet sheet, String qcName, String qcType, String analyteName) {
+        int i, startRow;
+        Cell cell;
+        Row row;
+
+        if (qcColumns != null && qcColumns.size() > 0)
+            startRow = 29;
+        else
+            startRow = 0;
+        
+        row = sheet.createRow(startRow);
+
+        cell = row.createCell(0);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "QC Name");
+        setMaxChars(cell, maxChars);
+
+        cell = row.createCell(1);
+        cell.setCellStyle(baseStyle);
+        setCellValue(cell, qcName);
+        setMaxChars(cell, maxChars);
+        
+        cell = row.createCell(2);
+        cell.setCellStyle(baseStyle);
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 2));
+
+        row = sheet.createRow(startRow + 1);
+
+        cell = row.createCell(0);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "QC Type: Analyte");
+        setMaxChars(cell, maxChars);
+
+        cell = row.createCell(1);
+        cell.setCellStyle(baseStyle);
+        setCellValue(cell, qcType + ": " + analyteName);
+        setMaxChars(cell, maxChars);
+
+        cell = row.createCell(2);
+        cell.setCellStyle(baseStyle);
+        sheet.addMergedRegion(new CellRangeAddress(startRow + 1, startRow + 1, 1, 2));
+
+        row = sheet.createRow(startRow + 2);
+
+        cell = row.createCell(0);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "Accession # / Worksheet #");
+        setMaxChars(cell, maxChars);
+        
+        cell = row.createCell(1);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "Lot #");
+        setMaxChars(cell, maxChars);
+        
+        cell = row.createCell(2);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "Created Date");
+        setMaxChars(cell, maxChars);
+
+        if (qcColumns != null && !qcColumns.isEmpty()) {
+            for (i = 0; i < qcColumns.size(); i++) {
+                cell = row.createCell(i + 3);
+                cell.setCellStyle(headerStyle);
+                setCellValue(cell, qcColumns.get(i).getEntry());
+                setMaxChars(cell, maxChars);
+            }
+        } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
+            for (i = 0; i < worksheetHeaders.size(); i++) {
+                cell = row.createCell(i + 3);
+                cell.setCellStyle(headerStyle);
+                setCellValue(cell, worksheetHeaders.get(i));
+                setMaxChars(cell, maxChars);
             }
         }
-        
-        return formatHeaders;
     }
-
+    
     /**
      * Fills all cells in "row" except the ones for result values.
      * 
@@ -660,146 +717,48 @@ public class QcChartReport1Bean {
      *        column; it's updated a when new value is set in a cell
      * @throws Exception
      */
-    private void setBaseCells(Value value, Row row, ArrayList<Integer> maxChars) throws Exception {
+    private void setBaseCells(Value value, Row row) throws Exception {
         Cell cell;
         
         cell = row.createCell(0);
-        setCellValue(cell, value.getAccessionNumber());
+        cell.setCellStyle(baseStyle);
+        setCellValue(cell, value.getAccessionNumber() + " / " + value.getWId());
         setMaxChars(cell, maxChars);
         
         cell = row.createCell(1);
+        cell.setCellStyle(baseStyle);
         setCellValue(cell, value.getLotNumber());
         setMaxChars(cell, maxChars);
 
         cell = row.createCell(2);
+        cell.setCellStyle(baseStyle);
         setCellValue(cell, getDateTimeLabel(value.getWorksheetCreatedDate(), Messages.get().gen_dateTimePattern()));
         setMaxChars(cell, maxChars);
     }
 
-    private void setTitleCell(XSSFSheet sheet, XSSFWorkbook wb, String title) {
+    private void setResultCells(Value value, Row row, String qcFormat, String worksheetFormat) throws Exception {
+        int i;
         Cell cell;
-        Row row;
-        Font font;
-        CellStyle style;
-
-        /*
-         * create the style to distinguish the title row from the other rows in
-         * the output
-         */
-        font = wb.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());
-        style = wb.createCellStyle();
-        style.setAlignment(CellStyle.ALIGN_LEFT);
-        style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        style.setFont(font);
+        DictionaryDO column;
         
-        row = sheet.createRow(29);
-
-        cell = row.createCell(0);
-        cell.setCellStyle(style);
-        setCellValue(cell, "QC");
-
-        cell = row.createCell(1);
-        setCellValue(cell, title);
-
-        row = sheet.createRow(30);
-
-        cell = row.createCell(0);
-        cell.setCellStyle(style);
-        setCellValue(cell, "Analyte");
-
-        cell = row.createCell(1);
-        setCellValue(cell, sheet.getSheetName());
-    }
-    
-    /**
-     * Creates the header row in "sheet" from "headers"; sets a style on the
-     * header row to distinguish it from the other rows; updates "maxChars" to
-     * account for the header labels because the header row is added after the
-     * other rows have been added
-     * 
-     * @param sheet
-     *        the sheet that contains all rows in "wb"
-     * @param wb
-     *        the workbook that gets converted to an Excel file
-     * @param headers
-     *        the list of labels to be shown in the header row
-     * @param maxChars
-     *        the list containing the maximum number of characters in each
-     *        column of "sheet"
-     */
-    private void setHeaderCells(XSSFSheet sheet, XSSFWorkbook wb, ArrayList<String> headers,
-                                ArrayList<Integer> maxChars) {
-        Cell cell;
-        Row row;
-        Font font;
-        CellStyle style;
-
-        /*
-         * create the style to distinguish the header row from the other rows in
-         * the output
-         */
-        font = wb.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());
-        style = wb.createCellStyle();
-        style.setAlignment(CellStyle.ALIGN_LEFT);
-        style.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
-        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        style.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        style.setFont(font);
-
-        row = sheet.createRow(31);
-        for (int i = 0; i < headers.size(); i++ ) {
-            cell = row.createCell(i);
-            cell.setCellStyle(style);
-            setCellValue(cell, headers.get(i));
-            setMaxChars(cell, maxChars);
+        if (qcColumns != null && !qcColumns.isEmpty()) {
+            for (i = 0; i < qcColumns.size(); i++) {
+                column = qcColumns.get(i);
+                cell = row.createCell(i + 3);
+                cell.setCellStyle(baseStyle);
+                setCellValue(cell, getValue(qcFormat, worksheetFormat, column.getSystemName(), value));
+                setMaxChars(cell, maxChars);
+            }
+        } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
+            for (i = 0; i < worksheetHeaders.size(); i++) {
+                cell = row.createCell(i + 3);
+                cell.setCellStyle(baseStyle);
+                setCellValue(cell, getValue(null, worksheetFormat, worksheetHeaderNames.get(i), value));
+                setMaxChars(cell, maxChars);
+            }
         }
     }
     
-    private void finishSheet(XSSFSheet sheet, XSSFWorkbook wb, ArrayList<Integer> maxChars,
-                             ArrayList<String> headers, HashMap<String, Integer> analyteColumnMap) {
-        int i;
-        
-        /*
-         * add the header row and set the header labels for all columns
-         */
-        setHeaderCells(sheet, wb, headers, maxChars);
-        headers.clear();
-        analyteColumnMap.clear();
-
-        /*
-         * make each column wide enough to show the longest string in it; the
-         * width for each column is set as the maximum number of characters in
-         * that column multiplied by 256; this is because the default width of
-         * one character is 1/256 units in Excel
-         */
-        for (i = 0; i < maxChars.size(); i++ )
-            sheet.setColumnWidth(i, maxChars.get(i) * 256);
-        maxChars.clear();
-    }
-    
-    private ArrayList<String> getFormatHeaders(String worksheetFormat) throws Exception {
-        int i;
-        ArrayList<DictionaryDO> list;
-        ArrayList<String> formatHeaders;
-        CategoryCacheVO vo;
-
-        formatHeaders = formatHeaderMap.get(worksheetFormat);
-        if (formatHeaders == null) {
-            vo = categoryCache.getBySystemName(worksheetFormat);
-            list = vo.getDictionaryList();
-            formatHeaders = new ArrayList<String>();
-            for (i = 0; i < list.size(); i++)
-                formatHeaders.add(list.get(i).getEntry());
-            formatHeaderMap.put(worksheetFormat, formatHeaders);
-        }
-        
-        return formatHeaders;
-    }
-
     /**
      * Converts the date and time in "dateTime" to a string formatted using
      * "pattern"
@@ -832,13 +791,82 @@ public class QcChartReport1Bean {
      * @param value
      *         the value to be set in "cell" 
      */
-    private void setCellValue(Cell cell, Object value) {
-        String val;
+    private void setCellValue(Cell cell, String value) {
+        try {
+            cell.setCellValue(Double.parseDouble(value));
+        } catch (Exception ignE) {
+            if (value != null && value.length() > 255)
+                value = value.substring(0, 255);
+            cell.setCellValue(value);
+        }
+    }
 
-        val = DataBaseUtil.toString(value);
-        if (val.length() > 255)
-            val = val.substring(0, 255);
-        cell.setCellValue(val);
+    /*
+     * Exports the workbook to an Excel file
+     */
+    private Path export(HSSFWorkbook wb, String systemVariableDirectory) throws Exception {
+        Path path;
+        OutputStream out;
+
+        out = null;
+        try {
+            path = ReportUtil.createTempFile("qcchart", ".xls", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            wb.write(out);
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close outout stream for qc chart report");
+            }
+        }
+        return path;
+    }
+
+    private String getChartTemplateFileName(String qcType) throws Exception {
+        ArrayList<SystemVariableDO> sysVars;
+        String dirName;
+
+        dirName = "";
+        try {
+            sysVars = systemVariable.fetchByName("qc_template_directory", 1);
+            if (sysVars.size() > 0)
+                dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving temp directory variable: " +
+                                anyE.getMessage());
+        }
+
+        return dirName + "QcChart" + qcType.replaceAll(" ", "") + ".xls";
+    }
+    
+    private HSSFName getName(HSSFWorkbook wb, HSSFSheet sheet, String nameString) {
+        int i;
+        HSSFName name;
+        
+        for (i = 0; i < wb.getNumberOfNames(); i++) {
+            name = wb.getNameAt(i);
+            if (name.getNameName().equals(nameString) && name.getSheetName().equals(sheet.getSheetName()))
+                return name;
+        }
+        
+        return null;
+    }
+
+    private Cell getCellForName(HSSFSheet sheet, HSSFName name) {
+        AreaReference aref;
+        Cell cell;
+        CellReference cref[];
+
+        cell = null;
+        if (name != null && !name.isDeleted()) {
+            aref = new AreaReference(name.getRefersToFormula());
+            cref = aref.getAllReferencedCells();
+            cell = sheet.getRow(cref[0].getRow()).getCell((int)cref[0].getCol());
+        }
+
+        return cell;
     }
 
     /**
@@ -859,59 +887,34 @@ public class QcChartReport1Bean {
         col = cell.getColumnIndex();
         if (col > maxChars.size() - 1)
             maxChars.add(0);
-        val = cell.getStringCellValue();
+        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+            if (DateUtil.isCellDateFormatted(cell))
+                val = ReportUtil.toString(cell.getDateCellValue(), Messages.get().dateTimePattern());
+            else
+                val = Double.toString(cell.getNumericCellValue());
+        } else {
+            val = cell.getStringCellValue();
+        }
         chars = !DataBaseUtil.isEmpty(val) ? val.length() : 0;
         maxChars.set(col, Math.max(chars, maxChars.get(col)));
     }
-
-    /*
-     * Exports the filled report to a temp file for printing or faxing.
-     */
-    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
-        Path path;
-        JRExporter jexport;
-        OutputStream out;
-
-        out = null;
-        try {
-            jexport = new JRPdfExporter();
-            path = ReportUtil.createTempFile("qcchart", ".pdf", systemVariableDirectory);
-            out = Files.newOutputStream(path);
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-            jexport.exportReport();
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception e) {
-                log.severe("Could not close outout stream for qc chart report");
+    
+    private void removeColumn(HSSFSheet sheet, Integer columnIndex) {
+        int i, j;
+        Cell cell;
+        Row row;
+        
+        for (i = 31; i <= sheet.getLastRowNum(); i++) {
+            row = sheet.getRow(i);
+            cell = row.getCell(columnIndex);
+            if (cell != null)
+                row.removeCell(row.getCell(columnIndex));
+            for (j = columnIndex + 1; j < row.getLastCellNum(); j++) {
+                cell = row.getCell(j);
+                if (cell != null)
+                    ((HSSFRow)row).moveCell((HSSFCell)cell, (short)(j - 1));
             }
         }
-        return path;
-    }
-
-    /*
-     * Exports the workbook to an Excel file
-     */
-    private Path export(XSSFWorkbook wb, String systemVariableDirectory) throws Exception {
-        Path path;
-        OutputStream out;
-
-        out = null;
-        try {
-            path = ReportUtil.createTempFile("qcchart", ".xlsx", systemVariableDirectory);
-            out = Files.newOutputStream(path);
-            wb.write(out);
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception e) {
-                log.severe("Could not close outout stream for qc chart report");
-            }
-        }
-        return path;
     }
 
     class ResultComparator implements Comparator<QcChartResultVO> {
@@ -920,7 +923,7 @@ public class QcChartReport1Bean {
         }
     }
 
-    class ValueComparator implements Comparator<QcChartReportViewVO.Value> {
+    class ValueComparator implements Comparator<Value> {
         public int compare(Value v1, Value v2) {
             return v1.getAnalyteName().compareTo(v2.getAnalyteName());
         }

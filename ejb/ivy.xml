@@ -34,8 +34,8 @@
       <dependency org="junit" name="junit" rev="4.11" conf="compile->default"/>
       <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" conf="compile,deploy->default" transitive="false"/>
       <dependency org="ehcache" name="ehcache" rev="1.2" conf="compile,deploy->default"/>
-      <dependency org="org.apache.poi" name="poi" rev="3.6" conf="compile,deploy->default"/>
-      <dependency org="org.apache.poi" name="poi-ooxml" rev="3.6" conf="compile,deploy->default"/>
+      <dependency org="org.apache.poi" name="poi" rev="3.13" conf="compile,deploy->default"/>
+      <dependency org="org.apache.poi" name="poi-ooxml" rev="3.13" conf="compile,deploy->default"/>
       <dependency org="net.sf.jasperreports" name="jasperreports" rev="4.0.1" conf="compile,deploy->default"/>
       <dependency org="jfree" name="jfreechart" rev="1.0.12" conf="compile,deploy->default"/>
       <dependency org="jfree" name="jcommon" rev="1.0.15" conf="compile,deploy->default"/>
