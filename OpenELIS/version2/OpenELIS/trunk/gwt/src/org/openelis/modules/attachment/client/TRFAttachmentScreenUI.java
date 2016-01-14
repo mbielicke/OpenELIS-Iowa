@@ -234,10 +234,10 @@ public abstract class TRFAttachmentScreenUI extends Screen {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (trfTab.isAttachmentsLocked()) {
                     event.cancel();
-                    setError(Messages.get().trfAttachment_firstUnlockAll());
+                    Window.alert(Messages.get().trfAttachment_firstUnlockAll());
                 } else if (isAnyTabLocked()) {
                     event.cancel();
-                    setError(Messages.get().gen_mustCommitOrAbort());
+                    Window.alert(Messages.get().gen_mustCommitOrAbort());
                 }
             }
         });

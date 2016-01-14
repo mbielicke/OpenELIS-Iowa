@@ -1007,7 +1007,7 @@ public class SampleManager1Bean {
                 else
                     addSampleInternalNote(sm, data);
         }
-        
+
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
             setAttachments(sm, null);
             for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids,
@@ -1232,7 +1232,7 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
-        
+
         /*
          * get the generic pattern for TRF's
          */
@@ -1240,7 +1240,9 @@ public class SampleManager1Bean {
             sys = systemVariable.fetchByName("attachment_pattern_gen_java");
             trfPattern = sys.getValue();
         } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_pattern_gen_java'", any);
+            log.log(Level.SEVERE,
+                    "Missing/invalid system variable 'attachment_pattern_gen_java'",
+                    any);
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("attachment_pattern_gen_java"));
         }
@@ -1840,6 +1842,7 @@ public class SampleManager1Bean {
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
+        ArrayList<AttachmentItemViewDO> attachments;
 
         data = getSample(sm);
         qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
@@ -1866,9 +1869,23 @@ public class SampleManager1Bean {
         setSampleClinical(qsm, getSampleClinical(sm));
         setSamplePT(qsm, getSamplePT(sm));
 
+        /*
+         * copy the attachments added on the screen to the quick-entered sample
+         * because the user may be doing data entry from TRF
+         */
+        if (getAttachments(sm) != null) {
+            attachments = getAttachments(qsm);
+            if (attachments == null) {
+                attachments = new ArrayList<AttachmentItemViewDO>();
+                setAttachments(qsm, attachments);
+            }
+            for (AttachmentItemViewDO att : getAttachments(sm))
+                attachments.add(att);
+        }
+
         return qsm;
     }
-    
+
     /**
      * Loads the data from send-out order or electronic order, depending on
      * domain, into the SampleManager. This method returns both the loaded
@@ -2091,12 +2108,7 @@ public class SampleManager1Bean {
 
         setSampleInternalNotes(sm, null);
 
-        if (getAttachments(sm) != null) {
-            for (AttachmentItemViewDO data : getAttachments(sm)) {
-                data.setId(sm.getNextUID());
-                data.setReferenceId(null);
-            }
-        }
+        setAttachments(sm, null);
 
         /*
          * level 2: everything is based on item ids
@@ -2743,7 +2755,7 @@ public class SampleManager1Bean {
                     if (DataBaseUtil.isSame(ref.getTestName(), ana.getTestName()) &&
                         DataBaseUtil.isSame(ref.getMethodName(), ana.getMethodName()))
                         ref.setPanelId(test.getPanelId());
-                    
+
                     anaById.put(ref.getId(), ref);
                 }
             } else {
@@ -2961,8 +2973,7 @@ public class SampleManager1Bean {
      * of exceptions/warnings listing all the problems for each sample.
      */
     private void validate(SampleManager1 sm, SystemUserPermission permission, Integer maxAccession,
-                          String trfPattern,
-                          HashMap<Integer, TestManager> tms,
+                          String trfPattern, HashMap<Integer, TestManager> tms,
                           HashMap<Integer, AuxFieldGroupManager> ams,
                           HashMap<Integer, QaEventDO> qas) throws Exception {
         int cnt;
@@ -2988,7 +2999,7 @@ public class SampleManager1Bean {
                     DataBaseUtil.mergeException(e, err);
                 }
         }
-        
+
         /*
          * for display
          */
@@ -3072,7 +3083,7 @@ public class SampleManager1Bean {
                     }
             }
         }
-        
+
         /*
          * a sample can't have more than one TRF
          */
@@ -3080,10 +3091,10 @@ public class SampleManager1Bean {
         if (getAttachments(sm) != null) {
             for (AttachmentItemViewDO data : getAttachments(sm)) {
                 if (data.getAttachmentDescription().matches(trfPattern))
-                    cnt++;                
+                    cnt++ ;
                 if (cnt > 1) {
                     e.add(new FormErrorException(Messages.get()
-                                                 .sample_moreThanOneTRFException(accession)));
+                                                         .sample_moreThanOneTRFException(accession)));
                     break;
                 }
             }
@@ -3407,7 +3418,7 @@ public class SampleManager1Bean {
     private void updateStatus(ReportStatus status, int increment) {
         if (status == null)
             return;
-        
+
         if (ReportStatus.Status.CANCEL.equals(status.getStatus()))
             status.setMessage(Messages.get().dataView_pleaseWait());
         else
