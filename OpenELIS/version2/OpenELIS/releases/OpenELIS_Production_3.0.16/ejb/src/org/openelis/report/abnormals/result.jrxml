@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="chlgc04" pageWidth="253" pageHeight="0" columnWidth="253" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.scriptlethandling" value="2"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
+	<parameter name="ABNORMAL_TEST" class="org.openelis.utils.Counter" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT an.name AS analyte_name, rt.system_name AS result_type, r.value AS result_value,
+       rd.entry AS result_dictionary, rf.system_name AS result_flags
+FROM   result r
+       JOIN analyte an ON an.id = r.analyte_id
+       JOIN test_result tr ON tr.id = r.test_result_id
+       LEFT JOIN dictionary rf on rf.id = tr.flags_id
+       JOIN dictionary rt ON rt.id = r.type_id
+       LEFT JOIN dictionary rd on rd.id::char(10) = r.value
+WHERE  r.analysis_id = $P{ANALYSIS_ID} AND
+       r.is_column = 'N'
+ORDER BY analyte_name]]>
+	</queryString>
+	<field name="analyte_name" class="java.lang.String"/>
+	<field name="result_type" class="java.lang.String"/>
+	<field name="result_value" class="java.lang.String"/>
+	<field name="result_dictionary" class="java.lang.String"/>
+	<field name="result_flags" class="java.lang.String"/>
+	<detail>
+		<band splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="countAnalyteResult" isPrintRepeatedValues="false" mode="Opaque" x="0" y="0" width="126" height="0">
+					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{result_type}) && $P{ABNORMAL_TEST}.set(DataBaseUtil.concatWithSeparator($F{analyte_name}, " : ",$F{result_value}), $F{result_flags} != null && $F{result_flags}.indexOf('a', 2) != -1)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="countAnalyteDictionaryResult" isPrintRepeatedValues="false" mode="Opaque" x="126" y="0" width="127" height="0">
+					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{result_type}) && $P{ABNORMAL_TEST}.set(DataBaseUtil.concatWithSeparator($F{analyte_name}, " : ",$F{result_dictionary}), $F{result_flags} != null && $F{result_flags}.indexOf('a', 2) != -1)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
