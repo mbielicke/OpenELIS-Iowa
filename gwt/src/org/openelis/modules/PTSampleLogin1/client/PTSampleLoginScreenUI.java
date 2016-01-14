@@ -292,7 +292,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          attachmentPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
 
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -2309,6 +2309,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
                     previousManager = manager;
                     manager = result.getManager();
+                    if (isAttachmentScreenOpen)
+                        addReservedAttachment();
                     buildCache();
                     evaluateEdit();
                     setData();
@@ -3171,17 +3173,18 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                             setData();
                             setState(UPDATE);
                             fireDataChange();
+                            clearStatus();
+                            checkTRF();
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
+                            clearStatus();
                         }
                     }
 
                     public void notFound() {
-                        /*
-                         * ignore because there's no sample with the accession
-                         * number entered by the user
-                         */
+                        clearStatus();
+                        checkTRF();
                     }
 
                     public void failure(Throwable e) {
@@ -3193,10 +3196,10 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
+                        clearStatus();
                     }
 
                     public void finish() {
-                        clearStatus();
                         isBusy = false;
                     }
                 };
@@ -3213,10 +3216,9 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 validateAccessionNumberCall = new AsyncCallbackUI<Void>() {
                     @Override
                     public void success(Void result) {
-                        /*
-                         * ignore because the accession number is valid, as no
-                         * exceptions were thrown
-                         */
+                        clearStatus();
+                        if (isFullLogin)
+                            checkTRF();
                     }
 
                     public void failure(Throwable e) {
@@ -3228,10 +3230,10 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
+                        clearStatus();
                     }
 
                     public void finish() {
-                        clearStatus();
                         isBusy = false;
                     }
                 };
@@ -3762,6 +3764,54 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         clearStatus();
+    }
+    
+    /**
+     * Checks whether the accession number on the TRF attached to the sample
+     * matched the accession number entered by the user; shows a warning if it
+     * doesn't
+     */
+    protected void checkTRF() {
+        String accession, pattern, arr[];
+        AttachmentItemViewDO data;
+
+        if (getAccessionNumber() == null || manager.attachment.count() == 0)
+            return;
+
+        if (genTRFPatternVariable == null) {
+            try {
+                /*
+                 * get the system variable that specifies the generic pattern
+                 * for TRFs and can be used in java code for pattern matching
+                 */
+                if (genTRFPatternVariable == null)
+                    genTRFPatternVariable = SystemVariableService.get()
+                                                                 .fetchByExactName("attachment_pattern_gen_java");
+            } catch (Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return;
+            }
+        }
+
+        pattern = genTRFPatternVariable.getValue();
+        accession = DataBaseUtil.toString(getAccessionNumber());
+
+        /*
+         * find out if a TRF is attached to the sample; notify the user if the
+         * TRF's accession number doesn't match the sample's accession number
+         */
+        for (int i = 0; i < manager.attachment.count(); i++ ) {
+            data = manager.attachment.get(i);
+            if (data.getAttachmentDescription().matches(pattern)) {
+                arr = data.getAttachmentDescription().split("-");
+                if (arr.length > 1 && !accession.equals(arr[1])) {
+                    setError(Messages.get()
+                                     .sample_trfNotMatchEntered(data.getAttachmentDescription()));
+                    break;
+                }
+            }
+        }
     }
 
     /**

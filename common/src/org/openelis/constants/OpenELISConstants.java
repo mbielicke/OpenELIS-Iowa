@@ -4525,6 +4525,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_nextOfKinMaidenName();
 
   /**
+   * Translated "Next Of Kin NID".
+   * 
+   * @return translated "Next Of Kin NID"
+   */
+  @DefaultMessage("Next Of Kin NID")
+  @Key("dataView.nextOfKinNationalId")
+  String dataView_nextOfKinNationalId();
+
+  /**
    * Translated "Next Of Kin Phone Number".
    * 
    * @return translated "Next Of Kin Phone Number"
@@ -4658,6 +4667,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient Last Name")
   @Key("dataView.patientLastName")
   String dataView_patientLastName();
+
+  /**
+   * Translated "Patient NID".
+   * 
+   * @return translated "Patient NID"
+   */
+  @DefaultMessage("Patient NID")
+  @Key("dataView.patientNationalId")
+  String dataView_patientNationalId();
 
   /**
    * Translated "Patient Phone Number".
@@ -17159,6 +17177,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Tracking")
   @Key("sample.tracking")
   String sample_tracking();
+
+  /**
+   * Translated "The accession number on ''{0}'' is different from the entered accession number".
+   * 
+   * @return translated "The accession number on ''{0}'' is different from the entered accession number"
+   */
+  @DefaultMessage("The accession number on ''{0}'' is different from the entered accession number")
+  @Key("sample.trfNotMatchEntered")
+  String sample_trfNotMatchEntered(String arg0);
 
   /**
    * Translated "Sample Type".

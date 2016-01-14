@@ -50,7 +50,6 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
-import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.TextBox;
@@ -103,11 +102,9 @@ public abstract class TRFTabUI extends Screen {
 
     protected String                                        defaultPattern;
 
-    protected int                                           attachmentShownRow;
+    protected int                                           trfShownRow;
 
     protected boolean                                       query, refresh;
-
-    protected AttachmentDO                                  prevSelected;
 
     protected HashMap<Integer, AttachmentManager>           managerMap;
 
@@ -185,7 +182,7 @@ public abstract class TRFTabUI extends Screen {
         });
 
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 loadTable(null);
             }
 
@@ -206,6 +203,7 @@ public abstract class TRFTabUI extends Screen {
                  */
                 if (isState(UPDATE))
                     event.cancel();
+                logger.log(Level.SEVERE, "UnSelection " + table.getSelectedRow());
             }
         });
 
@@ -236,6 +234,21 @@ public abstract class TRFTabUI extends Screen {
                     val = table.getValueAt(r, c);
                     if ( ( !isState(DISPLAY) || "Y".equals(val)) || !lock(r))
                         event.cancel();
+                    /*
+                     * if this row got selected by clicking in the first column
+                     * (the checkbox) instead of some other one, select the row
+                     * whose TRF was shown the most recently, if any, otherwise
+                     * unselect this row; the TRF is not shown if the first
+                     * column is clicked, so if this row stayed selected, the
+                     * user may assume that the TRF was shown and may not click
+                     * in some other column to see it
+                     */
+                    if (trfShownRow != r) {
+                        if (trfShownRow >= 0)
+                            table.selectRowAt(trfShownRow);
+                        else
+                            table.unselectRowAt(r);
+                    }
                     return;
                 }
 
@@ -243,13 +256,13 @@ public abstract class TRFTabUI extends Screen {
                  * this makes sure that the attachment for a row is not shown
                  * more than once if different cells of the row are clicked one
                  * after the other; displayAttachment is called from here
-                 * instead of from SelectionHandler because, the attachment is
-                 * not shown if the user clicks in the first column and the
+                 * instead of from SelectionHandler because the TRF is not shown
+                 * if the user clicks in the first column (the checkbox) and the
                  * column can't be known in SelectionHandler
                  */
-                if (attachmentShownRow != r) {
+                if (trfShownRow != r) {
                     displayAttachment(table.getRowAt(r));
-                    attachmentShownRow = r;
+                    trfShownRow = r;
                 }
 
                 if (c != 3 || !isState(UPDATE))
@@ -324,7 +337,6 @@ public abstract class TRFTabUI extends Screen {
             @Override
             public void onAttachmentIssue(AttachmentIssueEvent event) {
                 Query q;
-                AttachmentManager am;
 
                 if (parentScreen != event.getSource())
                     return;
@@ -363,15 +375,6 @@ public abstract class TRFTabUI extends Screen {
                                 refresh = false;
                                 description.setValue(getPattern());
                                 unattached.setValue("Y");
-
-                                /*
-                                 * find out which attachment if any is selected
-                                 * in the table, so that, that attachment can be
-                                 * selected on reloading the table if it's still
-                                 * in the table
-                                 */
-                                am = getSelected();
-                                prevSelected = am != null ? am.getAttachment() : null;
 
                                 managerMap = null;
 
@@ -588,15 +591,6 @@ public abstract class TRFTabUI extends Screen {
      */
     protected void commitQuery() {
         Query query;
-        AttachmentManager am;
-
-        /*
-         * find out which attachment if any is selected in the table so that,
-         * that attachment can be selected on reloading the table if it's still
-         * there
-         */
-        am = getSelected();
-        prevSelected = am != null ? am.getAttachment() : null;
 
         managerMap = null;
 
@@ -711,17 +705,13 @@ public abstract class TRFTabUI extends Screen {
      * complying with the query
      */
     private void executeQuery(final Query query) {
-        attachmentShownRow = -1;
+        trfShownRow = -1;
 
         parentScreen.getWindow().setBusy(Messages.get().gen_querying());
 
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
                 public void success(ArrayList<AttachmentManager> result) {
-                    int i, j;
-                    Row row;
-                    AttachmentDO data;
-
                     loadTable(null);
 
                     /*
@@ -737,26 +727,6 @@ public abstract class TRFTabUI extends Screen {
                     setState(DISPLAY);
                     loadTable(result);
                     parentScreen.getWindow().clearStatus();
-
-                    /*
-                     * if the previously selected attachment is still in the
-                     * table, find its row and select it; otherwise select the
-                     * first row
-                     */
-                    i = 0;
-                    if (prevSelected != null) {
-                        for (j = 0; j < table.getRowCount(); j++ ) {
-                            row = table.getRowAt(j);
-                            data = managerMap.get(row.getData()).getAttachment();
-                            if (prevSelected.getId().equals(data.getId())) {
-                                i = j;
-                                break;
-                            }
-                        }
-                    }
-                    table.selectRowAt(i);
-                    displayAttachment(table.getRowAt(i));
-                    attachmentShownRow = i;
                     refreshIssues();
                 }
 

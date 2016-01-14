@@ -457,7 +457,9 @@ public class SDWISTabUI extends VerificationScreen {
         tabs = null;
 
         /*
-         * add handlers for the shortcuts "Ctrl+1", "Ctrl+2" and "Ctrl+3"
+         * add handlers for the shortcuts "Ctrl+1", "Ctrl+2" and "Ctrl+3";
+         * handlers are added for the number keys above the letter keys, as well
+         * the ones on the numeric pad
          */
         addShortcut(new ShortcutHandler() {
             @Override
@@ -469,6 +471,13 @@ public class SDWISTabUI extends VerificationScreen {
         addShortcut(new ShortcutHandler() {
             @Override
             public void onShortcut() {
+                execute(Operation.COPY_FROM_SAMPLE);
+            }
+        }, (char)97, CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
                 execute(Operation.COPY_TO_SAMPLE);
             }
         }, '2', CTRL);
@@ -476,9 +485,23 @@ public class SDWISTabUI extends VerificationScreen {
         addShortcut(new ShortcutHandler() {
             @Override
             public void onShortcut() {
+                execute(Operation.COPY_TO_SAMPLE);
+            }
+        }, (char)98, CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
                 execute(Operation.VALUE_CHANGED);
             }
         }, '3', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                execute(Operation.VALUE_CHANGED);
+            }
+        }, (char)99, CTRL);
     }
 
     public void setData(SampleManager1 manager) {
