@@ -136,18 +136,18 @@ public class DataViewReportBean {
     @EJB
     private EventLogBean               eventLog;
 
-    private static final SampleWebMeta meta                = new SampleWebMeta();
+    private static final SampleWebMeta meta = new SampleWebMeta();
 
-    private static final Logger        log                 = Logger.getLogger("openelis");
+    private static final Logger        log  = Logger.getLogger("openelis");
 
-    private static final String        DATA_VIEW           = "data_view", FILTERS = "filters",
+    private static final String        DATA_VIEW = "data_view", FILTERS = "filters",
                     EXCLUDE_RES_OVERRIDE = "excludeResultOverride", EXCLUDE_RES = "excludeResults",
                     INCLUDE_NOT_REP_RES = "includeNotReportableResults",
                     EXCLUDE_AUX = "excludeAuxData",
                     INCLUDE_NOT_REP_AUX = "includeNotReportableAuxData",
                     QUERY_FIELDS = "query_fields", COLUMNS = "columns";
 
-    private static final int           DEFAULT_MAX_SAMPLES = 1000000;
+    private static final int           DEFAULT_MAX_SAMPLES = 1000000, NUMERIC_COL_WIDTH = 10;
 
     /**
      * Fetches the list of projects based on the clause defined in the security
@@ -1650,6 +1650,7 @@ public class DataViewReportBean {
                          rd,
                          data.getColumns(),
                          moduleName != null,
+                         wb,
                          currRow,
                          maxChars);
 
@@ -1658,8 +1659,8 @@ public class DataViewReportBean {
                  * this row is for either a result or aux data; show the analyte
                  */
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                setCellValue(cell, res.getAnalyteName());
-                setMaxChars(cell, maxChars);
+                setCellValue(cell, res.getAnalyteName(), null);
+                setMaxChars(cell.getColumnIndex(), res.getAnalyteName(), maxChars, null);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
                 if (anaId != null) {
                     /*
@@ -1667,8 +1668,8 @@ public class DataViewReportBean {
                      * analysis and sample are not overridden
                      */
                     if ( !anaOverridden && !samOverridden)
-                        setCellValue(cell, value);
-                    setMaxChars(cell, maxChars);
+                        setCellValue(cell, value, null);
+                    setMaxChars(cell.getColumnIndex(), cell.getStringCellValue(), maxChars, null);
 
                     /*
                      * if this analyte has column analytes, show them in the
@@ -1713,7 +1714,10 @@ public class DataViewReportBean {
                                     anaIndex = lastCol++ ;
                                     colAnaMap.put(colRes.getAnalyte(), anaIndex);
                                     headers.add(colRes.getAnalyte());
-                                    setMaxChars(cell, maxChars);
+                                    setMaxChars(cell.getColumnIndex(),
+                                                colRes.getAnalyte(),
+                                                maxChars,
+                                                null);
                                     cell = currRow.createCell(anaIndex);
                                 } else if (anaIndex == currCol) {
                                     cell = currRow.createCell(currCol++ );
@@ -1727,8 +1731,11 @@ public class DataViewReportBean {
                                  */
                                 if ( !anaOverridden && !samOverridden)
                                     setCellValue(cell, getValue(colRes.getValue(),
-                                                                colRes.getTypeId()));
-                                setMaxChars(cell, maxChars);
+                                                                colRes.getTypeId()), null);
+                                setMaxChars(cell.getColumnIndex(),
+                                            cell.getStringCellValue(),
+                                            maxChars,
+                                            null);
                             }
                         }
                     }
@@ -1736,8 +1743,8 @@ public class DataViewReportBean {
                     /*
                      * this row is for an aux data; show the value
                      */
-                    setCellValue(cell, value);
-                    setMaxChars(cell, maxChars);
+                    setCellValue(cell, value, null);
+                    setMaxChars(cell.getColumnIndex(), value, maxChars, null);
                 }
             }
 
@@ -2033,10 +2040,10 @@ public class DataViewReportBean {
                     headers.add(Messages.get().dataView_patientFirstName());
                     break;
                 case SampleWebMeta.CLIN_PATIENT_BIRTH_DATE:
-                    headers.add(Messages.get().patient_birth());
+                    headers.add(Messages.get().dataView_patientBirthDate());
                     break;
                 case SampleWebMeta.CLIN_PATIENT_NATIONAL_ID:
-                    headers.add(Messages.get().patient_nationalId());
+                    headers.add(Messages.get().dataView_patientNationalId());
                     break;
                 case SampleWebMeta.CLIN_PATIENT_ADDR_MULTIPLE_UNIT:
                     headers.add(Messages.get().dataView_patientAptSuite());
@@ -2167,7 +2174,7 @@ public class DataViewReportBean {
                     headers.add(Messages.get().dataView_nextOfKinBirthDate());
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID:
-                    headers.add(Messages.get().patient_nationalId());
+                    headers.add(Messages.get().dataView_nextOfKinNationalId());
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT:
                     headers.add(Messages.get().dataView_nextOfKinAptSuite());
@@ -2357,6 +2364,8 @@ public class DataViewReportBean {
      *        run for an internal user; this is used to show different
      *        information in the same column e.g qa event reporting text for
      *        external users as opposed to name for internal ones
+     * @param wb
+     *        the workbook whose rows are being filled
      * @param row
      *        the row whose cells are being filled
      * @param maxChars
@@ -2365,9 +2374,9 @@ public class DataViewReportBean {
      * @throws Exception
      */
     private void setBaseCells(SampleManager1 sm, Integer sampleItemId, Integer analysisId,
-                              RowData rd, ArrayList<String> columns, boolean forWeb, Row row,
-                              ArrayList<Integer> maxChars) throws Exception {
-        String column;
+                              RowData rd, ArrayList<String> columns, boolean forWeb,
+                              XSSFWorkbook wb, Row row, ArrayList<Integer> maxChars) throws Exception {
+        String column, pattern;
         Object value;
         SampleDO s;
         SampleEnvironmentalDO se;
@@ -2375,9 +2384,10 @@ public class DataViewReportBean {
         SampleClinicalViewDO sc;
         SampleNeonatalViewDO sn;
         SamplePTDO sp;
-        Datetime dt;
         Cell cell;
+        CellStyle style;
         ArrayList<String> labels;
+        HashMap<String, CellStyle> dtStyles;
 
         s = getSample(sm);
         se = getSampleEnvironmental(sm);
@@ -2492,9 +2502,11 @@ public class DataViewReportBean {
         /*
          * set the label for each column
          */
+        dtStyles = new HashMap<String, CellStyle>();
         for (int i = 0; i < columns.size(); i++ ) {
             column = columns.get(i);
             value = null;
+            pattern = null;
             switch (column) {
             /*
              * sample columns
@@ -2514,25 +2526,22 @@ public class DataViewReportBean {
                          * created again until the sample changes; at that time
                          * it gets set to null before entering the switch-case
                          */
-                        dt = getDateTime(s.getCollectionDate(), s.getCollectionTime());
-                        rd.collDateTime = dt != null ? getDateTimeLabel(dt,
-                                                                        Messages.get()
-                                                                                .gen_dateTimePattern())
-                                                    : "";
+                        rd.collDateTime = getDateTime(s.getCollectionDate(), s.getCollectionTime());
                     }
                     value = rd.collDateTime;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.RECEIVED_DATE:
-                    value = getDateTimeLabel(s.getReceivedDate(), Messages.get()
-                                                                          .gen_dateTimePattern());
+                    value = s.getReceivedDate();
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.ENTERED_DATE:
-                    value = getDateTimeLabel(s.getEnteredDate(), Messages.get()
-                                                                         .gen_dateTimePattern());
+                    value = s.getEnteredDate();
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.RELEASED_DATE:
-                    value = getDateTimeLabel(s.getReleasedDate(), Messages.get()
-                                                                          .gen_dateTimePattern());
+                    value = s.getReleasedDate();
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.STATUS_ID:
                     value = getDictionaryLabel(s.getStatusId());
@@ -2628,26 +2637,26 @@ public class DataViewReportBean {
                     value = rd.analysisQAs;
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
-                    dt = rd.analysis != null ? rd.analysis.getCompletedDate() : null;
-                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
+                    value = rd.analysis != null ? rd.analysis.getCompletedDate() : null;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_BY:
                     value = rd.completedBy;
                     break;
                 case SampleWebMeta.ANALYSIS_RELEASED_DATE:
-                    dt = rd.analysis != null ? rd.analysis.getReleasedDate() : null;
-                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
+                    value = rd.analysis != null ? rd.analysis.getReleasedDate() : null;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.ANALYSIS_RELEASED_BY:
                     value = rd.releasedBy;
                     break;
                 case SampleWebMeta.ANALYSIS_STARTED_DATE:
-                    dt = rd.analysis != null ? rd.analysis.getStartedDate() : null;
-                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
+                    value = rd.analysis != null ? rd.analysis.getStartedDate() : null;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.ANALYSIS_PRINTED_DATE:
-                    dt = rd.analysis != null ? rd.analysis.getPrintedDate() : null;
-                    value = getDateTimeLabel(dt, Messages.get().gen_dateTimePattern());
+                    value = rd.analysis != null ? rd.analysis.getPrintedDate() : null;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.ANALYSIS_SECTION_NAME:
                     value = rd.analysis != null ? rd.analysis.getSectionName() : null;
@@ -2740,8 +2749,8 @@ public class DataViewReportBean {
                     value = sc != null ? sc.getPatient().getFirstName() : null;
                     break;
                 case SampleWebMeta.CLIN_PATIENT_BIRTH_DATE:
-                    value = getDateTimeLabel(sc != null ? sc.getPatient().getBirthDate() : null,
-                                             Messages.get().gen_datePattern());
+                    value = sc != null ? sc.getPatient().getBirthDate() : null;
+                    pattern = Messages.get().gen_datePattern();
                     break;
                 case SampleWebMeta.CLIN_PATIENT_NATIONAL_ID:
                     value = sc != null ? sc.getPatient().getNationalId() : null;
@@ -2805,14 +2814,11 @@ public class DataViewReportBean {
                          * again until the sample changes; at that time it gets
                          * set to null before entering the switch-case
                          */
-                        dt = getDateTime(sn.getPatient().getBirthDate(), sn.getPatient()
-                                                                           .getBirthTime());
-                        rd.birthDateTime = dt != null ? getDateTimeLabel(dt,
-                                                                         Messages.get()
-                                                                                 .gen_dateTimePattern())
-                                                     : "";
+                        rd.birthDateTime = getDateTime(sn.getPatient().getBirthDate(),
+                                                       sn.getPatient().getBirthTime());
                     }
                     value = rd.birthDateTime;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.NEO_PATIENT_ADDR_MULTIPLE_UNIT:
                     value = sn != null ? sn.getPatient().getAddress().getMultipleUnit() : null;
@@ -2857,8 +2863,8 @@ public class DataViewReportBean {
                     value = getYesNoLabel(sn != null ? sn.getIsTransfused() : null);
                     break;
                 case SampleWebMeta.NEO_TRANSFUSION_DATE:
-                    value = getDateTimeLabel(sn != null ? sn.getTransfusionDate() : null,
-                                             Messages.get().gen_datePattern());
+                    value = sn != null ? sn.getTransfusionDate() : null;
+                    pattern = Messages.get().gen_datePattern();
                     break;
                 case SampleWebMeta.NEO_IS_REPEAT:
                     value = getYesNoLabel(sn != null ? sn.getIsRepeat() : null);
@@ -2888,8 +2894,8 @@ public class DataViewReportBean {
                     value = getDictionaryLabel(sn != null ? sn.getNextOfKinRelationId() : null);
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE:
-                    value = getDateTimeLabel(sn != null ? sn.getNextOfKin().getBirthDate() : null,
-                                             Messages.get().gen_datePattern());
+                    value = sn != null ? sn.getNextOfKin().getBirthDate() : null;
+                    pattern = Messages.get().gen_datePattern();
                     break;
                 case SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID:
                     value = sn != null ? sn.getNextOfKin().getNationalId() : null;
@@ -2940,8 +2946,8 @@ public class DataViewReportBean {
                     value = sp != null ? sp.getSeries() : null;
                     break;
                 case SampleWebMeta.PT_DUE_DATE:
-                    value = getDateTimeLabel(sp != null ? sp.getDueDate() : null,
-                                             Messages.get().gen_dateTimePattern());
+                    value = sp != null ? sp.getDueDate() : null;
+                    pattern = Messages.get().gen_dateTimePattern();
                     break;
                 case SampleWebMeta.RECEIVED_BY_ID:
                     value = s.getReceivedById() != null ? userCache.getSystemUser(s.getReceivedById())
@@ -2952,8 +2958,9 @@ public class DataViewReportBean {
                     throw new InconsistencyException("Unknown column " + column);
             }
             cell = row.createCell(i);
-            setCellValue(cell, value);
-            setMaxChars(cell, maxChars);
+            style = pattern != null ? getDatetimeStyle(wb, dtStyles, pattern) : null;
+            setCellValue(cell, value, style);
+            setMaxChars(cell.getColumnIndex(), value, maxChars, pattern);
         }
     }
 
@@ -2997,8 +3004,8 @@ public class DataViewReportBean {
         for (int i = 0; i < headers.size(); i++ ) {
             cell = row.createCell(i);
             cell.setCellStyle(style);
-            setCellValue(cell, headers.get(i));
-            setMaxChars(cell, maxChars);
+            setCellValue(cell, headers.get(i), null);
+            setMaxChars(cell.getColumnIndex(), headers.get(i), maxChars, null);
         }
     }
 
@@ -3031,27 +3038,6 @@ public class DataViewReportBean {
         }
 
         return cdt;
-    }
-
-    /**
-     * Converts the date and time in "dateTime" to a string formatted using
-     * "pattern"
-     * 
-     * @param dateTime
-     *        the Datetime object whose date and time is converted to a
-     *        formatted string
-     * @param pattern
-     *        the pattern used to format the date and time in "dateTime"
-     * @return the formatted string; null if "dateTime" is null
-     */
-    private String getDateTimeLabel(Datetime dateTime, String pattern) {
-        String val;
-
-        val = null;
-        if (dateTime != null)
-            val = ReportUtil.toString(dateTime, pattern);
-
-        return val;
     }
 
     /**
@@ -3092,46 +3078,95 @@ public class DataViewReportBean {
     }
 
     /**
-     * Sets the string version of "value" as the value of "cell"; if the string
-     * is longer than 255 characters, shortens it to 255 characters before
-     * setting it; this is done to avoid exceeding the limit for the maximum
-     * number of characters allowed in a cell by Excel  
+     * Sets the value of "cell" from "value"; if "value" is a Datetime, sets its
+     * Date as the value and "style" as the CellStyle so that it's treated as a
+     * date by Excel; if "value" is numeric, sets the value as a double; if
+     * "value" is a String and longer than 255 characters, shortens it to 255
+     * characters before setting it; this is done to avoid exceeding the limit
+     * for the maximum number of characters allowed in a cell by Excel
      * 
      * @param cell
      *        the cell whose value is to be set
      * @param value
-     *         the value to be set in "cell" 
+     *        the value to be set in "cell"
+     * @param style
+     *        the CellStyle set on the cell
      */
-    private void setCellValue(Cell cell, Object value) {
+    private void setCellValue(Cell cell, Object value, CellStyle style) {
         String val;
 
-        val = DataBaseUtil.toString(value);
-        if (val.length() > 255)
-            val = val.substring(0, 255);
-        cell.setCellValue(val);
+        if (value instanceof Datetime) {
+            cell.setCellValue( ((Datetime)value).getDate());
+            cell.setCellStyle(style);
+        } else if (value instanceof Number) {
+            cell.setCellValue( ((Number)value).doubleValue());
+        } else {
+            val = DataBaseUtil.toString(value);
+            if (val.length() > 255)
+                val = val.substring(0, 255);
+            cell.setCellValue(val);
+        }
     }
 
     /**
      * Keeps track of the maximum number of characters in each column of the
-     * spreadsheet; if "cell" has more characters than the number in "maxChars"
-     * for the cell's column, the number in "maxChars" is updated
+     * spreadsheet; if "value" has more characters than the number in "maxChars"
+     * for "col", the number in "maxChars" is updated; if "value" is a Datetime,
+     * the length of "pattern" is used as the number of characters; if it's
+     * numeric, a fixed number is used; if it's a String, its length is used
      * 
-     * @param cell
-     *        a cell in a row in the spreadsheet
+     * @param col
+     *        the index of a column in the spreadsheet
+     * @param value
+     *        the latest value to be set in a cell of "col"
      * @param maxChars
      *        the list containing the maximum number of characters in each
      *        column of the spreadsheet
+     * @param pattern
+     *        the pattern used to format "value" if it's a Datetime
      */
-    private void setMaxChars(Cell cell, ArrayList<Integer> maxChars) {
-        int col, chars;
-        String val;
+    private void setMaxChars(int col, Object value, ArrayList<Integer> maxChars, String pattern) {
+        int chars;
 
-        col = cell.getColumnIndex();
         if (col > maxChars.size() - 1)
             maxChars.add(0);
-        val = cell.getStringCellValue();
-        chars = !DataBaseUtil.isEmpty(val) ? val.length() : 0;
+
+        if (value instanceof Datetime)
+            chars = pattern.length();
+        else if (value instanceof Number)
+            chars = NUMERIC_COL_WIDTH;
+        else
+            chars = DataBaseUtil.toString(value).length();
+
         maxChars.set(col, Math.max(chars, maxChars.get(col)));
+    }
+
+    /**
+     * Returns the CellStyle for a cell showing date and/or time in the format
+     * specified by "pattern"; returns the style from "dtStyles" if it contains
+     * that style; otherwise, first creates the style using "wb", puts it in
+     * "dtStyles" and then returns it
+     * 
+     * @param wb
+     *        the workbook that the cell showing date and/or time belongs to
+     * @param dtStyles
+     *        a map containing CellStyles for various date-time patterns
+     * @param pattern
+     *        the date-time pattern for a cell
+     * @return the CellStyle pertaining to "pattern"
+     */
+    private CellStyle getDatetimeStyle(XSSFWorkbook wb, HashMap<String, CellStyle> dtStyles,
+                                       String pattern) {
+        CellStyle style;
+
+        style = dtStyles.get(pattern);
+        if (style == null) {
+            style = wb.createCellStyle();
+            style.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat(pattern));
+            dtStyles.put(pattern, style);
+        }
+
+        return style;
     }
 
     /**
@@ -3146,6 +3181,7 @@ public class DataViewReportBean {
      *         false otherwise
      */
     private boolean isSameDataInRows(Row currRow, Row prevRow) {
+        int prevType, currType;
         Cell prevCell, currCell;
 
         if (currRow == null || prevRow == null)
@@ -3164,11 +3200,24 @@ public class DataViewReportBean {
                 return false;
             }
 
-            if (prevCell.getCellType() != currCell.getCellType())
+            prevType = prevCell.getCellType();
+            currType = currCell.getCellType();
+
+            if (prevType != currType)
                 return false;
 
-            if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(), currCell.getStringCellValue()))
-                return false;
+            switch (prevType) {
+                case Cell.CELL_TYPE_STRING:
+                    if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(),
+                                              currCell.getStringCellValue()))
+                        return false;
+                    break;
+                case Cell.CELL_TYPE_NUMERIC:
+                    if ( !DataBaseUtil.isSame(prevCell.getNumericCellValue(),
+                                              currCell.getNumericCellValue()))
+                        return false;
+                    break;
+            }
         }
 
         return true;
@@ -3184,8 +3233,8 @@ public class DataViewReportBean {
      */
     private class RowData {
         Integer                  sampleId, sampleItemId, analysisId;
-        String                   collDateTime, projNames, completedBy, releasedBy, analysisQAs,
-                        birthDateTime;
+        String                   projNames, completedBy, releasedBy, analysisQAs;
+        Datetime                 collDateTime, birthDateTime;
         SampleOrganizationViewDO repToOrg;
         SampleItemViewDO         sampleItem;
         AnalysisViewDO           analysis;
