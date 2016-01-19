@@ -250,13 +250,14 @@ public class UIHCFinalReportExportBean {
         field.setType(QueryData.Type.INTEGER);
         fields.add(field);
 
-        
-        excludedTestIds = "!" + excludedTestIds.replaceAll(",", "&!");
-        field = new QueryData();
-        field.setKey(SampleMeta.getAnalysisTestId());
-        field.setQuery(excludedTestIds);
-        field.setType(QueryData.Type.INTEGER);
-        fields.add(field);
+        if (excludedTestIds != null && excludedTestIds.length() > 0) {
+            excludedTestIds = "!" + excludedTestIds.replaceAll(",", "&!");
+            field = new QueryData();
+            field.setKey(SampleMeta.getAnalysisTestId());
+            field.setQuery(excludedTestIds);
+            field.setType(QueryData.Type.INTEGER);
+            fields.add(field);
+        }
 
         sms = new ArrayList<SampleManager1>();
         try {
