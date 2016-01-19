@@ -116,6 +116,11 @@ public class TurnaroundMaximumNotificationBean {
                         continue;
                     analysisIds.add(analysisId);
                 }
+                
+                if (analysisIds.size() < 1) {
+                    log.fine("No cases exceeded max time");
+                    return;
+                }
 
                 analysesById = new HashMap<Integer, AnalysisViewDO>();
                 sMansByAnalysisId = new HashMap<Integer, SampleManager1>();

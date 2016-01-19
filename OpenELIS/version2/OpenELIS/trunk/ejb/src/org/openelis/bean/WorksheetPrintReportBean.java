@@ -58,6 +58,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -75,6 +76,7 @@ import org.openelis.manager.WorksheetManager1Accessor;
 import org.openelis.report.worksheetPrint.DiagramDataSource;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -112,6 +114,9 @@ public class WorksheetPrintReportBean {
     
     @EJB
     private PrinterCacheBean      printers;
+
+    @EJB
+    private QcAnalyteBean         qcAnalyte;
 
     @EJB
     private QcLotBean             qcLot;
@@ -400,6 +405,7 @@ public class WorksheetPrintReportBean {
         ArrayList<AnalysisQaEventViewDO> aqeVDOs;
         ArrayList<Integer> analysisIds, qcLotIds;
         ArrayList<NoteViewDO> nVDOs;
+        ArrayList<QcAnalyteViewDO> qaVDOs;
         ArrayList<QcLotViewDO> qlVDOs;
         ArrayList<SampleManager1> sMans;
         ArrayList<SampleOrganizationViewDO> sOrgs;
@@ -408,8 +414,9 @@ public class WorksheetPrintReportBean {
         ArrayList<WorksheetAnalysisViewDO> waVDOs; 
         ByteArrayOutputStream page;
         Document doc;
+        HashMap<Integer, ArrayList<QcAnalyteViewDO>> qaVDOMap;
         HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> waVDOMap;
-        HashMap<Integer, QcLotViewDO> qcMap;
+        HashMap<Integer, QcLotViewDO> qlMap;
         HashMap<Integer, SampleManager1> sMap;
         OutputStream out;
         Path path;
@@ -469,11 +476,20 @@ public class WorksheetPrintReportBean {
             }
         }
         
-        qcMap = new HashMap<Integer, QcLotViewDO>();
+        qaVDOMap = new HashMap<Integer, ArrayList<QcAnalyteViewDO>>();
+        qlMap = new HashMap<Integer, QcLotViewDO>();
         if (qcLotIds.size() > 0) {
             qlVDOs = qcLot.fetchByIds(qcLotIds);
-            for (QcLotViewDO data : qlVDOs)
-                qcMap.put(data.getId(), data);
+            for (QcLotViewDO data : qlVDOs) {
+                qlMap.put(data.getId(), data);
+                try {
+                    qaVDOs = qcAnalyte.fetchByQcId(data.getQcId());
+                    qaVDOMap.put(data.getQcId(), qaVDOs);
+                } catch (NotFoundException nfE) {
+                    // ignore this error as leaving the hash record blank will not
+                    // cause an error due to a null check later on in the code
+                }
+            }
         }
         
         formCapacity = 1;
@@ -507,7 +523,6 @@ public class WorksheetPrintReportBean {
                             flattenFilledFields(stamper, formCapacity);
                             stamper.close();
                             reader.close();
-                            
                             reader = new PdfReader(page.toByteArray());
                             writer.addPage(writer.getImportedPage(reader, 1));
                             reader.close();
@@ -634,11 +649,14 @@ public class WorksheetPrintReportBean {
                         form.setField("sample_note_"+(i + 1), sNotes.toString());
                         form.setField("analysis_note_"+(i + 1), aNotes.toString());
                     } else if (waVDO.getQcLotId() != null) {
-                        qlVDO = qcMap.get(waVDO.getQcLotId());
+                        qlVDO = qlMap.get(waVDO.getQcLotId());
                         form.setField("accession_number_"+(i + 1), waVDO.getAccessionNumber());
                         form.setField("qc_name_"+(i + 1), qlVDO.getQcName());
                         form.setField("qc_lot_"+(i + 1), qlVDO.getLotNumber());
                         form.setField("qc_expiration_"+(i + 1), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
+                        qaVDOs = qaVDOMap.get(qlVDO.getQcId());
+                        if (qaVDOs != null && !qaVDOs.isEmpty())
+                            form.setField("expected_value_"+(i + 1), qaVDOs.get(0).getValue());
                     }
                     i++;
                 }
@@ -650,8 +668,8 @@ public class WorksheetPrintReportBean {
             
             reader = new PdfReader(page.toByteArray());
             writer.addPage(writer.getImportedPage(reader, 1));
+            doc.close();
             reader.close();
-            writer.close();
         } finally {
             try {
                 if (out != null)
@@ -693,6 +711,7 @@ public class WorksheetPrintReportBean {
             stamper.partialFormFlattening("qc_name_"+i);
             stamper.partialFormFlattening("qc_lot_"+i);
             stamper.partialFormFlattening("qc_expiration_"+i);
+            stamper.partialFormFlattening("expected_value_"+i);
         }
     }
 }

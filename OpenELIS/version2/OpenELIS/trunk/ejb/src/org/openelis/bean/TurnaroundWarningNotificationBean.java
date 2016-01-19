@@ -116,6 +116,11 @@ public class TurnaroundWarningNotificationBean {
                     analysisIds.add(analysisId);
                 }
 
+                if (analysisIds.size() < 1) {
+                    log.fine("No cases exceeded warning time");
+                    return;
+                }
+
                 analysesById = new HashMap<Integer, AnalysisViewDO>();
                 sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
                 testsById = new HashMap<Integer, TestViewDO>();
