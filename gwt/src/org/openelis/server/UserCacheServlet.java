@@ -62,7 +62,7 @@ public class UserCacheServlet extends RemoteServlet implements UserCacheServiceI
     
     public ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
         try {
-            return userCache.getEmployees(name + "%", 10);
+            return userCache.getEmployees(name + "%", 1000);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

@@ -30,6 +30,8 @@ import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -39,7 +41,6 @@ import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -70,20 +71,19 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
-import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextArea;
 import org.openelis.ui.widget.TextBox;
@@ -124,7 +124,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     protected TextBox<Integer>                              accessionNumber;
 
     @UiField
-    protected TextBox<String>                               historySystemUser;
+    protected MultiDropdown<Integer>                        historySystemUserIds;
 
     @UiField
     protected Calendar                                      receivedDate;
@@ -139,19 +139,19 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     protected TabLayoutPanel                                tabPanel;
 
     @UiField(provided = true)
-    protected EnvironmentalTabUI                           environmentalTab;
+    protected EnvironmentalTabUI                            environmentalTab;
 
     @UiField(provided = true)
     protected SDWISTabUI                                    sdwisTab;
 
     @UiField(provided = true)
-    protected ClinicalTabUI                                clinicalTab;
+    protected ClinicalTabUI                                 clinicalTab;
 
     @UiField(provided = true)
     protected NeonatalTabUI                                 neonatalTab;
 
     @UiField(provided = true)
-    protected PTTabUI                                      ptTab;
+    protected PTTabUI                                       ptTab;
 
     @UiField(provided = true)
     protected NoDomainTabUI                                 noDomainTab;
@@ -163,7 +163,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected SampleManager1                                manager;
 
-    protected SecondDataEntryScreenUI                      screen;
+    protected SecondDataEntryScreenUI                       screen;
 
     protected HashMap<String, Object>                       cache;
 
@@ -231,9 +231,12 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
      */
     private void initialize() {
         String dom;
-        Item<String> row;
-        ArrayList<Item<String>> model;
-        
+        Item<Integer> row;
+        Item<String> srow;
+        ArrayList<Item<Integer>> model;
+        ArrayList<Item<String>> smodel;
+        ArrayList<SystemUserVO> users;
+
         screen = this;
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
@@ -319,20 +322,20 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? historySystemUser : domain;
+                                 return forward ? historySystemUserIds : domain;
                              }
                          });
 
-        addScreenHandler(historySystemUser,
+        addScreenHandler(historySystemUserIds,
                          SampleMeta.HISTORY_SYSTEM_USER_ID,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
-                                 historySystemUser.setValue(getUsers());
+                                 historySystemUserIds.setValue(getHistorySystemUserIds());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 historySystemUser.setEnabled(isState(QUERY));
-                                 historySystemUser.setQueryMode(isState(QUERY));
+                                 historySystemUserIds.setEnabled(isState(QUERY));
+                                 historySystemUserIds.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -351,10 +354,10 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? domain : historySystemUser;
+                return forward ? domain : historySystemUserIds;
             }
         });
-        
+
         addScreenHandler(domain, SampleMeta.DOMAIN, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
                 domain.setValue(getDomain());
@@ -777,8 +780,9 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     for (SecondDataEntryVO entry : result) {
                         row = new Item<Integer>(entry.getSampleId(),
                                                 entry.getSampleAccessionNumber(),
-                                                entry.getHistorysystemUserLoginName(),
+                                                entry.getHistorySystemUserIds(),
                                                 entry.getSampleDomain());
+                        row.setData(entry);
                         model.add(row);
                     }
                 }
@@ -812,8 +816,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
-        model = new ArrayList<Item<String>>();
+
+        smodel = new ArrayList<Item<String>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_domain")) {
             dom = null;
             if (Constants.dictionary().ENVIRONMENTAL.equals(d.getId()))
@@ -830,91 +834,38 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 dom = Constants.domain().PT;
 
             if (dom != null) {
-                row = new Item<String>(dom, d.getEntry());
-                model.add(row);
+                srow = new Item<String>(dom, d.getEntry());
+                smodel.add(srow);
             }
         }
 
-        domain.setModel(model);
-        ((Dropdown<String>)table.getColumnWidget(2)).setModel(model);
+        domain.setModel(smodel);
+        ((Dropdown<String>)table.getColumnWidget(2)).setModel(smodel);
+
+        try {
+            model = new ArrayList<Item<Integer>>();
+            users = UserCache.getEmployees("%");
+            /*
+             * sort the users by login name because the query returns all
+             * employees in the system which are only sorted by id
+             */
+            Collections.sort(users, new SystemUserComparator());
+            for (SystemUserVO u : users) {
+                row = new Item<Integer>(u.getId(), u.getLoginName());
+                model.add(row);
+            }
+
+            historySystemUserIds.setModel(model);
+            ((MultiDropdown<Integer>)table.getColumnWidget(1)).setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+        }
     }
 
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    public Validation validate() {
-        String loginName;
-        ArrayList<SystemUserVO> userList;
-        Validation validation;
-
-        historySystemUser.clearExceptions();
-        validation = super.validate();
-
-        if (isState(QUERY)) {
-            /*
-             * make sure that the login name the user wants to query by, is
-             * valid and of an employee
-             */
-            loginName = historySystemUser.getText();
-            if ( !DataBaseUtil.isEmpty(loginName)) {
-                try {
-                    userList = UserCacheService.get().getEmployees(loginName);
-                    if (userList.size() == 0) {
-                        validation.setStatus(Status.ERRORS);
-                        historySystemUser.addException(new Exception(Messages.get()
-                                                                             .secondDataEntry_enterValidUsername()));
-                    }
-                } catch (Exception anyE) {
-                    Window.alert(anyE.getMessage());
-                    logger.log(Level.SEVERE,
-                               anyE.getMessage() != null ? anyE.getMessage() : "null",
-                               anyE);
-                }
-            }
-        }
-
-        return validation;
-    }
-
-    public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> fields;
-        ArrayList<SystemUserVO> userList;
-        String loginName;
-        StringBuffer userIds;
-
-        fields = super.getQueryFields();
-        for (QueryData field : fields) {
-            if (SampleMeta.HISTORY_SYSTEM_USER_ID.equals(field.getKey())) {
-                /*
-                 * since we cannot join with the security database to link
-                 * system user's login name to the query, we need to lookup the
-                 * matching id(s) from the UserCache to input into the query
-                 */
-                loginName = field.getQuery();
-
-                field.setType(QueryData.Type.INTEGER);
-                userIds = new StringBuffer();
-                try {
-                    userList = UserCacheService.get().getEmployees(loginName);
-                    for (SystemUserVO userVO : userList) {
-                        if (userIds.length() > 0)
-                            userIds.append(" | ");
-                        userIds.append(userVO.getId());
-                    }
-                    field.setQuery(userIds.toString());
-                } catch (Exception anyE) {
-                    Window.alert(anyE.getMessage());
-                    logger.log(Level.SEVERE,
-                               anyE.getMessage() != null ? anyE.getMessage() : "null",
-                               anyE);
-                }
-                break;
-            }
-        }
-
-        return fields;
     }
 
     /**
@@ -1352,17 +1303,16 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Returns the login names of the users who added/updated the selected
-     * sample
+     * Returns the ids of the users who added/updated the selected sample
      */
-    private String getUsers() {
+    private ArrayList<Integer> getHistorySystemUserIds() {
         Row row;
 
         row = table.getRowAt(table.getSelectedRow());
         if (manager == null || row == null)
             return null;
 
-        return row.getCell(1);
+        return ((SecondDataEntryVO)row.getData()).getHistorySystemUserIds();
     }
 
     /**
@@ -1393,5 +1343,17 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             return Messages.get().secondDataEntry_loadedWithEOrder();
 
         return null;
+    }
+
+    /**
+     * This class is used for sorting, by login name, the list of SystemUserVOs
+     * shown in the dropdown; they need to be sorted because they're fetched
+     * using the wildcard "%" which returns all employees in the system and not
+     * just the employees whose login name begins with a specific letter
+     */
+    private class SystemUserComparator implements Comparator<SystemUserVO> {
+        public int compare(SystemUserVO user1, SystemUserVO user2) {
+            return user1.getLoginName().compareTo(user2.getLoginName());
+        }
     }
 }

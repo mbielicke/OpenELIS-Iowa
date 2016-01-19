@@ -52,20 +52,17 @@ public class SecondDataEntryBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
 
-    @EJB
-    private UserCacheBean           userCache;
-
     private static final SampleMeta meta = new SampleMeta();
 
     public ArrayList<SecondDataEntryVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Integer prevSamId, currSamId, accession, userId;
-        String domain, loginName;
+        String domain;
         Query query;
         QueryBuilderV2 builder;
-        SystemUserVO user;
         SecondDataEntryVO data;
         List<Object[]> list;
         ArrayList<SecondDataEntryVO> returnList;
+        ArrayList<Integer> userIdList;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -102,32 +99,27 @@ public class SecondDataEntryBean {
 
         prevSamId = null;
         returnList = new ArrayList<SecondDataEntryVO>();
+        userIdList = null;
         data = null;
         /*
          * create SecondDataEntryVOs from the fetched data; there's only one VO
          * for each sample; so if a sample has been added/updated by multiple
-         * users, their login names are combined into one VO
+         * users, their ids are combined into one VO
          */
         for (Object[] o : list) {
             currSamId = (Integer)o[0];
             accession = (Integer)o[1];
             domain = (String)o[2];
             userId = (Integer)o[3];
-            loginName = null;
-            if (userId != null) {
-                user = userCache.getSystemUser(userId);
-                if (user != null)
-                    loginName = user.getLoginName();
-            }
 
             if ( !currSamId.equals(prevSamId)) {
-                data = new SecondDataEntryVO(currSamId, accession, domain, loginName);
+                userIdList = new ArrayList<Integer>();
+                data = new SecondDataEntryVO(currSamId, accession, domain, userIdList);
                 returnList.add(data);
-            } else {
-                data.setHistorySystemUserLoginName(DataBaseUtil.concatWithSeparator(data.getHistorysystemUserLoginName(),
-                                                                                    ", ",
-                                                                                    loginName));
             }
+            
+            if (userId != null)
+                userIdList.add(userId);            
 
             prevSamId = currSamId;
         }
