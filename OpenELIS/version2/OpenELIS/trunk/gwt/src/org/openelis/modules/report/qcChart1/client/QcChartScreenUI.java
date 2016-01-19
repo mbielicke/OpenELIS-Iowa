@@ -310,9 +310,10 @@ public class QcChartScreenUI extends Screen {
         
         plotDataTree.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
-                if (plotDataTree.getSelectedNodes().length == 0)
+                if (plotDataTree.getSelectedNodes().length == 0) {
                     selectButton.setEnabled(false);
                     unselectButton.setEnabled(false);
+                }
             }
         });
         
@@ -529,8 +530,6 @@ public class QcChartScreenUI extends Screen {
         boolean hasPlottable;
         QcChartReportScreen1 plot;
 
-        setBusy("Plotting Data");
-        
         hasPlottable = false;
         for (QcChartReportViewVO.Value data : results.getQcList()) {
             if ("Y".equals(data.getIsPlot())) {
