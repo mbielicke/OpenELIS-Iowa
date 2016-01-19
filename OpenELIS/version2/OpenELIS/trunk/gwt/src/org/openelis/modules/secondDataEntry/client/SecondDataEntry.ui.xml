@@ -28,9 +28,9 @@
                   </t:LabelCell>
                 </t:Column>
                 <t:Column width="70" label="{msg.gen_username}">
-                  <t:LabelCell>
-                    <w:Label field="Integer" />
-                  </t:LabelCell>
+                  <t:MultiDropdownCell>
+                    <w:MultiDropdown width="70px" field="Integer" />
+                  </t:MultiDropdownCell>
                 </t:Column>
                 <t:Column width="50" label="{msg.sample_domain}">
                   <t:DropdownCell>
@@ -89,7 +89,8 @@
                       <ui:text from="{msg.gen_username}:" />
                     </td>
                     <td colspan="5">
-                      <w:TextBox ui:field="historySystemUser" width="125px" field="String" />
+                      <w:MultiDropdown ui:field="historySystemUserIds" width="125px"
+                        field="Integer" />
                     </td>
                   </tr>
                   <tr>

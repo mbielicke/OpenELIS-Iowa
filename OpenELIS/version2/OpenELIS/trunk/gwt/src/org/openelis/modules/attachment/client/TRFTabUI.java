@@ -203,7 +203,6 @@ public abstract class TRFTabUI extends Screen {
                  */
                 if (isState(UPDATE))
                     event.cancel();
-                logger.log(Level.SEVERE, "UnSelection " + table.getSelectedRow());
             }
         });
 

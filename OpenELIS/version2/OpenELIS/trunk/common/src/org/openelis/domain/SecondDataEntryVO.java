@@ -26,6 +26,7 @@
 package org.openelis.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.openelis.ui.common.DataBaseUtil;
 
@@ -39,20 +40,21 @@ import org.openelis.ui.common.DataBaseUtil;
  */
 public class SecondDataEntryVO implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long    serialVersionUID = 1L;
 
-    protected Integer         sampleId, sampleAccessionNumber;
-    protected String          sampleDomain, historySystemUserLoginName;
+    protected Integer            sampleId, sampleAccessionNumber;
+    protected String             sampleDomain;
+    protected ArrayList<Integer> historySystemUserIds;
 
     public SecondDataEntryVO() {
     }
 
     public SecondDataEntryVO(Integer sampleId, Integer sampleAccessionNumber, String sampleDomain,
-                             String historysystemUserLoginName) {
+                             ArrayList<Integer> historySystemUserIds) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
         setSampleDomain(sampleDomain);
-        setHistorySystemUserLoginName(historysystemUserLoginName);
+        setHistorySystemUserIds(historySystemUserIds);
     }
 
     public Integer getSampleId() {
@@ -79,11 +81,11 @@ public class SecondDataEntryVO implements Serializable {
         this.sampleDomain = DataBaseUtil.trim(sampleDomain);
     }
 
-    public String getHistorysystemUserLoginName() {
-        return historySystemUserLoginName;
+    public ArrayList<Integer> getHistorySystemUserIds() {
+        return historySystemUserIds;
     }
 
-    public void setHistorySystemUserLoginName(String historySystemUserLoginName) {
-        this.historySystemUserLoginName = DataBaseUtil.trim(historySystemUserLoginName);
+    public void setHistorySystemUserIds(ArrayList<Integer> historySystemUserIds) {
+        this.historySystemUserIds = historySystemUserIds;
     }
 }
