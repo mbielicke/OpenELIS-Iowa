@@ -2834,6 +2834,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                         return;
                     }
 
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result.getManager();
                     if (isAttachmentScreenOpen)

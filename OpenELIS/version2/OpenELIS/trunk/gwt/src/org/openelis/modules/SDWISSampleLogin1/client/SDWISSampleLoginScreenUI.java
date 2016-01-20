@@ -2563,6 +2563,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                         return;
                     }
 
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result.getManager();
                     if (isAttachmentScreenOpen)

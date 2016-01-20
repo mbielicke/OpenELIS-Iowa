@@ -3616,6 +3616,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         return;
                     }
 
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result.getManager();
                     if (isAttachmentScreenOpen)
@@ -4702,6 +4703,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             logger.log(Level.SEVERE, e.getMessage(), e);
                             clearStatus();
                         }
+                    }
+                    
+                    public void notFound() {
+                        clearStatus();
+                        checkTRF();
                     }
 
                     public void failure(Throwable e) {
