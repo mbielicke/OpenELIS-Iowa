@@ -2652,6 +2652,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         return;
                     }
 
+                    isFullLogin = true;
                     previousManager = manager;
                     manager = result.getManager();
                     if (isAttachmentScreenOpen)
