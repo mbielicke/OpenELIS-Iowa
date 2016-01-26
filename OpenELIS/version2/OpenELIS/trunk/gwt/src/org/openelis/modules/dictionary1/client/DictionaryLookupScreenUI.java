@@ -193,6 +193,11 @@ public class DictionaryLookupScreenUI extends Screen
         executeQuery(query);
     }
 
+    @UiHandler("find")
+    public void find(ClickEvent event) {
+        executeQuery(findTextBox.getText());
+    }
+
     @UiHandler("ok")
     public void ok(ClickEvent event) {
         ArrayList<IdNameVO> list;
@@ -210,6 +215,7 @@ public class DictionaryLookupScreenUI extends Screen
         }
 
         ActionEvent.fire(this, Action.OK, list);
+        table.clear();
         window.close();
     }
 
