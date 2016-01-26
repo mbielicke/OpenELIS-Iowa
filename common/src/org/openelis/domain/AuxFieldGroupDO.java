@@ -73,6 +73,7 @@ public class AuxFieldGroupDO extends DataObject {
 
     public void setActiveBegin(Datetime activeBegin) {
         this.activeBegin = DataBaseUtil.toYD(activeBegin);
+        _changed = true;
     }
 
     public Datetime getActiveEnd() {
@@ -81,5 +82,6 @@ public class AuxFieldGroupDO extends DataObject {
 
     public void setActiveEnd(Datetime activeEnd) {
         this.activeEnd = DataBaseUtil.toYD(activeEnd);
+        _changed = true;
     }
 }
