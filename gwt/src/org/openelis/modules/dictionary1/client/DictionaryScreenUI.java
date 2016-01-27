@@ -468,7 +468,7 @@ public class DictionaryScreenUI extends Screen {
                         row = (AutoCompleteValue)val;
                         if (row != null) {
                             data.setRelatedEntryId(row.getId());
-                             data.setRelatedEntryName(row.getDisplay());
+                            data.setRelatedEntryName(row.getDisplay());
                         } else {
                             data.setRelatedEntryId(null);
                             data.setRelatedEntryName(null);
@@ -891,7 +891,10 @@ public class DictionaryScreenUI extends Screen {
                     manager = result;
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    if (isState(ADD))
+                        setDone(Messages.get().addingComplete());
+                    else
+                        setDone(Messages.get().updatingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {

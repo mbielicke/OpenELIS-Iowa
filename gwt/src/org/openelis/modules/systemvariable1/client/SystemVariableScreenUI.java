@@ -565,7 +565,7 @@ public class SystemVariableScreenUI extends Screen {
                     data = result;
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    setDone(Messages.get().addingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -592,7 +592,7 @@ public class SystemVariableScreenUI extends Screen {
                     data = result;
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    setDone(Messages.get().updatingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
