@@ -4246,6 +4246,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_analysisFieldSearchBy();
 
   /**
+   * Translated "Analysis QA Event".
+   * 
+   * @return translated "Analysis QA Event"
+   */
+  @DefaultMessage("Analysis QA Event")
+  @Key("dataView.analysisQAEvent")
+  String dataView_analysisQAEvent();
+
+  /**
    * Translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled".
    * 
    * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled"
@@ -4262,6 +4271,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("By")
   @Key("dataView.by")
   String dataView_by();
+
+  /**
+   * Translated "Column Order".
+   * 
+   * @return translated "Column Order"
+   */
+  @DefaultMessage("Column Order")
+  @Key("dataView.columnOrder")
+  String dataView_columnOrder();
 
   /**
    * Translated "Common".
@@ -4766,6 +4784,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample Fields To Search By")
   @Key("dataView.sampleFieldSearchBy")
   String dataView_sampleFieldSearchBy();
+
+  /**
+   * Translated "Sample QA Event".
+   * 
+   * @return translated "Sample QA Event"
+   */
+  @DefaultMessage("Sample QA Event")
+  @Key("dataView.sampleQAEvent")
+  String dataView_sampleQAEvent();
 
   /**
    * Translated "Sample Revision".
@@ -21533,6 +21560,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Not Attached")
   @Key("trfAttachment.notAttached")
   String trfAttachment_notAttached();
+
+  /**
+   * Translated "Please select an attachment".
+   * 
+   * @return translated "Please select an attachment"
+   */
+  @DefaultMessage("Please select an attachment")
+  @Key("trfAttachment.selectAttachment")
+  String trfAttachment_selectAttachment();
 
   /**
    * Translated "TRF".

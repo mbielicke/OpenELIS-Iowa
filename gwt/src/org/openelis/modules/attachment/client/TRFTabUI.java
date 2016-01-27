@@ -553,9 +553,15 @@ public abstract class TRFTabUI extends Screen {
      */
     @UiHandler("updateButton")
     protected void update(ClickEvent event) {
+        int r;
         Integer id;
 
-        id = table.getRowAt(table.getSelectedRow()).getData();
+        r = table.getSelectedRow();
+        if (r < 0) {
+            Window.alert(Messages.get().trfAttachment_selectAttachment());
+            return;
+        }
+        id = table.getRowAt(r).getData();
         fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, id);
     }
 
