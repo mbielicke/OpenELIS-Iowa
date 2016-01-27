@@ -887,7 +887,10 @@ public class OrganizationScreenUI extends Screen {
                     setData();
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    if (isState(ADD))
+                        setDone(Messages.get().addingComplete());
+                    else
+                        setDone(Messages.get().updatingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {

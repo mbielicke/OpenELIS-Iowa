@@ -572,7 +572,7 @@ public class AnalyteScreenUI extends Screen {
                     data = (AnalyteViewDO)result;
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    setDone(Messages.get().addingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -599,7 +599,7 @@ public class AnalyteScreenUI extends Screen {
                     data = (AnalyteViewDO)result;
                     setState(DISPLAY);
                     fireDataChange();
-                    clearStatus();
+                    setDone(Messages.get().updatingComplete());
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
