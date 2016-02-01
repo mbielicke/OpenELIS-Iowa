@@ -2,24 +2,24 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=OpenELIS-GWT&amp;ivyXmlPath=ivy.xml&amp;confs=jboss7&amp;ivySettingsPath=ivysettings.xml&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
 	<classpathentry kind="lib" path="/usr/local/java/gwt-2.7.0/gwt-codeserver.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-visualization-noredist.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-vfs-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gwtupload-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-dnd-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/org.moxieapps.gwt.highcharts-1.7.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=OpenELIS-GWT&amp;ivyXmlPath=ivy.xml&amp;confs=wildfly9&amp;ivySettingsPath=ivysettings.xml&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
