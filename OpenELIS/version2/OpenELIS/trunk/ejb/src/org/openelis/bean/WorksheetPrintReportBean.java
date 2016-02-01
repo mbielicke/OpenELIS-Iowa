@@ -656,7 +656,7 @@ public class WorksheetPrintReportBean {
                         form.setField("analysis_note_"+(i + 1), aNotes.toString());
                     } else if (waVDO.getQcLotId() != null) {
                         qlVDO = qlMap.get(waVDO.getQcLotId());
-                        form.setField("well_label_"+(i + 1), waVDO.getAccessionNumber());
+                        form.setField("well_label_"+(j), waVDO.getAccessionNumber());
                         form.setField("accession_number_"+(i + 1), waVDO.getAccessionNumber());
                         form.setField("qc_name_"+(i + 1), qlVDO.getQcName());
                         form.setField("qc_lot_"+(i + 1), qlVDO.getLotNumber());
