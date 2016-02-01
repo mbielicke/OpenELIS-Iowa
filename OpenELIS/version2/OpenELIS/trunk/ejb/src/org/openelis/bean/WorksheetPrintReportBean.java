@@ -399,7 +399,7 @@ public class WorksheetPrintReportBean {
     }
     
     private Path fillPDFWorksheet(Integer worksheetId, String templateName) throws Exception {
-        int i, formCapacity;
+        int i, j, formCapacity;
         AcroFields form;
         AnalysisViewDO aVDO;
         ArrayList<AnalysisQaEventViewDO> aqeVDOs;
@@ -511,6 +511,7 @@ public class WorksheetPrintReportBean {
             reader.close();
             
             i = -1;
+            j = 1;
             form = null;
             page = null;
             stamper = null;
@@ -532,6 +533,7 @@ public class WorksheetPrintReportBean {
                         stamper = new PdfStamper(reader, page);
                         form = stamper.getAcroFields();
                         i = 0;
+                        j = 1;
                     }
                     
                     form.setField("worksheet_id_"+(i + 1), wVDO.getId().toString());
@@ -609,6 +611,10 @@ public class WorksheetPrintReportBean {
                             }
                         }
                         
+                        if (waVDOMap.get(wiDO.getId()).size() > 1)
+                            form.setField("well_label_"+(j), wVDO.getId() + "." + wiDO.getPosition());
+                        else
+                            form.setField("well_label_"+(j), sDO.getAccessionNumber().toString());
                         form.setField("accession_number_"+(i + 1), sDO.getAccessionNumber().toString());
                         if (sDO.getCollectionDate() != null) {
                             collectionDateTime = ReportUtil.toString(sDO.getCollectionDate(), Messages.get().datePattern());
@@ -650,6 +656,7 @@ public class WorksheetPrintReportBean {
                         form.setField("analysis_note_"+(i + 1), aNotes.toString());
                     } else if (waVDO.getQcLotId() != null) {
                         qlVDO = qlMap.get(waVDO.getQcLotId());
+                        form.setField("well_label_"+(i + 1), waVDO.getAccessionNumber());
                         form.setField("accession_number_"+(i + 1), waVDO.getAccessionNumber());
                         form.setField("qc_name_"+(i + 1), qlVDO.getQcName());
                         form.setField("qc_lot_"+(i + 1), qlVDO.getLotNumber());
@@ -660,6 +667,7 @@ public class WorksheetPrintReportBean {
                     }
                     i++;
                 }
+                j++;
             }
             stamper.setFormFlattening(true);
             flattenFilledFields(stamper, formCapacity);
