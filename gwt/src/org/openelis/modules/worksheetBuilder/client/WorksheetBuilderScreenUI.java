@@ -41,6 +41,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -60,6 +61,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.WorksheetBuilderMeta;
@@ -69,6 +71,7 @@ import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.report.client.WorksheetPrintReportScreen;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
@@ -133,6 +136,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     private ScreenNavigator<IdNameVO>                     nav;
     private String                                        selectedUid;
     private WorksheetManager1                             manager;
+    private WorksheetPrintReportScreen                    worksheetPrintReportScreen;
 
     @UiField
     protected AutoComplete                                instrumentName, systemUserId;
@@ -149,7 +153,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField
     protected Menu                                        optionsMenu;
     @UiField
-    protected MenuItem                                    worksheetHistory;
+    protected MenuItem                                    printWorksheet, worksheetHistory;
     @UiField
     protected TabLayoutPanel                              tabPanel;
     @UiField
@@ -286,9 +290,18 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
+                printWorksheet.setEnabled(isState(DISPLAY));
                 worksheetHistory.setEnabled(isState(DISPLAY));
             }
         });
+
+        printWorksheet.addCommand(new Command() {
+            @Override
+            public void execute() {
+                printWorksheet();
+            }
+        });
+
         worksheetHistory.addCommand(new Command() {
             @Override
             public void execute() {
@@ -989,6 +1002,37 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         WorksheetService1.get().unlock(manager.getWorksheet().getId(), elements,
                                        unlockCall);
+    }
+
+    protected void printWorksheet() {
+        ScreenWindow modal;
+
+        try {
+            if (worksheetPrintReportScreen == null) {
+                worksheetPrintReportScreen = new WorksheetPrintReportScreen();
+
+                /*
+                 * we need to make sure that the value of WORKSHEET_ID gets set
+                 * the first time the screen is brought up
+                 */
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        worksheetPrintReportScreen.setFieldValue("WORKSHEET_ID",
+                                                                 manager.getWorksheet().getId());
+                    }
+                });
+            } else {
+                worksheetPrintReportScreen.reset();
+                worksheetPrintReportScreen.setFieldValue("WORKSHEET_ID", manager.getWorksheet()
+                                                                                .getId());
+            }
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().print());
+            modal.setContent(worksheetPrintReportScreen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void worksheetHistory() {
