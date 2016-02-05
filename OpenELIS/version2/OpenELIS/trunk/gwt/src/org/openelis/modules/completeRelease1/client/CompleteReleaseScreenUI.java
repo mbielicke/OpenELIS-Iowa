@@ -248,7 +248,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected boolean                          isBusy, hasEnvScriptlet, hasNeonatalScriptlet,
                     hasSDWISScriptlet;
 
-    protected ModulePermission                 userPermission;
+    protected ModulePermission                 samplePermission;
 
     protected CompleteReleaseScreenUI          screen;
 
@@ -307,10 +307,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     public CompleteReleaseScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("samplecompleterelease");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("samplecompleterelease") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Complete and Release Screen"));
+        
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -460,7 +463,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -471,7 +474,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);

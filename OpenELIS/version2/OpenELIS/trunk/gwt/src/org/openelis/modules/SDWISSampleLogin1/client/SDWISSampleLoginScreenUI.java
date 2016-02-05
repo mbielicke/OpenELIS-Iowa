@@ -275,7 +275,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
 
-    protected ModulePermission                          userPermission;
+    protected ModulePermission                          samplePermission;
 
     protected SDWISSampleLoginScreenUI                  screen;
 
@@ -331,10 +331,13 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     public SDWISSampleLoginScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("samplesdwis");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("samplesdwis") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("SDWIS Sample Login Screen"));
+
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -475,7 +478,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -500,7 +503,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                               samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -511,7 +515,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) &&
+                                  samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -547,7 +552,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(State.DISPLAY) && samplePermission.hasAddPermission());
             }
         });
 
@@ -560,7 +565,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
-                                      userPermission.hasAddPermission());
+                                      samplePermission.hasAddPermission());
             }
         });
 

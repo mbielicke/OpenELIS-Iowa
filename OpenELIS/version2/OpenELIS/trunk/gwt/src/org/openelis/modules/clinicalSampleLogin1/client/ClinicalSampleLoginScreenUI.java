@@ -279,7 +279,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     isPatientLocked, isBusy, closeLoginScreen, isAttachmentScreenOpen, revalidate,
                     isFullLogin;
 
-    protected ModulePermission                          userPermission;
+    protected ModulePermission                          samplePermission;
 
     protected ClinicalSampleLoginScreenUI               screen;
 
@@ -312,7 +312,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable,
+                    genTRFPatternVariable;
 
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -335,10 +336,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     public ClinicalSampleLoginScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sampleclinical");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("sampleclinical") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Clinical Sample Login Screen"));
+        
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -482,7 +486,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -507,7 +511,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -518,7 +522,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -554,7 +558,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(State.DISPLAY) && samplePermission.hasAddPermission());
             }
         });
 
@@ -567,7 +571,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
-                                      userPermission.hasAddPermission());
+                                      samplePermission.hasAddPermission());
             }
         });
 
@@ -4799,7 +4803,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         }
         clearStatus();
     }
-    
+
     /**
      * Checks whether the accession number on the TRF attached to the sample
      * matched the accession number entered by the user; shows a warning if it

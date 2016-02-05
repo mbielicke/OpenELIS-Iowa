@@ -243,9 +243,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RESULT_ANALYTE_ID = "_result.analyteId", RESULT_TYPE_ID = "_result.typeId",
                     RESULT_VALUE = "_result.value",
 
-                    ANALYSISQA_QAEVENT_ID = "_analysisQaevent.qaeventId",
-
-                    ANALYSISSUBQA_ID = "_aQaevent.id", ANALYSISSUBQA_NAME = "_aQaevent.name",
+                    ANALYSIS_QA_EVENT_QA_EVENT_NAME = "_aQaevent.name",
 
                     SAMPLE_ORG_ID = "_sampleOrganization.id",
                     SAMPLE_ORG_SAMPLE_ID = "_sampleOrganization.sampleId",
@@ -267,6 +265,8 @@ public class SampleWebMeta implements Meta, MetaMap {
 
                     PROJECT_ID = "_project.id", PROJECT_ID_HEADER = "_project.idHeader",
                     PROJECT_NAME = "_project.name", PROJECT_DESCRIPTION = "_project.description",
+                    
+                    SAMPLE_QA_EVENT_QA_EVENT_NAME = "_sQaevent.name",
 
                     NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
                     NEO_PROVIDER_FIRST_NAME = "_neonatalProvider.firstName",
@@ -487,9 +487,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RESULT_ANALYTE_ID,
                                                   RESULT_TYPE_ID,
                                                   RESULT_VALUE,
-                                                  ANALYSISQA_QAEVENT_ID,
-                                                  ANALYSISSUBQA_ID,
-                                                  ANALYSISSUBQA_NAME,
+                                                  ANALYSIS_QA_EVENT_QA_EVENT_NAME,
                                                   SAMPLE_ORG_ID,
                                                   SAMPLE_ORG_SAMPLE_ID,
                                                   SAMPLE_ORG_ORGANIZATION_ID,
@@ -511,6 +509,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   PROJECT_ID,
                                                   PROJECT_NAME,
                                                   PROJECT_DESCRIPTION,
+                                                  SAMPLE_QA_EVENT_QA_EVENT_NAME,
                                                   NEO_PROVIDER_LAST_NAME,
                                                   NEO_PROVIDER_FIRST_NAME,
                                                   CLIN_PROVIDER_LAST_NAME,
@@ -1300,16 +1299,8 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RESULT_VALUE;
     }
 
-    public static String getAnalysisQaQaeventId() {
-        return ANALYSISQA_QAEVENT_ID;
-    }
-
-    public static String getAnalysisSubQaId() {
-        return ANALYSISSUBQA_ID;
-    }
-
-    public static String getAnalysisSubQaName() {
-        return ANALYSISSUBQA_NAME;
+    public static String getAnalysisQAEventQAEventName() {
+        return ANALYSIS_QA_EVENT_QA_EVENT_NAME;
     }
 
     public static String getSampleOrgId() {
@@ -1390,6 +1381,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getProjectDescription() {
         return PROJECT_DESCRIPTION;
+    }
+    
+    public static String getSampleQAEventQAEventName() {    
+        return SAMPLE_QA_EVENT_QA_EVENT_NAME;
     }
 
     public static String getAuxDataId() {

@@ -46,6 +46,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -86,8 +87,8 @@ public class NeonatalTabUI extends Screen {
     protected EventBus                 parentBus;
 
     protected DataView1VO              data;
-    
-    protected ModulePermission     patientPermission;
+
+    protected ModulePermission         patientPermission;
 
     protected String                   domain;
 
@@ -96,9 +97,9 @@ public class NeonatalTabUI extends Screen {
     public NeonatalTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
-        
+
         patientPermission = UserCache.getPermission().getModule("dataview_patient");
-        
+
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -108,14 +109,19 @@ public class NeonatalTabUI extends Screen {
 
     public void initialize() {
         addScreenHandler(neonatalPatientId,
-                         SampleWebMeta.getNeonatalPatientId(),
+                         SampleWebMeta.NEO_PATIENT_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientId.setValue(getValue(SampleWebMeta.getNeonatalPatientId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientId.setValue(getValue(SampleWebMeta.NEO_PATIENT_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientId.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                              canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -125,14 +131,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientLastName,
-                         SampleWebMeta.getNeonatalPatientLastName(),
+                         SampleWebMeta.NEO_PATIENT_LAST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientLastName.setValue(getValue(SampleWebMeta.getNeonatalPatientLastName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientLastName.setValue(getValue(SampleWebMeta.NEO_PATIENT_LAST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_LAST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientLastName.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -141,14 +153,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientFirstName,
-                         SampleWebMeta.getNeonatalPatientFirstName(),
+                         SampleWebMeta.NEO_PATIENT_FIRST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientFirstName.setValue(getValue(SampleWebMeta.getNeonatalPatientFirstName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientFirstName.setValue(getValue(SampleWebMeta.NEO_PATIENT_FIRST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_FIRST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientFirstName.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -158,14 +177,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientBirthDate,
-                         SampleWebMeta.getNeonatalPatientBirthDate(),
+                         SampleWebMeta.NEO_PATIENT_BIRTH_DATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientBirthDate.setValue(getValue(SampleWebMeta.getNeonatalPatientBirthDate()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientBirthDate.setValue(getValue(SampleWebMeta.NEO_PATIENT_BIRTH_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_BIRTH_DATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientBirthDate.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -175,15 +201,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientAddrMultipleUnit,
-                         SampleWebMeta.getNeonatalPatientAddrMultipleUnit(),
+                         SampleWebMeta.NEO_PATIENT_ADDR_MULTIPLE_UNIT,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientAddrMultipleUnit.setValue(getValue(SampleWebMeta.getNeonatalPatientAddrMultipleUnit()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientAddrMultipleUnit.setValue(getValue(SampleWebMeta.NEO_PATIENT_ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ADDR_MULTIPLE_UNIT,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalPatientAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                            canEditDomain && canEditPatient);
+                                                                            canEditDomain &&
+                                                                            canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -193,15 +225,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientAddrStreetAddress,
-                         SampleWebMeta.getNeonatalPatientAddrStreetAddress(),
+                         SampleWebMeta.NEO_PATIENT_ADDR_STREET_ADDRESS,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientAddrStreetAddress.setValue(getValue(SampleWebMeta.getNeonatalPatientAddrStreetAddress()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientAddrStreetAddress.setValue(getValue(SampleWebMeta.NEO_PATIENT_ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ADDR_STREET_ADDRESS,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalPatientAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                             canEditDomain && canEditPatient);
+                                                                             canEditDomain &&
+                                                                             canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -211,14 +249,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientAddrCity,
-                         SampleWebMeta.getNeonatalPatientAddrCity(),
+                         SampleWebMeta.NEO_PATIENT_ADDR_CITY,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientAddrCity.setValue(getValue(SampleWebMeta.getNeonatalPatientAddrCity()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientAddrCity.setValue(getValue(SampleWebMeta.NEO_PATIENT_ADDR_CITY));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ADDR_CITY,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientAddrCity.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -228,14 +272,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientAddrState,
-                         SampleWebMeta.getNeonatalPatientAddrState(),
+                         SampleWebMeta.NEO_PATIENT_ADDR_STATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientAddrState.setValue(getValue(SampleWebMeta.getNeonatalPatientAddrState()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientAddrState.setValue(getValue(SampleWebMeta.NEO_PATIENT_ADDR_STATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ADDR_STATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientAddrState.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -245,14 +296,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientAddrZipCode,
-                         SampleWebMeta.getNeonatalPatientAddrZipCode(),
+                         SampleWebMeta.NEO_PATIENT_ADDR_ZIP_CODE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientAddrZipCode.setValue(getValue(SampleWebMeta.getNeonatalPatientAddrZipCode()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientAddrZipCode.setValue(getValue(SampleWebMeta.NEO_PATIENT_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ADDR_ZIP_CODE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientAddrZipCode.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -262,14 +320,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientGenderId,
-                         SampleWebMeta.getNeonatalPatientGenderId(),
+                         SampleWebMeta.NEO_PATIENT_GENDER_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientGenderId.setValue(getValue(SampleWebMeta.getNeonatalPatientGenderId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientGenderId.setValue(getValue(SampleWebMeta.NEO_PATIENT_GENDER_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_GENDER_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientGenderId.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -279,14 +343,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientRaceId,
-                         SampleWebMeta.getNeonatalPatientRaceId(),
+                         SampleWebMeta.NEO_PATIENT_RACE_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientRaceId.setValue(getValue(SampleWebMeta.getNeonatalPatientRaceId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientRaceId.setValue(getValue(SampleWebMeta.NEO_PATIENT_RACE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_RACE_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientRaceId.setEnabled(isState(DEFAULT) &&
+                                                                  canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -296,14 +366,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalPatientEthnicityId,
-                         SampleWebMeta.getNeonatalPatientEthnicityId(),
+                         SampleWebMeta.NEO_PATIENT_ETHNICITY_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalPatientEthnicityId.setValue(getValue(SampleWebMeta.getNeonatalPatientEthnicityId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalPatientEthnicityId.setValue(getValue(SampleWebMeta.NEO_PATIENT_ETHNICITY_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PATIENT_ETHNICITY_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalPatientEthnicityId.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -311,31 +388,38 @@ public class NeonatalTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(neonatalIsNicu,
-                         SampleWebMeta.getNeonatalIsNicu(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalIsNicu.setValue(getValue(SampleWebMeta.getNeonatalIsNicu()));
-                             }
+        addScreenHandler(neonatalIsNicu, SampleWebMeta.NEO_IS_NICU, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                neonatalIsNicu.setValue(getValue(SampleWebMeta.NEO_IS_NICU));
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsNicu.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
-                             }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.NEO_IS_NICU, event.getValue());
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? neonatalBirthOrder : neonatalPatientEthnicityId;
-                             }
-                         });
+            public void onStateChange(StateChangeEvent event) {
+                neonatalIsNicu.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? neonatalBirthOrder : neonatalPatientEthnicityId;
+            }
+        });
 
         addScreenHandler(neonatalBirthOrder,
-                         SampleWebMeta.getNeonatalBirthOrder(),
+                         SampleWebMeta.NEO_BIRTH_ORDER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalBirthOrder.setValue(getValue(SampleWebMeta.getNeonatalBirthOrder()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalBirthOrder.setValue(getValue(SampleWebMeta.NEO_BIRTH_ORDER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_BIRTH_ORDER, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalBirthOrder.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalBirthOrder.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                               canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -344,14 +428,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalGestationalAge,
-                         SampleWebMeta.getNeonatalGestationalAge(),
+                         SampleWebMeta.NEO_GESTATIONAL_AGE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalGestationalAge.setValue(getValue(SampleWebMeta.getNeonatalGestationalAge()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalGestationalAge.setValue(getValue(SampleWebMeta.NEO_GESTATIONAL_AGE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_GESTATIONAL_AGE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalGestationalAge.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalGestationalAge.setEnabled(isState(DEFAULT) &&
+                                                                   canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -360,14 +450,19 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalFeedingId,
-                         SampleWebMeta.getNeonatalFeedingId(),
+                         SampleWebMeta.NEO_FEEDING_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalFeedingId.setValue(getValue(SampleWebMeta.getNeonatalFeedingId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalFeedingId.setValue(getValue(SampleWebMeta.NEO_FEEDING_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_FEEDING_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalFeedingId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalFeedingId.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                              canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -375,31 +470,38 @@ public class NeonatalTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(neonatalWeight,
-                         SampleWebMeta.getNeonatalWeight(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalWeight.setValue(getValue(SampleWebMeta.getNeonatalWeight()));
-                             }
+        addScreenHandler(neonatalWeight, SampleWebMeta.NEO_WEIGHT, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                neonatalWeight.setValue(getValue(SampleWebMeta.NEO_WEIGHT));
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 neonatalWeight.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
-                             }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.NEO_WEIGHT, event.getValue());
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? neonatalIsTransfused : neonatalFeedingId;
-                             }
-                         });
+            public void onStateChange(StateChangeEvent event) {
+                neonatalWeight.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? neonatalIsTransfused : neonatalFeedingId;
+            }
+        });
 
         addScreenHandler(neonatalIsTransfused,
-                         SampleWebMeta.getNeonatalIsTransfused(),
+                         SampleWebMeta.NEO_IS_TRANSFUSED,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalIsTransfused.setValue(getValue(SampleWebMeta.getNeonatalIsTransfused()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalIsTransfused.setValue(getValue(SampleWebMeta.NEO_IS_TRANSFUSED));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_IS_TRANSFUSED, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsTransfused.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalIsTransfused.setEnabled(isState(DEFAULT) &&
+                                                                 canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -408,14 +510,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalTransfusionDate,
-                         SampleWebMeta.getNeonatalTransfusionDate(),
+                         SampleWebMeta.NEO_TRANSFUSION_DATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalTransfusionDate.setValue(getValue(SampleWebMeta.getNeonatalTransfusionDate()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalTransfusionDate.setValue(getValue(SampleWebMeta.NEO_TRANSFUSION_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_TRANSFUSION_DATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalTransfusionDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalTransfusionDate.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -424,14 +532,19 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalIsRepeat,
-                         SampleWebMeta.getNeonatalIsRepeat(),
+                         SampleWebMeta.NEO_IS_REPEAT,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalIsRepeat.setValue(getValue(SampleWebMeta.getNeonatalIsRepeat()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalIsRepeat.setValue(getValue(SampleWebMeta.NEO_IS_REPEAT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_IS_REPEAT, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsRepeat.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalIsRepeat.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                             canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -440,14 +553,19 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalCollectionAge,
-                         SampleWebMeta.getNeonatalCollectionAge(),
+                         SampleWebMeta.NEO_COLLECTION_AGE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalCollectionAge.setValue(getValue(SampleWebMeta.getNeonatalCollectionAge()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalCollectionAge.setValue(getValue(SampleWebMeta.NEO_COLLECTION_AGE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_COLLECTION_AGE, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalCollectionAge.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalCollectionAge.setEnabled(isState(DEFAULT) &&
+                                                                  canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -456,14 +574,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalIsCollectionValid,
-                         SampleWebMeta.getNeonatalIsCollectionValid(),
+                         SampleWebMeta.NEO_IS_COLLECTION_VALID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalIsCollectionValid.setValue(getValue(SampleWebMeta.getNeonatalIsCollectionValid()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalIsCollectionValid.setValue(getValue(SampleWebMeta.NEO_IS_COLLECTION_VALID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_IS_COLLECTION_VALID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalIsCollectionValid.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalIsCollectionValid.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain &&
+                                                                      canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -472,14 +597,19 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalFormNumber,
-                         SampleWebMeta.getNeonatalFormNumber(),
+                         SampleWebMeta.NEO_FORM_NUMBER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalFormNumber.setValue(getValue(SampleWebMeta.getNeonatalFormNumber()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalFormNumber.setValue(getValue(SampleWebMeta.NEO_FORM_NUMBER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_FORM_NUMBER, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalFormNumber.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalFormNumber.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                               canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -488,14 +618,19 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinId,
-                         SampleWebMeta.getNeonatalNextOfKinId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinId.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                                canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -504,14 +639,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinLastName,
-                         SampleWebMeta.getNeonatalNextOfKinLastName(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_LAST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinLastName.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinLastName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinLastName.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_LAST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_LAST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinLastName.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain &&
+                                                                      canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -520,14 +662,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinMiddleName,
-                         SampleWebMeta.getNeonatalNextOfKinMiddleName(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_MIDDLE_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinMiddleName.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinMiddleName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinMiddleName.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_MIDDLE_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_MIDDLE_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinMiddleName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinMiddleName.setEnabled(isState(DEFAULT) &&
+                                                                        canEditDomain &&
+                                                                        canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -537,14 +686,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinFirstName,
-                         SampleWebMeta.getNeonatalNextOfKinFirstName(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_FIRST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinFirstName.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinFirstName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinFirstName.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_FIRST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_FIRST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinFirstName.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -554,14 +710,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinRelationId,
-                         SampleWebMeta.getNeonatalNextOfKinRelationId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_RELATION_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinRelationId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinRelationId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinRelationId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_RELATION_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_RELATION_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinRelationId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinRelationId.setEnabled(isState(DEFAULT) &&
+                                                                        canEditDomain &&
+                                                                        canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -571,14 +734,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinBirthDate,
-                         SampleWebMeta.getNeonatalNextOfKinBirthDate(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinBirthDate.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinBirthDate()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinBirthDate.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_BIRTH_DATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinBirthDate.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -588,14 +758,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinNationalId,
-                         SampleWebMeta.getNeonatalNextOfKinNationalId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinNationalId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinNationalId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinNationalId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_NATIONAL_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinNationalId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinNationalId.setEnabled(isState(DEFAULT) &&
+                                                                        canEditDomain &&
+                                                                        canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -605,15 +782,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrMultipleUnit,
-                         SampleWebMeta.getNeonatalNextOfKinAddrMultipleUnit(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrMultipleUnit.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrMultipleUnit()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrMultipleUnit.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                              canEditDomain && canEditPatient);
+                                                                              canEditDomain &&
+                                                                              canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -623,15 +806,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrStreetAddress,
-                         SampleWebMeta.getNeonatalNextOfKinAddrStreetAddress(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrStreetAddress.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrStreetAddress()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrStreetAddress.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                               canEditDomain && canEditPatient);
+                                                                               canEditDomain &&
+                                                                               canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -641,14 +830,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrCity,
-                         SampleWebMeta.getNeonatalNextOfKinAddrCity(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_CITY,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrCity.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrCity()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrCity.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_CITY));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_CITY,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinAddrCity.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain &&
+                                                                      canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -658,14 +854,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrState,
-                         SampleWebMeta.getNeonatalNextOfKinAddrState(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrState.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrState()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrState.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_STATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinAddrState.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -675,15 +878,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrZipCode,
-                         SampleWebMeta.getNeonatalNextOfKinAddrZipCode(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_ZIP_CODE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrZipCode.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrZipCode()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrZipCode.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_ZIP_CODE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrZipCode.setEnabled(isState(DEFAULT) &&
-                                                                         canEditDomain && canEditPatient);
+                                                                         canEditDomain &&
+                                                                         canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -693,15 +902,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinAddrHomePhone,
-                         SampleWebMeta.getNeonatalNextOfKinAddrHomePhone(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_HOME_PHONE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinAddrHomePhone.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinAddrHomePhone()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinAddrHomePhone.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_HOME_PHONE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ADDR_HOME_PHONE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinAddrHomePhone.setEnabled(isState(DEFAULT) &&
-                                                                           canEditDomain && canEditPatient);
+                                                                           canEditDomain &&
+                                                                           canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -711,14 +926,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinGenderId,
-                         SampleWebMeta.getNeonatalNextOfKinGenderId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_GENDER_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinGenderId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinGenderId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinGenderId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_GENDER_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_GENDER_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinGenderId.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain &&
+                                                                      canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -728,14 +950,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinRaceId,
-                         SampleWebMeta.getNeonatalNextOfKinRaceId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_RACE_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinRaceId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinRaceId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinRaceId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_RACE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_RACE_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalNextOfKinRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 neonatalNextOfKinRaceId.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -745,15 +973,21 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalNextOfKinEthnicityId,
-                         SampleWebMeta.getNeonatalNextOfKinEthnicityId(),
+                         SampleWebMeta.NEO_NEXT_OF_KIN_ETHNICITY_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalNextOfKinEthnicityId.setValue(getValue(SampleWebMeta.getNeonatalNextOfKinEthnicityId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalNextOfKinEthnicityId.setValue(getValue(SampleWebMeta.NEO_NEXT_OF_KIN_ETHNICITY_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_NEXT_OF_KIN_ETHNICITY_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  neonatalNextOfKinEthnicityId.setEnabled(isState(DEFAULT) &&
-                                                                         canEditDomain && canEditPatient);
+                                                                         canEditDomain &&
+                                                                         canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -763,14 +997,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalProviderLastName,
-                         SampleWebMeta.getNeonatalProviderLastName(),
+                         SampleWebMeta.NEO_PROVIDER_LAST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalProviderLastName.setValue(getValue(SampleWebMeta.getNeonatalProviderLastName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalProviderLastName.setValue(getValue(SampleWebMeta.NEO_PROVIDER_LAST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PROVIDER_LAST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalProviderLastName.setEnabled(isState(DEFAULT) && canEditDomain);
+                                 neonatalProviderLastName.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -780,14 +1020,20 @@ public class NeonatalTabUI extends Screen {
                          });
 
         addScreenHandler(neonatalProviderFirstName,
-                         SampleWebMeta.getNeonatalProviderFirstName(),
+                         SampleWebMeta.NEO_PROVIDER_FIRST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 neonatalProviderFirstName.setValue(getValue(SampleWebMeta.getNeonatalProviderFirstName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 neonatalProviderFirstName.setValue(getValue(SampleWebMeta.NEO_PROVIDER_FIRST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.NEO_PROVIDER_FIRST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 neonatalProviderFirstName.setEnabled(isState(DEFAULT) && canEditDomain);
+                                 neonatalProviderFirstName.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -798,10 +1044,10 @@ public class NeonatalTabUI extends Screen {
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
                 String dtxt, ptxt;
-                
+
                 dtxt = canEditDomain ? null : Messages.get().dataView_tabFieldsDisabled();
                 ptxt = canEditPatient ? null : Messages.get().dataView_patientFieldsDisabled();
-                
+
                 fieldsDisabledLabel.setText(DataBaseUtil.concatWithSeparator(dtxt, " ", ptxt));
             }
         });
@@ -809,12 +1055,36 @@ public class NeonatalTabUI extends Screen {
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
+                String prevDom;
+                Widget w;
+                CheckBox cb;
+
+                prevDom = domain;
                 /*
                  * the widgets in this tab need to be enabled or disabled based
                  * on the current domain
                  */
                 domain = event.getDomain();
                 setState(state);
+
+                if (Constants.domain().NEONATAL.equals(prevDom) && !canEditDomain) {
+                    /*
+                     * the previous domain was neonatal but is not anymore; if
+                     * some columns from neonatal were selected before the
+                     * domain was changed, remove them from the ones shown in
+                     * the report
+                     */
+                    for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+                        w = entry.getValue().widget;
+                        if (w instanceof CheckBox) {
+                            cb = (CheckBox)w;
+                            if ("Y".equals(cb.getValue())) {
+                                cb.setValue("N");
+                                addRemoveColumn(entry.getKey(), "N");
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -832,17 +1102,17 @@ public class NeonatalTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
-    
+
     public Validation validate() {
         Widget w;
         CheckBox cb;
         Validation validation;
-        
+
         validation = super.validate();
-        
+
         if ( !canEditDomain)
             return validation;
-        
+
         /*
          * show an error if the checkbox for a patient field has been checked
          * but the user doesn't have the permission to view patient or patient
@@ -850,8 +1120,8 @@ public class NeonatalTabUI extends Screen {
          * is loaded from a file that had those fields checked; this validation
          * is done only if neonatal domain is selected on Query tab, because
          * otherwise this tab's fields don't get added to the list of columns
-         * sent to the back-end; provider fields don't require the
-         * permission to be checked
+         * sent to the back-end; provider fields don't require the permission to
+         * be checked
          */
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
             w = entry.getValue().widget;
@@ -859,9 +1129,9 @@ public class NeonatalTabUI extends Screen {
                 cb = (CheckBox)w;
                 if ("Y".equals(cb.getValue()) &&
                     !canEditPatient &&
-                    (entry.getKey().startsWith("_neonatalPatient") || entry.getKey()
-                                    .startsWith("_neonatalNextOfKin") || entry.getKey()
-                                                                    .startsWith("_sampleNeonatal"))) {
+                    (entry.getKey().startsWith("_neonatalPatient") ||
+                     entry.getKey().startsWith("_neonatalNextOfKin") || entry.getKey()
+                                                                             .startsWith("_sampleNeonatal"))) {
                     validation.addException(new Exception(Messages.get()
                                                                   .dataView_noPermToViewPatientException()));
                     validation.setStatus(Validation.Status.ERRORS);
@@ -869,39 +1139,35 @@ public class NeonatalTabUI extends Screen {
                 }
             }
         }
-        
+
         return validation;
     }
 
-    /**
-     * Adds the keys for all checked checkboxes to the list of columns shown in
-     * the generated excel file
-     */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        if ( !canEditDomain)
-            return;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
+    private void evaluateEdit() {
+        canEditDomain = Constants.domain().NEONATAL.equals(domain);
+        canEditPatient = patientPermission != null;
     }
 
+    /**
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
+     */
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
     }
 
-    private void evaluateEdit() {
-        canEditDomain = Constants.domain().NEONATAL.equals(domain);
-        canEditPatient = patientPermission != null;
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }

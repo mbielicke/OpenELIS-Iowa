@@ -188,6 +188,7 @@ public class ResultTabUI extends Screen {
                 Integer caseFlag, rg, testId, unitId;
                 Row row;
                 ResultViewDO data;
+                Item<Integer> item;
                 ArrayList<Item<Integer>> model;
                 String key;
                 TestManager tm;
@@ -260,8 +261,11 @@ public class ResultTabUI extends Screen {
                                 values = rf.getDictionaryValues(rg, unitId);
                                 if (values != null) {
                                     model = new ArrayList<Item<Integer>>();
-                                    for (FormattedValue v : values)
-                                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                                    for (FormattedValue v : values) {
+                                        item = new Item<Integer>(v.getId(), v.getDisplay());
+                                        item.setEnabled(v.getIsActive());
+                                        model.add(item);
+                                    }
                                 }
                                 len = rf.getMaxLength(rg, unitId) * MEAN_CHAR_WIDTH;
                             } else if (rf.hasOnlyAlphaLower(rg, unitId)) {

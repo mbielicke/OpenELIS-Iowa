@@ -172,7 +172,6 @@ public class ApplicationBean {
         Constants.dictionary().ENVIRONMENTAL = dictId(map, "environmental");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
-        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map,

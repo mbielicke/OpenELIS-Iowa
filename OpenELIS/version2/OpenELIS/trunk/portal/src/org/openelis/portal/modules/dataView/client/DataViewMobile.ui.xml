@@ -531,14 +531,14 @@
 								enabled="true" width="36px" />
 						</td>
 						<td>
-							<ui:text from="{msg.sample_releasedDate}" />
+							<ui:text from="{msg.analysis_releasedDate}" />
 						</td>
 						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisQa"
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisQA"
 								enabled="true" width="36px" />
 						</td>
 						<td>
-							<ui:text from="{msg.analysis_qaEvent}" />
+							<ui:text from="{msg.dataView_qaEvent}" />
 						</td>
 					</tr>
 					<tr>

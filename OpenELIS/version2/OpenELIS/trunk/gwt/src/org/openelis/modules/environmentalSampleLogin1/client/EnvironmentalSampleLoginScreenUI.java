@@ -268,7 +268,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
 
-    protected ModulePermission                          userPermission;
+    protected ModulePermission                          samplePermission;
 
     protected EnvironmentalSampleLoginScreenUI          screen;
 
@@ -324,10 +324,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     public EnvironmentalSampleLoginScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sampleenvironmental");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("sampleenvironmental") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Environmental Sample Login Screen"));
+        
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -468,7 +471,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -493,7 +496,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -504,7 +507,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -540,7 +543,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(DISPLAY));
+                duplicate.setEnabled(isState(DISPLAY) && samplePermission.hasAddPermission());
             }
         });
 
@@ -553,7 +556,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
-                                      userPermission.hasAddPermission());
+                                      samplePermission.hasAddPermission());
             }
         });
 
@@ -4256,7 +4259,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
         clearStatus();
     }
-    
+
     /**
      * Checks whether the accession number on the TRF attached to the sample
      * matched the accession number entered by the user; shows a warning if it

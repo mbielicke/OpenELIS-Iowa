@@ -160,7 +160,7 @@ public class AttachmentBean {
      * "description"
      * 
      * @param description
-     *         the value used to find attachments with matching description
+     *        the value used to find attachments with matching description
      * @param first
      *        the index of the first record to be returned by the query i.e. the
      *        first record in the current "page"
@@ -191,7 +191,8 @@ public class AttachmentBean {
 
     /**
      * Fetches the attachment records that don't have any attachment items and
-     * were created before "createdDate"
+     * issues and were created before "createdDate" so that they can be removed
+     * from the system
      * 
      * @param createdDate
      *        all fetched attachment records were created before this date
@@ -199,11 +200,11 @@ public class AttachmentBean {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> fetchUnattachedBeforeCreatedDate(Date createdDate) throws Exception {
+    public ArrayList<AttachmentDO> fetchForRemove(Date createdDate) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("Attachment.FetchUnattachedBeforeCreatedDate");
+        query = manager.createNamedQuery("Attachment.FetchForRemove");
         query.setParameter("createdDate", createdDate);
 
         list = query.getResultList();
@@ -212,7 +213,7 @@ public class AttachmentBean {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
+
     /**
      * Fetches the attachment records whose description matches "description"
      * and whose attachment items are linked to the record with the passed
@@ -438,10 +439,10 @@ public class AttachmentBean {
         if (DataBaseUtil.isEmpty(data.getDescription()))
             e.add(new FormErrorException(Messages.get()
                                                  .attachment_descRequiredException(data.getDescription())));
-        
+
         if (data.getSectionId() == null)
             e.add(new FormErrorException(Messages.get()
-                                         .attachment_sectRequiredException(data.getDescription())));
+                                                 .attachment_sectRequiredException(data.getDescription())));
 
         /*
          * validate the section if the two DOs have different sections

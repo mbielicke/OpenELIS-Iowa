@@ -237,7 +237,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected boolean                                    canEdit, isBusy, unrelease,
                     hasEnvScriptlet, hasNeonatalScriptlet, hasSDWISScriptlet;
 
-    protected ModulePermission                           userPermission, unreleasePermission,
+    protected ModulePermission                           samplePermission, unreleasePermission,
                     changeDomainPermission;
 
     protected SampleTrackingScreenUI                     screen;
@@ -305,10 +305,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     public SampleTrackingScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sampletracking");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("sampletracking") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Sample Tracking Screen"));
+
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         unreleasePermission = UserCache.getPermission().getModule("sampleunrelease");
         if (unreleasePermission == null)
@@ -485,7 +488,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 queryButton.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                       userPermission.hasSelectPermission());
+                                       samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     queryButton.lock();
                     queryButton.setPressed(true);
@@ -496,7 +499,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 updateButton.setEnabled(isState(UPDATE, DISPLAY) &&
-                                        userPermission.hasUpdatePermission());
+                                        samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     updateButton.lock();
                     updateButton.setPressed(true);
@@ -839,42 +842,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         tree.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
-                AnalysisViewDO ana;
-                UUID data;
-                Node node;
-
-                node = tree.getNodeAt(event.getSelectedItem());
-                data = node.getData();
-                manager = managers.get(data.sampleId);
-
-                /*
-                 * enable the button for adding a test if the nodes for sample
-                 * item, result or any of its children is selected and the
-                 * sample can be changed; enable the button for cancelling a
-                 * test if the nodes for result or any of its children is
-                 * selected, the sample can be changed and the analysis can be
-                 * cancelled
-                 */
-                if (RESULT_LEAF.equals(node.getType()) ||
-                    RESULT_LEAF.equals(node.getParent().getType())) {
-                    ana = (AnalysisViewDO)manager.getObject(data.uid);
-                    addTestButton.setEnabled(canEdit && isState(UPDATE));
-                    cancelTestButton.setEnabled(canEdit &&
-                                                isState(UPDATE) &&
-                                                !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
-                                                !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()));
-                } else if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
-                    addTestButton.setEnabled(canEdit && isState(UPDATE));
-                    cancelTestButton.setEnabled(false);
-                } else {
-                    addTestButton.setEnabled(false);
-                    cancelTestButton.setEnabled(false);
-                }
-
-                setData();
-                refreshTabs(node);
-                enablePatientHistory();
-                enablePatientRelationHistory();
+                nodeSelected(tree.getNodeAt(event.getSelectedItem()));
             }
         });
 
@@ -902,7 +870,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(sampleTab, "sampleTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleTab.onDataChange();
             }
 
@@ -922,7 +890,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 environmentalTab.onDataChange();
             }
 
@@ -947,7 +915,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         environmentalTab.setCanQuery(true);
 
         addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 privateWellTab.onDataChange();
             }
 
@@ -972,7 +940,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         privateWellTab.setCanQuery(true);
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sdwisTab.onDataChange();
             }
 
@@ -997,7 +965,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         sdwisTab.setCanQuery(true);
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 neonatalTab.onDataChange();
             }
 
@@ -1016,7 +984,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 clinicalTab.onDataChange();
             }
 
@@ -1044,7 +1012,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         clinicalTab.setCanQuery(true);
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 ptTab.onDataChange();
             }
 
@@ -1069,7 +1037,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         ptTab.setCanQuery(true);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 quickEntryTab.onDataChange();
             }
 
@@ -1083,7 +1051,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1105,7 +1073,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1127,7 +1095,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1149,7 +1117,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1165,7 +1133,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1179,7 +1147,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1195,7 +1163,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1211,7 +1179,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1231,7 +1199,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -1867,7 +1835,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                      * the tree
                      */
                     reloadSample(node);
-                    refreshTabs(node);
+                    nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
                     clearStatus();
 
                     /*
@@ -1962,7 +1930,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                          * refresh the tree
                          */
                         reloadSample(node);
-                        refreshTabs(node);
+                        nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
@@ -2033,7 +2001,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                      * tree
                      */
                     reloadSample(node);
-                    refreshTabs(node);
+                    nodeSelected(screen.tree.getNodeAt(screen.tree.getSelectedNode()));
                 }
             };
         }
@@ -2926,7 +2894,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                      * the tree
                      */
                     reloadSample(node);
-                    refreshTabs(node);
+                    nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
                     if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                                .getStatusId())) {
                         try {
@@ -3106,7 +3074,14 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * manager for the currently selected sample
      */
     private void reloadSample(Node sampleNode) {
+        Node prevSelNode, newSelNode;
         HashMap<String, Boolean> openNodes;
+
+        /*
+         * find out which node is currently selected; if a node for its record
+         * (e.g. analysis) is in the new subtree, it will be selected
+         */
+        prevSelNode = tree.getNodeAt(tree.getSelectedNode());
 
         /*
          * find out which nodes in the existing subtree are open right now, so
@@ -3132,7 +3107,47 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         setOpen(openNodes, sampleNode);
 
         tree.refreshNode(sampleNode);
-        tree.selectNodeAt(sampleNode);
+
+        /*
+         * find the node showing the same record (e.g. analysis) as the node
+         * selected before reloading the subtree; if the node is found, select
+         * it; otherwise select the sample node
+         */
+        newSelNode = findNewSelectNode(sampleNode, prevSelNode);
+        tree.selectNodeAt(newSelNode != null ? newSelNode : sampleNode);
+    }
+
+    /**
+     * Finds the node that's showing the same record (e.g. analysis) as
+     * "prevSelNode", in the subtree rooted at "parentNode"; returns the node if
+     * it's found, otherwise returns null
+     */
+    private Node findNewSelectNode(Node parentNode, Node prevSelNode) {
+        Node newSelNode;
+
+        if (isSameNode(parentNode, prevSelNode)) {
+            return parentNode;
+        } else {
+            for (int i = 0; i < parentNode.getChildCount(); i++ ) {
+                newSelNode = findNewSelectNode(parentNode.getChildAt(i), prevSelNode);
+                if (newSelNode != null)
+                    return newSelNode;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if the two nodes are showing the same record (e.g.
+     * analysis); the comparison is done using uid and leaf type
+     */
+    private boolean isSameNode(Node node1, Node node2) {
+        UUID data1, data2;
+
+        data1 = (UUID)node1.getData();
+        data2 = (UUID)node2.getData();
+
+        return data1.uid.equals(data2.uid) && node1.getType().equals(node2.getType());
     }
 
     /**
@@ -3168,6 +3183,47 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         for (int i = 0; i < node.getChildCount(); i++ )
             setOpen(openNodes, node.getChildAt(i));
+    }
+
+    /**
+     * Performs the necessary operations when a node in the tree is selected
+     * either manually or through code; the operations include disabling or
+     * enabling widgets e.g. menu options and buttons and showing the
+     * appropriate tab(s) for the selected node
+     */
+    private void nodeSelected(Node node) {
+        AnalysisViewDO ana;
+        UUID data;
+
+        data = node.getData();
+        manager = managers.get(data.sampleId);
+
+        /*
+         * enable the button for adding a test if the nodes for sample item,
+         * result or any of its children is selected and the sample can be
+         * changed; enable the button for cancelling a test if the nodes for
+         * result or any of its children is selected, the sample can be changed
+         * and the analysis can be cancelled
+         */
+        if (RESULT_LEAF.equals(node.getType()) || RESULT_LEAF.equals(node.getParent().getType())) {
+            ana = (AnalysisViewDO)manager.getObject(data.uid);
+            addTestButton.setEnabled(canEdit && isState(UPDATE));
+            cancelTestButton.setEnabled(canEdit &&
+                                        isState(UPDATE) &&
+                                        !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
+                                        !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()));
+        } else if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
+            addTestButton.setEnabled(canEdit && isState(UPDATE));
+            cancelTestButton.setEnabled(false);
+        } else {
+            addTestButton.setEnabled(false);
+            cancelTestButton.setEnabled(false);
+        }
+
+        setData();
+        refreshTabs(node);
+        enablePatientHistory();
+        enablePatientRelationHistory();
     }
 
     /**
@@ -3797,7 +3853,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
              * reload the changed sample in the tree and refresh the tree
              */
             reloadSample(node);
-            refreshTabs(node);
+            nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

@@ -66,7 +66,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -110,6 +109,9 @@ public class DataViewScreenUI extends Screen {
     @UiField(provided = true)
     protected PTTabUI                      ptTab;
 
+    @UiField(provided = true)
+    protected ColumnOrderTabUI             columnOrderTab;
+
     protected DataViewScreenUI             screen;
 
     protected FilterScreenUI               filterScreen;
@@ -124,8 +126,6 @@ public class DataViewScreenUI extends Screen {
 
     protected AsyncCallbackUI<DataView1VO> fetchTestAnalyteAndAuxFieldCall;
 
-    protected AsyncCallback<ReportStatus>  runReportCall;
-
     public DataViewScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
@@ -136,6 +136,7 @@ public class DataViewScreenUI extends Screen {
         clinicalTab = new ClinicalTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         ptTab = new PTTabUI(this);
+        columnOrderTab = new ColumnOrderTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -198,7 +199,7 @@ public class DataViewScreenUI extends Screen {
          * widgets
          */
         addScreenHandler(queryTab, "queryTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 queryTab.onDataChange();
             }
 
@@ -212,7 +213,7 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(commonTab, "commonTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 commonTab.onDataChange();
             }
 
@@ -226,7 +227,7 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 environmentalTab.onDataChange();
             }
 
@@ -240,7 +241,7 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sdwisTab.onDataChange();
             }
 
@@ -254,7 +255,7 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 clinicalTab.onDataChange();
             }
 
@@ -268,7 +269,7 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 neonatalTab.onDataChange();
             }
 
@@ -282,12 +283,26 @@ public class DataViewScreenUI extends Screen {
         });
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 ptTab.onDataChange();
             }
 
             public void onStateChange(StateChangeEvent event) {
                 ptTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(columnOrderTab, "columnOrderTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                columnOrderTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                columnOrderTab.setState(event.getState());
             }
 
             public Object getQuery() {
@@ -305,7 +320,7 @@ public class DataViewScreenUI extends Screen {
             }
         });
     }
-    
+
     /**
      * This is overridden because the tabs need to be enabled or disabled based
      * on the data on the screen e.g. on opening a query; otherwise,
@@ -327,6 +342,7 @@ public class DataViewScreenUI extends Screen {
         clinicalTab.setData(data);
         neonatalTab.setData(data);
         ptTab.setData(data);
+        columnOrderTab.setData(data);
     }
 
     /**
@@ -337,7 +353,6 @@ public class DataViewScreenUI extends Screen {
     @UiHandler("saveQueryButton")
     protected void saveQuery(ClickEvent event) {
         Validation validation;
-        ArrayList<String> columns;
 
         finishEditing();
 
@@ -351,18 +366,6 @@ public class DataViewScreenUI extends Screen {
         data.setQueryFields(getQueryFields());
         data.setTestAnalytes(null);
         data.setAuxFields(null);
-
-        /*
-         * make a list of the columns selected in each tab
-         */
-        columns = new ArrayList<String>();
-        commonTab.addColumns(columns);
-        environmentalTab.addColumns(columns);
-        sdwisTab.addColumns(columns);
-        clinicalTab.addColumns(columns);
-        neonatalTab.addColumns(columns);
-        ptTab.addColumns(columns);
-        data.setColumns(columns);
 
         getReportScreen("saveQuery", window, "DataView.xml");
 
@@ -378,49 +381,11 @@ public class DataViewScreenUI extends Screen {
      */
     @UiHandler("executeQueryButton")
     protected void executeQuery(ClickEvent event) {
-        int before;
         boolean excludeResults, excludeAuxData;
-        QueryData field;
-        String domain;
         Validation validation;
         ArrayList<String> columns;
-        ArrayList<QueryData> fields;
 
         finishEditing();
-
-        columns = new ArrayList<String>();
-
-        /*
-         * find out which columns are selected in each tab
-         */
-        commonTab.addColumns(columns);
-
-        domain = null;
-
-        before = columns.size();
-        environmentalTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().ENVIRONMENTAL;
-
-        before = columns.size();
-        sdwisTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().SDWIS;
-
-        before = columns.size();
-        clinicalTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().CLINICAL;
-
-        before = columns.size();
-        neonatalTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().NEONATAL;
-
-        before = columns.size();
-        ptTab.addColumns(columns);
-        if (columns.size() > before)
-            domain = Constants.domain().PT;
 
         /*
          * if both results and aux data are excluded then at least one column
@@ -428,8 +393,8 @@ public class DataViewScreenUI extends Screen {
          */
         excludeResults = "Y".equals(data.getExcludeResults());
         excludeAuxData = "Y".equals(data.getExcludeAuxData());
-
-        if (excludeResults && excludeAuxData && columns.size() == 0) {
+        columns = data.getColumns();
+        if (excludeResults && excludeAuxData && (columns == null || columns.size() == 0)) {
             setError(Messages.get().dataView_selAtleastOneField());
             return;
         }
@@ -441,33 +406,11 @@ public class DataViewScreenUI extends Screen {
             return;
         }
 
-        fields = getQueryFields();
-        /*
-         * if the user has not selected a domain in the dropdown, but has
-         * selected the columns for a domain, then set that as the domain
-         */
-        if (domain != null) {
-            field = null;
-            for (QueryData f : fields) {
-                if (SampleWebMeta.DOMAIN.equals(f.getKey())) {
-                    field = f;
-                    break;
-                }
-            }
-            if (field == null) {
-                field = new QueryData();
-                field.setKey(SampleWebMeta.DOMAIN);
-                field.setQuery(domain);
-                field.setType(QueryData.Type.STRING);
-                fields.add(field);
-            }
-        }
-        data.setQueryFields(fields);
+        data.setQueryFields(getQueryFields());
         data.setTestAnalytes(null);
         data.setAuxFields(null);
-        data.setColumns(columns);
         setBusy(Messages.get().gen_querying());
-        
+
         /*
          * if the user has excluded both results and aux data, don't show the
          * filter screen, just generate the report; otherwise fetch the analytes
@@ -488,7 +431,7 @@ public class DataViewScreenUI extends Screen {
 
                     @Override
                     public void notFound() {
-                        setDone(Messages.get().noRecordsFound());
+                        setDone(Messages.get().gen_noRecordsFound());
                     }
 
                     public void failure(Throwable e) {
@@ -639,7 +582,7 @@ public class DataViewScreenUI extends Screen {
                 public boolean isStopVisible() {
                     return true;
                 }
-                
+
                 @Override
                 public void stop() {
                     /*
@@ -675,7 +618,7 @@ public class DataViewScreenUI extends Screen {
             timer = new Timer() {
                 public void run() {
                     ReportStatus status;
-                    
+
                     try {
                         status = DataViewReportService1.get().getStatus();
                         /*

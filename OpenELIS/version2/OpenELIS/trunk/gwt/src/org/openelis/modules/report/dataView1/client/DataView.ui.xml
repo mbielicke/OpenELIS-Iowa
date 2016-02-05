@@ -102,6 +102,16 @@
             </g:layer>
           </g:LayoutPanel>
         </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.dataView_columnOrder}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:ColumnOrderTabUI ui:field="columnOrderTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
       </w:TabLayoutPanel>
     </g:layer>
   </g:LayoutPanel>

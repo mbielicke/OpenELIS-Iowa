@@ -38,6 +38,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.history.History"/>
   <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
   <inherits name="org.openelis.modules.eorder.EOrder"/>
+  <inherits name="org.openelis.modules.eventLog.EventLog" />
   
   <entry-point class="org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginEntry"/>
 </module>

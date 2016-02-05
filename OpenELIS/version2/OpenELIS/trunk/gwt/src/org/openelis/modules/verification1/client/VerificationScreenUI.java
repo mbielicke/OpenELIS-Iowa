@@ -73,8 +73,6 @@ public class VerificationScreenUI extends Screen {
     @UiField
     protected TextBox<String>           barcode;
 
-    protected ModulePermission          userPermission;
-
     protected VerificationScreenUI      screen;
 
     /**
@@ -83,9 +81,11 @@ public class VerificationScreenUI extends Screen {
     public VerificationScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("verification");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("verification") == null)
             throw new PermissionException(Messages.get().screenPermException("Verification Screen"));
+        
+        if (UserCache.getPermission().getModule("sample") == null)
+            throw new PermissionException(Messages.get().sample_noSamplePermissionException());
 
         initWidget(uiBinder.createAndBindUi(this));
 

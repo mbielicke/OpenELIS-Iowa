@@ -154,7 +154,8 @@ public class Constants implements Serializable {
                         CASE_PATIENT = 122, CASE_PROVIDER = 123, CASE_USER = 124,
                         CASE_RESULT = 125, CASE_TAG = 126, CASE_CONTACT = 127,
                         CASE_CONTACT_LOCATION = 128, EORDER = 129, EORDER_BODY = 130,
-                        EORDER_LINK = 131, SAMPLE_PT = 132,CASE_SAMPLE = 133, ATTACHMENT_ISSUE = 134;
+                        EORDER_LINK = 131, SAMPLE_PT = 132, CASE_SAMPLE = 133,
+                        ATTACHMENT_ISSUE = 134;
     }
 
     /**
@@ -204,16 +205,15 @@ public class Constants implements Serializable {
                         AN_USER_AC_RELEASED, AUX_ALPHA_LOWER, AUX_ALPHA_MIXED, AUX_ALPHA_UPPER,
                         AUX_DATE, AUX_DATE_TIME, AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC,
                         AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, COST_CENTER_UNKNOWN,
-                        INSTRUMENT_LOG_COMPLETED, INSTRUMENT_LOG_PENDING, LABORATORY_LOCATION_IC,
-                        LOCAL_TYPE_ANALYTE, LOCAL_TYPE_DICTIONARY, LOCAL_TYPE_METHOD,
-                        LOCAL_TYPE_ORGANIZATION, LOCAL_TYPE_TEST, LOCAL_TYPE_TEST_ANALYTE,
-                        LOG_LEVEL_ERROR, LOG_LEVEL_INFO, LOG_TYPE_DATA_TRANSMISSION,
-                        MICROGRAMS_PER_LITER, NANOGRAMS_PER_LITER, NANOGRAMS_PER_MILLILITER,
-                        ORDER_RECURRENCE_UNIT_DAYS, ORDER_RECURRENCE_UNIT_MONTHS,
-                        ORDER_RECURRENCE_UNIT_YEARS, ORDER_STATUS_BACK_ORDERED,
-                        ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED, ORDER_STATUS_RECURRING,
-                        ORDER_STATUS_ON_HOLD, ORDER_STATUS_CANCELLED, ORDER_STATUS_TEMPLATE,
-                        ORDER_STATUS_ERROR, ORG_BILL_TO, ORG_BIRTH_HOSPITAL,
+                        INSTRUMENT_LOG_COMPLETED, INSTRUMENT_LOG_PENDING, LOCAL_TYPE_ANALYTE,
+                        LOCAL_TYPE_DICTIONARY, LOCAL_TYPE_METHOD, LOCAL_TYPE_ORGANIZATION,
+                        LOCAL_TYPE_TEST, LOCAL_TYPE_TEST_ANALYTE, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
+                        LOG_TYPE_DATA_TRANSMISSION, MICROGRAMS_PER_LITER, NANOGRAMS_PER_LITER,
+                        NANOGRAMS_PER_MILLILITER, ORDER_RECURRENCE_UNIT_DAYS,
+                        ORDER_RECURRENCE_UNIT_MONTHS, ORDER_RECURRENCE_UNIT_YEARS,
+                        ORDER_STATUS_BACK_ORDERED, ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED,
+                        ORDER_STATUS_RECURRING, ORDER_STATUS_ON_HOLD, ORDER_STATUS_CANCELLED,
+                        ORDER_STATUS_TEMPLATE, ORDER_STATUS_ERROR, ORG_BILL_TO, ORG_BIRTH_HOSPITAL,
                         ORG_FINALREP_FAX_NUMBER, ORG_NO_FINALREPORT, ORG_REPORT_TO,
                         ORG_SECOND_REPORT_TO, PATIENT_RELATION_MOTHER, PATIENT_RELATION_FATHER,
                         PATIENT_RELATION_GUARDIAN, PATIENT_RELATION_SELF, POS_DUPLICATE, POS_FIXED,
@@ -243,7 +243,8 @@ public class Constants implements Serializable {
     }
 
     /**
-     * The class represents all the iorder types that can be used in iorder record
+     * The class represents all the iorder types that can be used in iorder
+     * record
      */
     public static class IOrder implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -341,7 +342,7 @@ public class Constants implements Serializable {
         public String get(AttachmentItemDO data) {
             return getAttachmentItem(data.getId());
         }
-        
+
         public String get(AnalyteParameterDO data) {
             return getAnalyteParameter(data.getId());
         }
@@ -412,7 +413,7 @@ public class Constants implements Serializable {
         private String getAttachmentItem(Integer id) {
             return Constants.table().ATTACHMENT_ITEM + ":" + id;
         }
-                        
+
         public String getAnalyteParameter(Integer id) {
             return Constants.table().ANALYTE_PARAMETER + ":" + id;
         }

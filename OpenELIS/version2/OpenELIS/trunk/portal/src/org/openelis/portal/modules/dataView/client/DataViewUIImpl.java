@@ -43,7 +43,7 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
                     source, organizationName, organizationApt, organizationAddress,
                     organizationCity, organizationState, organizationZip, analysisTest,
                     analysisMethod, analysisRevision, analysisUnit, analysisStarted,
-                    analysisCompleted, analysisReleased, analysisQa, patientLastName,
+                    analysisCompleted, analysisReleased, analysisQA, patientLastName,
                     patientFirstName, patientBirth, patientGender, patientRace, patientEthnicity,
                     patientPhone, providerLastName, providerFirstName, pwsIdHeader, pwsName,
                     sdwisCollectorHeader, sdwisLocation, facilityId, sdwisSampleType,
@@ -279,8 +279,8 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
     }
 
     @Override
-    public CheckBox getAnalysisQa() {
-        return analysisQa;
+    public CheckBox getAnalysisQA() {
+        return analysisQA;
     }
 
     @Override

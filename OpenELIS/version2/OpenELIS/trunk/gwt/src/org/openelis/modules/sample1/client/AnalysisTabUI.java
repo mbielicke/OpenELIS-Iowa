@@ -882,8 +882,11 @@ public class AnalysisTabUI extends Screen {
         status.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type"))
-            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         type.setModel(model);
 
@@ -910,8 +913,11 @@ public class AnalysisTabUI extends Screen {
         }
 
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_status"))
-            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_status")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         worksheetStatus.setModel(model);
 

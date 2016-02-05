@@ -25,12 +25,9 @@
  */
 package org.openelis.modules.report.dataView1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
@@ -45,6 +42,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -89,10 +87,14 @@ public class EnvironmentalTabUI extends Screen {
 
     public void initialize() {
         addScreenHandler(envIsHazardous,
-                         SampleWebMeta.getEnvIsHazardous(),
+                         SampleWebMeta.ENV_IS_HAZARDOUS,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 envIsHazardous.setValue(getValue(SampleWebMeta.getEnvIsHazardous()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 envIsHazardous.setValue(getValue(SampleWebMeta.ENV_IS_HAZARDOUS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ENV_IS_HAZARDOUS, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -104,9 +106,13 @@ public class EnvironmentalTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(envPriority, SampleWebMeta.getEnvPriority(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envPriority.setValue(getValue(SampleWebMeta.getEnvPriority()));
+        addScreenHandler(envPriority, SampleWebMeta.ENV_PRIORITY, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                envPriority.setValue(getValue(SampleWebMeta.ENV_PRIORITY));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ENV_PRIORITY, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -119,10 +125,15 @@ public class EnvironmentalTabUI extends Screen {
         });
 
         addScreenHandler(envCollector,
-                         SampleWebMeta.getEnvCollectorHeader(),
+                         SampleWebMeta.ENV_COLLECTOR_HEADER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 envCollector.setValue(getValue(SampleWebMeta.getEnvCollectorHeader()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 envCollector.setValue(getValue(SampleWebMeta.ENV_COLLECTOR_HEADER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ENV_COLLECTOR_HEADER,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -137,8 +148,13 @@ public class EnvironmentalTabUI extends Screen {
         addScreenHandler(envCollectorPhone,
                          SampleWebMeta.getEnvCollectorPhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 envCollectorPhone.setValue(getValue(SampleWebMeta.getEnvCollectorPhone()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 envCollectorPhone.setValue(getValue(SampleWebMeta.ENV_COLLECTOR_PHONE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ENV_COLLECTOR_PHONE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -151,10 +167,14 @@ public class EnvironmentalTabUI extends Screen {
                          });
 
         addScreenHandler(envDescription,
-                         SampleWebMeta.getEnvDescription(),
+                         SampleWebMeta.ENV_DESCRIPTION,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 envDescription.setValue(getValue(SampleWebMeta.getEnvDescription()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 envDescription.setValue(getValue(SampleWebMeta.ENV_DESCRIPTION));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ENV_DESCRIPTION, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -166,9 +186,13 @@ public class EnvironmentalTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(envLocation, SampleWebMeta.getEnvLocation(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envLocation.setValue(getValue(SampleWebMeta.getEnvLocation()));
+        addScreenHandler(envLocation, SampleWebMeta.ENV_LOCATION, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                envLocation.setValue(getValue(SampleWebMeta.ENV_LOCATION));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ENV_LOCATION, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -179,12 +203,17 @@ public class EnvironmentalTabUI extends Screen {
                 return forward ? locationAddrMultipleUnit : envDescription;
             }
         });
-        
+
         addScreenHandler(locationAddrMultipleUnit,
-                         SampleWebMeta.getLocationAddrMultipleUnit(),
+                         SampleWebMeta.LOCATION_ADDR_MULTIPLE_UNIT,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrMultipleUnit.setValue(getValue(SampleWebMeta.getLocationAddrMultipleUnit()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrMultipleUnit.setValue(getValue(SampleWebMeta.LOCATION_ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_MULTIPLE_UNIT,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -195,12 +224,17 @@ public class EnvironmentalTabUI extends Screen {
                                  return forward ? locationAddrStreetAddress : envLocation;
                              }
                          });
-        
+
         addScreenHandler(locationAddrStreetAddress,
-                         SampleWebMeta.getLocationAddrStreetAddress(),
+                         SampleWebMeta.LOCATION_ADDR_STREET_ADDRESS,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrStreetAddress.setValue(getValue(SampleWebMeta.getLocationAddrStreetAddress()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrStreetAddress.setValue(getValue(SampleWebMeta.LOCATION_ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_STREET_ADDRESS,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -211,12 +245,16 @@ public class EnvironmentalTabUI extends Screen {
                                  return forward ? locationAddrCity : locationAddrMultipleUnit;
                              }
                          });
-       
+
         addScreenHandler(locationAddrCity,
-                         SampleWebMeta.getLocationAddrCity(),
+                         SampleWebMeta.LOCATION_ADDR_CITY,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrCity.setValue(getValue(SampleWebMeta.getLocationAddrCity()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrCity.setValue(getValue(SampleWebMeta.LOCATION_ADDR_CITY));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_CITY, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -227,12 +265,17 @@ public class EnvironmentalTabUI extends Screen {
                                  return forward ? locationAddrState : locationAddrStreetAddress;
                              }
                          });
-        
+
         addScreenHandler(locationAddrState,
-                         SampleWebMeta.getLocationAddrState(),
+                         SampleWebMeta.LOCATION_ADDR_STATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrState.setValue(getValue(SampleWebMeta.getLocationAddrState()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrState.setValue(getValue(SampleWebMeta.LOCATION_ADDR_STATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_STATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -243,12 +286,17 @@ public class EnvironmentalTabUI extends Screen {
                                  return forward ? locationAddrZipCode : locationAddrCity;
                              }
                          });
-        
+
         addScreenHandler(locationAddrZipCode,
-                         SampleWebMeta.getLocationAddrZipCode(),
+                         SampleWebMeta.LOCATION_ADDR_ZIP_CODE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrZipCode.setValue(getValue(SampleWebMeta.getLocationAddrZipCode()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrZipCode.setValue(getValue(SampleWebMeta.LOCATION_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_ZIP_CODE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -259,12 +307,17 @@ public class EnvironmentalTabUI extends Screen {
                                  return forward ? locationAddrCountry : locationAddrState;
                              }
                          });
-        
+
         addScreenHandler(locationAddrCountry,
-                         SampleWebMeta.getLocationAddrCountry(),
+                         SampleWebMeta.LOCATION_ADDR_COUNTRY,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 locationAddrCountry.setValue(getValue(SampleWebMeta.getLocationAddrCountry()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 locationAddrCountry.setValue(getValue(SampleWebMeta.LOCATION_ADDR_COUNTRY));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.LOCATION_ADDR_COUNTRY,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -286,12 +339,36 @@ public class EnvironmentalTabUI extends Screen {
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
+                String prevDom;
+                Widget w;
+                CheckBox cb;
+
+                prevDom = domain;
                 /*
                  * the widgets in this tab need to be enabled or disabled based
                  * on the current domain
                  */
                 domain = event.getDomain();
                 setState(state);
+
+                if (Constants.domain().ENVIRONMENTAL.equals(prevDom) && !canEdit) {
+                    /*
+                     * the previous domain was environmental but is not anymore;
+                     * if some columns from environmental were selected before
+                     * the domain was changed, remove them from the ones shown
+                     * in the report
+                     */
+                    for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+                        w = entry.getValue().widget;
+                        if (w instanceof CheckBox) {
+                            cb = (CheckBox)w;
+                            if ("Y".equals(cb.getValue())) {
+                                cb.setValue("N");
+                                addRemoveColumn(entry.getKey(), "N");
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -310,34 +387,30 @@ public class EnvironmentalTabUI extends Screen {
         fireDataChange();
     }
 
-    /**
-     * Adds the keys for all checked checkboxes to the list of columns shown in
-     * the generated excel file
-     */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        if ( !canEdit)
-            return;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
+    private void evaluateEdit() {
+        canEdit = Constants.domain().ENVIRONMENTAL.equals(domain);
     }
 
+    /**
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
+     */
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
     }
 
-    private void evaluateEdit() {
-        canEdit = Constants.domain().ENVIRONMENTAL.equals(domain);
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }
