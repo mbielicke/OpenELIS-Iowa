@@ -88,7 +88,8 @@ public class AuxFieldGroupManager1 implements Serializable {
                               null,
                               null,
                               afv.getValue(),
-                              afv.getDictionary());
+                              afv.getDictionary(),
+                              afv.getDictionaryIsActive());
             }
         }
         return formatter;

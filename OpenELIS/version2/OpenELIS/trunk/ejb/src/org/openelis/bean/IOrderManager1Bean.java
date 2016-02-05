@@ -1122,7 +1122,7 @@ public class IOrderManager1Bean {
          * set default values
          */
         if (data.getShipFromId() == null)
-            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_IC);
+            data.setShipFromId(dictionary.getIdBySystemName("laboratory_location_ic"));
         data.setStatusId(Constants.dictionary().ORDER_STATUS_ON_HOLD);
         data.setOrderedDate(Datetime.getInstance());
         if (data.getRequestedBy() == null)
