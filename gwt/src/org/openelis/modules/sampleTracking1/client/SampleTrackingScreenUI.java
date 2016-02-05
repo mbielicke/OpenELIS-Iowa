@@ -1579,6 +1579,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                  */
                 node = findAncestorByType(SAMPLE_LEAF);
                 reloadSample(node);
+                nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
                 bus.fireEventFromSource(new RemoveAnalysisEvent(uid), screen);
             } catch (Exception e) {
                 Window.alert(e.getMessage());
