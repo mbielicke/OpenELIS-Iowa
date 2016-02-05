@@ -69,7 +69,7 @@ public class ResultFormatter implements Serializable {
      * @throws Exception
      */
     public void add(Integer id, Integer group, Integer unitId, Integer type, Integer sigDigits,
-                    Integer rounding, String value, String entry) throws Exception {
+                    Integer rounding, String value, String entry, String isActive) throws Exception {
         Item item;
 
         if (isTypeNumeric(type)) {
@@ -77,7 +77,7 @@ public class ResultFormatter implements Serializable {
             ((NumericItem)item).rounding = (rounding == null) ? 0 : rounding;
             ((NumericItem)item).sigDigits = (sigDigits == null) ? 0 : sigDigits.byteValue();
         } else if (isTypeDictionary(type)) {
-            item = new DictionaryItem(value, entry);
+            item = new DictionaryItem(value, entry, isActive);
         } else if (isTypeTiter(type)) {
             item = new TiterItem(value);
         } else if (isTypeDate(type) || isTypeTime(type) || isTypeDateTime(type)) {
@@ -206,7 +206,7 @@ public class ResultFormatter implements Serializable {
                         else if (isTypeTiter(item.type))
                             fv = ((TiterItem)item).format(value);
                         else if (isTypeDate(item.type) || isTypeTime(item.type) ||
-                                   isTypeDateTime(item.type))
+                                 isTypeDateTime(item.type))
                             fv = ((DateTimeItem)item).format(value);
                     } catch (Exception e) {
                         fv = null;
@@ -216,10 +216,10 @@ public class ResultFormatter implements Serializable {
                 }
             }
         }
-        if (! value.equals(fv))
+        if ( !value.equals(fv))
             throw new InconsistencyException(Messages.get().gen_invalidValueException());
-}
-    
+    }
+
     /**
      * Returns the "default" for specified group and unit. If no unit default
      * has been defined, the general rules (null unit) default is returned if
@@ -248,9 +248,10 @@ public class ResultFormatter implements Serializable {
             l = new ArrayList<FormattedValue>();
             for (Item item : u.items) {
                 if (isTypeDictionary(item.type))
-                    l.add(new FormattedValue(((DictionaryItem)item).id,
+                    l.add(new FormattedValue( ((DictionaryItem)item).id,
                                              item.type,
-                                             ((DictionaryItem)item).text));
+                                             ((DictionaryItem)item).text,
+                                             ((DictionaryItem)item).isActive));
             }
         }
         return l;
@@ -332,7 +333,7 @@ public class ResultFormatter implements Serializable {
                     u.def = (DefaultItem)item;
                 } else {
                     u.items.add(item);
-                    if (!isTypeDictionary(item.type))
+                    if ( !isTypeDictionary(item.type))
                         u.onlyDictionary = false;
                     if (isTypeAlphaLower(item.type) && u.items.size() == 1) {
                         u.onlyAlphaLower = true;
@@ -444,15 +445,17 @@ public class ResultFormatter implements Serializable {
     public static class FormattedValue {
         int    id, type;
         String display;
+        boolean isActive;
 
         public FormattedValue() {
 
         }
 
-        public FormattedValue(int id, int type, String display) {
+        public FormattedValue(int id, int type, String display, boolean isActive) {
             this.id = id;
             this.type = type;
             this.display = display;
+            this.isActive = isActive;
         }
 
         public int getId() {
@@ -465,6 +468,10 @@ public class ResultFormatter implements Serializable {
 
         public String getDisplay() {
             return display;
+        }
+        
+        public boolean getIsActive() {
+            return isActive;
         }
     }
 
@@ -528,8 +535,8 @@ public class ResultFormatter implements Serializable {
             try {
                 d = Double.parseDouble(value);
                 /*
-                 * If the user specifies a "<" in front of the result, we want to
-                 * try to match the upper bounds.
+                 * If the user specifies a "<" in front of the result, we want
+                 * to try to match the upper bounds.
                  */
                 if (d < min || d > max || (d == max && !"<".equals(sign))) {
                     err = true;
@@ -618,14 +625,14 @@ public class ResultFormatter implements Serializable {
             }
             if (value.startsWith("1:"))
                 value = value.substring(2);
-            
+
             fmt += "1:";
-            
+
             try {
                 d = Integer.parseInt(value);
                 /*
-                 * If the user specifies a "<" in front of the result, we want to
-                 * try to match the upper bounds.
+                 * If the user specifies a "<" in front of the result, we want
+                 * to try to match the upper bounds.
                  */
                 if (d < min || d > max || (d == max && !"<1:".equals(fmt)))
                     err = true;
@@ -647,36 +654,39 @@ public class ResultFormatter implements Serializable {
     static class DictionaryItem extends Item {
         int id;
         String text;
+        boolean isActive;
 
         /**
-         * Dictionary has dictionary.id and dictionary.text; Text is used for
-         * matching while the id is stored in value
+         * Dictionary has dictionary.id, dictionary.text, dictionary.isActive;
+         * Text is used for matching while the id is stored in value; IsActive
+         * indicates whether the dictionary is active or inactive
          */
-        public DictionaryItem(String id, String text) {
+        public DictionaryItem(String id, String text, String isActive) {
             this.id = Integer.parseInt(id);
             this.text = text;
+            this.isActive = "Y".equals(isActive);
         }
 
         /**
          * Returns the dictionary id if the entered value matches the dictionary
-         * text
+         * text and the dictionary is active
          */
         public String format(String value) {
-            if (value.equals(text))
+            if (value.equals(text) && isActive)
                 return String.valueOf(id);
 
             return null;
         }
-        
+
         /**
-         * This method is used in the validation routine to verify that the specified
-         * dictionary id is valid
+         * This method is used in the validation routine to verify that the
+         * specified dictionary id is valid
          */
         public String formatById(String value) {
             String id;
 
             id = String.valueOf(this.id);
-            if (value.equals(id))
+            if (value.equals(id) && isActive)
                 return id;
             return null;
         }

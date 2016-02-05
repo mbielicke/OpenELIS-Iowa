@@ -43,6 +43,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -85,9 +86,13 @@ public class SDWISTabUI extends Screen {
     }
 
     public void initialize() {
-        addScreenHandler(sdwisPwsId, SampleWebMeta.getSDWISPwsId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisPwsId.setValue(getValue(SampleWebMeta.getSDWISPwsId()));
+        addScreenHandler(sdwisPwsId, SampleWebMeta.SDWIS_PWS_ID, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                sdwisPwsId.setValue(getValue(SampleWebMeta.SDWIS_PWS_ID));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.SDWIS_PWS_ID, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -99,9 +104,13 @@ public class SDWISTabUI extends Screen {
             }
         });
 
-        addScreenHandler(pwsName, SampleWebMeta.getPwsName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                pwsName.setValue(getValue(SampleWebMeta.getPwsName()));
+        addScreenHandler(pwsName, SampleWebMeta.PWS_NAME, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                pwsName.setValue(getValue(SampleWebMeta.PWS_NAME));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.PWS_NAME, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -114,10 +123,14 @@ public class SDWISTabUI extends Screen {
         });
 
         addScreenHandler(sdwisStateLabId,
-                         SampleWebMeta.getSDWISStateLabId(),
+                         SampleWebMeta.SDWIS_STATE_LAB_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisStateLabId.setValue(getValue(SampleWebMeta.getSDWISStateLabId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisStateLabId.setValue(getValue(SampleWebMeta.SDWIS_STATE_LAB_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_STATE_LAB_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -130,10 +143,14 @@ public class SDWISTabUI extends Screen {
                          });
 
         addScreenHandler(sdwisFacilityId,
-                         SampleWebMeta.getSDWISFacilityId(),
+                         SampleWebMeta.SDWIS_FACILITY_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisFacilityId.setValue(getValue(SampleWebMeta.getSDWISFacilityId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisFacilityId.setValue(getValue(SampleWebMeta.SDWIS_FACILITY_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_FACILITY_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -146,10 +163,15 @@ public class SDWISTabUI extends Screen {
                          });
 
         addScreenHandler(sdwisSampleTypeId,
-                         SampleWebMeta.getSDWISSampleTypeId(),
+                         SampleWebMeta.SDWIS_SAMPLE_TYPE_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisSampleTypeId.setValue(getValue(SampleWebMeta.getSDWISSampleTypeId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisSampleTypeId.setValue(getValue(SampleWebMeta.SDWIS_SAMPLE_TYPE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_SAMPLE_TYPE_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -162,10 +184,15 @@ public class SDWISTabUI extends Screen {
                          });
 
         addScreenHandler(sdwisSampleCategoryId,
-                         SampleWebMeta.getSDWISSampleCategoryId(),
+                         SampleWebMeta.SDWIS_SAMPLE_CATEGORY_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisSampleCategoryId.setValue(getValue(SampleWebMeta.getSDWISSampleCategoryId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisSampleCategoryId.setValue(getValue(SampleWebMeta.SDWIS_SAMPLE_CATEGORY_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_SAMPLE_CATEGORY_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -178,10 +205,15 @@ public class SDWISTabUI extends Screen {
                          });
 
         addScreenHandler(sdwisSamplePointId,
-                         SampleWebMeta.getSDWISSamplePointId(),
+                         SampleWebMeta.SDWIS_SAMPLE_POINT_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisSamplePointId.setValue(getValue(SampleWebMeta.getSDWISSamplePointId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisSamplePointId.setValue(getValue(SampleWebMeta.SDWIS_SAMPLE_POINT_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_SAMPLE_POINT_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -193,43 +225,52 @@ public class SDWISTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(sdwisLocation,
-                         SampleWebMeta.getSDWISLocation(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisLocation.setValue(getValue(SampleWebMeta.getSDWISLocation()));
-                             }
+        addScreenHandler(sdwisLocation, SampleWebMeta.SDWIS_LOCATION, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                sdwisLocation.setValue(getValue(SampleWebMeta.SDWIS_LOCATION));
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 sdwisLocation.setEnabled(isState(DEFAULT) && canEdit);
-                             }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.SDWIS_LOCATION, event.getValue());
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? sdwisPriority : sdwisSamplePointId;
-                             }
-                         });
+            public void onStateChange(StateChangeEvent event) {
+                sdwisLocation.setEnabled(isState(DEFAULT) && canEdit);
+            }
 
-        addScreenHandler(sdwisPriority,
-                         SampleWebMeta.getSDWISPriority(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisPriority.setValue(getValue(SampleWebMeta.getSDWISPriority()));
-                             }
+            public Widget onTab(boolean forward) {
+                return forward ? sdwisPriority : sdwisSamplePointId;
+            }
+        });
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 sdwisPriority.setEnabled(isState(DEFAULT) && canEdit);
-                             }
+        addScreenHandler(sdwisPriority, SampleWebMeta.SDWIS_PRIORITY, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                sdwisPriority.setValue(getValue(SampleWebMeta.SDWIS_PRIORITY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? sdwisCollector : sdwisLocation;
-                             }
-                         });
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.SDWIS_PRIORITY, event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sdwisPriority.setEnabled(isState(DEFAULT) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? sdwisCollector : sdwisLocation;
+            }
+        });
 
         addScreenHandler(sdwisCollector,
-                         SampleWebMeta.getSDWISCollectorHeader(),
+                         SampleWebMeta.SDWIS_COLLECTOR_HEADER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sdwisCollector.setValue(getValue(SampleWebMeta.getSDWISCollectorHeader()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sdwisCollector.setValue(getValue(SampleWebMeta.SDWIS_COLLECTOR_HEADER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SDWIS_COLLECTOR_HEADER,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -251,12 +292,35 @@ public class SDWISTabUI extends Screen {
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
+                String prevDom;
+                Widget w;
+                CheckBox cb;
+
+                prevDom = domain;
                 /*
                  * the widgets in this tab need to be enabled or disabled based
                  * on the current domain
                  */
                 domain = event.getDomain();
                 setState(state);
+
+                if (Constants.domain().SDWIS.equals(prevDom) && !canEdit) {
+                    /*
+                     * the previous domain was SDWIS but is not anymore; if some
+                     * columns from SDWIS were selected before the domain was
+                     * changed, remove them from the ones shown in the report
+                     */
+                    for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+                        w = entry.getValue().widget;
+                        if (w instanceof CheckBox) {
+                            cb = (CheckBox)w;
+                            if ("Y".equals(cb.getValue())) {
+                                cb.setValue("N");
+                                addRemoveColumn(entry.getKey(), "N");
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -275,34 +339,30 @@ public class SDWISTabUI extends Screen {
         fireDataChange();
     }
 
-    /**
-     * Adds the keys for all checked checkboxes to the list of columns shown in
-     * the generated excel file
-     */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        if ( !canEdit)
-            return;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
+    private void evaluateEdit() {
+        canEdit = Constants.domain().SDWIS.equals(domain);
     }
 
+    /**
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
+     */
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
     }
 
-    private void evaluateEdit() {
-        canEdit = Constants.domain().SDWIS.equals(domain);
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }

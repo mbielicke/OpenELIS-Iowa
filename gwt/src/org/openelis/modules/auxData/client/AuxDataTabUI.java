@@ -746,6 +746,7 @@ public abstract class AuxDataTabUI extends Screen {
         String key;
         ResultCell rc;
         ResultFormatter rf;
+        Item<Integer> item;
         ArrayList<Item<Integer>> model;
         ArrayList<FormattedValue> values;
         AuxFieldGroupManager agm;
@@ -767,8 +768,11 @@ public abstract class AuxDataTabUI extends Screen {
                 values = rf.getDictionaryValues(fieldId, null);
                 if (values != null) {
                     model = new ArrayList<Item<Integer>>();
-                    for (FormattedValue v : values)
-                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                    for (FormattedValue v : values) {
+                        item = new Item<Integer>(v.getId(), v.getDisplay());
+                        item.setEnabled(v.getIsActive());
+                        model.add(item);
+                    }
                 }
             } else if (rf.hasOnlyAlphaLower(fieldId, null)) {
                 caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER;

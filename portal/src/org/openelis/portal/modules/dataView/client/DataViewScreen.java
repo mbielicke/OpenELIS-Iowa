@@ -194,7 +194,7 @@ public class DataViewScreen extends Screen {
                 ui.getAnalysisStarted().setValue(yes, true);
                 ui.getAnalysisCompleted().setValue(yes, true);
                 ui.getAnalysisReleased().setValue(yes, true);
-                ui.getAnalysisQa().setValue(yes, true);
+                ui.getAnalysisQA().setValue(yes, true);
             }
         });
 
@@ -788,7 +788,7 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getAnalysisQa(), SampleWebMeta.getAnalysisSubQaName(), new ScreenHandler<String>() {
+        addScreenHandler(ui.getAnalysisQA(), SampleWebMeta.getAnalysisQAEventQAEventName(), new ScreenHandler<String>() {
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
@@ -1516,7 +1516,7 @@ public class DataViewScreen extends Screen {
         ui.getAnalysisStarted().setValue(no, true);
         ui.getAnalysisCompleted().setValue(no, true);
         ui.getAnalysisReleased().setValue(no, true);
-        ui.getAnalysisQa().setValue(no, true);
+        ui.getAnalysisQA().setValue(no, true);
         ui.getPatientLastName().setValue(no, true);
         ui.getPatientFirstName().setValue(no, true);
         ui.getPatientBirth().setValue(no, true);

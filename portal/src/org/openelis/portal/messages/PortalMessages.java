@@ -2,7 +2,7 @@ package org.openelis.portal.messages;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Portal/war/WEB-INF/classes/org/openelis/portal/messages/PortalMessages.properties'.
  */
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   
@@ -25,13 +25,13 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String analysis_method();
 
   /**
-   * Translated "QA Event".
+   * Translated "Released Date".
    * 
-   * @return translated "QA Event"
+   * @return translated "Released Date"
    */
-  @DefaultMessage("QA Event")
-  @Key("analysis.qaEvent")
-  String analysis_qaEvent();
+  @DefaultMessage("Released Date")
+  @Key("analysis.releasedDate")
+  String analysis_releasedDate();
 
   /**
    * Translated "Revision".
@@ -257,6 +257,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Patient Fields For Output")
   @Key("dataView.patientFields")
   String dataView_patientFields();
+
+  /**
+   * Translated "QA Event".
+   * 
+   * @return translated "QA Event"
+   */
+  @DefaultMessage("QA Event")
+  @Key("dataView.qaEvent")
+  String dataView_qaEvent();
 
   /**
    * Translated "Query".

@@ -38,6 +38,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.order1.Order1"/>
   <inherits name="org.openelis.modules.pws.PWS"/>
   <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
+  <inherits name="org.openelis.modules.eventLog.EventLog" />
   
   <entry-point class="org.openelis.modules.SDWISSampleLogin1.client.SDWISSampleLoginEntry"/>
 </module>

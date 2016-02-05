@@ -88,7 +88,7 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getAnalysisReleased();
 
-    public CheckBox getAnalysisQa();
+    public CheckBox getAnalysisQA();
 
     public CheckBox getPatientFirstName();
 

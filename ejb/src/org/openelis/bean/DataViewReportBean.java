@@ -648,7 +648,7 @@ public class DataViewReportBean {
          * get the labels to be displayed in the headers for the various
          * columns; Note: load parameter is changed based on selected columns
          */
-        headers = getHeaders(data.getColumns(), load);
+        headers = getHeaders(data.getColumns(), moduleName != null, load);
 
         /*
          * always fetch sample and analysis qa events to make sure that
@@ -1796,7 +1796,7 @@ public class DataViewReportBean {
      * @return header labels
      * @throws Exception
      */
-    private ArrayList<String> getHeaders(ArrayList<String> columns,
+    private ArrayList<String> getHeaders(ArrayList<String> columns, boolean forWeb,
                                          ArrayList<SampleManager1.Load> load) throws Exception {
         String column;
         boolean fetchOrg, fetchUser, fetchProv;
@@ -1835,6 +1835,9 @@ public class DataViewReportBean {
                     break;
                 case SampleWebMeta.STATUS_ID:
                     headers.add(Messages.get().sample_status());
+                    break;
+                case SampleWebMeta.SAMPLE_QA_EVENT_QA_EVENT_NAME:
+                    headers.add(Messages.get().dataView_sampleQAEvent());
                     break;
                 case SampleWebMeta.PROJECT_NAME:
                     headers.add(Messages.get().project_project());
@@ -1926,8 +1929,16 @@ public class DataViewReportBean {
                 case SampleWebMeta.ANALYSIS_UNIT_OF_MEASURE_ID:
                     headers.add(Messages.get().gen_unit());
                     break;
-                case SampleWebMeta.ANALYSISSUBQA_NAME:
-                    headers.add(Messages.get().qaEvent_qaEvent());
+                case SampleWebMeta.ANALYSIS_QA_EVENT_QA_EVENT_NAME:
+                    /*
+                     * for external clients, both sample and analysis qa events
+                     * are shown in the same column; so for them the header
+                     * can't be "Analysis QA Event"
+                     */
+                    if (forWeb)
+                        headers.add(Messages.get().dataView_analysisQAEvent());
+                    else
+                        headers.add(Messages.get().qaEvent_qaEvent());
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
                     headers.add(Messages.get().gen_completedDate());
@@ -2414,8 +2425,24 @@ public class DataViewReportBean {
             }
 
             /*
-             * for external users show only the first permanent project;for
-             * internal users, show all projects;
+             * for external clients, internal qa events are not shown and the qa
+             * event's reporting text is shown; otherwise internal qa events are
+             * shown and the qa event's name is shown
+             */
+            rd.sampleQAs = null;
+            if (getSampleQAs(sm) != null) {
+                labels.clear();
+                for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                    if (forWeb && Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId()))
+                        continue;
+                    labels.add(forWeb ? data.getQaEventReportingText() : data.getQaEventName());
+                }
+                rd.sampleQAs = DataBaseUtil.concatWithSeparator(labels, forWeb ? " " : ", ");
+            }
+
+            /*
+             * for external users show only the first permanent project; for
+             * internal users, show all projects
              */
             if (getProjects(sm) != null) {
                 labels.clear();
@@ -2486,12 +2513,11 @@ public class DataViewReportBean {
             if (getAnalysisQAs(sm) != null) {
                 labels.clear();
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                    if ( !data.getAnalysisId().equals(analysisId))
+                    if ( !data.getAnalysisId().equals(analysisId) ||
+                        (forWeb && Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())))
                         continue;
-                    if (forWeb && !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId()))
-                        labels.add(data.getQaEventReportingText());
-                    else
-                        labels.add(data.getQaEventName());
+
+                    labels.add(forWeb ? data.getQaEventReportingText() : data.getQaEventName());
                 }
                 rd.analysisQAs = DataBaseUtil.concatWithSeparator(labels, forWeb ? " " : ", ");
             }
@@ -2545,6 +2571,9 @@ public class DataViewReportBean {
                     break;
                 case SampleWebMeta.STATUS_ID:
                     value = getDictionaryLabel(s.getStatusId());
+                    break;
+                case SampleWebMeta.SAMPLE_QA_EVENT_QA_EVENT_NAME:
+                    value = rd.sampleQAs;
                     break;
                 case SampleWebMeta.PROJECT_NAME:
                     value = rd.projNames;
@@ -2633,8 +2662,15 @@ public class DataViewReportBean {
                     value = getDictionaryLabel(rd.analysis != null ? rd.analysis.getUnitOfMeasureId()
                                                                   : null);
                     break;
-                case SampleWebMeta.ANALYSISSUBQA_NAME:
-                    value = rd.analysisQAs;
+                case SampleWebMeta.ANALYSIS_QA_EVENT_QA_EVENT_NAME:
+                    /*
+                     * for external clients, both sample and analysis qa events
+                     * are shown in the same column
+                     */
+                    value = forWeb ? DataBaseUtil.concatWithSeparator(rd.sampleQAs,
+                                                                      " ",
+                                                                      rd.analysisQAs)
+                                  : rd.analysisQAs;
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
                     value = rd.analysis != null ? rd.analysis.getCompletedDate() : null;
@@ -3080,10 +3116,8 @@ public class DataViewReportBean {
     /**
      * Sets the value of "cell" from "value"; if "value" is a Datetime, sets its
      * Date as the value and "style" as the CellStyle so that it's treated as a
-     * date by Excel; if "value" is numeric, sets the value as a double; if
-     * "value" is a String and longer than 255 characters, shortens it to 255
-     * characters before setting it; this is done to avoid exceeding the limit
-     * for the maximum number of characters allowed in a cell by Excel
+     * date by Excel; if "value" is numeric, sets the value as a double; for any
+     * other type, sets the value as a string
      * 
      * @param cell
      *        the cell whose value is to be set
@@ -3093,18 +3127,13 @@ public class DataViewReportBean {
      *        the CellStyle set on the cell
      */
     private void setCellValue(Cell cell, Object value, CellStyle style) {
-        String val;
-
         if (value instanceof Datetime) {
             cell.setCellValue( ((Datetime)value).getDate());
             cell.setCellStyle(style);
         } else if (value instanceof Number) {
             cell.setCellValue( ((Number)value).doubleValue());
         } else {
-            val = DataBaseUtil.toString(value);
-            if (val.length() > 255)
-                val = val.substring(0, 255);
-            cell.setCellValue(val);
+            cell.setCellValue(DataBaseUtil.toString(value));
         }
     }
 
@@ -3113,7 +3142,11 @@ public class DataViewReportBean {
      * spreadsheet; if "value" has more characters than the number in "maxChars"
      * for "col", the number in "maxChars" is updated; if "value" is a Datetime,
      * the length of "pattern" is used as the number of characters; if it's
-     * numeric, a fixed number is used; if it's a String, its length is used
+     * numeric, a fixed number is used; for any other type, the value is
+     * converted to a String and its length is used; if "value" is longer than
+     * 255 characters, sets the number of characters to 255; this is done to
+     * avoid exceeding the limit for the maximum number of characters allowed in
+     * a cell by Excel
      * 
      * @param col
      *        the index of a column in the spreadsheet
@@ -3137,6 +3170,8 @@ public class DataViewReportBean {
             chars = NUMERIC_COL_WIDTH;
         else
             chars = DataBaseUtil.toString(value).length();
+        if (chars > 255)
+            chars = 255;
 
         maxChars.set(col, Math.max(chars, maxChars.get(col)));
     }
@@ -3233,7 +3268,7 @@ public class DataViewReportBean {
      */
     private class RowData {
         Integer                  sampleId, sampleItemId, analysisId;
-        String                   projNames, completedBy, releasedBy, analysisQAs;
+        String                   sampleQAs, projNames, completedBy, releasedBy, analysisQAs;
         Datetime                 collDateTime, birthDateTime;
         SampleOrganizationViewDO repToOrg;
         SampleItemViewDO         sampleItem;
@@ -3244,6 +3279,7 @@ public class DataViewReportBean {
             sampleItemId = null;
             analysisId = null;
             collDateTime = null;
+            sampleQAs = null;
             projNames = null;
             completedBy = null;
             releasedBy = null;

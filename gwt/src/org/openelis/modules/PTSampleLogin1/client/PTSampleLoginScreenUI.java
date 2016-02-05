@@ -205,8 +205,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     protected Dropdown<String>                          ptAdditionalDomain;
 
     @UiField
-    protected AutoComplete                              receivedByName, reportToName,
-                    billToName, projectName;
+    protected AutoComplete                              receivedByName, reportToName, billToName,
+                    projectName;
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
@@ -261,7 +261,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen, isFullLogin;
 
-    protected ModulePermission                          userPermission;
+    protected ModulePermission                          samplePermission;
 
     protected PTSampleLoginScreenUI                     screen;
 
@@ -292,7 +292,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable,
+                    genTRFPatternVariable;
 
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -306,8 +307,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         AUX_DATA, ATTACHMENT
     };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
-                    BILL_TO_KEY = "billTo";
+    private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -315,10 +315,13 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     public PTSampleLoginScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("samplept");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("samplept") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("PT Sample Login Screen"));
+        
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -457,7 +460,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -482,7 +485,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -493,7 +496,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -529,7 +532,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(DISPLAY));
+                duplicate.setEnabled(isState(DISPLAY) && samplePermission.hasAddPermission());
             }
         });
 
@@ -542,7 +545,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
-                                      userPermission.hasAddPermission());
+                                      samplePermission.hasAddPermission());
             }
         });
 
@@ -1034,37 +1037,39 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
                          });
 
-        addScreenHandler(receivedByName, SampleMeta.getReceivedById(), new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
-                try {
-                    receivedByName.setValue(getReceivedById(), getReceivedByName());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-            }
-            
-            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                Integer id;
-                SystemUserVO user;
+        addScreenHandler(receivedByName,
+                         SampleMeta.getReceivedById(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 try {
+                                     receivedByName.setValue(getReceivedById(), getReceivedByName());
+                                 } catch (Exception e) {
+                                     Window.alert(e.getMessage());
+                                     logger.log(Level.SEVERE, e.getMessage(), e);
+                                 }
+                             }
 
-                id = null;
-                if (event.getValue() != null) {
-                    user = (SystemUserVO)event.getValue().getData();
-                    id = user.getId();
-                }
-                setReceivedById(id);
-            }
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 Integer id;
+                                 SystemUserVO user;
 
-            public void onStateChange(StateChangeEvent event) {
-                receivedByName.setEnabled(canEdit && isState(ADD, UPDATE));
-            }
+                                 id = null;
+                                 if (event.getValue() != null) {
+                                     user = (SystemUserVO)event.getValue().getData();
+                                     id = user.getId();
+                                 }
+                                 setReceivedById(id);
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? reportToName : ptAdditionalDomain;
-            }
-        });
-        
+                             public void onStateChange(StateChangeEvent event) {
+                                 receivedByName.setEnabled(canEdit && isState(ADD, UPDATE));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToName : ptAdditionalDomain;
+                             }
+                         });
+
         receivedByName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Item<Integer> item;
@@ -1772,7 +1777,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -2356,8 +2361,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     /**
      * If the checkbox of the menu item "Add With TRF" is checked, opens the
      * data entry attachment screen and executes the query to fetch unattached
-     * attachments for this domain; if the checkbox is unchecked, closes
-     * the attachment screen if it's open.
+     * attachments for this domain; if the checkbox is unchecked, closes the
+     * attachment screen if it's open.
      */
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
@@ -3505,7 +3510,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             return null;
         return UserCache.getSystemUser(manager.getSample().getReceivedById()).getLoginName();
     }
-    
+
     /**
      * Sets the received by id
      */
@@ -3766,7 +3771,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         }
         clearStatus();
     }
-    
+
     /**
      * Checks whether the accession number on the TRF attached to the sample
      * matched the accession number entered by the user; shows a warning if it
@@ -3902,8 +3907,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             } else {
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
             }
@@ -3949,7 +3954,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             addTestScriptlets();
 
             /*
-             * show any validation errors encountered while changing the method             
+             * show any validation errors encountered while changing the method
              */
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
@@ -3963,8 +3968,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 isBusy = false;
             else
                 /*
-                 * show the pop up for selecting the prep/reflex tests for the tests
-                 * added
+                 * show the pop up for selecting the prep/reflex tests for the
+                 * tests added
                  */
                 showTests(ret);
         } catch (Exception e) {

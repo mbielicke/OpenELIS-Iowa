@@ -1346,7 +1346,26 @@ public class SampleManager1Bean {
             /*
              * go through remove list and delete all the unwanted records
              */
-            if (getRemoved(sm) != null) {
+            if (getRemoved(sm) != null) {         
+                /*
+                 * we need to remove objects in the correct order so that referential
+                 * integrity is maintained
+                 */
+                for (DataObject data : getRemoved(sm)) {                    
+                    if (data instanceof AuxDataViewDO)
+                        auxdata.delete( ((AuxDataViewDO)data));
+                    else if (data instanceof NoteViewDO)
+                        note.delete( ((NoteViewDO)data));
+                    else if (data instanceof AnalysisQaEventViewDO)
+                        analysisQA.delete( ((AnalysisQaEventViewDO)data));
+                    else if (data instanceof StorageViewDO)
+                        storage.delete( ((StorageViewDO)data));
+                    else if (data instanceof AnalysisUserViewDO)
+                        user.delete( ((AnalysisUserViewDO)data));
+                    else if (data instanceof ResultViewDO)
+                        result.delete( ((ResultViewDO)data));
+                }
+                
                 for (DataObject data : getRemoved(sm)) {
                     if (data instanceof SampleEnvironmentalDO)
                         sampleEnvironmental.delete( ((SampleEnvironmentalDO)data));
@@ -1366,24 +1385,10 @@ public class SampleManager1Bean {
                         sampleProject.delete( ((SampleProjectViewDO)data));
                     else if (data instanceof SampleQaEventViewDO)
                         sampleQA.delete( ((SampleQaEventViewDO)data));
-                    else if (data instanceof AuxDataViewDO)
-                        auxdata.delete( ((AuxDataViewDO)data));
-                    else if (data instanceof NoteViewDO)
-                        note.delete( ((NoteViewDO)data));
                     else if (data instanceof AttachmentItemViewDO)
                         attachmentItem.delete( ((AttachmentItemViewDO)data));
                     else if (data instanceof SampleItemViewDO)
                         item.delete( ((SampleItemViewDO)data));
-                    else if (data instanceof AnalysisQaEventViewDO)
-                        analysisQA.delete( ((AnalysisQaEventViewDO)data));
-                    else if (data instanceof StorageViewDO)
-                        storage.delete( ((StorageViewDO)data));
-                    else if (data instanceof AnalysisUserViewDO)
-                        user.delete( ((AnalysisUserViewDO)data));
-                    else if (data instanceof ResultViewDO)
-                        result.delete( ((ResultViewDO)data));
-                    else
-                        throw new Exception("ERROR: DataObject passed for removal is of unknown type");
                 }
             }
 

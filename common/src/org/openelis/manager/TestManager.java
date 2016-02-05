@@ -293,7 +293,8 @@ public class TestManager implements Serializable {
                               tr.getSignificantDigits(),
                               tr.getRoundingMethodId(),
                               tr.getValue(),
-                              tr.getDictionary());
+                              tr.getDictionary(),
+                              tr.getDictionaryIsActive());
             }
         }
         return formatter;

@@ -537,10 +537,10 @@
 									<ui:text from="{msg.sample_releasedDate}" />
 								</td>
 								<td>
-									<w:CheckBox ui:field="analysisQa" enabled="true" />
+									<w:CheckBox ui:field="analysisQA" enabled="true" />
 								</td>
 								<td>
-									<ui:text from="{msg.analysis_qaEvent}" />
+									<ui:text from="{msg.dataView_qaEvent}" />
 								</td>
 								<td width="50px" />
 								<td>

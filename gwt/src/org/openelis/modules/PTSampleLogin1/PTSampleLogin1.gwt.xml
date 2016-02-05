@@ -38,6 +38,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.order1.Order1"/>
   <inherits name="org.openelis.modules.attachment.AttachmentService"/>
   <inherits name="org.openelis.modules.scriptlet.ScriptletService"/>
+  <inherits name="org.openelis.modules.eventLog.EventLog" />
   
   <entry-point class="org.openelis.modules.PTSampleLogin1.client.PTSampleLoginEntry"/>
 </module>

@@ -65,12 +65,12 @@ import org.openelis.utils.Auditable;
                                    + " from Attachment a where a.id in (:ids) order by a.id desc"),
                @NamedQuery( name = "Attachment.FetchUnattachedByDescription",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                                   + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id)"
-                                   + " and a.description like (:description) order by a.id"),
-               @NamedQuery( name = "Attachment.FetchUnattachedBeforeCreatedDate",
+                                   + " from Attachment a where a.description like (:description) and"
+                                   + " a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id) order by a.id"),
+               @NamedQuery( name = "Attachment.FetchForRemove",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                                 + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id)"
-                                 + " and a.createdDate < :createdDate"),
+                                 + " from Attachment a where a.createdDate < :createdDate and a.id not in (select i.attachmentId from AttachmentItem i where i.attachmentId = a.id)"
+                                 + " and a.id not in (select i.attachmentId from AttachmentIssue i where i.attachmentId = a.id)"),
                @NamedQuery( name = "Attachment.FetchByDescriptionReferenceIdReferenceTableId",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                  + " from Attachment a left join a.attachmentItem i where a.description like (:description) and i.referenceId = :referenceId"

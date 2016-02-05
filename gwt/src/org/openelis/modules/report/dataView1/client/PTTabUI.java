@@ -27,7 +27,6 @@ package org.openelis.modules.report.dataView1.client;
 
 import static org.openelis.ui.screen.State.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.openelis.constants.Messages;
@@ -43,6 +42,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -84,10 +84,14 @@ public class PTTabUI extends Screen {
 
     public void initialize() {
         addScreenHandler(ptPTProviderId,
-                         SampleWebMeta.getPTPTProviderId(),
+                         SampleWebMeta.PT_PT_PROVIDER_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ptPTProviderId.setValue(getValue(SampleWebMeta.getPTPTProviderId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 ptPTProviderId.setValue(getValue(SampleWebMeta.PT_PT_PROVIDER_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.PT_PT_PROVIDER_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -99,9 +103,13 @@ public class PTTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(ptSeries, SampleWebMeta.getPTSeries(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ptSeries.setValue(getValue(SampleWebMeta.getPTSeries()));
+        addScreenHandler(ptSeries, SampleWebMeta.PT_SERIES, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                ptSeries.setValue(getValue(SampleWebMeta.PT_SERIES));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.PT_SERIES, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -113,9 +121,13 @@ public class PTTabUI extends Screen {
             }
         });
 
-        addScreenHandler(ptDueDate, SampleWebMeta.getPTDueDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ptDueDate.setValue(getValue(SampleWebMeta.getPTDueDate()));
+        addScreenHandler(ptDueDate, SampleWebMeta.PT_DUE_DATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                ptDueDate.setValue(getValue(SampleWebMeta.PT_DUE_DATE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.PT_DUE_DATE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -127,21 +139,23 @@ public class PTTabUI extends Screen {
             }
         });
 
-        addScreenHandler(receivedById,
-                         SampleWebMeta.getReceivedById(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 receivedById.setValue(getValue(SampleWebMeta.getReceivedById()));
-                             }
+        addScreenHandler(receivedById, SampleWebMeta.RECEIVED_BY_ID, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                receivedById.setValue(getValue(SampleWebMeta.RECEIVED_BY_ID));
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 receivedById.setEnabled(isState(DEFAULT) && canEdit);
-                             }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.RECEIVED_BY_ID, event.getValue());
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ptPTProviderId : ptDueDate;
-                             }
-                         });
+            public void onStateChange(StateChangeEvent event) {
+                receivedById.setEnabled(isState(DEFAULT) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? ptPTProviderId : ptDueDate;
+            }
+        });
 
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
@@ -153,12 +167,35 @@ public class PTTabUI extends Screen {
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
+                String prevDom;
+                Widget w;
+                CheckBox cb;
+
+                prevDom = domain;
                 /*
                  * the widgets in this tab need to be enabled or disabled based
                  * on the current domain
                  */
                 domain = event.getDomain();
                 setState(state);
+
+                if (Constants.domain().PT.equals(prevDom) && !canEdit) {
+                    /*
+                     * the previous domain was PT but is not anymore; if some
+                     * columns from PT were selected before the domain was
+                     * changed, remove them from the ones shown in the report
+                     */
+                    for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+                        w = entry.getValue().widget;
+                        if (w instanceof CheckBox) {
+                            cb = (CheckBox)w;
+                            if ("Y".equals(cb.getValue())) {
+                                cb.setValue("N");
+                                addRemoveColumn(entry.getKey(), "N");
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -177,34 +214,30 @@ public class PTTabUI extends Screen {
         fireDataChange();
     }
 
-    /**
-     * Adds the keys for all checked checkboxes to the list of columns shown in
-     * the generated excel file
-     */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        if ( !canEdit)
-            return;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
+    private void evaluateEdit() {
+        canEdit = Constants.domain().PT.equals(domain);
     }
 
+    /**
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
+     */
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
     }
 
-    private void evaluateEdit() {
-        canEdit = Constants.domain().PT.equals(domain);
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }

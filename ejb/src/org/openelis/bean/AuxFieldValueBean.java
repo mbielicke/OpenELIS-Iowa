@@ -158,11 +158,13 @@ public class AuxFieldValueBean {
         try {
             /*
              * for entries that are dictionary, we want to fetch the dictionary
-             * text and set it for display
+             * text and set it for display; the flag "isActive" is also set
              */
             dict = dictionaryCache.getById(Integer.parseInt(data.getValue()));
-            if (dict != null)
+            if (dict != null) {
                 data.setDictionary(dict.getEntry());
+                data.setDictionaryIsActive(dict.getIsActive());
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not fetch dictionary record with id " + data.getValue(), e);
             throw e;

@@ -16954,6 +16954,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_noDomainException(Integer arg0);
 
   /**
+   * Translated "You do not have permission to add or update samples".
+   * 
+   * @return translated "You do not have permission to add or update samples"
+   */
+  @DefaultMessage("You do not have permission to add or update samples")
+  @Key("sample.noSamplePermissionException")
+  String sample_noSamplePermissionException();
+
+  /**
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
    * 
    * @return translated "A QA event has been added that makes this sample and all its analyses not billable"

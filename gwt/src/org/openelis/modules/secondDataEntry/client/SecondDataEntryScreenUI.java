@@ -194,12 +194,9 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     };
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
-        ModulePermission userPermission;
-
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("verification");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("verification") == null)
             throw new PermissionException(Messages.get()
                                                   .gen_screenPermException("Second Data Entry"));
 

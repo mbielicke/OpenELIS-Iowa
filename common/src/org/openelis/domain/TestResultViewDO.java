@@ -42,7 +42,7 @@ public class TestResultViewDO extends TestResultDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          dictionary;
+    protected String          dictionary, dictionaryIsActive;
 
     public TestResultViewDO() {
     }
@@ -50,10 +50,11 @@ public class TestResultViewDO extends TestResultDO {
     public TestResultViewDO(Integer id, Integer testId, Integer resultGroup, Integer sortOrder,
                             Integer unitOfMeasureId, Integer typeId, String value,
                             Integer significantDigits, Integer roundingMethodId, Integer flagsId,
-                            String dictionary) {
+                            String dictionary, String dictionaryIsActive) {
         super(id, testId, resultGroup, sortOrder, unitOfMeasureId, typeId, value,
               significantDigits, roundingMethodId, flagsId);
         setDictionary(dictionary);
+        setDictionaryIsActive(dictionaryIsActive);
     }
 
     public String getDictionary() {
@@ -62,5 +63,13 @@ public class TestResultViewDO extends TestResultDO {
 
     public void setDictionary(String dictionary) {
         this.dictionary = DataBaseUtil.trim(dictionary);
+    }
+
+    public String getDictionaryIsActive() {
+        return dictionaryIsActive;
+    }
+
+    public void setDictionaryIsActive(String dictionaryIsActive) {
+        this.dictionaryIsActive = DataBaseUtil.trim(dictionaryIsActive);
     }
 }

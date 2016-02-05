@@ -74,6 +74,12 @@
               <ui:text from="{msg.gen_status}" />
             </td>
             <td>
+              <w:CheckBox ui:field="sampleQAEventQAEventName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.qaEvent_qaEvent}" />
+            </td>
+            <td>
               <w:CheckBox ui:field="projectName" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
@@ -272,7 +278,7 @@
               <ui:text from="{msg.gen_unit}" />
             </td>
             <td>
-              <w:CheckBox ui:field="analysisSubQaName" />
+              <w:CheckBox ui:field="analysisQAEventQAEventName" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.qaEvent_qaEvent}" />

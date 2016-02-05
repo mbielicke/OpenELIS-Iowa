@@ -296,7 +296,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     setSelectedAsNextOfKin, closeLoginScreen, isAttachmentScreenOpen, revalidate,
                     hasDomainScriptlet, isFullLogin;
 
-    protected ModulePermission                          userPermission;
+    protected ModulePermission                          samplePermission;
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
 
@@ -355,10 +355,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     public NeonatalScreeningSampleLoginScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sampleneonatal");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("sampleneonatal") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Neonatal Screening Sample Login Screen"));
+        
+        samplePermission = UserCache.getPermission().getModule("sample");
+        if (samplePermission == null)
+            samplePermission = new ModulePermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -507,7 +510,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
+                                 samplePermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
@@ -532,7 +535,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -543,7 +546,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -579,7 +582,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(State.DISPLAY) && samplePermission.hasAddPermission());
             }
         });
 
@@ -592,7 +595,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addWithTRF.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
-                                      userPermission.hasAddPermission());
+                                      samplePermission.hasAddPermission());
             }
         });
 
@@ -4704,7 +4707,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             clearStatus();
                         }
                     }
-                    
+
                     public void notFound() {
                         clearStatus();
                         checkTRF();

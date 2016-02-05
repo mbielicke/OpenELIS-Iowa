@@ -100,7 +100,7 @@ public class AttachmentImportBean {
                 } catch (Exception e) {
                     log.severe("No 'internal_section' system variable defined");
                     return;
-                } 
+                }
             }
             sectionId = section.getByName(sectionName).getId();
             /*
@@ -126,7 +126,7 @@ public class AttachmentImportBean {
 
     /**
      * Removes unattached attachments from the database that were created more
-     * than the passed number of days ago
+     * than the passed number of days ago and have no attachment issues
      */
     public void removeImportedAttachments(String days) throws Exception {
         String base;
@@ -149,10 +149,11 @@ public class AttachmentImportBean {
 
         try {
             /*
-             * fetch the unattached attachments older than the date obtained
-             * above and delete them; also delete the files linked to them
+             * fetch attachments that are unattached, have no attachment issuesa
+             * and are older than the date obtained above, and delete them; also
+             * delete the files linked to them
              */
-            attachments = attachment.fetchUnattachedBeforeCreatedDate(cal.getTime());
+            attachments = attachment.fetchForRemove(cal.getTime());
             for (AttachmentDO data : attachments) {
                 log.fine("Deleting attachment id: " + data.getId());
                 src = Paths.get(base,

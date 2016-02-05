@@ -39,6 +39,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.CheckBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -54,16 +55,16 @@ public class CommonTabUI extends Screen {
 
     @UiField
     protected CheckBox               accessionNumber, revision, collectionDate, receivedDate,
-                    enteredDate, releasedDate, statusId, projectName, clientReferenceHeader,
-                    sampleOrgId, sampleOrgOrganizationName, sampleOrgAttention,
-                    addressMultipleUnit, addressStreetAddress, addressCity, addressState,
-                    addressZipCode, itemTypeofSampleId, itemSourceOfSampleId, itemSourceOther,
-                    itemContainerId, itemContainerReference, itemItemSequence, analysisId,
-                    analysisTestNameHeader, analysisMethodNameHeader, analysisStatusIdHeader,
-                    analysisRevision, analysisIsReportableHeader, analysisUnitOfMeasureId,
-                    analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
-                    analysisReleasedDate, analysisReleasedBy, analysisStartedDate,
-                    analysisPrintedDate, analysisSectionName, analysisTypeId;
+                    enteredDate, releasedDate, statusId, sampleQAEventQAEventName, projectName,
+                    clientReferenceHeader, sampleOrgId, sampleOrgOrganizationName,
+                    sampleOrgAttention, addressMultipleUnit, addressStreetAddress, addressCity,
+                    addressState, addressZipCode, itemTypeofSampleId, itemSourceOfSampleId,
+                    itemSourceOther, itemContainerId, itemContainerReference, itemItemSequence,
+                    analysisId, analysisTestNameHeader, analysisMethodNameHeader,
+                    analysisStatusIdHeader, analysisRevision, analysisIsReportableHeader,
+                    analysisUnitOfMeasureId, analysisQAEventQAEventName, analysisCompletedDate,
+                    analysisCompletedBy, analysisReleasedDate, analysisReleasedBy,
+                    analysisStartedDate, analysisPrintedDate, analysisSectionName, analysisTypeId;
 
     protected Screen                 parentScreen;
 
@@ -76,60 +77,80 @@ public class CommonTabUI extends Screen {
         this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
-        
+
         data = null;
     }
 
     public void initialize() {
-        addScreenHandler(accessionNumber, SampleWebMeta.getAccessionNumber(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(getValue(SampleWebMeta.getAccessionNumber()));
+        addScreenHandler(accessionNumber,
+                         SampleWebMeta.ACCESSION_NUMBER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 accessionNumber.setValue(getValue(SampleWebMeta.ACCESSION_NUMBER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ACCESSION_NUMBER, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 accessionNumber.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? revision : analysisTypeId;
+                             }
+                         });
+
+        addScreenHandler(revision, SampleWebMeta.REVISION, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                revision.setValue(getValue(SampleWebMeta.REVISION));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.REVISION, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                accessionNumber.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? revision : analysisTypeId;
-            }
-        });
-
-        addScreenHandler(revision, SampleWebMeta.getRevision(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                revision.setValue(getValue(SampleWebMeta.getRevision()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                revision.setEnabled( isState(DEFAULT));
+                revision.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
                 return forward ? collectionDate : accessionNumber;
             }
         });
-        
-        addScreenHandler(collectionDate, SampleWebMeta.getCollectionDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                collectionDate.setValue(getValue(SampleWebMeta.getCollectionDate()));
+
+        addScreenHandler(collectionDate,
+                         SampleWebMeta.COLLECTION_DATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 collectionDate.setValue(getValue(SampleWebMeta.COLLECTION_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.COLLECTION_DATE, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 collectionDate.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? receivedDate : revision;
+                             }
+                         });
+
+        addScreenHandler(receivedDate, SampleWebMeta.RECEIVED_DATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                receivedDate.setValue(getValue(SampleWebMeta.RECEIVED_DATE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.RECEIVED_DATE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                collectionDate.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? receivedDate : revision;
-            }
-        });
-        
-        addScreenHandler(receivedDate, SampleWebMeta.getReceivedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                receivedDate.setValue(getValue(SampleWebMeta.getReceivedDate()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                receivedDate.setEnabled( isState(DEFAULT));
+                receivedDate.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -137,13 +158,17 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(enteredDate, SampleWebMeta.getEnteredDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                enteredDate.setValue(getValue(SampleWebMeta.getEnteredDate()));
+        addScreenHandler(enteredDate, SampleWebMeta.ENTERED_DATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                enteredDate.setValue(getValue(SampleWebMeta.ENTERED_DATE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ENTERED_DATE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                enteredDate.setEnabled( isState(DEFAULT));
+                enteredDate.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -151,13 +176,17 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(releasedDate, SampleWebMeta.getReleasedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                releasedDate.setValue(getValue(SampleWebMeta.getReleasedDate()));
+        addScreenHandler(releasedDate, SampleWebMeta.RELEASED_DATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                releasedDate.setValue(getValue(SampleWebMeta.RELEASED_DATE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.RELEASED_DATE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                releasedDate.setEnabled( isState(DEFAULT));
+                releasedDate.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -165,55 +194,95 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(statusId, SampleWebMeta.getStatusId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                statusId.setValue(getValue(SampleWebMeta.getStatusId()));
+        addScreenHandler(statusId, SampleWebMeta.STATUS_ID, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                statusId.setValue(getValue(SampleWebMeta.STATUS_ID));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.STATUS_ID, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                statusId.setEnabled( isState(DEFAULT));
+                statusId.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? projectName : releasedDate;
+                return forward ? sampleQAEventQAEventName : releasedDate;
             }
         });
 
-        addScreenHandler(projectName, SampleWebMeta.getProjectName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                projectName.setValue(getValue(SampleWebMeta.getProjectName()));
+        addScreenHandler(sampleQAEventQAEventName,
+                         SampleWebMeta.SAMPLE_QA_EVENT_QA_EVENT_NAME,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sampleQAEventQAEventName.setValue(getValue(SampleWebMeta.SAMPLE_QA_EVENT_QA_EVENT_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SAMPLE_QA_EVENT_QA_EVENT_NAME,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 sampleQAEventQAEventName.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectName : statusId;
+                             }
+                         });
+
+        addScreenHandler(projectName, SampleWebMeta.PROJECT_NAME, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                projectName.setValue(getValue(SampleWebMeta.PROJECT_NAME));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.PROJECT_NAME, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                projectName.setEnabled( isState(DEFAULT));
+                projectName.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? clientReferenceHeader : statusId;
+                return forward ? clientReferenceHeader : sampleQAEventQAEventName;
             }
         });
 
-        addScreenHandler(clientReferenceHeader, SampleWebMeta.getClientReferenceHeader(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                clientReferenceHeader.setValue(getValue(SampleWebMeta.getClientReferenceHeader()));
+        addScreenHandler(clientReferenceHeader,
+                         SampleWebMeta.CLIENT_REFERENCE_HEADER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clientReferenceHeader.setValue(getValue(SampleWebMeta.CLIENT_REFERENCE_HEADER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIENT_REFERENCE_HEADER,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 clientReferenceHeader.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sampleOrgId : projectName;
+                             }
+                         });
+
+        addScreenHandler(sampleOrgId, SampleWebMeta.SAMPLE_ORG_ID, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                sampleOrgId.setValue(getValue(SampleWebMeta.SAMPLE_ORG_ID));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.SAMPLE_ORG_ID, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                clientReferenceHeader.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? sampleOrgId : projectName;
-            }
-        });
-
-        addScreenHandler(sampleOrgId, SampleWebMeta.getSampleOrgId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleOrgId.setValue(getValue(SampleWebMeta.getSampleOrgId()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                sampleOrgId.setEnabled( isState(DEFAULT));
+                sampleOrgId.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -221,69 +290,99 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(sampleOrgOrganizationName, SampleWebMeta.getSampleOrgOrganizationName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleOrgOrganizationName.setValue(getValue(SampleWebMeta.getSampleOrgOrganizationName()));
+        addScreenHandler(sampleOrgOrganizationName,
+                         SampleWebMeta.ORG_NAME,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sampleOrgOrganizationName.setValue(getValue(SampleWebMeta.ORG_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ORG_NAME, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 sampleOrgOrganizationName.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sampleOrgAttention : sampleOrgId;
+                             }
+                         });
+
+        addScreenHandler(sampleOrgAttention,
+                         SampleWebMeta.SAMPLE_ORG_ATTENTION,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 sampleOrgAttention.setValue(getValue(SampleWebMeta.SAMPLE_ORG_ATTENTION));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.SAMPLE_ORG_ATTENTION,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 sampleOrgAttention.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? addressMultipleUnit : sampleOrgOrganizationName;
+                             }
+                         });
+
+        addScreenHandler(addressMultipleUnit,
+                         SampleWebMeta.ADDR_MULTIPLE_UNIT,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 addressMultipleUnit.setValue(getValue(SampleWebMeta.ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ADDR_MULTIPLE_UNIT, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 addressMultipleUnit.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? addressStreetAddress : sampleOrgAttention;
+                             }
+                         });
+
+        addScreenHandler(addressStreetAddress,
+                         SampleWebMeta.ADDR_STREET_ADDRESS,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 addressStreetAddress.setValue(getValue(SampleWebMeta.ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ADDR_STREET_ADDRESS,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 addressStreetAddress.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? addressCity : addressMultipleUnit;
+                             }
+                         });
+
+        addScreenHandler(addressCity, SampleWebMeta.ADDR_CITY, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                addressCity.setValue(getValue(SampleWebMeta.ADDR_CITY));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ADDR_CITY, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sampleOrgOrganizationName.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? sampleOrgAttention : sampleOrgId;
-            }
-        });
-
-        addScreenHandler(sampleOrgAttention, SampleWebMeta.getSampleOrgAttention(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleOrgAttention.setValue(getValue(SampleWebMeta.getSampleOrgAttention()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                sampleOrgAttention.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? addressMultipleUnit : sampleOrgOrganizationName;
-            }
-        });
-
-        addScreenHandler(addressMultipleUnit, SampleWebMeta.getAddressMultipleUnit(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressMultipleUnit.setValue(getValue(SampleWebMeta.getAddressMultipleUnit()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                addressMultipleUnit.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? addressStreetAddress : sampleOrgAttention;
-            }
-        });
-
-        addScreenHandler(addressStreetAddress, SampleWebMeta.getAddressStreetAddress(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressStreetAddress.setValue(getValue(SampleWebMeta.getAddressStreetAddress()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                addressStreetAddress.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? addressCity : addressMultipleUnit;
-            }
-        });
-
-        addScreenHandler(addressCity, SampleWebMeta.getAddressCity(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressCity.setValue(getValue(SampleWebMeta.getAddressCity()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                addressCity.setEnabled( isState(DEFAULT));
+                addressCity.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -291,13 +390,17 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(addressState, SampleWebMeta.getAddressState(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressState.setValue(getValue(SampleWebMeta.getAddressState()));
+        addScreenHandler(addressState, SampleWebMeta.ADDR_STATE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                addressState.setValue(getValue(SampleWebMeta.ADDR_STATE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ADDR_STATE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                addressState.setEnabled( isState(DEFAULT));
+                addressState.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -305,13 +408,17 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(addressZipCode, SampleWebMeta.getAddressZipCode(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressZipCode.setValue(getValue(SampleWebMeta.getAddressZipCode()));
+        addScreenHandler(addressZipCode, SampleWebMeta.ADDR_ZIP_CODE, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                addressZipCode.setValue(getValue(SampleWebMeta.ADDR_ZIP_CODE));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ADDR_ZIP_CODE, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                addressZipCode.setEnabled( isState(DEFAULT));
+                addressZipCode.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -319,97 +426,140 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(itemTypeofSampleId, SampleWebMeta.getItemTypeofSampleId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemTypeofSampleId.setValue(getValue(SampleWebMeta.getItemTypeofSampleId()));
+        addScreenHandler(itemTypeofSampleId,
+                         SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemTypeofSampleId.setValue(getValue(SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemTypeofSampleId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemSourceOfSampleId : addressZipCode;
+                             }
+                         });
+
+        addScreenHandler(itemSourceOfSampleId,
+                         SampleWebMeta.ITEM_SOURCE_OF_SAMPLE_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemSourceOfSampleId.setValue(getValue(SampleWebMeta.ITEM_SOURCE_OF_SAMPLE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_SOURCE_OF_SAMPLE_ID,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemSourceOfSampleId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemSourceOther : itemTypeofSampleId;
+                             }
+                         });
+
+        addScreenHandler(itemSourceOther,
+                         SampleWebMeta.ITEM_SOURCE_OTHER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemSourceOther.setValue(getValue(SampleWebMeta.ITEM_SOURCE_OTHER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_SOURCE_OTHER, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemSourceOther.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemContainerId : itemSourceOfSampleId;
+                             }
+                         });
+
+        addScreenHandler(itemContainerId,
+                         SampleWebMeta.ITEM_CONTAINER_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemContainerId.setValue(getValue(SampleWebMeta.ITEM_CONTAINER_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_CONTAINER_ID, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemContainerId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemContainerReference : itemSourceOther;
+                             }
+                         });
+
+        addScreenHandler(itemContainerReference,
+                         SampleWebMeta.ITEM_CONTAINER_REFERENCE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemContainerReference.setValue(getValue(SampleWebMeta.ITEM_CONTAINER_REFERENCE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_CONTAINER_REFERENCE,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemContainerReference.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemItemSequence : itemContainerId;
+                             }
+                         });
+
+        addScreenHandler(itemItemSequence,
+                         SampleWebMeta.ITEM_ITEM_SEQUENCE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 itemItemSequence.setValue(getValue(SampleWebMeta.ITEM_ITEM_SEQUENCE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ITEM_ITEM_SEQUENCE, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 itemItemSequence.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisId : itemContainerReference;
+                             }
+                         });
+
+        addScreenHandler(analysisId, SampleWebMeta.ANALYSIS_ID, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                analysisId.setValue(getValue(SampleWebMeta.ANALYSIS_ID));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                addRemoveColumn(SampleWebMeta.ANALYSIS_ID, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                itemTypeofSampleId.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? itemSourceOfSampleId : addressZipCode;
-            }
-        });
-        
-        addScreenHandler(itemSourceOfSampleId, SampleWebMeta.getItemSourceOfSampleId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemSourceOfSampleId.setValue(getValue(SampleWebMeta.getItemSourceOfSampleId()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                itemSourceOfSampleId.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? itemSourceOther : itemTypeofSampleId;
-            }
-        });
-
-        addScreenHandler(itemSourceOther, SampleWebMeta.getItemSourceOther(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemSourceOther.setValue(getValue(SampleWebMeta.getItemSourceOther()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                itemSourceOther.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? itemContainerId : itemSourceOfSampleId;
-            }
-        });
-
-        addScreenHandler(itemContainerId, SampleWebMeta.getItemContainerId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemContainerId.setValue(getValue(SampleWebMeta.getItemContainerId()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                itemContainerId.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? itemContainerReference : itemSourceOther;
-            }
-        });
-
-        addScreenHandler(itemContainerReference, SampleWebMeta.getItemContainerReference(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemContainerReference.setValue(getValue(SampleWebMeta.getItemContainerReference()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                itemContainerReference.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? itemItemSequence : itemContainerId;
-            }
-        });
-
-        addScreenHandler(itemItemSequence, SampleWebMeta.getItemItemSequence(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemItemSequence.setValue(getValue(SampleWebMeta.getItemItemSequence()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                itemItemSequence.setEnabled( isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? analysisId : itemContainerReference;
-            }
-        });
-
-        addScreenHandler(analysisId, SampleWebMeta.getAnalysisId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisId.setValue(getValue(SampleWebMeta.getAnalysisId()));
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                analysisId.setEnabled( isState(DEFAULT));
+                analysisId.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
@@ -417,217 +567,322 @@ public class CommonTabUI extends Screen {
             }
         });
 
-        addScreenHandler(analysisTestNameHeader, SampleWebMeta.getAnalysisTestNameHeader(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisTestNameHeader.setValue(getValue(SampleWebMeta.getAnalysisTestNameHeader()));
-            }
+        addScreenHandler(analysisTestNameHeader,
+                         SampleWebMeta.ANALYSIS_TEST_NAME_HEADER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisTestNameHeader.setValue(getValue(SampleWebMeta.ANALYSIS_TEST_NAME_HEADER));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisTestNameHeader.setEnabled( isState(DEFAULT));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_TEST_NAME_HEADER,
+                                                 event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisMethodNameHeader : analysisId;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisTestNameHeader.setEnabled(isState(DEFAULT));
+                             }
 
-        addScreenHandler(analysisMethodNameHeader, SampleWebMeta.getAnalysisMethodNameHeader(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisMethodNameHeader.setValue(getValue(SampleWebMeta.getAnalysisMethodNameHeader()));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisMethodNameHeader : analysisId;
+                             }
+                         });
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisMethodNameHeader.setEnabled( isState(DEFAULT));
-            }
+        addScreenHandler(analysisMethodNameHeader,
+                         SampleWebMeta.ANALYSIS_METHOD_NAME_HEADER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisMethodNameHeader.setValue(getValue(SampleWebMeta.ANALYSIS_METHOD_NAME_HEADER));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisStatusIdHeader : analysisTestNameHeader;
-            }
-        });
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_METHOD_NAME_HEADER,
+                                                 event.getValue());
+                             }
 
-        addScreenHandler(analysisStatusIdHeader, SampleWebMeta.getAnalysisStatusIdHeader(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisStatusIdHeader.setValue(getValue(SampleWebMeta.getAnalysisStatusIdHeader()));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisMethodNameHeader.setEnabled(isState(DEFAULT));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisStatusIdHeader.setEnabled( isState(DEFAULT));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisStatusIdHeader : analysisTestNameHeader;
+                             }
+                         });
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisRevision : analysisMethodNameHeader;
-            }
-        });
+        addScreenHandler(analysisStatusIdHeader,
+                         SampleWebMeta.ANALYSIS_STATUS_ID_HEADER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisStatusIdHeader.setValue(getValue(SampleWebMeta.ANALYSIS_STATUS_ID_HEADER));
+                             }
 
-        addScreenHandler(analysisRevision, SampleWebMeta.getAnalysisRevision(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisRevision.setValue(getValue(SampleWebMeta.getAnalysisRevision()));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_STATUS_ID_HEADER,
+                                                 event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisRevision.setEnabled( isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisStatusIdHeader.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisIsReportableHeader : analysisStatusIdHeader;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisRevision : analysisMethodNameHeader;
+                             }
+                         });
 
-        addScreenHandler(analysisIsReportableHeader, SampleWebMeta.getAnalysisIsReportableHeader(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisIsReportableHeader.setValue(getValue(SampleWebMeta.getAnalysisIsReportableHeader()));
-            }
+        addScreenHandler(analysisRevision,
+                         SampleWebMeta.ANALYSIS_REVISION,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisRevision.setValue(getValue(SampleWebMeta.ANALYSIS_REVISION));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisIsReportableHeader.setEnabled( isState(DEFAULT));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_REVISION, event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisUnitOfMeasureId : analysisRevision;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisRevision.setEnabled(isState(DEFAULT));
+                             }
 
-        addScreenHandler(analysisUnitOfMeasureId, SampleWebMeta.getAnalysisUnitOfMeasureId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisUnitOfMeasureId.setValue(getValue(SampleWebMeta.getAnalysisUnitOfMeasureId()));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisIsReportableHeader
+                                               : analysisStatusIdHeader;
+                             }
+                         });
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisUnitOfMeasureId.setEnabled( isState(DEFAULT));
-            }
+        addScreenHandler(analysisIsReportableHeader,
+                         SampleWebMeta.ANALYSIS_IS_REPORTABLE_HEADER,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisIsReportableHeader.setValue(getValue(SampleWebMeta.ANALYSIS_IS_REPORTABLE_HEADER));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisSubQaName : analysisIsReportableHeader;
-            }
-        });
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_IS_REPORTABLE_HEADER,
+                                                 event.getValue());
+                             }
 
-        addScreenHandler(analysisSubQaName, SampleWebMeta.getAnalysisSubQaName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisSubQaName.setValue(getValue(SampleWebMeta.getAnalysisSubQaName()));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisIsReportableHeader.setEnabled(isState(DEFAULT));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisSubQaName.setEnabled( isState(DEFAULT));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisUnitOfMeasureId : analysisRevision;
+                             }
+                         });
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisCompletedDate : analysisUnitOfMeasureId;
-            }
-        });
+        addScreenHandler(analysisUnitOfMeasureId,
+                         SampleWebMeta.ANALYSIS_UNIT_OF_MEASURE_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisUnitOfMeasureId.setValue(getValue(SampleWebMeta.ANALYSIS_UNIT_OF_MEASURE_ID));
+                             }
 
-        addScreenHandler(analysisCompletedDate, SampleWebMeta.getAnalysisCompletedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisCompletedDate.setValue(getValue(SampleWebMeta.getAnalysisCompletedDate()));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_UNIT_OF_MEASURE_ID,
+                                                 event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisCompletedDate.setEnabled( isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisUnitOfMeasureId.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisCompletedBy : analysisSubQaName;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisQAEventQAEventName
+                                               : analysisIsReportableHeader;
+                             }
+                         });
 
-        addScreenHandler(analysisCompletedBy, SampleWebMeta.getAnalysisCompletedBy(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisCompletedBy.setValue(getValue(SampleWebMeta.getAnalysisCompletedBy()));
-            }
+        addScreenHandler(analysisQAEventQAEventName,
+                         SampleWebMeta.ANALYSIS_QA_EVENT_QA_EVENT_NAME,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisQAEventQAEventName.setValue(getValue(SampleWebMeta.ANALYSIS_QA_EVENT_QA_EVENT_NAME));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisCompletedBy.setEnabled( isState(DEFAULT));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_QA_EVENT_QA_EVENT_NAME,
+                                                 event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisReleasedDate : analysisCompletedDate;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisQAEventQAEventName.setEnabled(isState(DEFAULT));
+                             }
 
-        addScreenHandler(analysisReleasedDate, SampleWebMeta.getAnalysisReleasedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisReleasedDate.setValue(getValue(SampleWebMeta.getAnalysisReleasedDate()));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisCompletedDate : analysisUnitOfMeasureId;
+                             }
+                         });
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisReleasedDate.setEnabled( isState(DEFAULT));
-            }
+        addScreenHandler(analysisCompletedDate,
+                         SampleWebMeta.ANALYSIS_COMPLETED_DATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisCompletedDate.setValue(getValue(SampleWebMeta.ANALYSIS_COMPLETED_DATE));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisReleasedBy : analysisCompletedBy;
-            }
-        });
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_COMPLETED_DATE,
+                                                 event.getValue());
+                             }
 
-        addScreenHandler(analysisReleasedBy, SampleWebMeta.getAnalysisReleasedBy(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisReleasedBy.setValue(getValue(SampleWebMeta.getAnalysisReleasedBy()));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisCompletedDate.setEnabled(isState(DEFAULT));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisReleasedBy.setEnabled( isState(DEFAULT));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisCompletedBy : analysisQAEventQAEventName;
+                             }
+                         });
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisStartedDate : analysisReleasedDate;
-            }
-        });
+        addScreenHandler(analysisCompletedBy,
+                         SampleWebMeta.ANALYSIS_COMPLETED_BY,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisCompletedBy.setValue(getValue(SampleWebMeta.ANALYSIS_COMPLETED_BY));
+                             }
 
-        addScreenHandler(analysisStartedDate, SampleWebMeta.getAnalysisStartedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisStartedDate.setValue(getValue(SampleWebMeta.getAnalysisStartedDate()));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_COMPLETED_BY,
+                                                 event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisStartedDate.setEnabled( isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisCompletedBy.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisPrintedDate : analysisReleasedBy;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisReleasedDate : analysisCompletedDate;
+                             }
+                         });
 
-        addScreenHandler(analysisPrintedDate, SampleWebMeta.getAnalysisPrintedDate(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisPrintedDate.setValue(getValue(SampleWebMeta.getAnalysisPrintedDate()));
-            }
+        addScreenHandler(analysisReleasedDate,
+                         SampleWebMeta.ANALYSIS_RELEASED_DATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisReleasedDate.setValue(getValue(SampleWebMeta.ANALYSIS_RELEASED_DATE));
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisPrintedDate.setEnabled( isState(DEFAULT));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_RELEASED_DATE,
+                                                 event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisSectionName : analysisStartedDate;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisReleasedDate.setEnabled(isState(DEFAULT));
+                             }
 
-        addScreenHandler(analysisSectionName, SampleWebMeta.getAnalysisSectionName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisSectionName.setValue(getValue(SampleWebMeta.getAnalysisSectionName()));
-            }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisReleasedBy : analysisCompletedBy;
+                             }
+                         });
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisSectionName.setEnabled( isState(DEFAULT));
-            }
+        addScreenHandler(analysisReleasedBy,
+                         SampleWebMeta.ANALYSIS_RELEASED_BY,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisReleasedBy.setValue(getValue(SampleWebMeta.ANALYSIS_RELEASED_BY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? analysisTypeId : analysisPrintedDate;
-            }
-        });
-        
-        addScreenHandler(analysisTypeId, SampleWebMeta.getAnalysisTypeId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisTypeId.setValue(getValue(SampleWebMeta.getAnalysisTypeId()));
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_RELEASED_BY,
+                                                 event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                analysisTypeId.setEnabled( isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisReleasedBy.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? accessionNumber : analysisSectionName;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisStartedDate : analysisReleasedDate;
+                             }
+                         });
+
+        addScreenHandler(analysisStartedDate,
+                         SampleWebMeta.ANALYSIS_STARTED_DATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisStartedDate.setValue(getValue(SampleWebMeta.ANALYSIS_STARTED_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_STARTED_DATE,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisStartedDate.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisPrintedDate : analysisReleasedBy;
+                             }
+                         });
+
+        addScreenHandler(analysisPrintedDate,
+                         SampleWebMeta.ANALYSIS_PRINTED_DATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisPrintedDate.setValue(getValue(SampleWebMeta.ANALYSIS_PRINTED_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_PRINTED_DATE,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisPrintedDate.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisSectionName : analysisStartedDate;
+                             }
+                         });
+
+        addScreenHandler(analysisSectionName,
+                         SampleWebMeta.ANALYSIS_SECTION_NAME,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisSectionName.setValue(getValue(SampleWebMeta.ANALYSIS_SECTION_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_SECTION_NAME,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisSectionName.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisTypeId : analysisPrintedDate;
+                             }
+                         });
+
+        addScreenHandler(analysisTypeId,
+                         SampleWebMeta.ANALYSIS_TYPE_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 analysisTypeId.setValue(getValue(SampleWebMeta.ANALYSIS_TYPE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.ANALYSIS_TYPE_ID, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 analysisTypeId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : analysisSectionName;
+                             }
+                         });
     }
-    
+
     public void setData(DataView1VO data) {
         this.data = data;
     }
@@ -635,28 +890,27 @@ public class CommonTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
-    
+
     /**
-     * Adds the keys for all checked checkboxes to the list of columns shown
-     * in the generated excel file
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
      */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
-    }
-
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
+    }
+
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }

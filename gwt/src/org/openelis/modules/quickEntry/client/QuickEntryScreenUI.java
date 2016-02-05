@@ -25,9 +25,9 @@
  */
 package org.openelis.modules.quickEntry.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +55,6 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
-import org.openelis.modules.panel1.client.PanelService1;
 import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
@@ -65,7 +64,6 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
-import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
@@ -127,7 +125,6 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     private Datetime                                       todaysDate;
     private HashMap<Integer, ArrayList<TestSectionViewDO>> testSectionHash;
     private HashMap<Integer, SampleManagerRowCount>        managers;
-    private ModulePermission                               userPermission;
     private ScheduledCommand                               focusEntryCmd;
 
     @UiField
@@ -159,9 +156,11 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     public QuickEntryScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("quickentry");
-        if (userPermission == null)
+        if (UserCache.getPermission().getModule("quickentry") == null)
             throw new PermissionException(Messages.get().screenPermException("Quick Entry Screen"));
+        
+        if (UserCache.getPermission().getModule("sample") == null)
+            throw new PermissionException(Messages.get().sample_noSamplePermissionException());
 
         initWidget(uiBinder.createAndBindUi(this));
 

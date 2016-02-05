@@ -27,7 +27,6 @@ package org.openelis.modules.report.dataView1.client;
 
 import static org.openelis.ui.screen.State.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.openelis.cache.UserCache;
@@ -46,6 +45,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -67,7 +67,7 @@ public class ClinicalTabUI extends Screen {
                     clinicalPatientAddrHomePhone, clinicalPatientGenderId, clinicalPatientRaceId,
                     clinicalPatientEthnicityId, clinicalProviderLastName,
                     clinicalProviderFirstName, clinicalProviderPhone;
-    
+
     @UiField
     protected Label<String>            fieldsDisabledLabel;
 
@@ -76,19 +76,19 @@ public class ClinicalTabUI extends Screen {
     protected EventBus                 parentBus;
 
     protected DataView1VO              data;
-    
-    protected ModulePermission     patientPermission;
+
+    protected ModulePermission         patientPermission;
 
     protected String                   domain;
 
     protected boolean                  canEditDomain, canEditPatient;
-    
+
     public ClinicalTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
-        
+
         patientPermission = UserCache.getPermission().getModule("dataview_patient");
-        
+
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -98,14 +98,19 @@ public class ClinicalTabUI extends Screen {
 
     public void initialize() {
         addScreenHandler(clinicalPatientId,
-                         SampleWebMeta.getClinicalPatientId(),
+                         SampleWebMeta.CLIN_PATIENT_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientId.setValue(getValue(SampleWebMeta.getClinicalPatientId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientId.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientId.setEnabled(isState(DEFAULT) && canEditDomain &&
+                                                              canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -114,14 +119,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientLastName,
-                         SampleWebMeta.getClinicalPatientLastNameHeader(),
+                         SampleWebMeta.CLIN_PATIENT_LAST_NAME_HEADER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientLastName.setValue(getValue(SampleWebMeta.getClinicalPatientLastNameHeader()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientLastName.setValue(getValue(SampleWebMeta.CLIN_PATIENT_LAST_NAME_HEADER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_LAST_NAME_HEADER,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientLastName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientLastName.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -130,14 +141,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientFirstName,
-                         SampleWebMeta.getClinicalPatientFirstNameHeader(),
+                         SampleWebMeta.CLIN_PATIENT_FIRST_NAME_HEADER,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientFirstName.setValue(getValue(SampleWebMeta.getClinicalPatientFirstNameHeader()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientFirstName.setValue(getValue(SampleWebMeta.CLIN_PATIENT_FIRST_NAME_HEADER));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_FIRST_NAME_HEADER,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientFirstName.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientFirstName.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -147,14 +165,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientBirthDate,
-                         SampleWebMeta.getClinicalPatientBirthDate(),
+                         SampleWebMeta.CLIN_PATIENT_BIRTH_DATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientBirthDate.setValue(getValue(SampleWebMeta.getClinicalPatientBirthDate()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientBirthDate.setValue(getValue(SampleWebMeta.CLIN_PATIENT_BIRTH_DATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_BIRTH_DATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientBirthDate.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientBirthDate.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -164,14 +189,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientNationalId,
-                         SampleWebMeta.getClinicalPatientNationalId(),
+                         SampleWebMeta.CLIN_PATIENT_NATIONAL_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientNationalId.setValue(getValue(SampleWebMeta.getClinicalPatientNationalId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientNationalId.setValue(getValue(SampleWebMeta.CLIN_PATIENT_NATIONAL_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_NATIONAL_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientNationalId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientNationalId.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain &&
+                                                                      canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -181,15 +213,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrMultipleUnit,
-                         SampleWebMeta.getClinicalPatientAddrMultipleUnit(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_MULTIPLE_UNIT,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrMultipleUnit.setValue(getValue(SampleWebMeta.getClinicalPatientAddrMultipleUnit()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrMultipleUnit.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_MULTIPLE_UNIT,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrMultipleUnit.setEnabled(isState(DEFAULT) &&
-                                                                            canEditDomain && canEditPatient);
+                                                                            canEditDomain &&
+                                                                            canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -199,15 +237,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrStreetAddress,
-                         SampleWebMeta.getClinicalPatientAddrStreetAddress(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_STREET_ADDRESS,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrStreetAddress.setValue(getValue(SampleWebMeta.getClinicalPatientAddrStreetAddress()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrStreetAddress.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_STREET_ADDRESS,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrStreetAddress.setEnabled(isState(DEFAULT) &&
-                                                                             canEditDomain && canEditPatient);
+                                                                             canEditDomain &&
+                                                                             canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -217,14 +261,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrCity,
-                         SampleWebMeta.getClinicalPatientAddrCity(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_CITY,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrCity.setValue(getValue(SampleWebMeta.getClinicalPatientAddrCity()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrCity.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_CITY));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_CITY,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrCity.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientAddrCity.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -234,14 +284,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrState,
-                         SampleWebMeta.getClinicalPatientAddrState(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_STATE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrState.setValue(getValue(SampleWebMeta.getClinicalPatientAddrState()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrState.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_STATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_STATE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrState.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientAddrState.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain &&
+                                                                     canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -251,14 +308,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrZipCode,
-                         SampleWebMeta.getClinicalPatientAddrZipCode(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_ZIP_CODE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrZipCode.setValue(getValue(SampleWebMeta.getClinicalPatientAddrZipCode()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrZipCode.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_ZIP_CODE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientAddrZipCode.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientAddrZipCode.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -268,15 +332,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientAddrHomePhone,
-                         SampleWebMeta.getClinicalPatientAddrHomePhone(),
+                         SampleWebMeta.CLIN_PATIENT_ADDR_HOME_PHONE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientAddrHomePhone.setValue(getValue(SampleWebMeta.getClinicalPatientAddrHomePhone()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientAddrHomePhone.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ADDR_HOME_PHONE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ADDR_HOME_PHONE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  clinicalPatientAddrHomePhone.setEnabled(isState(DEFAULT) &&
-                                                                         canEditDomain && canEditPatient);
+                                                                         canEditDomain &&
+                                                                         canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -286,14 +356,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientGenderId,
-                         SampleWebMeta.getClinicalPatientGenderId(),
+                         SampleWebMeta.CLIN_PATIENT_GENDER_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientGenderId.setValue(getValue(SampleWebMeta.getClinicalPatientGenderId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientGenderId.setValue(getValue(SampleWebMeta.CLIN_PATIENT_GENDER_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_GENDER_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientGenderId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientGenderId.setEnabled(isState(DEFAULT) &&
+                                                                    canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -303,14 +379,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientRaceId,
-                         SampleWebMeta.getClinicalPatientRaceId(),
+                         SampleWebMeta.CLIN_PATIENT_RACE_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientRaceId.setValue(getValue(SampleWebMeta.getClinicalPatientRaceId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientRaceId.setValue(getValue(SampleWebMeta.CLIN_PATIENT_RACE_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_RACE_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientRaceId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientRaceId.setEnabled(isState(DEFAULT) &&
+                                                                  canEditDomain && canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -320,14 +402,21 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalPatientEthnicityId,
-                         SampleWebMeta.getClinicalPatientEthnicityId(),
+                         SampleWebMeta.CLIN_PATIENT_ETHNICITY_ID,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalPatientEthnicityId.setValue(getValue(SampleWebMeta.getClinicalPatientEthnicityId()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalPatientEthnicityId.setValue(getValue(SampleWebMeta.CLIN_PATIENT_ETHNICITY_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PATIENT_ETHNICITY_ID,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalPatientEthnicityId.setEnabled(isState(DEFAULT) && canEditDomain && canEditPatient);
+                                 clinicalPatientEthnicityId.setEnabled(isState(DEFAULT) &&
+                                                                       canEditDomain &&
+                                                                       canEditPatient);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -336,14 +425,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalProviderLastName,
-                         SampleWebMeta.getClinicalProviderLastName(),
+                         SampleWebMeta.CLIN_PROVIDER_LAST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalProviderLastName.setValue(getValue(SampleWebMeta.getClinicalProviderLastName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalProviderLastName.setValue(getValue(SampleWebMeta.CLIN_PROVIDER_LAST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PROVIDER_LAST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalProviderLastName.setEnabled(isState(DEFAULT) && canEditDomain);
+                                 clinicalProviderLastName.setEnabled(isState(DEFAULT) &&
+                                                                     canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -353,14 +448,20 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalProviderFirstName,
-                         SampleWebMeta.getClinicalProviderFirstName(),
+                         SampleWebMeta.CLIN_PROVIDER_FIRST_NAME,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalProviderFirstName.setValue(getValue(SampleWebMeta.getClinicalProviderFirstName()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalProviderFirstName.setValue(getValue(SampleWebMeta.CLIN_PROVIDER_FIRST_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PROVIDER_FIRST_NAME,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 clinicalProviderFirstName.setEnabled(isState(DEFAULT) && canEditDomain);
+                                 clinicalProviderFirstName.setEnabled(isState(DEFAULT) &&
+                                                                      canEditDomain);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -369,10 +470,15 @@ public class ClinicalTabUI extends Screen {
                          });
 
         addScreenHandler(clinicalProviderPhone,
-                         SampleWebMeta.getClinicalProviderPhone(),
+                         SampleWebMeta.CLIN_PROVIDER_PHONE,
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 clinicalProviderPhone.setValue(getValue(SampleWebMeta.getClinicalProviderPhone()));
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 clinicalProviderPhone.setValue(getValue(SampleWebMeta.CLIN_PROVIDER_PHONE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.CLIN_PROVIDER_PHONE,
+                                                 event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -387,10 +493,10 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
                 String dtxt, ptxt;
-                
+
                 dtxt = canEditDomain ? null : Messages.get().dataView_tabFieldsDisabled();
                 ptxt = canEditPatient ? null : Messages.get().dataView_patientFieldsDisabled();
-                
+
                 fieldsDisabledLabel.setText(DataBaseUtil.concatWithSeparator(dtxt, " ", ptxt));
             }
         });
@@ -398,12 +504,36 @@ public class ClinicalTabUI extends Screen {
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
+                String prevDom;
+                Widget w;
+                CheckBox cb;
+
+                prevDom = domain;
                 /*
                  * the widgets in this tab need to be enabled or disabled based
                  * on the current domain
                  */
                 domain = event.getDomain();
                 setState(state);
+
+                if (Constants.domain().CLINICAL.equals(prevDom) && !canEditDomain) {
+                    /*
+                     * the previous domain was clinical but is not anymore; if
+                     * some columns from clinical were selected before the
+                     * domain was changed, remove them from the ones shown in
+                     * the report
+                     */
+                    for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
+                        w = entry.getValue().widget;
+                        if (w instanceof CheckBox) {
+                            cb = (CheckBox)w;
+                            if ("Y".equals(cb.getValue())) {
+                                cb.setValue("N");
+                                addRemoveColumn(entry.getKey(), "N");
+                            }
+                        }
+                    }
+                }
             }
         });
     }
@@ -421,17 +551,17 @@ public class ClinicalTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
-    
+
     public Validation validate() {
         Widget w;
         CheckBox cb;
         Validation validation;
-        
+
         validation = super.validate();
-        
+
         if ( !canEditDomain)
             return validation;
-        
+
         /*
          * show an error if the checkbox for a patient field has been checked
          * but the user doesn't have the permission to view patient fields; this
@@ -445,47 +575,44 @@ public class ClinicalTabUI extends Screen {
             w = entry.getValue().widget;
             if (w instanceof CheckBox) {
                 cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()) && !canEditPatient && entry.getKey().startsWith("_clinicalPatient")) {
+                if ("Y".equals(cb.getValue()) && !canEditPatient &&
+                    entry.getKey().startsWith("_clinicalPatient")) {
                     validation.addException(new Exception(Messages.get()
-                                                          .dataView_noPermToViewPatientException()));
+                                                                  .dataView_noPermToViewPatientException()));
                     validation.setStatus(Validation.Status.ERRORS);
                     break;
                 }
             }
         }
-        
+
         return validation;
     }
 
-    /**
-     * Adds the keys for all checked checkboxes to the list of columns shown in
-     * the generated excel file
-     */
-    public void addColumns(ArrayList<String> columns) {
-        Widget w;
-        CheckBox cb;
-
-        if ( !canEditDomain)
-            return;
-
-        for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
-            w = entry.getValue().widget;
-            if (w instanceof CheckBox) {
-                cb = (CheckBox)w;
-                if ("Y".equals(cb.getValue()))
-                    columns.add(entry.getKey());
-            }
-        }
+    private void evaluateEdit() {
+        canEditDomain = Constants.domain().CLINICAL.equals(domain);
+        canEditPatient = patientPermission != null;
     }
 
+    /**
+     * Returns the value indicating whether the passed column is selected or not
+     * to be shown in the report; if the column is selected, the value is "Y";
+     * otherwise it's "N"
+     */
     private String getValue(String column) {
         if (data == null || data.getColumns() == null)
             return "N";
         return data.getColumns().contains(column) ? "Y" : "N";
     }
 
-    private void evaluateEdit() {
-        canEditDomain = Constants.domain().CLINICAL.equals(domain);
-        canEditPatient = patientPermission != null;
+    /**
+     * Fires an event to notify column order tab that the passed column needs to
+     * be added to or removed from the list of columns shown in the report; the
+     * column is added if the passed value is "Y"; it's removed otherwise
+     */
+    private void addRemoveColumn(String column, String value) {
+        ColumnEvent.Action action;
+
+        action = "Y".equals(value) ? ColumnEvent.Action.ADD : ColumnEvent.Action.REMOVE;
+        parentBus.fireEvent(new ColumnEvent(column, action));
     }
 }

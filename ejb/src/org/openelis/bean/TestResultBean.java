@@ -55,19 +55,18 @@ import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class TestResultBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager   manager;
+    private EntityManager                 manager;
 
     @EJB
-    private DictionaryCacheBean dictionaryCache;
+    private DictionaryCacheBean           dictionaryCache;
 
     private static HashMap<Integer, Type> types;
-    
+
     @PostConstruct
-    public void init() {        
+    public void init() {
         if (types == null) {
             types = new HashMap<Integer, Type>();
             types.put(Constants.dictionary().TEST_RES_TYPE_DICTIONARY, Type.DICTIONARY);
@@ -81,7 +80,7 @@ public class TestResultBean {
             types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED, Type.ALPHA_MIXED);
         }
     }
-    
+
     public TestResultViewDO fetchById(Integer id) throws Exception {
         Query query = manager.createNamedQuery("TestResult.FetchById");
         query.setParameter("id", id);
@@ -138,16 +137,19 @@ public class TestResultBean {
                 list = DataBaseUtil.toArrayList(list);
                 for (int i = 0; i < list.size(); i++ ) {
                     data = (TestResultViewDO)list.get(i);
-                    
+
                     /*
-                     *  for entries that are dictionary, we want to fetch the
-                     * dictionary text and set it for display
+                     * for entries that are dictionary, we want to fetch the
+                     * dictionary text and set it for display; the flag
+                     * "isActive" is also set
                      */
                     type = types.get(data.getTypeId());
                     if (type == Type.DICTIONARY) {
                         dict = dictionaryCache.getById(Integer.parseInt(data.getValue()));
-                        if (dict != null)
+                        if (dict != null) {
                             data.setDictionary(dict.getEntry());
+                            data.setDictionaryIsActive(dict.getIsActive());
+                        }
                     }
                 }
 
@@ -235,23 +237,25 @@ public class TestResultBean {
         Integer typeId;
         String value;
         Type type;
-        
+
         list = new ValidationErrorsList();
         value = data.getValue();
         typeId = data.getTypeId();
 
         if (DataBaseUtil.isEmpty(typeId))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getResultTypeId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             TestMeta.getResultTypeId()));
         //
         // dictionary, titers, numeric require a value
         //
         type = types.get(data.getTypeId());
         if (DataBaseUtil.isEmpty(value) &&
             (type == Type.NUMERIC || type == Type.TITER || type == Type.DICTIONARY)) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getResultValue()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             TestMeta.getResultValue()));
         } else if ( !DataBaseUtil.isEmpty(value) &&
-                   (type == Type.DATE_TIME || type == Type.TIME || type == Type.DATE || type == Type.ALPHA_LOWER ||
-                   type == Type.ALPHA_UPPER || type == Type.ALPHA_MIXED)) {
+                   (type == Type.DATE_TIME || type == Type.TIME || type == Type.DATE ||
+                    type == Type.ALPHA_LOWER || type == Type.ALPHA_UPPER || type == Type.ALPHA_MIXED)) {
             list.add(new FieldErrorException(Messages.get().valuePresentForTypeException(),
                                              TestMeta.getResultValue()));
         }
