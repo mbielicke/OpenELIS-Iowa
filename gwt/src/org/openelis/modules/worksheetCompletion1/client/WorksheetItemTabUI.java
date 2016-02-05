@@ -181,7 +181,7 @@ public class WorksheetItemTabUI extends Screen {
     private void initialize() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
-        Item item;
+        Item<Integer> item;
 
         screen = this;
 
@@ -215,6 +215,7 @@ public class WorksheetItemTabUI extends Screen {
                 DataObject data;
                 HashMap<Integer, Integer> rgRow;
                 Integer rg, testId, unitId;
+                Item<String> item;
                 ResultFormatter rf;
                 SectionPermission perm;
                 String accessionNumber, resultKey;
@@ -292,8 +293,11 @@ public class WorksheetItemTabUI extends Screen {
                                         values = rf.getDictionaryValues(rg, unitId);
                                         if (values != null) {
                                             model = new ArrayList<Item<String>>();
-                                            for (FormattedValue v : values)
-                                                model.add(new Item<String>(v.getDisplay(), v.getDisplay()));
+                                            for (FormattedValue v : values) {
+                                                item = new Item<String>(v.getDisplay(), v.getDisplay());
+                                                item.setEnabled(v.getIsActive());
+                                                model.add(item);
+                                            }
                                         }
                                     }
                                     dictionaryResultMap.put(resultKey, model);
@@ -614,8 +618,11 @@ public class WorksheetItemTabUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("analysis_type");
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        for (DictionaryDO resultDO : dictList) {
+            item = new Item<Integer>(resultDO.getId(),resultDO.getEntry());
+            item.setEnabled("Y".equals(resultDO.getIsActive()));
+            model.add(item);
+        }
         analysisTypeId.setModel(model);
     }
     
