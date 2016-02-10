@@ -612,7 +612,7 @@ public class WorksheetPrintReportBean {
                         }
                         
                         if (waVDOMap.get(wiDO.getId()).size() > 1)
-                            form.setField("well_label_"+(j), wVDO.getId() + "." + wiDO.getPosition());
+                            form.setField("well_label_"+(j), wiDO.getPosition().toString());
                         else
                             form.setField("well_label_"+(j), sDO.getAccessionNumber().toString());
                         form.setField("accession_number_"+(i + 1), sDO.getAccessionNumber().toString());
@@ -648,6 +648,7 @@ public class WorksheetPrintReportBean {
                         form.setField("type_of_sample_"+(i + 1), siVDO.getTypeOfSample());
                         form.setField("source_of_sample_"+(i + 1), siVDO.getSourceOfSample());
                         form.setField("source_other_"+(i + 1), siVDO.getSourceOther());
+                        form.setField("container_reference_"+(i + 1), siVDO.getContainerReference());
                         form.setField("test_"+(i + 1), aVDO.getTestName());
                         form.setField("method_"+(i + 1), aVDO.getMethodName());
                         form.setField("sample_qaevent_"+(i + 1), sQaevents.toString());
@@ -656,8 +657,7 @@ public class WorksheetPrintReportBean {
                         form.setField("analysis_note_"+(i + 1), aNotes.toString());
                     } else if (waVDO.getQcLotId() != null) {
                         qlVDO = qlMap.get(waVDO.getQcLotId());
-                        form.setField("well_label_"+(j), waVDO.getAccessionNumber());
-                        form.setField("accession_number_"+(i + 1), waVDO.getAccessionNumber());
+                        form.setField("well_label_"+(j), qlVDO.getQcName());
                         form.setField("qc_name_"+(i + 1), qlVDO.getQcName());
                         form.setField("qc_lot_"+(i + 1), qlVDO.getLotNumber());
                         form.setField("qc_expiration_"+(i + 1), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
@@ -696,6 +696,7 @@ public class WorksheetPrintReportBean {
             stamper.partialFormFlattening("worksheet_id_"+i);
             stamper.partialFormFlattening("created_date_"+i);
             stamper.partialFormFlattening("position_"+i);
+            stamper.partialFormFlattening("well_label_"+i);
             stamper.partialFormFlattening("accession_number_"+i);
             stamper.partialFormFlattening("collection_date_"+i);
             stamper.partialFormFlattening("received_date_"+i);
@@ -710,6 +711,7 @@ public class WorksheetPrintReportBean {
             stamper.partialFormFlattening("type_of_sample_"+i);
             stamper.partialFormFlattening("source_of_sample_"+i);
             stamper.partialFormFlattening("source_other_"+i);
+            stamper.partialFormFlattening("container_reference_"+i);
             stamper.partialFormFlattening("test_"+i);
             stamper.partialFormFlattening("method_"+i);
             stamper.partialFormFlattening("sample_qaevent_"+i);

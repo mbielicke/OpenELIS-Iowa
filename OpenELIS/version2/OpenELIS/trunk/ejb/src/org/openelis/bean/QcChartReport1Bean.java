@@ -273,23 +273,26 @@ public class QcChartReport1Bean {
      * fields and computed/stored in plotValue.
      */
     protected Value loadScreenValues(Value value, String qcFormat, String worksheetFormat) throws Exception {
+        int i;
+        
         if (qcColumns == null || qcColumns.size() == 0)
             return value;
         
+        i = qcFormat.length() + 1;
         for (DictionaryDO dict : qcColumns) {
             if (!DataBaseUtil.isEmpty(dict.getCode())) {
                 switch (dict.getCode()) {
                     case "Value1":
-                        value.setValue1(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value));
+                        value.setValue1(getValue(worksheetFormat, dict.getSystemName().substring(i), value));
                         break;
                         
                     case "Value2":
-                        value.setValue2(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value));
+                        value.setValue2(getValue(worksheetFormat, dict.getSystemName().substring(i), value));
                         break;
                         
                     case "PlotValue":
                         try {
-                            value.setPlotValue(Double.parseDouble(getValue(qcFormat, worksheetFormat, dict.getSystemName(), value)));
+                            value.setPlotValue(Double.parseDouble(getValue(worksheetFormat, dict.getSystemName().substring(i), value)));
                         } catch (Exception e) {
                             value.setPlotValue(null);
                             value.setIsPlot("N");
@@ -302,7 +305,7 @@ public class QcChartReport1Bean {
         return value;
     }
 
-    protected String getValue(String qcFormat, String worksheetFormat, String columnName, Value data) throws Exception {
+    protected String getValue(String worksheetFormat, String columnName, Value data) throws Exception {
         HashMap<String, Integer> columnMap;
         Integer column;
         String value;
@@ -313,11 +316,7 @@ public class QcChartReport1Bean {
         if (columnMap == null)
             columnMap = loadWorksheetFormat(worksheetFormat);
         
-        if (qcFormat != null)
-            column = columnMap.get(worksheetFormat + "_" + columnName.substring(qcFormat.length() + 1));
-        else
-            column = columnMap.get(columnName);
-        
+        column = columnMap.get(columnName);
         if (column != null)
             value = data.getValueAt(column);
         
@@ -325,22 +324,23 @@ public class QcChartReport1Bean {
     }
 
     protected HashMap<String, Integer> loadWorksheetFormat(String worksheetFormat) throws Exception {
-        int i;
+        int i, j;
         ArrayList<DictionaryDO> list;
         CategoryCacheVO vo;
         DictionaryDO column;
         HashMap<String, Integer> columnMap;
 
+        j = worksheetFormat.length() + 1;
         vo = categoryCache.getBySystemName(worksheetFormat);
         list = vo.getDictionaryList();
         columnMap = new HashMap<String, Integer>();
         for (i = 0; i < list.size(); i++) {
             column = list.get(i);
-            columnMap.put(column.getSystemName(), i);
+            columnMap.put(column.getSystemName().substring(j), i);
             if (worksheetHeaders != null && worksheetHeaderNames != null) {
                 if (!worksheetHeaders.contains(column.getEntry())) {
                     worksheetHeaders.add(column.getEntry());
-                    worksheetHeaderNames.add(column.getSystemName());
+                    worksheetHeaderNames.add(column.getSystemName().substring(j));
                 }
             }
         }
@@ -737,23 +737,24 @@ public class QcChartReport1Bean {
     }
 
     private void setResultCells(Value value, Row row, String qcFormat, String worksheetFormat) throws Exception {
-        int i;
+        int i, j;
         Cell cell;
         DictionaryDO column;
         
         if (qcColumns != null && !qcColumns.isEmpty()) {
+            j = qcFormat.length() + 1;
             for (i = 0; i < qcColumns.size(); i++) {
                 column = qcColumns.get(i);
                 cell = row.createCell(i + 3);
                 cell.setCellStyle(baseStyle);
-                setCellValue(cell, getValue(qcFormat, worksheetFormat, column.getSystemName(), value));
+                setCellValue(cell, getValue(worksheetFormat, column.getSystemName().substring(j), value));
                 setMaxChars(cell, maxChars);
             }
         } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
             for (i = 0; i < worksheetHeaders.size(); i++) {
                 cell = row.createCell(i + 3);
                 cell.setCellStyle(baseStyle);
-                setCellValue(cell, getValue(null, worksheetFormat, worksheetHeaderNames.get(i), value));
+                setCellValue(cell, getValue(worksheetFormat, worksheetHeaderNames.get(i), value));
                 setMaxChars(cell, maxChars);
             }
         }
