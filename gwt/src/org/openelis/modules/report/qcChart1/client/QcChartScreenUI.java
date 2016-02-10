@@ -450,7 +450,7 @@ public class QcChartScreenUI extends Screen {
         validation = validate();
         
         if (validation.getStatus() != VALID || !validateFromToFields()) {
-            setError(Messages.get().gen_correctErrors());
+            setError(Messages.get().qcChart_correctErrors());
             return;
         }
 

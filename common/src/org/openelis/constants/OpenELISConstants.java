@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -14999,6 +14999,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("QC Chart")
   @Key("qcChart")
   String qcChart();
+
+  /**
+   * Translated "Please correct the errors indicated, then press Get Data".
+   * 
+   * @return translated "Please correct the errors indicated, then press Get Data"
+   */
+  @DefaultMessage("Please correct the errors indicated, then press Get Data")
+  @Key("qcChart.correctErrors")
+  String qcChart_correctErrors();
 
   /**
    * Translated "Creation Date".
