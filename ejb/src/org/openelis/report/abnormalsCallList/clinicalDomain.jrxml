@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="result" pageWidth="250" pageHeight="24" columnWidth="250" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="result" pageWidth="432" pageHeight="12" columnWidth="432" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.scriptlethandling" value="2"/>
 	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
@@ -20,7 +20,7 @@ WHERE  sc.sample_id = $P{SAMPLE_ID}]]>
 	<field name="provider_last" class="java.lang.String"/>
 	<field name="provider_first" class="java.lang.String"/>
 	<detail>
-		<band height="24" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="patientName" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="150" height="12"/>
 				<textElement>
@@ -29,21 +29,21 @@ WHERE  sc.sample_id = $P{SAMPLE_ID}]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{patient_last}, ", ", $F{patient_first})]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement key="patientBirth" isPrintRepeatedValues="false" mode="Transparent" x="0" y="12" width="75" height="12"/>
+				<reportElement key="patientBirth" isPrintRepeatedValues="false" mode="Transparent" x="150" y="0" width="75" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{birth_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="patientGender" isPrintRepeatedValues="false" mode="Transparent" x="75" y="12" width="75" height="12"/>
+				<reportElement key="patientGender" isPrintRepeatedValues="false" mode="Transparent" x="225" y="0" width="75" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{gender}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="provider" isPrintRepeatedValues="false" mode="Transparent" x="150" y="12" width="100" height="12">
+				<reportElement key="provider" isPrintRepeatedValues="false" mode="Transparent" x="300" y="0" width="132" height="12">
 					<printWhenExpression><![CDATA[$F{provider_id} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement>

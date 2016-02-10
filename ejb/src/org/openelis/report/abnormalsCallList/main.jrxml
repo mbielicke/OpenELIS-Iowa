@@ -47,6 +47,7 @@ FROM   sample s
                                          FROM   dictionary
                                          WHERE  dictionary.system_name = 'analysis_released') AND
                           a.released_date BETWEEN $P{FROM_DATE} AND $P{TO_DATE} AND
+                          a.is_reportable = 'Y' and
                           a.id not in (SELECT analysis_qaevent.analysis_id
                                        FROM   analysis_qaevent
                                        WHERE  analysis_qaevent.analysis_id = a.id AND
@@ -54,7 +55,9 @@ FROM   sample s
                                                                           FROM   dictionary
                                                                           WHERE  dictionary.system_name = 'qaevent_override'))
        JOIN test t ON t.id = a.test_id
-       JOIN result r ON r.analysis_id = a.id
+       JOIN result r ON r.analysis_id = a.id and
+                        r.is_column = 'N' and
+                        r.is_reportable = 'Y'
        JOIN test_result tr on tr.test_id = t.id AND
                               tr.id = r.test_result_id AND
                               tr.flags_id in (SELECT dictionary.id
@@ -160,6 +163,91 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 			<band height="12"/>
 		</groupFooter>
 	</group>
+	<group name="sample">
+		<groupExpression><![CDATA[$F{s_id}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<rectangle>
+					<reportElement key="sample.background" x="24" y="0" width="732" height="12" backcolor="#999999"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="">
+					<reportElement key="accessionNumber" mode="Transparent" x="24" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="collectionDateTime" mode="Transparent" x="124" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator(ReportUtil.toString($F{collection_date}, "yyyy-MM-dd"), " ", ReportUtil.toString($F{collection_time}, "HH:mm"))]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement key="clinicalDomain" isPrintRepeatedValues="false" mode="Transparent" x="324" y="0" width="432" height="12">
+						<printWhenExpression><![CDATA["C".equals($F{domain})]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SAMPLE_ID">
+						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"clinicalDomain.jasper"]]></subreportExpression>
+				</subreport>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="clientReference" mode="Transparent" x="224" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="analysis">
+		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<rectangle>
+					<reportElement key="analysis.background" x="65" y="0" width="690" height="12" backcolor="#CCCCCC"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="">
+					<reportElement key="testDescription" mode="Transparent" x="65" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_description}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="typeOfSample" mode="Transparent" x="226" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement key="analyte.header" mode="Transparent" x="410" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Analyte]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="result.header" mode="Transparent" x="571" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Result]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
 	<pageHeader>
 		<band height="36">
 			<textField pattern="MMM dd, yyyy">
@@ -214,69 +302,16 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="24">
-			<rectangle>
-				<reportElement key="detail.background" x="24" y="0" width="732" height="24" backcolor="#CCCCCC">
-					<printWhenExpression><![CDATA[$V{organization_COUNT} % 2 == 0]]></printWhenExpression>
-				</reportElement>
-				<graphicElement>
-					<pen lineWidth="0.0"/>
-				</graphicElement>
-			</rectangle>
+		<band height="12">
 			<textField pattern="">
-				<reportElement key="accessionNumber" mode="Transparent" x="24" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
-				<textElement>
-					<font reportFont="times" size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
-			</textField>
-			<textField pattern="">
-				<reportElement key="collectionDateTime" mode="Transparent" x="24" y="12" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
-				<textElement>
-					<font reportFont="times" size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator(ReportUtil.toString($F{collection_date}, "yyyy-MM-dd"), " ", ReportUtil.toString($F{collection_time}, "HH:mm"))]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement key="clinicalDomain" isPrintRepeatedValues="false" mode="Transparent" x="124" y="0" width="250" height="24">
-					<printWhenExpression><![CDATA["C".equals($F{domain})]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"clinicalDomain.jasper"]]></subreportExpression>
-			</subreport>
-			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="clientReference" mode="Transparent" x="274" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
-				<textElement>
-					<font reportFont="times" size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
-			</textField>
-			<textField pattern="">
-				<reportElement key="testDescription" mode="Transparent" x="410" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
-				<textElement>
-					<font reportFont="times" size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{t_description}]]></textFieldExpression>
-			</textField>
-			<textField pattern="">
-				<reportElement key="typeOfSample" mode="Transparent" x="571" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
-				<textElement>
-					<font reportFont="times" size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
-			</textField>
-			<textField pattern="">
-				<reportElement key="analyte" mode="Transparent" x="410" y="12" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement key="analyte" mode="Transparent" x="410" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement>
 					<font reportFont="times" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="resultValue" mode="Transparent" x="571" y="12" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF">
+				<reportElement key="resultValue" mode="Transparent" x="571" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{result_type})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -285,7 +320,7 @@ ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="resultDict" isPrintRepeatedValues="false" mode="Transparent" x="571" y="12" width="184" height="12">
+				<reportElement key="resultDict" isPrintRepeatedValues="false" mode="Transparent" x="571" y="0" width="184" height="12">
 					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{result_type})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="DICTIONARY_ID">
