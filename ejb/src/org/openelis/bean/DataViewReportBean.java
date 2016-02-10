@@ -1936,9 +1936,9 @@ public class DataViewReportBean {
                      * can't be "Analysis QA Event"
                      */
                     if (forWeb)
-                        headers.add(Messages.get().dataView_analysisQAEvent());
-                    else
                         headers.add(Messages.get().qaEvent_qaEvent());
+                    else
+                        headers.add(Messages.get().dataView_analysisQAEvent());
                     break;
                 case SampleWebMeta.ANALYSIS_COMPLETED_DATE:
                     headers.add(Messages.get().gen_completedDate());
