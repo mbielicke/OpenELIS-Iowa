@@ -362,7 +362,7 @@ public class IssuesTabUI extends Screen {
         finishEditing();
 
         if (validate().getStatus() == Validation.Status.ERRORS) {
-            parentScreen.getWindow().setError(Messages.get().gen_correctErrors());
+            parentScreen.setError(Messages.get().gen_correctErrors());
             return;
         }
 

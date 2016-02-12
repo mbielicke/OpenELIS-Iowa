@@ -363,7 +363,7 @@ public abstract class TRFTabUI extends Screen {
                                 query = false;
                                 description.setFocus(true);
                                 setState(QUERY);
-                                parentScreen.getWindow().setDone(Messages.get()
+                                parentScreen.setDone(Messages.get()
                                                                          .gen_enterFieldsToQuery());
                             } else if (refresh) {
                                 /*
@@ -486,10 +486,9 @@ public abstract class TRFTabUI extends Screen {
     }
 
     /**
-     * Executes a query to fetch unattached attachments for a particular domain;
-     * the domain is specified by the passed pattern
+     * Executes a query to fetch unattached attachments
      */
-    public void fetchUnattached(String pattern) {
+    public void fetchUnattached() {
         refresh = true;
         query = false;
         fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
@@ -576,7 +575,7 @@ public abstract class TRFTabUI extends Screen {
         finishEditing();
 
         if (validate().getStatus() == Validation.Status.ERRORS) {
-            parentScreen.getWindow().setError(Messages.get().gen_correctErrors());
+            parentScreen.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -647,12 +646,12 @@ public abstract class TRFTabUI extends Screen {
         clearErrors();
 
         if (isState(QUERY)) {
-            parentScreen.getWindow().setBusy(Messages.get().gen_cancelChanges());
+            parentScreen.setBusy(Messages.get().gen_cancelChanges());
             if (table.getRowCount() > 0)
                 setState(DISPLAY);
             else
                 setState(DEFAULT);
-            parentScreen.getWindow().setDone(Messages.get().gen_queryAborted());
+            parentScreen.setDone(Messages.get().gen_queryAborted());
         } else if (isState(UPDATE)) {
             row = table.getRowAt(table.getSelectedRow());
             fireAttachmentIssue(AttachmentIssueEvent.Action.UNLOCK, (Integer)row.getData());
@@ -700,7 +699,7 @@ public abstract class TRFTabUI extends Screen {
             }
         }
         setState(DISPLAY);
-        parentScreen.getWindow().clearStatus();
+        parentScreen.clearStatus();
     }
 
     /**
@@ -712,7 +711,7 @@ public abstract class TRFTabUI extends Screen {
     private void executeQuery(final Query query) {
         trfShownRow = -1;
 
-        parentScreen.getWindow().setBusy(Messages.get().gen_querying());
+        parentScreen.setBusy(Messages.get().gen_fetching());
 
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
@@ -731,34 +730,21 @@ public abstract class TRFTabUI extends Screen {
 
                     setState(DISPLAY);
                     loadTable(result);
-                    parentScreen.getWindow().clearStatus();
                     refreshIssues();
+                    parentScreen.clearStatus();
                 }
 
                 public void notFound() {
                     setState(DEFAULT);
                     loadTable(null);
-                    parentScreen.getWindow().setDone(Messages.get().gen_noRecordsFound());
-                }
-
-                public void lastPage() {
-                    int page;
-
-                    /*
-                     * make sure that the page doesn't stay one more than the
-                     * current one if there are no more pages in this direction
-                     */
-                    page = query.getPage();
-                    if (page > 0)
-                        query.setPage(page - 1);
-                    parentScreen.getWindow().setError(Messages.get().gen_noMoreRecordInDir());
+                    parentScreen.setDone(Messages.get().gen_noRecordsFound());
                 }
 
                 public void failure(Throwable e) {
                     Window.alert("Error: Data Entry TRF Attachment call query failed; " +
                                  e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
-                    parentScreen.getWindow().setError(Messages.get().gen_queryFailed());
+                    parentScreen.setError(Messages.get().gen_queryFailed());
                 }
             };
         }

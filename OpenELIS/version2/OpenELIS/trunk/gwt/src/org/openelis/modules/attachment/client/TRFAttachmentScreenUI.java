@@ -244,11 +244,10 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     }
 
     /**
-     * Executes a query to fetch unattached attachments for a particular domain;
-     * the domain is specified by the passed pattern
+     * Executes a query to fetch unattached attachments
      */
-    public void fetchUnattached(String pattern) {
-        trfTab.fetchUnattached(pattern);
+    public void fetchUnattached() {
+        trfTab.fetchUnattached();
     }
 
     /**
@@ -282,9 +281,8 @@ public abstract class TRFAttachmentScreenUI extends Screen {
 
                     for (AttachmentIssueViewDO data : result)
                         issueMap.put(data.getAttachmentId(), data);
-
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
                     clearStatus();
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
                 }
 
                 public void notFound() {
@@ -314,6 +312,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
                 public void success(AttachmentIssueViewDO result) {
+                    clearStatus();
                     refreshIssues(screen.attachmentId, result);
                     fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, screen.attachmentId);
                 }
@@ -321,9 +320,6 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 public void failure(Throwable e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                }
-
-                public void finish() {
                     clearStatus();
                 }
             };
