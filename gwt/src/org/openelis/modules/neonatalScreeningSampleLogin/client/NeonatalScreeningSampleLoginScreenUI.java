@@ -3673,6 +3673,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
+        ScheduledCommand cmd;
 
         if ( !addWithTRF.isChecked()) {
             /*
@@ -3716,7 +3717,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             OpenELIS.getBrowser().addWindow(window, "neoTRFAttachment");
             isAttachmentScreenOpen = true;
 
-            trfAttachmentScreen.fetchUnattached(attachmentPatternVariable.getValue());
+            /*
+             * a ScheduledCommand is used here because otherwise any "Busy"
+             * message shown by the trf attachment screen get overwritten by the
+             * default "Done" message shown on creating the window
+             */
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    trfAttachmentScreen.fetchUnattached();
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
+            
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
