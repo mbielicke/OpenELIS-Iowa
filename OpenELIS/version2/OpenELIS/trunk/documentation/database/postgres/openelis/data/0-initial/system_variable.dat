@@ -20,9 +20,9 @@
 22|mcl_violation_email|DNR mail address for notification (labfax@xx.stateyy.gov)
 23|sample_fax_aux_data|fax client
 24|-auto_comment_environmental|name-of-standard-comment to insert on add
-28|receivable_report_back_days|5
 26|-system_fax_owner|faxadmin
 27|-system_fax_email|openelis-fax
+28|receivable_report_back_days|5
 29|attachment_directory|/OpenELIS/attachment
 30|final_report_esave|true
 31|system_section|system
@@ -50,11 +50,11 @@
 55|-billing_po_auxgroup_id|auxgroup-id for PO
 56|attachment_import_other|/OpenELIS/scan/attachment
 57|attachment_import_system|/OpenELIS/scan/system
-58|attachment_pattern_clinical|TRF%CL.pdf
-59|attachment_pattern_env|TRF%EN.pdf
-60|attachment_pattern_neonatal|TRF%NN.pdf
-61|attachment_pattern_sdwis|TRF%SD.pdf
-62|attachment_pattern_unknown|TRF%UN.pdf
+58|attachment_pattern_clinical|TRF*C?-?.pdf
+59|attachment_pattern_env|TRF*EN-?.pdf
+60|attachment_pattern_neonatal|TRF*NN-?.pdf
+61|attachment_pattern_sdwis|TRF*SD-?.pdf
+62|attachment_pattern_unknown|TRF*U-?.pdf
 63|-environmental_scriptlet|dictionary-system-name for scriptlet
 64|eorder_file_directory|/OpenELIS/eorders/
 65|-sdwis_scriptlet|dictionary-system-name for scriptlet
@@ -63,3 +63,9 @@
 73|-sdwis_export_printer|printer-name for sdwis export report
 74|-chlgc_cdc_directory|/OpenELIS/
 75|data_view_max_samples|10000
+76|attachment_pattern_gen_java|TRF(.*)
+77|attachment_pattern_gen_sql|TRF*
+78|attachment_pattern_pt|TRF*PT-?.pdf
+79|internal_section|internal
+80|system_section|system
+81|ver_with_scanned_trf|false

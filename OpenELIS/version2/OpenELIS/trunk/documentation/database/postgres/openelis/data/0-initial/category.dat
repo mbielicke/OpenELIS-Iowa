@@ -154,3 +154,9 @@
 155|wf_norovirus|Worksheet Format Norovirus|Columns for Worksheet Format Norovirus|\N|Y
 156|pt_provider|PT Provider|List of PT Sample Provider names|\N|Y
 157|wf_ll_aptima|Worksheet Format LimsLink Aptima CT-GC|Columns for Worksheet Format LimsLink Aptima CT-GC|\N|Y
+161|email_filter|Email Filter Type|Field Used to Filter Email Notification|\N|N
+162|todo_section|ToDo Section|\N|\N|Y
+166|ver_sdwis_fields|Second Verification SDWIS Fields|Second Verification SDWIS Fields|\N|Y
+167|ver_clin_fields|Second Verification Clinical Fields|Second Verification Clinical Fields|\N|Y
+168|ver_env_fields|Second Verification Environmental Fields|Second Verification Environmental Fields|\N|N
+169|ver_pt_fields|Second Verification PT Fields|Second Verification PT Fields|\N|N

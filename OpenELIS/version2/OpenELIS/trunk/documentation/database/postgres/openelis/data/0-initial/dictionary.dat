@@ -4129,3 +4129,101 @@
 4725|125|24|\N||Y|\N|Dermacentor species
 4726|125|85|\N||Y|\N|Ornithodoros species (soft tick)
 4727|125|111|\N||Y|\N|Rhipicephalus species
+4811|161|1|\N|email_filter_reference|Y|R:|Client Reference
+4812|161|2|\N|email_filter_collector|Y|C:|Collector
+4813|161|3|\N|email_filter_provider|Y|P:|Provider
+4839|162|1|\N|\N|Y|Y|My Section
+4840|162|2|\N|\N|Y|N|All Sections
+4926|166|1|\N|ver_sdwis_accession_number|Y|\N|Show Accession Number
+4927|166|2|\N|ver_sdwis_order_id|Y|\N|Show Order Id
+4928|166|3|\N|ver_sdwis_collection_date|Y|\N|Show Collection Date
+4929|166|4|\N|ver_sdwis_collection_time|Y|\N|Show Collection Time
+4930|166|5|\N|ver_sdwis_received_date|Y|\N|Show Received Date  
+4931|166|6|\N|ver_sdwis_client_reference|Y|\N|Show Client Reference
+4932|166|7|\N|ver_sdwis_pws_number0|Y|\N|Show PWS Number0
+4933|166|8|\N|ver_sdwis_state_lab_id|N|\N|Show State Lab Id 
+4934|166|9|\N|ver_sdwis_facility_id|Y|\N|Show Facility Id
+4935|166|10|\N|ver_sdwis_sample_type_id|Y|\N|Show Sample Type Id
+4936|166|11|\N|ver_sdwis_sample_category_id|Y|\N|Show Sample Category Id
+4937|166|12|\N|ver_sdwis_sample_point_id|Y|\N|Show Sample Point Id
+4938|166|13|\N|ver_sdwis_location|Y|\N|Show Location 
+4939|166|14|\N|ver_sdwis_priority|N|\N|Show Priority
+4940|166|15|\N|ver_sdwis_collector|Y|\N|Show Collector
+4941|166|16|\N|ver_sdwis_report_to|Y|\N|Show Report To
+4942|166|17|\N|ver_sdwis_bill_to|Y|\N|Show Bill To 
+4943|166|18|\N|ver_sdwis_project|Y|\N|Show Project
+4944|166|19|\N|ver_sdwis_sample_qa_events|Y|\N|Show Sample QA Events
+4945|166|20|\N|ver_sdwis_aux_data|Y|\N|Show Aux Data
+4946|166|21|\N|ver_sdwis_sample_items|N|\N|Show Sample Items
+4947|166|22|\N|ver_sdwis_analyses|N|\N|Show Analyses
+4962|167|1|\N|ver_clin_accession_number|Y|\N|Show Accession Number
+4963|167|2|\N|ver_clin_eorder_pov|Y|\N|Show EOrder Paper Order Validator
+4964|167|3|\N|ver_clin_collection_date|Y|\N|Show Collection Date
+4965|167|4|\N|ver_clin_collection_time|Y|\N|Show Collection Time
+4966|167|5|\N|ver_clin_received_date|Y|\N|Show Received Date
+4967|167|6|\N|ver_clin_client_reference|Y|\N|Show Client Reference
+4968|167|7|\N|ver_clin_pat_last_name|Y|\N|Show Patient Last Name
+4969|167|8|\N|ver_clin_pat_first_name|Y|\N|Show Patient First Name
+4970|167|9|\N|ver_clin_pat_birth_date|Y|\N|Show Patient Birth Date
+4971|167|10|\N|ver_clin_pat_national_id|Y|\N|Show Patient National Id
+4972|167|11|\N|ver_clin_pat_multiple_unit|Y|\N|Show Patient Multiple Unit
+4973|167|12|\N|ver_clin_pat_street_address|Y|\N|Show Patient Street Address
+4974|167|13|\N|ver_clin_pat_city|Y|\N|Show Patient City
+4975|167|14|\N|ver_clin_pat_state|Y|\N|Show Patient State
+4976|167|15|\N|ver_clin_pat_zip_code|Y|\N|Show Patient Zip Code
+4977|167|16|\N|ver_clin_pat_home_phone|Y|\N|Show Patient Home Phone
+4978|167|17|\N|ver_clin_pat_gender_id|Y|\N|Show Patient Gender
+4979|167|18|\N|ver_clin_pat_race_id|Y|\N|Show Patient Race
+4980|167|19|\N|ver_clin_pat_ethnicity_id|Y|\N|Show Patient Ethnicity
+4981|167|20|\N|ver_clin_prov_last_name|Y|\N|Show Provider Last Name
+4982|167|21|\N|ver_clin_prov_phone|Y|\N|Show Provider Phone
+4983|167|22|\N|ver_clin_report_to|Y|\N|Show Report To 
+4984|167|23|\N|ver_clin_bill_to|Y|\N|Show Bill To
+4985|167|24|\N|ver_clin_project|Y|\N|Show Project
+4986|167|25|\N|ver_clin_sample_qa_events|Y|\N|Show Sample QA Events
+4987|167|26|\N|ver_clin_aux_data|Y|\N|Show Aux Data
+4988|167|27|\N|ver_clin_sample_items|N|\N|Show Sample Items
+4989|167|28|\N|ver_clin_analyses|N|\N|Show Analyses
+4990|168|1|\N|ver_env_accession_number|Y|\N|Show Accession Number
+4991|168|2|\N|ver_env_order_id|Y|\N|Show Order Id
+4992|168|3|\N|ver_env_collection_date|Y|\N|Show Collection Date 
+4993|168|4|\N|ver_env_collection_time|Y|\N|Show Collection Time
+4994|168|5|\N|ver_env_received_date|Y|\N|Show Received Date
+4995|168|6|\N|ver_env_client_reference|Y|\N|Show Client Reference
+4996|168|7|\N|ver_env_is_hazardous|Y|\N|Show Is Hazardous
+4997|168|8|\N|ver_env_priority|Y|\N|Show Priority  
+4998|168|9|\N|ver_env_collector|Y|\N|Show Collector
+4999|168|10|\N|ver_env_collector_phone|Y|\N|Show Collector Phone
+5000|168|11|\N|ver_env_description|Y|\N|Show Description
+5001|168|12|\N|ver_env_location|Y|\N|Show Location
+5002|168|13|\N|ver_env_location_multiple_unit|Y|\N|Show Location Multiple Unit 
+5003|168|14|\N|ver_env_location_street_addres|Y|\N|Show Location Street Address
+5004|168|15|\N|ver_env_location_city|Y|\N|Show Location City  
+5005|168|16|\N|ver_env_location_state|Y|\N|Show Location State
+5006|168|17|\N|ver_env_location_zip_code|Y|\N|Show Location Zip Code
+5007|168|18|\N|ver_env_location_country|Y|\N|Show Location Country
+5008|168|19|\N|ver_env_report_to|Y|\N|Show Report To
+5009|168|20|\N|ver_env_bill_to|Y|\N|Show Bill To 
+5010|168|21|\N|ver_env_project|Y|\N|Show Project
+5011|168|22|\N|ver_env_sample_qa_events|Y|\N|Show Sample QA Events
+5012|168|23|\N|ver_env_aux_data|Y|\N|Show Aux Data
+5013|168|24|\N|ver_env_sample_items|N|\N|Show Sample Items
+5014|168|25|\N|ver_env_analyses|N|\N|Show Analyses
+5015|169|1|\N|ver_pt_accession_number|Y|\N|Show Accession Number
+5016|169|2|\N|ver_pt_order_id|Y|\N|Show Order Id
+5017|169|3|\N|ver_pt_collection_date|Y|\N|Show Collection Date 
+5018|169|4|\N|ver_pt_collection_time|Y|\N|Show Collection Time
+5019|169|5|\N|ver_pt_received_date|Y|\N|Show Received Date
+5020|169|6|\N|ver_pt_client_reference|Y|\N|Show Client Reference
+5021|169|7|\N|ver_pt_pt_provider_id|Y|\N|Show PT Provider
+5022|169|8|\N|ver_pt_series|Y|\N|Show Series
+5023|169|9|\N|ver_pt_due_date|Y|\N|Show Due Date
+5024|169|10|\N|ver_pt_additional_domain|Y|\N|Show Additional Domain
+5025|169|11|\N|ver_pt_received_by_id|Y|\N|Show Received By
+5026|169|12|\N|ver_pt_report_to|Y|\N|Show Report To
+5027|169|13|\N|ver_pt_bill_to|Y|\N|Show Bill To
+5028|169|14|\N|ver_pt_project|Y|\N|Show Project
+5029|169|15|\N|ver_pt_sample_qa_events|Y|\N|Show Sample QA Events
+5030|169|16|\N|ver_pt_aux_data|Y|\N|Show Aux Data
+5031|169|17|\N|ver_pt_sample_items|N|\N|Show Sample Items
+5032|169|18|\N|ver_pt_analyses|N|\N|Show Analyses   
