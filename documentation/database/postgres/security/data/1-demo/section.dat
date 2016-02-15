@@ -58,3 +58,5 @@
 58|2|volatile-ic|Gas Chromatography Volatile Analysis Iowa City
 59|2|wslh|Wisconsin State Laboratory of Hygiene
 60|2|wsu_waddl|Washington State University - WADDL
+61|2|internal|Internal staff permissions for attachments
+62|2|public|External client permissions for attachments

@@ -58,3 +58,5 @@
 58|\N|cdc_fort_collins|Centers for Disease Control and Prevention - Fort Collins|Y|\N
 59|\N|florida_dph|Florida Dept of Public Health - FL Bureau of Laboratories|Y|\N
 60|\N|wslh|Wisconsin State Laboratory of Hygiene|Y|\N
+61|\N|internal|Internal staff permissions for attachments|N|\N
+62|\N|public|External client permissions for attachments|N|\N
