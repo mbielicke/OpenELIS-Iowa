@@ -59,7 +59,7 @@ public class ToDoBean {
     public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchToDoByStatusId");
         query.setParameter("statusId", Constants.dictionary().ANALYSIS_LOGGED_IN);
         
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -68,7 +68,7 @@ public class ToDoBean {
     public ArrayList<AnalysisViewVO> getInitiated() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchToDoByStatusId");
         query.setParameter("statusId", Constants.dictionary().ANALYSIS_INITIATED);
         
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -77,8 +77,16 @@ public class ToDoBean {
     public ArrayList<AnalysisViewVO> getCompleted() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchToDoByStatusId");
         query.setParameter("statusId", Constants.dictionary().ANALYSIS_COMPLETED);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<AnalysisViewVO> getOther() throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("AnalysisView.FetchToDoByOtherStatus");
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -90,20 +98,12 @@ public class ToDoBean {
         cal = Calendar.getInstance();
         cal.add(Calendar.DATE,-4);
         
-        query = manager.createNamedQuery("AnalysisView.FetchReleased");
+        query = manager.createNamedQuery("AnalysisView.FetchToDoByReleased");
         query.setParameter("releasedDate", cal.getTime());
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<AnalysisViewVO> getOther() throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("AnalysisView.FetchOther");
-        
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
     public ArrayList<ToDoSampleViewVO> getToBeVerified() throws Exception {
         Query query;
 

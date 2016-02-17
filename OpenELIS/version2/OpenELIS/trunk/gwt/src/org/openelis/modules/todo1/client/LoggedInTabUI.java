@@ -103,7 +103,7 @@ public class LoggedInTabUI extends Screen {
 
     private HashMap<String, Integer>                 domains;
 
-    private ScheduledCommand                         drawChartCmd;
+    private ScheduledCommand                         loadCmd, drawChartCmd;
 
     private AsyncCallback<ArrayList<AnalysisViewVO>> getLoggedInCall;
 
@@ -240,6 +240,19 @@ public class LoggedInTabUI extends Screen {
         };
 
         /*
+         * call to fetch data. the scheduled command is performed so we can
+         * show the busy state while it is fetching data; it is only done on
+         * this tab because this tab is the first visible tab that is opened.
+         */
+        loadCmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                parentScreen.setBusy(Messages.get().gen_fetching());
+                ToDoService1Impl.INSTANCE.getLoggedIn(getLoggedInCall);
+            }
+        };
+
+        /*
          * call to refresh the chart
          */
         drawChartCmd = new ScheduledCommand() {
@@ -286,8 +299,7 @@ public class LoggedInTabUI extends Screen {
             if (load) {
                 load = false;
                 draw = false;
-                parentScreen.setBusy(Messages.get().gen_fetching());
-                ToDoService1Impl.INSTANCE.getLoggedIn(getLoggedInCall);
+                Scheduler.get().scheduleDeferred(loadCmd);
             } else if (draw) {
                 draw = false;
                 Scheduler.get().scheduleDeferred(drawChartCmd);
