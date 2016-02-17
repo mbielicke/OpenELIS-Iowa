@@ -45,8 +45,8 @@ import org.openelis.ui.common.Datetime;
     @NamedQuery( name = "ToDoSampleView.FetchBySampleStatusId",
                 query = "select distinct new org.openelis.domain.ToDoSampleViewVO(sv.sampleId, sv.domain, sv.accessionNumber," +
                 		"sv.receivedDate, sv.collectionDate, sv.collectionTime, sv.primaryOrganizationName," +
-                		"sv.description, sv.sampleStatusId,  sv.sampleResultOverride)"
-                      + " from ToDoSampleView sv where sv.sampleStatusId = :statusId order by sv.accessionNumber")})
+                		"sv.description, sv.sampleStatusId,  sv.sampleResultOverride, sv.releasedDate)"
+                      + " from ToDoSampleView sv where sv.releasedDate = null and sv.sampleStatusId = :statusId order by sv.accessionNumber")})
 @Entity
 @Table(name = "todo_sample_view")
 public class ToDoSampleView  {
@@ -82,6 +82,9 @@ public class ToDoSampleView  {
     @Column(name = "sample_result_override")
     private String                      sampleResultOverride;
     
+    @Column(name = "released_date")
+    private Date                        releasedDate;
+
     public Integer getSampleId() {
         return sampleId;
     }
@@ -95,7 +98,7 @@ public class ToDoSampleView  {
     }
     
     public Datetime getReceivedDate() {
-        return DataBaseUtil.toYD(receivedDate);
+        return DataBaseUtil.toYM(receivedDate);
     }
     
     public Datetime getCollectionDate() {
@@ -121,4 +124,9 @@ public class ToDoSampleView  {
     public String getAnalysisResultOverride() {
         return sampleResultOverride;
     }
+    
+    public Datetime getReleasedDate() {
+        return DataBaseUtil.toYM(releasedDate);
+    }
+
 }   

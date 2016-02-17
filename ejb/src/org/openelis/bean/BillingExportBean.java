@@ -35,7 +35,6 @@ import static org.openelis.manager.SampleManager1Accessor.getSample;
 import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
 import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
 import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
-import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
 import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 
@@ -328,9 +327,12 @@ public class BillingExportBean {
             
             /*
              * header information
+             * 
+             * for environmental samples, the date of service is date received
+             * while for other samples, it is the date collected.
              */
             hdr.accession = getSample(sm).getAccessionNumber();
-            if (getSample(sm).getCollectionDate() != null)
+            if (getSample(sm).getCollectionDate() != null && getSampleEnvironmental(sm) == null)
                 hdr.service = DataBaseUtil.toDate(getSample(sm).getCollectionDate());
             else if (getSample(sm).getReceivedDate() != null)
                 hdr.service = DataBaseUtil.toDate(getSample(sm).getReceivedDate());
@@ -341,63 +343,32 @@ public class BillingExportBean {
             /*
              * get bill-to or default to report-to organization
              */
-            if (getSamplePrivateWell(sm) != null) {
-                hdr.organizationId = getSamplePrivateWell(sm).getOrganizationId();
-                hdr.organizationName = getSamplePrivateWell(sm).getOrganization().getName();
-                hdr.streetAddress = getSamplePrivateWell(sm).getOrganization().getAddress().getStreetAddress();
-                hdr.multipleUnit = getSamplePrivateWell(sm).getOrganization().getAddress().getMultipleUnit();
-                hdr.city = getSamplePrivateWell(sm).getOrganization().getAddress().getCity();
-                hdr.state = getSamplePrivateWell(sm).getOrganization().getAddress().getState();
-                hdr.zipCode = getSamplePrivateWell(sm).getOrganization().getAddress().getZipCode();
-                hdr.owner = getSamplePrivateWell(sm).getOwner();
-                hdr.collector = getSamplePrivateWell(sm).getCollector();
-                hdr.location = getSamplePrivateWell(sm).getLocation();
-
-                if (getOrganizations(sm) != null) {
-                    for (SampleOrganizationViewDO o : getOrganizations(sm)) {
-                        /*
-                         * use bill-to if present
-                         */
-                        if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId())) {
-                            hdr.organizationId = o.getOrganizationId();
-                            hdr.organizationName = o.getOrganizationName();
-                            hdr.streetAddress = o.getOrganizationStreetAddress();
-                            hdr.multipleUnit = o.getOrganizationMultipleUnit();
-                            hdr.city = o.getOrganizationCity();
-                            hdr.state = o.getOrganizationState();
-                            hdr.zipCode = o.getOrganizationZipCode();
-                            break;
-                        }
-                    }
+            if (getSampleEnvironmental(sm) != null) {
+                hdr.collector = getSampleEnvironmental(sm).getCollector();
+                hdr.location = getSampleEnvironmental(sm).getLocation();
+            } else if (getSampleSDWIS(sm) != null) {
+                hdr.collector = getSampleSDWIS(sm).getCollector();
+                hdr.location = getSampleSDWIS(sm).getLocation();
+                hdr.pws = getSampleSDWIS(sm).getPwsNumber0();
+            }
+            
+            for (SampleOrganizationViewDO o : getOrganizations(sm)) {
+                /*
+                 * use report-to if no bill-to
+                 */
+                if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId()) ||
+                    Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId())) {
+                    hdr.organizationId = o.getOrganizationId();
+                    hdr.organizationName = o.getOrganizationName();
+                    hdr.streetAddress = o.getOrganizationStreetAddress();
+                    hdr.multipleUnit = o.getOrganizationMultipleUnit();
+                    hdr.city = o.getOrganizationCity();
+                    hdr.state = o.getOrganizationState();
+                    hdr.zipCode = o.getOrganizationZipCode();
+                    if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId()))
+                        break;
                 }
-            } else {
-                if (getSampleEnvironmental(sm) != null) {
-                    hdr.collector = getSampleEnvironmental(sm).getCollector();
-                    hdr.location = getSampleEnvironmental(sm).getLocation();
-                } else if (getSampleSDWIS(sm) != null) {
-                    hdr.collector = getSampleSDWIS(sm).getCollector();
-                    hdr.location = getSampleSDWIS(sm).getLocation();
-                    hdr.pws = getSampleSDWIS(sm).getPwsNumber0();
-                }
-                
-                for (SampleOrganizationViewDO o : getOrganizations(sm)) {
-                    /*
-                     * use report-to if no bill-to
-                     */
-                    if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId()) ||
-                        Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId())) {
-                        hdr.organizationId = o.getOrganizationId();
-                        hdr.organizationName = o.getOrganizationName();
-                        hdr.streetAddress = o.getOrganizationStreetAddress();
-                        hdr.multipleUnit = o.getOrganizationMultipleUnit();
-                        hdr.city = o.getOrganizationCity();
-                        hdr.state = o.getOrganizationState();
-                        hdr.zipCode = o.getOrganizationZipCode();
-                        if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId()))
-                            break;
-                    }
-                }
-            }                
+            }
 
             /*
              * Project/contract

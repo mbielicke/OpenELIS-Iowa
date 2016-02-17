@@ -41,7 +41,7 @@ public class ToDoSampleViewVO implements Serializable {
     protected Integer           sampleId, accessionNumber, sampleStatusId;
     protected String            domain, primaryOrganizationName, sampleResultOverride,
                                  description;
-    protected Datetime          receivedDate, collectionDate, collectionTime;
+    protected Datetime          receivedDate, collectionDate, collectionTime, releasedDate;
     
     public ToDoSampleViewVO() {        
     }
@@ -49,7 +49,7 @@ public class ToDoSampleViewVO implements Serializable {
     public ToDoSampleViewVO(Integer sampleId, String domain, Integer accessionNumber, 
                             Date receivedDate, Date collectionDate, Date collectionTime,
                             String primaryOrganizationName, String description,
-                            Integer sampleStatusId, String sampleResultOverride) {
+                            Integer sampleStatusId, String sampleResultOverride, Date releasedDate) {
         setSampleId(sampleId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
@@ -60,6 +60,7 @@ public class ToDoSampleViewVO implements Serializable {
         setDescription(description);
         setSampleStatusId(sampleStatusId);
         setSampleResultOverride(sampleResultOverride);
+        setReleasedDate(DataBaseUtil.toYM(releasedDate));
     }
 
     public Integer getSampleId() {
@@ -140,5 +141,13 @@ public class ToDoSampleViewVO implements Serializable {
 
     public void setSampleResultOverride(String sampleResultOverride) {
         this.sampleResultOverride = DataBaseUtil.trim(sampleResultOverride);
+    }
+    
+    public Datetime getReleasedDate() {
+        return releasedDate;
+    }
+    
+    public void setReleasedDate(Datetime releasedDate) {
+        this.releasedDate = DataBaseUtil.toYM(releasedDate);
     }
 }

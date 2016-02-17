@@ -135,12 +135,12 @@ public class SampleLoginLabelReportBean {
 
         samples = ReportUtil.getIntegerParameter(param, "SAMPLES");
         containers = ReportUtil.getIntegerParameter(param, "CONTAINERS");
-        if (samples == null || samples > 300 || containers == null || containers > 50)
-            throw new InconsistencyException("Sample labels must be < 300 and\ncontainer labels < 50");
-
         received = ReportUtil.getStringParameter(param, "RECEIVED");
         locationId = ReportUtil.getIntegerParameter(param, "LOCATION");
         printer = ReportUtil.getStringParameter(param, "BARCODE");
+
+        if (samples == null || samples > 300 || containers == null || containers > 50)
+            throw new InconsistencyException("Sample labels must be < 300 and\ncontainer labels < 50");
 
         if (DataBaseUtil.isEmpty(received) || locationId == null ||
             DataBaseUtil.isEmpty(printer))
@@ -155,11 +155,11 @@ public class SampleLoginLabelReportBean {
             throw e;
         }
 
-        status.setMessage("Outputing report").setPercentComplete(0);
-
         /*
          * fetch accession number counter and increment it
          */
+        status.setMessage("Outputing report").setPercentComplete(0);
+
         data = null;
         try {
             data = sysvar.fetchForUpdateByName("last_accession_number");
@@ -177,10 +177,11 @@ public class SampleLoginLabelReportBean {
 
         log.fine("Starting at accession # " + laccession + " for " + samples + " labels");
 
-        status.setPercentComplete(50);
         /*
          * print the labels and send it to printer
          */
+        status.setPercentComplete(50);
+
         path = ReportUtil.createTempFile("loginlabel", ".txt", null);
         ps = new PrintStream(Files.newOutputStream(path));
         for (i = 0; i < samples; i++) {
@@ -309,7 +310,7 @@ public class SampleLoginLabelReportBean {
          */
         try {
             samdata = sample.fetchByAccessionNumber(accession);
-            received = samdata.getReceivedDate().toString();
+            received = ReportUtil.toString(samdata.getReceivedDate(), Messages.get().dateTimePattern());
         } catch (Exception e) {
             if (DataBaseUtil.isEmpty(received))
                 throw new InconsistencyException("Sample with accession # " + accession +
@@ -326,10 +327,11 @@ public class SampleLoginLabelReportBean {
 
         log.info("Reprinting accession # " + accession + " for " + starting + " labels");
 
-        status.setPercentComplete(50);
         /*
          * print the labels and send it to printer
          */
+        status.setPercentComplete(50);
+
         path = ReportUtil.createTempFile("loginlabel", ".txt", null);
         ps = new PrintStream(Files.newOutputStream(path));
         for (i = 0; i < containers; i++)

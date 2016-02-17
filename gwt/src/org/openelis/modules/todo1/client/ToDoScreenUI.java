@@ -155,8 +155,6 @@ public class ToDoScreenUI extends Screen {
                 tabPanel.close();
             }
         });
-
-        setState(State.DEFAULT);
     }
     
     @UiHandler({"refreshButton"})
@@ -219,11 +217,11 @@ public class ToDoScreenUI extends Screen {
     protected void export(ClickEvent event) {
         ToDoReportScreen export;
         
-        setBusy(Messages.get().todo_exportingToExcel());
-
         try {
             export = new ToDoReportScreen(window);
             export.setMySectionOnly(mySection.isChecked());
+
+            setBusy(Messages.get().todo_exportingToExcel());
             export.runReport(null);
         } catch (Exception e) {
             Window.alert(e.getMessage());

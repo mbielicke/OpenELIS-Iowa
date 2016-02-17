@@ -42,22 +42,22 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 @NamedQueries({
-               @NamedQuery(name = "AnalysisView.FetchByAnalysisStatusId",
+               @NamedQuery(name = "AnalysisView.FetchToDoByStatusId",
                            query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber,"
                                    + "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription,"
                                    + "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"
                                    + "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate,"
                                    + "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
-                                   + " from AnalysisView av where av.analysisStatusId = :statusId order by av.accessionNumber"),
-               @NamedQuery(name = "AnalysisView.FetchOther",
+                                   + " from AnalysisView av where av.releasedDate = null and av.analysisStatusId = :statusId order by av.accessionNumber"),
+               @NamedQuery(name = "AnalysisView.FetchToDoByOtherStatus",
                            query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber,"
                                    + "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription,"
                                    + "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"
                                    + "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate,"
                                    + "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
-                                   + " from AnalysisView av where av.analysisStatusId not in (select id from Dictionary d where d.systemName in ('analysis_logged_in', 'analysis_initiated',"
+                                   + " from AnalysisView av where av.releasedDate = null and av.analysisStatusId not in (select id from Dictionary d where d.systemName in ('analysis_logged_in', 'analysis_initiated',"
                                    + " 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by av.accessionNumber"),
-               @NamedQuery(name = "AnalysisView.FetchReleased",
+               @NamedQuery(name = "AnalysisView.FetchToDoByReleased",
                            query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber,"
                                    + "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription,"
                                    + "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"
