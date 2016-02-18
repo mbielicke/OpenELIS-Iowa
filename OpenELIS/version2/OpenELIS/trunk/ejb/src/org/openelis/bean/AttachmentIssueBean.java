@@ -45,6 +45,7 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -54,13 +55,16 @@ import org.openelis.ui.common.ValidationErrorsList;
 public class AttachmentIssueBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager  manager;
 
     @EJB
-    private UserCacheBean userCache;
+    private UserCacheBean  userCache;
 
     @EJB
-    private LockBean      lock;
+    private LockBean       lock;
+
+    @EJB
+    private AttachmentBean attachment;
 
     public AttachmentIssueViewDO fetchByAttachmentId(Integer attachmentId) throws Exception {
         Query query;
@@ -92,10 +96,10 @@ public class AttachmentIssueBean {
 
         query = manager.createNamedQuery("AttachmentIssue.FetchList");
         list = query.getResultList();
-        
+
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         issues = DataBaseUtil.toArrayList(list);
 
         for (int i = 0; i < issues.size(); i++ ) {
@@ -139,62 +143,58 @@ public class AttachmentIssueBean {
 
         return DataBaseUtil.toArrayList(a);
     }
-    
+
     public AttachmentIssueViewDO add(AttachmentIssueViewDO data) throws Exception {
         AttachmentIssue entity;
         SystemUserVO user;
-        
-        //checkSecurity(ModuleFlags.ADD);
-    
+
         validate(data);
-        
+
         lock.validateLock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = new AttachmentIssue();
         entity.setAttachmentId(data.getAttachmentId());
         entity.setTimestamp(Datetime.getInstance());
         entity.setSystemUserId(userCache.getId());
         entity.setText(data.getText());
-        
+
         manager.persist(entity);
-        
+
         data.setId(entity.getId());
         data.setTimestamp(entity.getTimestamp());
         data.setSystemUserId(entity.getSystemUserId());
-        
+
         user = userCache.getSystemUser(data.getSystemUserId());
         if (user != null)
             data.setSystemUserLoginName(user.getLoginName());
-        
+
         lock.unlock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
 
         return data;
     }
-    
+
     public AttachmentIssueViewDO update(AttachmentIssueViewDO data) throws Exception {
         AttachmentIssue entity;
-        
+
         if ( !data.isChanged()) {
             lock.unlock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
             return data;
         }
-        
-        //checkSecurity(ModuleFlags.UPDATE);
-    
+
         validate(data);
-        
+
         lock.validateLock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = manager.find(AttachmentIssue.class, data.getId());
         entity.setAttachmentId(data.getAttachmentId());
         entity.setTimestamp(data.getTimestamp());
         entity.setSystemUserId(data.getSystemUserId());
         entity.setText(data.getText());
-        
+
         lock.unlock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
 
         return data;
@@ -202,6 +202,11 @@ public class AttachmentIssueBean {
 
     public AttachmentIssueViewDO fetchForUpdate(Integer attachmentId) throws Exception {
         AttachmentIssueViewDO data;
+
+        /*
+         * make sure that the attachment wasn't deleted
+         */
+        attachment.fetchById(attachmentId);
 
         try {
             lock.lock(Constants.table().ATTACHMENT_ISSUE, attachmentId);
@@ -233,7 +238,7 @@ public class AttachmentIssueBean {
 
         return data;
     }
-    
+
     public void delete(AttachmentIssueViewDO data) throws Exception {
         AttachmentIssue entity;
 
@@ -242,21 +247,29 @@ public class AttachmentIssueBean {
         entity = manager.find(AttachmentIssue.class, data.getId());
         if (entity != null)
             manager.remove(entity);
-        
+
         lock.unlock(Constants.table().ATTACHMENT_ISSUE, data.getAttachmentId());
     }
 
-    /*private void checkSecurity(ModuleFlags flag) throws Exception {
-        userCache.applyPermission("attachment", flag);
-    }*/
-    
     private void validate(AttachmentIssueViewDO data) throws Exception {
         ValidationErrorsList errors;
-    
+
         errors = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getText()))
-            errors.add(new FormErrorException(Messages.get().trfAttachment_issueTextRequired(data.getAttachmentDescription())));
         
+        /*
+         * make sure that the attachment wasn't deleted while this issue was in
+         * the front-end
+         */
+        try {
+            attachment.fetchById(data.getAttachmentId());
+        } catch (NotFoundException e) {
+            errors.add(new FormErrorException(e.getMessage()));
+        }
+        
+        if (DataBaseUtil.isEmpty(data.getText()))
+            errors.add(new FormErrorException(Messages.get()
+                                                      .trfAttachment_issueTextRequired(data.getAttachmentDescription())));
+
         if (errors.size() > 0)
             throw errors;
     }

@@ -131,7 +131,6 @@ public class AttachmentImportBean {
     public void removeImportedAttachments(String days) throws Exception {
         String base;
         Calendar cal;
-        Path src;
         List<AttachmentDO> attachments;
 
         /*
@@ -149,18 +148,14 @@ public class AttachmentImportBean {
 
         try {
             /*
-             * fetch attachments that are unattached, have no attachment issuesa
-             * and are older than the date obtained above, and delete them; also
-             * delete the files linked to them
+             * fetch attachments that are unattached, have no attachment issues
+             * and are older than the date obtained above; delete those
+             * attachments and the files linked to them
              */
             attachments = attachment.fetchForRemove(cal.getTime());
             for (AttachmentDO data : attachments) {
                 log.fine("Deleting attachment id: " + data.getId());
-                src = Paths.get(base,
-                                ReportUtil.getAttachmentSubdirectory(data.getId()),
-                                data.getId().toString());
-                Files.delete(src);
-                attachment.delete(data);
+                attachmentManager.delete(base, data);
             }
         } catch (NotFoundException e) {
             log.fine("No unattached attachments older than " + days + " found");

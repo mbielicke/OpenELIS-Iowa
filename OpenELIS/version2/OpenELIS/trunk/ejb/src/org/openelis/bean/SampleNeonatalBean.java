@@ -35,17 +35,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.entity.SampleNeonatal;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
 public class SampleNeonatalBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager       manager;
+    private EntityManager manager;
 
     @SuppressWarnings("unchecked")
     public ArrayList<SampleNeonatalViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
@@ -54,7 +57,7 @@ public class SampleNeonatalBean {
         ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleNeonatal.FetchBySampleIds");
-        n = new ArrayList<SampleNeonatalViewDO>();         
+        n = new ArrayList<SampleNeonatalViewDO>();
         r = DataBaseUtil.createSubsetRange(sampleIds.size());
         for (int i = 0; i < r.size() - 1; i++ ) {
             query.setParameter("ids", sampleIds.subList(r.get(i), r.get(i + 1)));
@@ -71,7 +74,7 @@ public class SampleNeonatalBean {
         ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleNeonatal.FetchByPatientIds");
-        n = new ArrayList<SampleNeonatalViewDO>();         
+        n = new ArrayList<SampleNeonatalViewDO>();
         r = DataBaseUtil.createSubsetRange(patientIds.size());
         for (int i = 0; i < r.size() - 1; i++ ) {
             query.setParameter("ids", patientIds.subList(r.get(i), r.get(i + 1)));
@@ -88,7 +91,7 @@ public class SampleNeonatalBean {
         ArrayList<Integer> r;
 
         query = manager.createNamedQuery("SampleNeonatal.FetchByNextOfKinIds");
-        n = new ArrayList<SampleNeonatalViewDO>();         
+        n = new ArrayList<SampleNeonatalViewDO>();
         r = DataBaseUtil.createSubsetRange(nextOfKinIds.size());
         for (int i = 0; i < r.size() - 1; i++ ) {
             query.setParameter("ids", nextOfKinIds.subList(r.get(i), r.get(i + 1)));
@@ -170,7 +173,21 @@ public class SampleNeonatalBean {
             manager.remove(entity);
     }
 
-    public void validate(SampleNeonatalDO data) throws Exception {
-        // TODO add logic for validation
+    public void validate(SampleNeonatalDO data, Integer accession) throws Exception {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+
+        if (data.getPatientId() == null)
+            list.add(new FormErrorException(Messages.get()
+                                                    .sample_patientRequiredException(accession == null ? 0
+                                                                                                      : accession)));
+        if (data.getNextOfKinId() == null)
+            list.add(new FormErrorException(Messages.get()
+                                                    .sample_nokRequiredException(accession == null ? 0
+                                                                                                  : accession)));
+
+        if (list.size() > 0)
+            throw list;
     }
 }

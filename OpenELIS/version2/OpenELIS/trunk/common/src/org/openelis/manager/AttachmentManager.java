@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.AttachmentItemViewDO;
 
 /**
@@ -38,10 +39,11 @@ import org.openelis.domain.AttachmentItemViewDO;
  * attachment.
  */
 public class AttachmentManager implements Serializable {
-    private static final long                 serialVersionUID = 1L;
+    private static final long                 serialVersionUID = 1L;   
 
     protected AttachmentDO                    attachment;
     protected ArrayList<AttachmentItemViewDO> items;
+    protected AttachmentIssueViewDO           issue;
 
     transient public final AttachmentItem     item             = new AttachmentItem();
 
@@ -58,6 +60,13 @@ public class AttachmentManager implements Serializable {
         return attachment;
     }
     
+    /**
+     * Returns the attachment issue DO
+     */
+    public AttachmentIssueViewDO getIssue() {
+        return issue;
+    }
+
     /**
      * Class to manage Attachment Item information
      */

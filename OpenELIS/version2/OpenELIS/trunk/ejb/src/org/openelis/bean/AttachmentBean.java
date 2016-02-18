@@ -41,7 +41,6 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Attachment;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -98,7 +97,8 @@ public class AttachmentBean {
         try {
             data = (AttachmentDO)query.getSingleResult();
         } catch (NoResultException e) {
-            throw new NotFoundException();
+            throw new NotFoundException(Messages.get()
+                                        .attachment_attachmentNotExistException(attachmentId));
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
@@ -153,40 +153,6 @@ public class AttachmentBean {
         }
 
         return DataBaseUtil.toArrayList(a);
-    }
-
-    /**
-     * Fetches attachments that don't have attachment items, based on
-     * "description"
-     * 
-     * @param description
-     *        the value used to find attachments with matching description
-     * @param first
-     *        the index of the first record to be returned by the query i.e. the
-     *        first record in the current "page"
-     * @param max
-     *        the maximum number of records to be returned by the query
-     * @return the DOs corresponding to the fetched attachment records
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> fetchUnattachedByDescription(String description, int first,
-                                                                int max) throws Exception {
-        Query query;
-        List list;
-
-        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescription");
-        query.setParameter("description", description);
-        query.setMaxResults(first + max);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-        if (list == null)
-            throw new LastPageException();
-
-        return DataBaseUtil.toArrayList(list);
     }
 
     /**
@@ -298,8 +264,7 @@ public class AttachmentBean {
         builder.constructWhere(fields);
         if (isUnattached)
             builder.addWhere(AttachmentMeta.getId() +
-                             " not in (select i.attachmentId from AttachmentItem i where i.attachmentId = " +
-                             AttachmentMeta.getId() + ")");
+                             " not in (select i.attachmentId from AttachmentItem i)");
         if (isDescending)
             builder.setOrderBy(AttachmentMeta.getId() + " DESC");
         else

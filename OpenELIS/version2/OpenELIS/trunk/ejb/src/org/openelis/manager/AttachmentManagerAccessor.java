@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.AttachmentItemViewDO;
 
 /**
@@ -57,5 +58,13 @@ public class AttachmentManagerAccessor {
         if (am.items == null)
             am.items = new ArrayList<AttachmentItemViewDO>();
         am.items.add(item);
+    }
+    
+    public static AttachmentIssueViewDO getIssue(AttachmentManager am) {
+        return am.issue;
+    }
+    
+    public static void setIssue(AttachmentManager am, AttachmentIssueViewDO issue) {
+        am.issue = issue;
     }
 }

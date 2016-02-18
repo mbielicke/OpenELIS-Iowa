@@ -44,6 +44,7 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
@@ -52,10 +53,12 @@ import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
@@ -73,6 +76,9 @@ public class AttachmentManagerBean {
 
     @EJB
     private AttachmentItemBean  attachmentItem;
+
+    @EJB
+    private AttachmentIssueBean attachmentIssue;
 
     @EJB
     private SampleBean          sample;
@@ -183,32 +189,6 @@ public class AttachmentManagerBean {
     public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
                                                                int first, int max) throws Exception {
         return fetchByQuery(fields, first, max, false, true);
-    }
-
-    /**
-     * Fetches the attachments with no attachment items based on "description";
-     * fills managers from those
-     * 
-     * @param description
-     *        the value specified to find attachments with the matching
-     *        description
-     * @param first
-     *        the index of the first record to be returned by the query i.e. the
-     *        first record in the current "page"
-     * @param max
-     *        the maximum number of records to be returned by the query
-     * @return the filled managers
-     * @throws Exception
-     */
-    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first,
-                                                                     int max) throws Exception {
-        ArrayList<Integer> ids;
-
-        ids = new ArrayList<Integer>();
-
-        for (AttachmentDO data : attachment.fetchUnattachedByDescription(description, first, max))
-            ids.add(data.getId());
-        return fetchByIds(ids);
     }
 
     /**
@@ -566,6 +546,9 @@ public class AttachmentManagerBean {
         SectionViewDO sect;
         OutputStream out;
 
+        /*
+         * make sure that the attachment wasn't deleted
+         */
         data = attachment.fetchById(attachmentId);
 
         /*
@@ -689,6 +672,123 @@ public class AttachmentManagerBean {
     }
 
     /**
+     * Deletes the attachment specified by "data" and the file linked to it
+     * 
+     * @param base
+     *        the top-level directory that contains the file
+     * @param data
+     *        the DO for the attachment to be deleted
+     * @throws Exception
+     */
+    public void delete(String base, AttachmentDO data) throws Exception {
+        Path src;
+
+        src = Paths.get(base, ReportUtil.getAttachmentSubdirectory(data.getId()), data.getId()
+                                                                                      .toString());
+        Files.delete(src);
+        attachment.delete(data);
+    }
+
+    /**
+     * Deletes the attachments and issues in "ams" from the database; also
+     * deletes the files linked to the attachments
+     * 
+     * @param ams
+     *        the managers containing the attachments, items and issues to be
+     *        deleted
+     * @throws Exception
+     */
+    public void delete(ArrayList<AttachmentManager> ams) throws Exception {
+        Integer count;
+        String base;
+        SystemUserPermission permission;
+        ValidationErrorsList e;
+        HashSet<Integer> ids;
+        ArrayList<Integer> fetchIds, locks;
+        HashMap<Integer, Integer> imap;
+
+        ids = new HashSet<Integer>();
+        for (AttachmentManager am : ams)
+            ids.add(getAttachment(am).getId());
+
+        /*
+         * fetch attachment items for the attachments to be deleted; keep track
+         * of how many attachment items are there for each attachment; this is
+         * used to make sure that attached attachments don't get deleted; that
+         * can happen if an attachment isn't attached when Delete is clicked on
+         * Attachment screen but gets attached later e.g. on a login screen and
+         * the sample is committed before the attachment can be deleted here
+         */
+        imap = new HashMap<Integer, Integer>();
+        fetchIds = new ArrayList<Integer>(ids);
+        if (ids.size() > 0) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(fetchIds)) {
+                count = imap.get(data.getAttachmentId());
+                if (count == null)
+                    count = 0;
+                imap.put(data.getAttachmentId(), ++count);
+            }
+        }
+
+        permission = userCache.getPermission();
+        e = new ValidationErrorsList();
+        /*
+         * validate each attachment to make sure that it can be deleted
+         */
+        for (AttachmentManager am : ams) {
+            try {
+                validateForDelete(am, imap, permission);
+            } catch (ValidationErrorsList err) {
+                if (err.hasErrors())
+                    DataBaseUtil.mergeException(e, err);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
+        if (e.size() > 0)
+            throw e;
+
+        /*
+         * check all the locks; there must be a lock on the issue even if an
+         * attachment doesn't have an issue; this is to prevent the user from
+         * adding/updating an issue while its attachment is being deleted
+         */
+        if (ids.size() > 0) {
+            locks = fetchIds;
+            lock.validateLock(Constants.table().ATTACHMENT, locks);
+            lock.validateLock(Constants.table().ATTACHMENT_ISSUE, locks);
+        } else {
+            locks = null;
+        }
+        ids = null;
+        fetchIds = null;
+
+        try {
+            base = systemVariable.fetchByName("attachment_directory").getValue();
+        } catch (Exception any) {
+            log.log(Level.SEVERE, "Missing/invalid system variable 'attachment_directory'", any);
+            throw new FormErrorException(Messages.get()
+                                                 .systemVariable_missingInvalidSystemVariable("attachment_directory"));
+        }
+
+        /*
+         * delete the attachments and issues while maintaining referential
+         * integrity; also delete the files linked to the attachments
+         */
+        for (AttachmentManager am : ams) {
+            if (getIssue(am) != null)
+                attachmentIssue.delete(getIssue(am));
+            delete(base, getAttachment(am));
+        }
+
+        if (locks != null) {
+            lock.unlock(Constants.table().ATTACHMENT, locks);
+            lock.unlock(Constants.table().ATTACHMENT_ISSUE, locks);
+        }
+    }
+
+    /**
      * Fetches the attachment whose ids are "attachmentIds"; also fetches their
      * attachment items; fills a manager from those; if "isDescending" is true,
      * the returned managers are sorted in descending order of the ids;
@@ -705,6 +805,7 @@ public class AttachmentManagerBean {
      */
     private ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds,
                                                     boolean isDescending) throws Exception {
+        String idStr;
         AttachmentManager am;
         SampleDO s;
         WorksheetViewDO w;
@@ -734,6 +835,16 @@ public class AttachmentManagerBean {
         else
             as = attachment.fetchByIds(attachmentIds);
 
+        if (as.size() == 0) {
+            /*
+             * no managers were fetched because none of the attachments with the
+             * passed ids exist
+             */
+            idStr = DataBaseUtil.concatWithSeparator(attachmentIds, ", ");
+            throw new InconsistencyException(Messages.get()
+                                                     .attachment_attachmentsNotExistException(idStr));
+        }
+
         /*
          * build level 1, everything is based on attachment ids
          */
@@ -758,6 +869,11 @@ public class AttachmentManagerBean {
                 sids.add(data.getReferenceId());
             else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId()))
                 wids.add(data.getReferenceId());
+        }
+
+        for (AttachmentIssueViewDO data : attachmentIssue.fetchByAttachmentIds(ids)) {
+            am = map.get(data.getAttachmentId());
+            setIssue(am, data);
         }
 
         /*
@@ -841,9 +957,9 @@ public class AttachmentManagerBean {
 
     /**
      * Fetches and locks the attachment whose ids are "attachmentIds"; also
-     * fetches its attachment items; fills a manager from those; if "expires" is
-     * not null, the attachment is locked for the duration specified by it;
-     * otherwise it's locked for the default duration
+     * fetches its attachment items and issues; fills a manager from those; if
+     * "expires" is not null, the attachment is locked for the duration
+     * specified by it; otherwise it's locked for the default duration
      * 
      * @param attachmentIds
      *        the ids of the attachment records whose managers are to be
@@ -887,6 +1003,48 @@ public class AttachmentManagerBean {
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
             }
+
+        if (e.size() > 0)
+            throw e;
+    }
+
+    /**
+     * Validates whether the attachment and issue records in "am" can be
+     * deleted; attached attachments can't be deleted; the user must have the
+     * permission to delete the attachment
+     * 
+     * @param am
+     *        the manager whose attachment and issue records are to be deleted
+     * @param imap
+     *        the map where the key is an attachment's id and the value is the
+     *        number of attachment items that the attachment has
+     * @param permission
+     *        the SystemUserPermission for the logged in user
+     */
+    private void validateForDelete(AttachmentManager am, HashMap<Integer, Integer> imap,
+                                   SystemUserPermission permission) throws Exception {
+        Integer count;
+        String description, name;
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+
+        /*
+         * attached attachments can't be deleted
+         */
+        description = getAttachment(am).getDescription();
+        count = imap.get(getAttachment(am).getId());
+        if (count != null && count > 0)
+            e.add(new FormErrorException(Messages.get()
+                                                 .attachment_cantDeleteAttachedException(description)));
+
+        /*
+         * to delete the attachment, the user must have "Cancel" permission to
+         * its section
+         */
+        name = sectionCache.getById(am.getAttachment().getSectionId()).getName();
+        if ( !permission.has(name, SectionFlags.CANCEL))
+            e.add(new FormErrorException(Messages.get().attachment_deletePermException(description)));
 
         if (e.size() > 0)
             throw e;

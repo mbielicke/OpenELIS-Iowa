@@ -30,19 +30,20 @@ import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -88,6 +89,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -103,6 +105,8 @@ public class AttachmentScreenUI extends Screen {
 
     protected HashMap<Integer, AttachmentManager>           managers;
 
+    protected ArrayList<AttachmentManager>                  deleteManagers;
+
     @UiField
     protected Calendar                                      createdDate;
 
@@ -110,14 +114,14 @@ public class AttachmentScreenUI extends Screen {
     protected TextBox<String>                               description;
 
     @UiField
-    protected Dropdown<Integer>                             querySection, tableSection, type;
+    protected Dropdown<Integer>                             querySection, tableSection;
 
     @UiField
     protected Tree                                          tree;
 
     @UiField
     protected Button                                        searchButton, attachButton,
-                    updateButton, commitButton, abortButton;
+                    updateButton, deleteButton, commitButton, abortButton;
 
     protected AttachmentScreenUI                            screen;
 
@@ -133,6 +137,8 @@ public class AttachmentScreenUI extends Screen {
 
     protected AsyncCallbackUI<AttachmentManager>            fetchForUpdateCall, updateCall,
                     unlockCall;
+
+    protected AsyncCallback<Void>                           deleteCall;
 
     protected boolean                                       isNewQuery, isLoadedFromQuery,
                     closeHandlerAdded;
@@ -165,7 +171,6 @@ public class AttachmentScreenUI extends Screen {
     }
 
     protected void initialize() {
-        Item<Integer> row;
         ArrayList<Item<Integer>> model1, model2;
 
         screen = this;
@@ -265,7 +270,7 @@ public class AttachmentScreenUI extends Screen {
         tree.addDoubleClickHandler(new DoubleClickHandler() {
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
-                if ( !isState(UPDATE))
+                if ( !isState(UPDATE, DELETE))
                     displayAttachment(tree.getNodeAt(tree.getSelectedNode()), null);
             }
         });
@@ -291,7 +296,8 @@ public class AttachmentScreenUI extends Screen {
                     if (sectId != null) {
                         /*
                          * allow changing any field of the attachment only if
-                         * the user has assign permission to the current section
+                         * the user has complete permission to the current
+                         * section
                          */
                         name = SectionCache.getById(sectId).getName();
                         if ( !perm.has(name, SectionFlags.COMPLETE)) {
@@ -302,7 +308,7 @@ public class AttachmentScreenUI extends Screen {
 
                     /*
                      * make sure that the section can't be changed to one that
-                     * the user doesn't have assign permission to
+                     * the user doesn't have complete permission to
                      */
                     for (Item<Integer> row : tableSection.getModel()) {
                         name = SectionCache.getById(row.getKey()).getName();
@@ -334,7 +340,7 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
-        tree.setAllowMultipleSelection(isAttach());
+        tree.setAllowMultipleSelection(true);
 
         addScreenHandler(attachButton, "attachButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
@@ -348,7 +354,7 @@ public class AttachmentScreenUI extends Screen {
 
         addScreenHandler(updateButton, "updateButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                updateButton.setEnabled(isState(DISPLAY, UPDATE));
+                updateButton.setEnabled(isState(DISPLAY, UPDATE) && manager != null);
                 if (isState(UPDATE)) {
                     updateButton.lock();
                     updateButton.setPressed(true);
@@ -356,19 +362,35 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? commitButton : tree;
+                return forward ? deleteButton : tree;
             }
         });
 
         addShortcut(updateButton, 'u', CTRL);
 
-        addScreenHandler(commitButton, "commitButton", new ScreenHandler<Object>() {
+        addScreenHandler(deleteButton, "deleteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                commitButton.setEnabled(isState(UPDATE));
+                deleteButton.setEnabled(isState(DISPLAY, DELETE) && manager != null);
+                if (isState(DELETE)) {
+                    deleteButton.lock();
+                    deleteButton.setPressed(true);
+                }
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? updateButton : abortButton;
+                return forward ? commitButton : updateButton;
+            }
+        });
+
+        addShortcut(deleteButton, 'd', CTRL);
+
+        addScreenHandler(commitButton, "commitButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                commitButton.setEnabled(isState(UPDATE, DELETE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? deleteButton : abortButton;
             }
         });
 
@@ -376,7 +398,7 @@ public class AttachmentScreenUI extends Screen {
 
         addScreenHandler(abortButton, "abortButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                abortButton.setEnabled(isState(UPDATE));
+                abortButton.setEnabled(isState(UPDATE, DELETE));
             }
 
             public Widget onTab(boolean forward) {
@@ -407,7 +429,7 @@ public class AttachmentScreenUI extends Screen {
                      * don't let a file be dropped for upload if a record is
                      * locked
                      */
-                    if (isState(UPDATE))
+                    if (isState(UPDATE, DELETE))
                         return;
                     setBusy(Messages.get().gen_saving());
                     /*
@@ -424,7 +446,7 @@ public class AttachmentScreenUI extends Screen {
                     setState(DISPLAY);
                     if (isLoadedFromQuery) {
                         /*
-                         * the table is showing the attachments returned by a
+                         * the tree is showing the attachments returned by a
                          * previous search, so they are cleared and only the
                          * attachment created from the uploaded file is shown
                          */
@@ -452,7 +474,7 @@ public class AttachmentScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 fileDrop.setEnabled(isState(QUERY, DISPLAY));
 
-                if (isState(UPDATE) && !closeHandlerAdded && window != null) {
+                if (isState(UPDATE, DELETE) && !closeHandlerAdded && window != null) {
                     /*
                      * this handler is not added in initialize() because this
                      * screen can be shown in a modal window and in that case,
@@ -460,7 +482,7 @@ public class AttachmentScreenUI extends Screen {
                      */
                     window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
                         public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                            if (isState(UPDATE)) {
+                            if (isState(UPDATE, DELETE)) {
                                 event.cancel();
                                 setError(Messages.get().gen_mustCommitOrAbort());
                             } else if (dropIndicator != null) {
@@ -498,15 +520,6 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
-        model1 = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("attachment_type")) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
-            row.setEnabled( ("Y".equals(d.getIsActive())));
-            model1.add(row);
-        }
-
-        type.setModel(model1);
-
         /*
          * here two separate models are created for the two dropdowns to make
          * sure that any items disabled or enabled in one don't affect the other
@@ -520,26 +533,10 @@ public class AttachmentScreenUI extends Screen {
 
         querySection.setModel(model1);
         tableSection.setModel(model2);
-    }
 
-    @UiHandler("searchButton")
-    protected void search(ClickEvent event) {
-        search();
-    }
-
-    /**
-     * puts the screen in update state and loads it with a locked attachment.
-     */
-    @UiHandler("updateButton")
-    protected void update(ClickEvent event) {
         /*
-         * manager will be null if the user selected the node for next page
+         * call for locking and fetching attachments
          */
-        if (manager == null)
-            return;
-
-        setBusy(Messages.get().gen_lockForUpdate());
-
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<AttachmentManager>() {
                 public void success(AttachmentManager result) {
@@ -550,9 +547,10 @@ public class AttachmentScreenUI extends Screen {
                     setState(UPDATE);
 
                     node = tree.getNodeAt(tree.getSelectedNode());
-                    if (ATTACHMENT_ITEM_LEAF.endsWith(node.getType()))
+                    if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
                         node = node.getParent();
                     reloadAttachment(node);
+                    tree.selectNodeAt(node);
                     tree.startEditing(tree.getSelectedNode(), 0);
                 }
 
@@ -567,7 +565,260 @@ public class AttachmentScreenUI extends Screen {
             };
         }
 
+        /*
+         * call for updating an attachment
+         */
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<AttachmentManager>() {
+                public void success(AttachmentManager result) {
+                    Node node;
+
+                    manager = result;
+                    managers.put(manager.getAttachment().getId(), manager);
+                    setState(DISPLAY);
+
+                    node = tree.getNodeAt(tree.getSelectedNode());
+                    if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                        node = node.getParent();
+                    reloadAttachment(node);
+                    tree.selectNodeAt(node);
+                    nodeSelected(tree.getSelectedNode());
+                    clearStatus();
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for unlocking an attachment
+         */
+        if (unlockCall == null) {
+            unlockCall = new AsyncCallbackUI<AttachmentManager>() {
+                public void success(AttachmentManager result) {
+                    Node node;
+
+                    manager = result;
+                    managers.put(manager.getAttachment().getId(), manager);
+                    setState(DISPLAY);
+
+                    node = tree.getNodeAt(tree.getSelectedNode());
+                    if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                        node = node.getParent();
+                    reloadAttachment(node);
+                    tree.selectNodeAt(node);
+                    nodeSelected(tree.getSelectedNode());
+                    setDone(Messages.get().gen_updateAborted());
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for deleting attachments
+         */
+        if (deleteCall == null) {
+            deleteCall = new AsyncCallbackUI<Void>() {
+                public void success(Void result) {
+                    setState(DISPLAY);
+                    setDone(Messages.get().gen_deletingComplete());
+                }
+                
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
+    }
+
+    @UiHandler("searchButton")
+    protected void search(ClickEvent event) {
+        search();
+    }
+
+    /**
+     * Puts the screen in update state and loads it with a locked attachment.
+     */
+    @UiHandler("updateButton")
+    protected void update(ClickEvent event) {
+        Integer id;
+        Node node;
+
+        /*
+         * manager will be null if the user selected the node for loading the
+         * next page or if no node is selected
+         */
+        if (manager == null) {
+            Window.alert(Messages.get().attachment_selectAnAttachment());
+            return;
+        }
+
+        /*
+         * allow update only if all selected nodes belong to the same attachment
+         */
+        id = null;
+        for (int i : tree.getSelectedNodes()) {
+            node = tree.getNodeAt(i);
+            if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                node = node.getParent();
+            if (id == null) {
+                id = node.getData();
+            } else if ( !id.equals(node.getData())) {
+                Window.alert(Messages.get().attachment_selectOneAttachment());
+                return;
+            }
+        }
+
+        setBusy(Messages.get().gen_lockForUpdate());
         AttachmentService.get().fetchForUpdate(manager.getAttachment().getId(), fetchForUpdateCall);
+    }
+
+    /**
+     * Puts the screen in delete state and deletes the nodes for all selected
+     * attachments
+     */
+    @UiHandler("deleteButton")
+    protected void delete(ClickEvent event) {
+        Integer id, selNodes[];
+        String desc, name;
+        AttachmentManager am;
+        SystemUserPermission perm;
+        Node node;
+        ArrayList<Node> removeNodes;
+
+        /*
+         * manager will be null if the user selected the node for loading the
+         * next page or if no node is selected
+         */
+        if (manager == null) {
+            Window.alert(Messages.get().attachment_selectAnAttachment());
+            return;
+        }
+
+        setState(DELETE);
+        deleteManagers = new ArrayList<AttachmentManager>();
+        removeNodes = new ArrayList<Node>();
+        perm = UserCache.getPermission();
+
+        setBusy(Messages.get().gen_lockForDelete());
+        /*
+         * go through the selected nodes and make a list of managers and nodes
+         * for the attachments that can be deleted; the list of nodes is used to
+         * remove the nodes in a separate loop; they're not removed in this loop
+         * because that'll mess up the indexes that this loop depends on
+         */
+        selNodes = tree.getSelectedNodes();
+        Arrays.sort(selNodes);
+        for (Integer i : selNodes) {
+            node = tree.getNodeAt(i);
+            if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                node = node.getParent();
+
+            id = node.getData();
+            /*
+             * the id will be null if the user selected the node that says
+             * "Click for more records"
+             */
+            if (id == null)
+                continue;
+
+            am = managers.get(id);
+            desc = am.getAttachment().getDescription();
+            /*
+             * try to lock each selected node's attachment and issue and refresh
+             * the node with the fetched data
+             */
+            try {
+                am = AttachmentService.get().fetchForUpdate(id);
+                AttachmentService.get().fetchIssueForUpdate(id);
+                manager = am;
+                managers.put(id, am);
+                reloadAttachment(node);
+                /*
+                 * the attachment will be deleted if it and its issue could be
+                 * locked, it isn't attached and the user has permission to
+                 * delete it; if it has an issue, ask the user to confirm
+                 * deletion
+                 */
+                desc = am.getAttachment().getDescription();
+                if (am.item.count() > 0) {
+                    Window.alert(Messages.get().attachment_cantDeleteAttachedException(desc));
+                    unlockAndReloadAttachment(id, node);
+                    continue;
+                }
+
+                name = SectionCache.getById(am.getAttachment().getSectionId()).getName();
+                if ( !perm.has(name, SectionFlags.CANCEL)) {
+                    Window.alert(Messages.get().attachment_deletePermException(desc));
+                    unlockAndReloadAttachment(id, node);
+                    continue;
+                }
+
+                if (am.getIssue() != null) {
+                    if ( !Window.confirm(Messages.get().attachment_attachmentHasIssue(desc,
+                                                                                      am.getIssue()
+                                                                                        .getText()))) {
+                        unlockAndReloadAttachment(id, node);
+                        continue;
+                    }
+                }
+                /*
+                 * this attachment can be deleted
+                 */
+                deleteManagers.add(am);
+                removeNodes.add(node);
+            } catch (EntityLockedException e) {
+                /*
+                 * either the attachment or the issue couldn't be locked; unlock
+                 * them both
+                 */
+                Window.alert(Messages.get()
+                                     .attachment_attachmentLockException(desc,
+                                                                         e.getUserName(),
+                                                                         new Date(e.getExpires()).toString()));
+                unlockAndReloadAttachment(id, node);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+            }
+        }
+
+        /*
+         * remove the nodes whose attachments can be deleted
+         */
+        if (removeNodes.size() > 0)
+            for (Node n : removeNodes)
+                tree.removeNode(n);
+
+        /*
+         * don't leave any nodes selected because the user may think that they
+         * will get deleted when "Commit" is clicked, but they won't be; that's
+         * because their attachments either can't be deleted possibly because
+         * they're attached, or the user chose not to delete them because they
+         * have issues
+         */
+        tree.unselectAll();
+        manager = null;
+        clearStatus();
     }
 
     /**
@@ -585,38 +836,17 @@ public class AttachmentScreenUI extends Screen {
             return;
         }
 
-        setBusy(Messages.get().gen_updating());
-
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<AttachmentManager>() {
-                public void success(AttachmentManager result) {
-                    Node node;
-
-                    manager = result;
-                    managers.put(manager.getAttachment().getId(), manager);
-                    setState(DISPLAY);
-
-                    node = tree.getNodeAt(tree.getSelectedNode());
-                    if (ATTACHMENT_ITEM_LEAF.endsWith(node.getType()))
-                        node = node.getParent();
-                    reloadAttachment(node);
-                    nodeSelected(tree.getSelectedNode());
-                    clearStatus();
-                }
-
-                public void validationErrors(ValidationErrorsList e) {
-                    showErrors(e);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("commitUpdate(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    clearStatus();
-                }
-            };
+        if (isState(UPDATE)) {
+            setBusy(Messages.get().gen_updating());
+            AttachmentService.get().update(manager, updateCall);
+        } else if (isState(DELETE)) {
+            if (deleteManagers == null || deleteManagers.size() == 0) {
+                Window.alert(Messages.get().attachment_noAttachmentToDelete());
+                return;
+            }
+            setBusy(Messages.get().gen_deleting());
+            AttachmentService.get().delete(deleteManagers, deleteCall);
         }
-
-        AttachmentService.get().update(manager, updateCall);
     }
 
     /**
@@ -626,37 +856,60 @@ public class AttachmentScreenUI extends Screen {
      */
     @UiHandler("abortButton")
     protected void abort(ClickEvent event) {
+        int i, index;
+        Integer insId, currId;
+        Node root, insNode;
+
         finishEditing();
         clearErrors();
         setBusy(Messages.get().gen_cancelChanges());
 
         if (isState(UPDATE)) {
-            if (unlockCall == null) {
-                unlockCall = new AsyncCallbackUI<AttachmentManager>() {
-                    public void success(AttachmentManager result) {
-                        Node node;
-
-                        manager = result;
-                        managers.put(manager.getAttachment().getId(), manager);
-                        setState(DISPLAY);
-
-                        node = tree.getNodeAt(tree.getSelectedNode());
-                        if (ATTACHMENT_ITEM_LEAF.endsWith(node.getType()))
-                            node = node.getParent();
-                        reloadAttachment(node);
-                        nodeSelected(tree.getSelectedNode());
-                        setDone(Messages.get().gen_updateAborted());
-                    }
-
-                    public void failure(Throwable e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        clearStatus();
-                    }
-                };
-            }
-
             AttachmentService.get().unlock(manager.getAttachment().getId(), unlockCall);
+        } else if (isState(DELETE)) {
+            /*
+             * if some attachment nodes were deleted, unlock their attachments
+             * and issues and re-insert them in the tree
+             */
+            if (deleteManagers != null) {
+                /*
+                 * the attachments in the tree are sorted in descending order of
+                 * their ids; re-insert a deleted node right before the first
+                 * node whose attachment id is less than the deleted node's
+                 * attachment id
+                 */
+                root = tree.getRoot();
+                while (deleteManagers.size() > 0) {
+                    insNode = new Node(5);
+                    insId = deleteManagers.get(0).getAttachment().getId();
+                    unlockAndReloadAttachment(insId, insNode);
+                    index = -1;
+                    /*
+                     * find the first attachment whose id is less than this
+                     * attachment's
+                     */
+                    for (i = 0; i < root.getChildCount(); i++ ) {
+                        currId = root.getChildAt(i).getData();
+                        if (currId == null || insId > currId) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    /*
+                     * either there are no nodes in the tree or this
+                     * attachment's id is greater than all other nodes' ids;
+                     * insert it at the end
+                     */
+                    if (index < 0)
+                        index = root.getChildCount() == 0 ? 0 : root.getChildCount() - 1;
+                    root.add(insNode, index);
+                    deleteManagers.remove(0);
+                }
+                tree.setRoot(root);
+                deleteManagers = null;
+            }
+            setState(DISPLAY);
+            setDone(Messages.get().gen_deleteAborted());
         }
     }
 
@@ -840,7 +1093,7 @@ public class AttachmentScreenUI extends Screen {
     /**
      * Performs specific actions based on node selected in the tree, specified
      * by the passed index. If an attachment or attachment item was selected
-     * then resets the manager otherwise tries to load the next page, because
+     * then resets the manager; otherwise tries to load the next page, because
      * "Click for Next.." is selected. Also, enables or disables widgets.
      */
     private void nodeSelected(int index) {
@@ -848,27 +1101,31 @@ public class AttachmentScreenUI extends Screen {
         Node node;
 
         node = tree.getNodeAt(index);
-        if (ATTACHMENT_LEAF.equals(node.getType())) {
+        id = null;
+        if (ATTACHMENT_LEAF.equals(node.getType()))
             id = node.getData();
-        } else if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
+        else if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
             id = node.getParent().getData();
-        } else {
+        else if (isState(DISPLAY))
             loadNextPage();
-            id = null;
-        }
 
+        /*
+         * id is null if the node "Click for more records" is selected; "Update"
+         * button is enabled if only one node is selected; "Delete" button is
+         * enabled even if multiple nodes are selected
+         */
         if ( !isState(UPDATE))
-            /*
-             * in update state, the Update button can't be disabled
-             */
             updateButton.setEnabled(id != null && (isState(DISPLAY)));
+        if ( !isState(DELETE))
+            deleteButton.setEnabled( (id != null || tree.getSelectedNodes().length > 1) &&
+                                    (isState(DISPLAY)));
         /*
          * the "Attach" button shouldn't be enabled unless any attachment or
-         * attachment item is selected but once it is enabled it shouldn't be
-         * disabled on selecting "Click for more..." because the tree supports
-         * multiple selection, and other nodes may be already selected
+         * attachment item is selected; but once it is enabled it shouldn't be
+         * disabled on selecting "Click for more..."; that's because the tree
+         * supports multiple selection, and other nodes may be already selected
          */
-        if ( !CLICK_FOR_MORE_LEAF.equals(node.getType()))
+        if (id != null)
             attachButton.setEnabled(isAttach() && (isState(DISPLAY)));
         manager = id != null ? managers.get(id) : null;
     }
@@ -908,8 +1165,8 @@ public class AttachmentScreenUI extends Screen {
         root = tree.getRoot();
         if (reloadTree || root == null) {
             /*
-             * if no records were found by the query then empty the tree if this
-             * was a new search as opposed to getting the next page
+             * if no records were found by the query, empty the tree if this was
+             * a new search and not getting the next page
              */
             root = new Node();
             tree.setRoot(root);
@@ -932,13 +1189,15 @@ public class AttachmentScreenUI extends Screen {
          * because the tree will be reloaded, otherwise they're added after the
          * current nodes
          */
-        for (AttachmentManager am : ams) {
-            node = new Node(6);
-            loadAttachment(node, am);
-            if (reloadTree)
-                root.add(node);
-            else
-                tree.addNodeAt( ++index, node);
+        if (ams != null) {
+            for (AttachmentManager am : ams) {
+                node = new Node(5);
+                loadAttachment(node, am);
+                if (reloadTree)
+                    root.add(node);
+                else
+                    tree.addNodeAt( ++index, node);
+            }
         }
 
         if (reloadTree) {
@@ -982,9 +1241,8 @@ public class AttachmentScreenUI extends Screen {
         anode.setCell(0, data.getDescription());
         anode.setCell(1, data.getCreatedDate());
         anode.setCell(2, data.getSectionId());
-        anode.setCell(3, data.getTypeId());
-        anode.setCell(4, data.getStorageReference());
-        anode.setCell(5, data.getId());
+        anode.setCell(3, am.getIssue() != null ? am.getIssue().getText() : null);
+        anode.setCell(4, data.getId());
         anode.setData(data.getId());
         anode.setType(ATTACHMENT_LEAF);
         /*
@@ -1026,6 +1284,23 @@ public class AttachmentScreenUI extends Screen {
             tree.open(node);
 
         tree.refreshNode(node);
-        tree.selectNodeAt(node);
+    }
+
+    /**
+     * Unlocks the attachment with the passed id and its issue; loads the passed
+     * node with the latest data for the attachment from the database
+     */
+    private void unlockAndReloadAttachment(Integer attachmentId, Node node) {
+        AttachmentManager am;
+
+        try {
+            am = AttachmentService.get().unlock(attachmentId);
+            AttachmentService.get().unlockIssue(attachmentId);
+            managers.put(attachmentId, am);
+            loadAttachment(node, am);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+        }
     }
 }

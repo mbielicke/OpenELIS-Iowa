@@ -10,10 +10,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.entity.SampleClinical;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -101,7 +104,16 @@ public class SampleClinicalBean {
             manager.remove(entity);
     }
 
-    public void validate(SampleClinicalDO data) throws Exception {
-        // TODO add logic for validation
+    public void validate(SampleClinicalDO data, Integer accession) throws Exception {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+
+        if (data.getPatientId() == null)
+            list.add(new FormErrorException(Messages.get()
+                                                    .sample_patientRequiredException(accession == null ? 0
+                                                                                                      : accession)));
+        if (list.size() > 0)
+            throw list;
     }
 }

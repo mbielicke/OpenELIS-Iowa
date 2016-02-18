@@ -42,10 +42,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface AttachmentServiceIntAsync {
 
-    public void get(Integer id, AsyncCallback<ReportStatus> callback);
-    
-    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback);
-
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              AsyncCallback<ArrayList<AttachmentManager>> callback);
     
@@ -55,9 +51,6 @@ public interface AttachmentServiceIntAsync {
     public void fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max,
                                        AsyncCallback<ArrayList<AttachmentManager>> callback);
 
-    public void fetchUnattachedByDescription(String description, int first, int max,
-                                             AsyncCallback<ArrayList<AttachmentManager>> callback);
-    
     public void fetchIssues(AsyncCallback<ArrayList<AttachmentIssueViewDO>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
@@ -69,6 +62,12 @@ public interface AttachmentServiceIntAsync {
     public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
 
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
+    
+    public void put(AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
+    public void get(Integer id, AsyncCallback<ReportStatus> callback);
+    
+    public void getTRF(Integer sampleId, AsyncCallback<ReportStatus> callback);
 
     public void addIssue(AttachmentIssueViewDO data, AsyncCallback<AttachmentIssueViewDO> callback);
 
@@ -77,8 +76,8 @@ public interface AttachmentServiceIntAsync {
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
     public void unlockIssue(Integer attachmentId, AsyncCallback<AttachmentIssueViewDO> callback);
-
-    public void put(AsyncCallback<ArrayList<AttachmentManager>> callback);
+    
+    public void delete(ArrayList<AttachmentManager> ams, AsyncCallback<Void> callback);
 
     public void deleteIssue(AttachmentIssueViewDO data, AsyncCallback<Void> callback);
 }

@@ -77,6 +77,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AddAttachmentEvent;
+import org.openelis.modules.attachment.client.AttachmentEntry;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
@@ -2893,6 +2894,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
         ScheduledCommand cmd;
+        AttachmentEntry entry;
 
         if ( !addWithTRF.isChecked()) {
             /*
@@ -2927,13 +2929,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     }
                 };
             }
-
-            window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
-            window.setSize("670px", "520px");
-            trfAttachmentScreen.setWindow(window);
-            window.setContent(trfAttachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "clinTRFAttachment");
+            
+            entry = new AttachmentEntry();
+            window = entry.addTRFScreen(trfAttachmentScreen, "clinTRFAttachment");  
             isAttachmentScreenOpen = true;
 
             /*

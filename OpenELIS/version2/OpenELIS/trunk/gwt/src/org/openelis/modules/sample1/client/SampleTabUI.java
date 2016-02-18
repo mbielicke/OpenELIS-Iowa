@@ -20,6 +20,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.order1.client.OrderEntry;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
@@ -811,9 +812,9 @@ public class SampleTabUI extends Screen {
     @UiHandler("orderLookupButton")
     protected void orderLookup(ClickEvent event) {
         String domain;
-        org.openelis.ui.widget.Window window;
         final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
+        OrderEntry entry;
 
         if (getOrderId() == null)
             return;
@@ -824,12 +825,8 @@ public class SampleTabUI extends Screen {
             Constants.domain().PRIVATEWELL.equals(domain) ||
             Constants.domain().SDWIS.equals(domain)) {
             try {
-                window = new org.openelis.ui.widget.Window();
-                window.setName(Messages.get().order_sendoutOrder());
-                window.setSize("1020px", "588px");
-                orderScreen = new SendoutOrderScreenUI(window);
-                window.setContent(orderScreen);
-                OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+                entry = new OrderEntry();
+                orderScreen = entry.addSendoutOrderScreen();           
                 cmd = new ScheduledCommand() {
                     @Override
                     public void execute() {
