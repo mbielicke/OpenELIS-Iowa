@@ -70,6 +70,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AddAttachmentEvent;
+import org.openelis.modules.attachment.client.AttachmentEntry;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
@@ -79,6 +80,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.order1.client.OrderEntry;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
@@ -2710,6 +2712,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected void addWithTRF() {
         org.openelis.ui.widget.Window window;
         ScheduledCommand cmd;
+        AttachmentEntry entry;
 
         if ( !addWithTRF.isChecked()) {
             /*
@@ -2746,12 +2749,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 };
             }
 
-            window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().trfAttachment_dataEntryTRFAttachment());
-            window.setSize("670px", "520px");
-            trfAttachmentScreen.setWindow(window);
-            window.setContent(trfAttachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "envTRFAttachment");
+            entry = new AttachmentEntry();
+            window = entry.addTRFScreen(trfAttachmentScreen, "envTRFAttachment");
             isAttachmentScreenOpen = true;
 
             /*
@@ -2798,17 +2797,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      */
     @UiHandler("orderLookupButton")
     protected void orderLookup(ClickEvent event) {
-        org.openelis.ui.widget.Window window;
         final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
+        OrderEntry entry;
 
         try {
-            window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().order_sendoutOrder());
-            window.setSize("1020px", "588px");
-            orderScreen = new SendoutOrderScreenUI(window);
-            window.setContent(orderScreen);
-            OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+            entry = new OrderEntry();
+            orderScreen = entry.addSendoutOrderScreen();           
             cmd = new ScheduledCommand() {
                 @Override
                 public void execute() {

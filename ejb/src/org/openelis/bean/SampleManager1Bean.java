@@ -2982,8 +2982,9 @@ public class SampleManager1Bean {
                           HashMap<Integer, AuxFieldGroupManager> ams,
                           HashMap<Integer, QaEventDO> qas) throws Exception {
         int cnt;
+        String prefix;
         AnalysisViewDO ana;
-        ValidationErrorsList e;
+        ValidationErrorsList e, ae;
         Integer accession;
         QaEventDO qa;
         HashMap<Integer, SampleItemViewDO> imap;
@@ -3020,6 +3021,24 @@ public class SampleManager1Bean {
             (getSampleSDWIS(sm).getId() == null || getSampleSDWIS(sm).isChanged())) {
             try {
                 sampleSDWIS.validate(getSampleSDWIS(sm), accession);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
+        if (getSampleClinical(sm) != null &&
+            (getSampleClinical(sm).getId() == null || getSampleClinical(sm).isChanged())) {
+            try {
+                sampleClinical.validate(getSampleClinical(sm), accession);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
+        if (getSampleNeonatal(sm) != null &&
+            (getSampleNeonatal(sm).getId() == null || getSampleNeonatal(sm).isChanged())) {
+            try {
+                sampleNeonatal.validate(getSampleNeonatal(sm), accession);
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
             }
@@ -3090,11 +3109,39 @@ public class SampleManager1Bean {
         }
 
         /*
-         * a sample can't have more than one TRF
+         * all attachment items must be linked to existing attachments; only
+         * uncommitted attachment items need to be validated because attached
+         * attachments can't be deleted; a sample can't have more than one TRF
          */
         cnt = 0;
         if (getAttachments(sm) != null) {
+            prefix = Messages.get().sample_accessionPrefix(accession);
             for (AttachmentItemViewDO data : getAttachments(sm)) {
+                if (data.getId() < 0)
+                    try {
+                        attachmentItem.validate(data);
+                    } catch (Exception err) {
+                        /*
+                         * since attachments can be linked to several different
+                         * types of records, the exceptions added by the bean
+                         * above don't have the prefix "Accession #"; so that
+                         * prefix is added here
+                         */
+                        if (err instanceof ValidationErrorsList) {
+                            ae = (ValidationErrorsList)err;
+                            if (ae.hasErrors()) {
+                                for (Exception ex : ae.getErrorList()) {
+                                    e.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
+                                                                                                  " ",
+                                                                                                  ex.getMessage())));
+                                    
+                                }
+                            }
+                        } else {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                    }
+
                 if (data.getAttachmentDescription().matches(trfPattern))
                     cnt++ ;
                 if (cnt > 1) {

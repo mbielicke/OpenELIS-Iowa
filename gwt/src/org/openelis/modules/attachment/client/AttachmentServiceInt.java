@@ -44,40 +44,42 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
  */
 @RemoteServiceRelativePath("attachment")
 public interface AttachmentServiceInt extends XsrfProtectedService {
-    
-    public ReportStatus get(Integer id) throws Exception;
-    
-    public ReportStatus getTRF(Integer sampleId) throws Exception;
 
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception;
-    
-    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
-    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields, int first, int max) throws Exception;
-    
-    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception;
-    
+    public ArrayList<AttachmentManager> fetchByQueryUnattached(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception;
+
+    public ArrayList<AttachmentManager> fetchByQueryDescending(ArrayList<QueryData> fields,
+                                                               int first, int max) throws Exception;
+
     public ArrayList<AttachmentIssueViewDO> fetchIssues() throws Exception;
-    
+
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception;
-    
+
     public AttachmentManager fetchForReserve(Integer attachmentId) throws Exception;
-    
+
     public AttachmentIssueViewDO fetchIssueForUpdate(Integer attachmentId) throws Exception;
-    
+
     public ArrayList<AttachmentDO> query(Query query) throws Exception;
 
     public AttachmentManager update(AttachmentManager data) throws Exception;
-    
+
     public AttachmentIssueViewDO addIssue(AttachmentIssueViewDO data) throws Exception;
-    
+
     public AttachmentIssueViewDO updateIssue(AttachmentIssueViewDO data) throws Exception;
 
+    public ArrayList<AttachmentManager> put() throws Exception;
+
+    public ReportStatus get(Integer id) throws Exception;
+
+    public ReportStatus getTRF(Integer sampleId) throws Exception;
+
     public AttachmentManager unlock(Integer attachmentId) throws Exception;
-    
+
     public AttachmentIssueViewDO unlockIssue(Integer attachmentId) throws Exception;
 
-    public ArrayList<AttachmentManager> put() throws Exception;
-    
+    public void delete(ArrayList<AttachmentManager> ams) throws Exception;
+
     public void deleteIssue(AttachmentIssueViewDO data) throws Exception;
 }

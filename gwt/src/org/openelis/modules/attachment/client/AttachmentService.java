@@ -139,21 +139,6 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
                                        AsyncCallback<ArrayList<AttachmentManager>> callback) {
         service.fetchByQueryDescending(fields, first, max, callback);
     }
-
-    @Override
-    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception {
-        Callback<ArrayList<AttachmentManager>> callback;
-
-        callback = new Callback<ArrayList<AttachmentManager>>();
-        service.fetchUnattachedByDescription(description, first, max, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public void fetchUnattachedByDescription(String description, int first, int max,
-                                             AsyncCallback<ArrayList<AttachmentManager>> callback) {
-        service.fetchUnattachedByDescription(description, first, max, callback);
-    }
     
     @Override
     public ArrayList<AttachmentIssueViewDO> fetchIssues() throws Exception {
@@ -305,10 +290,23 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
         service.put(callback);
         return callback.getResult();
     }
-    
+
     @Override
     public void put(AsyncCallback<ArrayList<AttachmentManager>> callback) {
         service.put(callback);
+    }
+    
+    @Override
+    public void delete(ArrayList<AttachmentManager> ams) throws Exception {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.delete(ams, callback);
+    }
+
+    @Override
+    public void delete(ArrayList<AttachmentManager> ams, AsyncCallback<Void> callback) {
+        service.delete(ams, callback);
     }
 
     @Override

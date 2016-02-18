@@ -37,6 +37,7 @@ import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.modules.attachment.client.AttachmentIssueEvent.Action;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
@@ -62,37 +63,35 @@ public abstract class TRFAttachmentScreenUI extends Screen {
     interface TRFAttachmentUiBinder extends UiBinder<Widget, TRFAttachmentScreenUI> {
     };
 
-    private static final TRFAttachmentUiBinder                  uiBinder = GWT.create(TRFAttachmentUiBinder.class);
+    private static final TRFAttachmentUiBinder                uiBinder = GWT.create(TRFAttachmentUiBinder.class);
 
-    protected TRFAttachmentScreenUI                             screen;
+    protected TRFAttachmentScreenUI                           screen;
 
-    protected boolean                                           closeHandlerAdded;
-
-    protected String                                            defaultPattern;
+    protected boolean                                         closeHandlerAdded;
 
     @UiField
-    protected TabLayoutPanel                                    tabPanel;
+    protected TabLayoutPanel                                  tabPanel;
 
     @UiField(provided = true)
-    protected TRFTabUI                                          trfTab;
+    protected TRFTabUI                                        trfTab;
 
     @UiField(provided = true)
-    protected IssuesTabUI                                       issuesTab;
+    protected IssuesTabUI                                     issuesTab;
 
-    protected AsyncCallbackUI<ArrayList<AttachmentIssueViewDO>> fetchIssuesCall;
+    protected AsyncCallback<ArrayList<AttachmentIssueViewDO>> fetchIssuesCall;
 
-    protected AsyncCallbackUI<AttachmentIssueViewDO>            fetchForUpdateCall, updateCall,
+    protected AsyncCallback<AttachmentIssueViewDO>            fetchForUpdateCall, updateCall,
                     unlockCall;
 
-    protected AsyncCallback<Void>                               deleteCall;
+    protected AsyncCallback<Void>                             deleteCall;
 
-    protected Integer                                           attachmentId;
+    protected Integer                                         attachmentId;
 
-    protected Object                                            originalSource;
+    protected Object                                          originalSource;
 
-    protected ArrayList<AttachmentIssueViewDO>                  issueList;
+    protected ArrayList<AttachmentIssueViewDO>                issueList;
 
-    protected HashMap<Integer, AttachmentIssueViewDO>           issueMap;
+    protected HashMap<Integer, AttachmentIssueViewDO>         issueMap;
 
     public TRFAttachmentScreenUI() throws Exception {
         trfTab = new TRFTabUI(this) {
@@ -207,6 +206,118 @@ public abstract class TRFAttachmentScreenUI extends Screen {
                 }
             }
         });
+        
+        /*
+         * call for fetching attachment issues
+         */
+        if (fetchIssuesCall == null) {
+            fetchIssuesCall = new AsyncCallback<ArrayList<AttachmentIssueViewDO>>() {
+                public void onSuccess(ArrayList<AttachmentIssueViewDO> result) {
+                    issueList = result;
+
+                    for (AttachmentIssueViewDO data : result)
+                        issueMap.put(data.getAttachmentId(), data);
+                    clearStatus();
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
+                }
+
+                public void onFailure(Throwable e) {
+                    if (e instanceof NotFoundException) {
+                        setDone(Messages.get().gen_noRecordsFound());
+                    } else {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE,
+                                   e.getMessage() != null ? e.getMessage() : "null",
+                                   e);
+                        clearStatus();
+                    }
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
+                }
+            };
+        }
+        
+        /*
+         * call for locking an attachment issue
+         */
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallback<AttachmentIssueViewDO>() {
+                public void onSuccess(AttachmentIssueViewDO result) {
+                    clearStatus();
+                    refreshIssues(screen.attachmentId, result);
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, screen.attachmentId);
+                }
+
+                public void onFailure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
+        
+        /*
+         * call for updating an attachment issue
+         */
+        if (updateCall == null) {
+            updateCall = new AsyncCallback<AttachmentIssueViewDO>() {
+                public void onSuccess(AttachmentIssueViewDO result) {
+                    clearStatus();
+                    refreshIssues(result.getAttachmentId(), result);
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.UPDATE,
+                                        result.getAttachmentId());
+                }
+
+                public void onFailure(Throwable e) {
+                    if (e instanceof ValidationErrorsList) {
+                        showErrors((ValidationErrorsList)e);
+                    } else {
+                        Window.alert("commitUpdate(): " + e.getMessage());
+                        logger.log(Level.SEVERE,
+                                   e.getMessage() != null ? e.getMessage() : "null",
+                                   e);
+                        clearStatus();
+                    }
+                }
+            };
+        }
+        
+        /*
+         * call for deleting an attachment issue
+         */
+        if (deleteCall == null) {
+            deleteCall = new AsyncCallbackUI<Void>() {
+                public void success(Void result) {
+                    clearStatus();
+                    refreshIssues(screen.attachmentId, null);
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.DELETE, screen.attachmentId);
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert("commitdelete(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
+        
+        /*
+         * call for unlocking an attachment issue
+         */
+        if (unlockCall == null) {
+            unlockCall = new AsyncCallback<AttachmentIssueViewDO>() {
+                public void onSuccess(AttachmentIssueViewDO result) {
+                    setDone(Messages.get().gen_updateAborted());
+                    refreshIssues(screen.attachmentId, result);
+                    fireAttachmentIssue(AttachmentIssueEvent.Action.UNLOCK, screen.attachmentId);
+                }
+
+                public void onFailure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                    clearStatus();
+                }
+            };
+        }
     }
 
     /**
@@ -270,35 +381,8 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     private void fetchIssues() {
         setBusy(Messages.get().gen_fetching());
-
         issueList = new ArrayList<AttachmentIssueViewDO>();
         issueMap = new HashMap<Integer, AttachmentIssueViewDO>();
-
-        if (fetchIssuesCall == null) {
-            fetchIssuesCall = new AsyncCallbackUI<ArrayList<AttachmentIssueViewDO>>() {
-                public void success(ArrayList<AttachmentIssueViewDO> result) {
-                    issueList = result;
-
-                    for (AttachmentIssueViewDO data : result)
-                        issueMap.put(data.getAttachmentId(), data);
-                    clearStatus();
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
-                }
-
-                public void notFound() {
-                    setDone(Messages.get().gen_noRecordsFound());
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.FETCH, null);
-                }
-            };
-        }
-
         AttachmentService.get().fetchIssues(fetchIssuesCall);
     }
 
@@ -307,24 +391,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     protected void fetchForUpdate(Integer attachmentId) {
         setBusy(Messages.get().gen_lockForUpdate());
-
         this.attachmentId = attachmentId;
-        if (fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
-                public void success(AttachmentIssueViewDO result) {
-                    clearStatus();
-                    refreshIssues(screen.attachmentId, result);
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.LOCK, screen.attachmentId);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                }
-            };
-        }
-
         AttachmentService.get().fetchIssueForUpdate(attachmentId, fetchForUpdateCall);
     }
 
@@ -339,30 +406,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
         AttachmentIssueViewDO data;
 
         setBusy(Messages.get().gen_updating());
-
         data = issueMap.get(attachmentId);
-
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
-                public void success(AttachmentIssueViewDO result) {
-                    clearStatus();
-                    refreshIssues(result.getAttachmentId(), result);
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.UPDATE,
-                                        result.getAttachmentId());
-                }
-
-                public void validationErrors(ValidationErrorsList e) {
-                    showErrors(e);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("commitUpdate(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                }
-            };
-        }
-
         if (data.getId() == null)
             AttachmentService.get().addIssue(data, updateCall);
         else
@@ -378,23 +422,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     protected void commitDelete(Integer attachmentId) {
         setBusy(Messages.get().gen_updating());
-
         this.attachmentId = attachmentId;
-        if (deleteCall == null) {
-            deleteCall = new AsyncCallbackUI<Void>() {
-                public void success(Void result) {
-                    clearStatus();
-                    refreshIssues(screen.attachmentId, null);
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.DELETE, screen.attachmentId);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("commitdelete(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                }
-            };
-        }
         AttachmentService.get().deleteIssue(issueMap.get(attachmentId), deleteCall);
     }
 
@@ -406,24 +434,7 @@ public abstract class TRFAttachmentScreenUI extends Screen {
      */
     protected void abort(Integer attachmentId) {
         setBusy(Messages.get().gen_cancelChanges());
-
         this.attachmentId = attachmentId;
-        if (unlockCall == null) {
-            unlockCall = new AsyncCallbackUI<AttachmentIssueViewDO>() {
-                public void success(AttachmentIssueViewDO result) {
-                    setDone(Messages.get().gen_updateAborted());
-                    refreshIssues(screen.attachmentId, result);
-                    fireAttachmentIssue(AttachmentIssueEvent.Action.UNLOCK, screen.attachmentId);
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                    clearStatus();
-                }
-            };
-        }
-
         AttachmentService.get().unlockIssue(attachmentId, unlockCall);
     }
 

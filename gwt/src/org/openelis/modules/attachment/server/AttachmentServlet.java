@@ -75,22 +75,6 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
 
     @Override
-    public ReportStatus getTRF(Integer sampleId) throws Exception {
-        ReportStatus st;
-
-        try {
-            st = attachmentManager.getTRF(sampleId);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
-
-    @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
         try {
             return attachmentManager.fetchByQuery(fields, first, max);
@@ -123,16 +107,6 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     public ArrayList<AttachmentIssueViewDO> fetchIssues() throws Exception {
         try {
             return attachmentIssue.fetchList();
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    @Override
-    public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first,
-                                                                     int max) throws Exception {
-        try {
-            return attachmentManager.fetchUnattachedByDescription(description, first, max);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -204,6 +178,38 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     }
 
     @Override
+    public ArrayList<AttachmentManager> put() throws Exception {
+        List<String> paths;
+        HttpSession session;
+
+        session = getThreadLocalRequest().getSession();
+        paths = (List<String>)session.getAttribute("upload");
+        try {
+            return attachmentManager.put(paths, null);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        } finally {
+            session.removeAttribute("upload");
+        }
+    }
+
+    @Override
+    public ReportStatus getTRF(Integer sampleId) throws Exception {
+        ReportStatus st;
+
+        try {
+            st = attachmentManager.getTRF(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+
+    @Override
     public AttachmentManager unlock(Integer attachmentId) throws Exception {
         try {
             return attachmentManager.unlock(attachmentId);
@@ -220,20 +226,13 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
             throw serializeForGWT(anyE);
         }
     }
-
+    
     @Override
-    public ArrayList<AttachmentManager> put() throws Exception {
-        List<String> paths;
-        HttpSession session;
-
-        session = getThreadLocalRequest().getSession();
-        paths = (List<String>)session.getAttribute("upload");
+    public void delete(ArrayList<AttachmentManager> ams) throws Exception {
         try {
-            return attachmentManager.put(paths, null);
+            attachmentManager.delete(ams);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
-        } finally {
-            session.removeAttribute("upload");
         }
     }
 

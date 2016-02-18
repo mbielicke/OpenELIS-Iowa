@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -2140,13 +2140,40 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_attachment();
 
   /**
-   * Translated "Auto Select Next".
+   * Translated "Attachment ''{0}'' has the issue ''{1}''. Are you sure you want to delete it?".
    * 
-   * @return translated "Auto Select Next"
+   * @return translated "Attachment ''{0}'' has the issue ''{1}''. Are you sure you want to delete it?"
    */
-  @DefaultMessage("Auto Select Next")
-  @Key("attachment.autoSelectNext")
-  String attachment_autoSelectNext();
+  @DefaultMessage("Attachment ''{0}'' has the issue ''{1}''. Are you sure you want to delete it?")
+  @Key("attachment.attachmentHasIssue")
+  String attachment_attachmentHasIssue(String arg0,  String arg1);
+
+  /**
+   * Translated "Attachment ''{0}'' is locked by {1} until {2}".
+   * 
+   * @return translated "Attachment ''{0}'' is locked by {1} until {2}"
+   */
+  @DefaultMessage("Attachment ''{0}'' is locked by {1} until {2}")
+  @Key("attachment.attachmentLockException")
+  String attachment_attachmentLockException(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Attachment with Id {0,number,#0} does not exist".
+   * 
+   * @return translated "Attachment with Id {0,number,#0} does not exist"
+   */
+  @DefaultMessage("Attachment with Id {0,number,#0} does not exist")
+  @Key("attachment.attachmentNotExistException")
+  String attachment_attachmentNotExistException(Integer arg0);
+
+  /**
+   * Translated "Attachments with Ids {0} do not exist".
+   * 
+   * @return translated "Attachments with Ids {0} do not exist"
+   */
+  @DefaultMessage("Attachments with Ids {0} do not exist")
+  @Key("attachment.attachmentsNotExistException")
+  String attachment_attachmentsNotExistException(String arg0);
 
   /**
    * Translated "Attachment ''{0}'': The section can''t be change from ''system'' to something else".
@@ -2165,6 +2192,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Attachment ''{0}'': The section can''t be change to ''system'' from something else")
   @Key("attachment.cantChangeToSystemException")
   String attachment_cantChangeToSystemException(String arg0);
+
+  /**
+   * Translated "Attachment ''{0}'': The attachment has been attached. It can''t be deleted. ".
+   * 
+   * @return translated "Attachment ''{0}'': The attachment has been attached. It can''t be deleted. "
+   */
+  @DefaultMessage("Attachment ''{0}'': The attachment has been attached. It can''t be deleted. ")
+  @Key("attachment.cantDeleteAttachedException")
+  String attachment_cantDeleteAttachedException(String arg0);
+
+  /**
+   * Translated "Created Date".
+   * 
+   * @return translated "Created Date"
+   */
+  @DefaultMessage("Created Date")
+  @Key("attachment.createdDate")
+  String attachment_createdDate();
+
+  /**
+   * Translated "Attachment ''{0}'': You do not have permission to delete the attachment".
+   * 
+   * @return translated "Attachment ''{0}'': You do not have permission to delete the attachment"
+   */
+  @DefaultMessage("Attachment ''{0}'': You do not have permission to delete the attachment")
+  @Key("attachment.deletePermException")
+  String attachment_deletePermException(String arg0);
 
   /**
    * Translated "Attachment ''{0}'': Description is required".
@@ -2221,6 +2275,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_fileName();
 
   /**
+   * Translated "Issue".
+   * 
+   * @return translated "Issue"
+   */
+  @DefaultMessage("Issue")
+  @Key("attachment.issue")
+  String attachment_issue();
+
+  /**
    * Translated "Generic attachment pattern is missing. Please contact the system administrator.".
    * 
    * @return translated "Generic attachment pattern is missing. Please contact the system administrator."
@@ -2248,6 +2311,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_moveFileException(String arg0);
 
   /**
+   * Translated "There are no attachments to delete".
+   * 
+   * @return translated "There are no attachments to delete"
+   */
+  @DefaultMessage("There are no attachments to delete")
+  @Key("attachment.noAttachmentToDelete")
+  String attachment_noAttachmentToDelete();
+
+  /**
    * Translated "Sample # {0,number,#0}".
    * 
    * @return translated "Sample # {0,number,#0}"
@@ -2264,6 +2336,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Attachment ''{0}'': Section is required")
   @Key("attachment.sectRequiredException")
   String attachment_sectRequiredException(String arg0);
+
+  /**
+   * Translated "Please select an attachment".
+   * 
+   * @return translated "Please select an attachment"
+   */
+  @DefaultMessage("Please select an attachment")
+  @Key("attachment.selectAnAttachment")
+  String attachment_selectAnAttachment();
+
+  /**
+   * Translated "Please select only one attachment".
+   * 
+   * @return translated "Please select only one attachment"
+   */
+  @DefaultMessage("Please select only one attachment")
+  @Key("attachment.selectOneAttachment")
+  String attachment_selectOneAttachment();
 
   /**
    * Translated "TRF not found".
@@ -7297,6 +7387,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_deleteAborted();
 
   /**
+   * Translated "Deleting...".
+   * 
+   * @return translated "Deleting..."
+   */
+  @DefaultMessage("Deleting...")
+  @Key("gen.deleting")
+  String gen_deleting();
+
+  /**
+   * Translated "Deleting...Complete".
+   * 
+   * @return translated "Deleting...Complete"
+   */
+  @DefaultMessage("Deleting...Complete")
+  @Key("gen.deletingComplete")
+  String gen_deletingComplete();
+
+  /**
    * Translated "Desc".
    * 
    * @return translated "Desc"
@@ -7664,6 +7772,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Location")
   @Key("gen.location")
   String gen_location();
+
+  /**
+   * Translated "Locking record for Delete...".
+   * 
+   * @return translated "Locking record for Delete..."
+   */
+  @DefaultMessage("Locking record for Delete...")
+  @Key("gen.lockForDelete")
+  String gen_lockForDelete();
 
   /**
    * Translated "Locking record for Update...".
@@ -12301,6 +12418,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String order_inactiveTestWarning(String arg0,  String arg1);
 
   /**
+   * Translated "Internal Order".
+   * 
+   * @return translated "Internal Order"
+   */
+  @DefaultMessage("Internal Order")
+  @Key("order.internalOrder")
+  String order_internalOrder();
+
+  /**
+   * Translated "Order items from in-house store.".
+   * 
+   * @return translated "Order items from in-house store."
+   */
+  @DefaultMessage("Order items from in-house store.")
+  @Key("order.internalOrderDescription")
+  String order_internalOrderDescription();
+
+  /**
    * Translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  ".
    * 
    * @return translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  "
@@ -12749,6 +12884,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Vendor")
   @Key("order.vendor")
   String order_vendor();
+
+  /**
+   * Translated "Vendor Order".
+   * 
+   * @return translated "Vendor Order"
+   */
+  @DefaultMessage("Vendor Order")
+  @Key("order.vendorOrder")
+  String order_vendorOrder();
+
+  /**
+   * Translated "Order items from external vendors.".
+   * 
+   * @return translated "Order items from external vendors."
+   */
+  @DefaultMessage("Order items from external vendors.")
+  @Key("order.vendorOrderDescription")
+  String order_vendorOrderDescription();
 
   /**
    * Translated "{0} couldn''t be found ".
@@ -16522,11 +16675,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
-   * Translated "Accession # {0,number,#0}".
+   * Translated "Accession # {0,number,#0}:".
    * 
-   * @return translated "Accession # {0,number,#0}"
+   * @return translated "Accession # {0,number,#0}:"
    */
-  @DefaultMessage("Accession # {0,number,#0}")
+  @DefaultMessage("Accession # {0,number,#0}:")
   @Key("sample.accessionPrefix")
   String sample_accessionPrefix(Integer arg0);
 
@@ -16972,6 +17125,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_noSamplePermissionException();
 
   /**
+   * Translated "Accession # {0,number,#0}: This sample must have a next of kin record".
+   * 
+   * @return translated "Accession # {0,number,#0}: This sample must have a next of kin record"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: This sample must have a next of kin record")
+  @Key("sample.nokRequiredException")
+  String sample_nokRequiredException(Integer arg0);
+
+  /**
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
    * 
    * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
@@ -17051,6 +17213,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Last name is required for a patient")
   @Key("sample.patientLastNameRequiredException")
   String sample_patientLastNameRequiredException(Integer arg0);
+
+  /**
+   * Translated "Accession # {0,number,#0}: This sample must have a patient record".
+   * 
+   * @return translated "Accession # {0,number,#0}: This sample must have a patient record"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: This sample must have a patient record")
+  @Key("sample.patientRequiredException")
+  String sample_patientRequiredException(Integer arg0);
 
   /**
    * Translated "Private Well".

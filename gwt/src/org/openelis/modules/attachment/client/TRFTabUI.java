@@ -100,8 +100,6 @@ public abstract class TRFTabUI extends Screen {
 
     protected EventBus                                      parentBus;
 
-    protected String                                        defaultPattern;
-
     protected int                                           trfShownRow;
 
     protected boolean                                       query, refresh;

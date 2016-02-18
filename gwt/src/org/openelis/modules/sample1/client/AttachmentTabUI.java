@@ -40,6 +40,7 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.modules.attachment.client.AddAttachmentEvent;
+import org.openelis.modules.attachment.client.AttachmentEntry;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentService;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
@@ -524,7 +525,8 @@ public abstract class AttachmentTabUI extends Screen {
     @UiHandler("attachButton")
     protected void attach(ClickEvent event) {
         ModalWindow modal;
-
+        AttachmentEntry entry;
+        
         if (attachmentScreen == null) {
             try {
                 attachmentScreen = new AttachmentScreenUI() {
@@ -572,10 +574,8 @@ public abstract class AttachmentTabUI extends Screen {
         }
 
         modal = new ModalWindow();
-        modal.setName(Messages.get().attachment_attachment());
-        modal.setSize("782px", "521px");
-        modal.setContent(attachmentScreen);
-
+        entry = new AttachmentEntry();
+        entry.initializeWindow(modal, attachmentScreen);
         attachmentScreen.setWindow(modal);
     }
 

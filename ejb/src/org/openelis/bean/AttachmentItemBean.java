@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -35,18 +36,24 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentItemDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.entity.AttachmentItem;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
 public class AttachmentItemBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager  manager;
+
+    @EJB
+    private AttachmentBean attachment;
 
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentItemDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
@@ -66,7 +73,7 @@ public class AttachmentItemBean {
 
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentItemViewDO> fetchByIds(ArrayList<Integer> referenceIds,
-                                                  Integer referenceTableId) {
+                                                      Integer referenceTableId) {
         Query query;
         List<AttachmentItemViewDO> a;
         ArrayList<Integer> r;
@@ -82,7 +89,7 @@ public class AttachmentItemBean {
 
         return DataBaseUtil.toArrayList(a);
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<AttachmentItemViewDO> fetchByAttachmentIds(ArrayList<Integer> attachmentIds) {
         Query query;
@@ -140,5 +147,24 @@ public class AttachmentItemBean {
         entity = manager.find(AttachmentItem.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+    
+    public void validate(AttachmentItemDO data) throws Exception {
+        ValidationErrorsList errors;
+
+        errors = new ValidationErrorsList();
+        
+        /*
+         * make sure that the attachment wasn't deleted while this item was in
+         * the front-end
+         */
+        try {
+            attachment.fetchById(data.getAttachmentId());
+        } catch (NotFoundException e) {
+            errors.add(new FormErrorException(e.getMessage()));
+        }
+
+        if (errors.size() > 0)
+            throw errors;
     }
 }

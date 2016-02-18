@@ -25,11 +25,7 @@ public class OrderEntry implements EntryPoint {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(Messages.get().internalOrder());
-                            window.setSize("880px", "588px");
-                            window.setContent(new InternalOrderScreenUI(window));
-                            OpenELIS.getBrowser().addWindow(window, "internalOrder");
+                            addInternalOrderScreen();
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
@@ -51,11 +47,7 @@ public class OrderEntry implements EntryPoint {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(Messages.get().vendorOrder());
-                            window.setSize("880px", "588px");
-                            window.setContent(new VendorOrderScreenUI(window));
-                            OpenELIS.getBrowser().addWindow(window, "vendorOrder");
+                            addVendorOrderScreen();
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
@@ -78,11 +70,7 @@ public class OrderEntry implements EntryPoint {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(Messages.get().sendoutOrder());
-                            window.setSize("960px", "588px");
-                            window.setContent(new SendoutOrderScreenUI(window));
-                            OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+                            addSendoutOrderScreen();
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
@@ -96,5 +84,47 @@ public class OrderEntry implements EntryPoint {
                 });
             }
         });
+    }
+    
+    public InternalOrderScreenUI addInternalOrderScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        InternalOrderScreenUI screen;
+        
+        window = new org.openelis.ui.widget.Window();
+        window.setName(Messages.get().order_internalOrder());
+        window.setSize("880px", "588px");
+        screen = new InternalOrderScreenUI(window);
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "internalOrder");
+        
+        return screen;
+    }
+    
+    public VendorOrderScreenUI addVendorOrderScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        VendorOrderScreenUI screen;
+        
+        window = new org.openelis.ui.widget.Window();
+        window.setName(Messages.get().order_vendorOrder());
+        window.setSize("880px", "588px");
+        screen = new VendorOrderScreenUI(window);
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "vendorOrder");
+        
+        return screen;
+    }
+    
+    public SendoutOrderScreenUI addSendoutOrderScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        SendoutOrderScreenUI screen;
+        
+        window = new org.openelis.ui.widget.Window();
+        window.setName(Messages.get().order_sendoutOrder());
+        window.setSize("960px", "588px");
+        screen = new SendoutOrderScreenUI(window);
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+        
+        return screen;
     }
 }
