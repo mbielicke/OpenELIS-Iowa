@@ -1,0 +1,6 @@
+<module>
+  <replace-with class="org.openelis.portal.modules.main.client.MainMobileUIImpl">
+    <when-type-assignable class="org.openelis.portal.modules.main.client.MainUI"/>
+    <when-property-is name="platform" value="phone"/>
+  </replace-with>
+</module>
