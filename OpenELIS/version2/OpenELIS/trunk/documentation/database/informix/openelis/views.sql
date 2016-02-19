@@ -313,7 +313,8 @@ create view test_analyte_view (id, test_id, test_name, method_id, method_name,
 
 create view todo_sample_view (sample_id, domain, accession_number, received_date,
                               collection_date, collection_time, primary_organization_name,
-                              description, sample_status_id, sample_result_override) as (
+                              description, sample_status_id, sample_result_override,
+                              released_date) as (
 
    select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
        s.collection_time,
@@ -394,7 +395,8 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                                                                                        where d.system_name = 'qaevent_override')
                            where sample_item.sample_id = s.id)) then 'Y'
            else 'N'
-       end
+       end,
+       s.released_date
   from sample s
        join sample_item si on s.id = si.sample_id
        left join sample_environmental sen on s.id = sen.sample_id
