@@ -1323,6 +1323,23 @@ public class WorksheetManager1Bean {
             }
         }
 
+        /*
+         * all attachment items must be linked to existing attachments; only
+         * uncommitted attachment items need to be validated because attached
+         * attachments can't be deleted
+         */
+        if (getAttachments(wm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(wm)) {
+                if (data.getId() < 0) {
+                    try {
+                        attachmentItem.validate(data);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+                }
+            }
+        }
+
         if (e.size() > 0)
             throw e;
     }
