@@ -1312,6 +1312,7 @@ public class AttachmentScreenUI extends Screen {
             am = AttachmentService.get().unlock(attachmentId);
             AttachmentService.get().unlockIssue(attachmentId);
             managers.put(attachmentId, am);
+            node.removeAllChildren();
             loadAttachment(node, am);
         } catch (Exception e) {
             Window.alert(e.getMessage());
