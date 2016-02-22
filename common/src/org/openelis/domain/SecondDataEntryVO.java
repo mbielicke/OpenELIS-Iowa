@@ -44,17 +44,17 @@ public class SecondDataEntryVO implements Serializable {
 
     protected Integer            sampleId, sampleAccessionNumber;
     protected String             sampleDomain;
-    protected ArrayList<Integer> historySystemUserIds;
+    protected ArrayList<String>  historySystemUserLoginNames;
 
     public SecondDataEntryVO() {
     }
 
     public SecondDataEntryVO(Integer sampleId, Integer sampleAccessionNumber, String sampleDomain,
-                             ArrayList<Integer> historySystemUserIds) {
+                             ArrayList<String> historySystemUserLoginNames) {
         setSampleId(sampleId);
         setSampleAccessionNumber(sampleAccessionNumber);
         setSampleDomain(sampleDomain);
-        setHistorySystemUserIds(historySystemUserIds);
+        setHistorySystemUserLoginNames(historySystemUserLoginNames);
     }
 
     public Integer getSampleId() {
@@ -81,11 +81,11 @@ public class SecondDataEntryVO implements Serializable {
         this.sampleDomain = DataBaseUtil.trim(sampleDomain);
     }
 
-    public ArrayList<Integer> getHistorySystemUserIds() {
-        return historySystemUserIds;
+    public ArrayList<String> getHistorySystemUserLoginNames() {
+        return historySystemUserLoginNames;
     }
 
-    public void setHistorySystemUserIds(ArrayList<Integer> historySystemUserIds) {
-        this.historySystemUserIds = historySystemUserIds;
+    public void setHistorySystemUserLoginNames(ArrayList<String> historySystemUserLoginNames) {
+        this.historySystemUserLoginNames = historySystemUserLoginNames;
     }
 }
