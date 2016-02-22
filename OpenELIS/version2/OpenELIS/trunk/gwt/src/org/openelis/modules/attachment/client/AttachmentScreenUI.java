@@ -39,6 +39,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
@@ -111,7 +112,7 @@ public class AttachmentScreenUI extends Screen {
     protected Calendar                                      createdDate;
 
     @UiField
-    protected TextBox<String>                               description;
+    protected TextBox<String>                               description, issueText;
 
     @UiField
     protected Dropdown<Integer>                             querySection, tableSection;
@@ -209,7 +210,18 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? searchButton : createdDate;
+                return forward ? issueText : createdDate;
+            }
+        });
+        
+        addScreenHandler(issueText, AttachmentMeta.getIssueText(), new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                issueText.setEnabled(isState(QUERY, DISPLAY));
+                issueText.setQueryMode(isState(QUERY, DISPLAY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? searchButton : querySection;
             }
         });
 
@@ -219,7 +231,7 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? tree : querySection;
+                return forward ? tree : issueText;
             }
         });
 
@@ -880,7 +892,7 @@ public class AttachmentScreenUI extends Screen {
                  */
                 root = tree.getRoot();
                 while (deleteManagers.size() > 0) {
-                    insNode = new Node(5);
+                    insNode = new Node(6);
                     insId = deleteManagers.get(0).getAttachment().getId();
                     unlockAndReloadAttachment(insId, insNode);
                     index = -1;
@@ -1191,7 +1203,7 @@ public class AttachmentScreenUI extends Screen {
          */
         if (ams != null) {
             for (AttachmentManager am : ams) {
-                node = new Node(5);
+                node = new Node(6);
                 loadAttachment(node, am);
                 if (reloadTree)
                     root.add(node);
@@ -1232,17 +1244,20 @@ public class AttachmentScreenUI extends Screen {
     private void loadAttachment(Node anode, AttachmentManager am) {
         int i;
         AttachmentDO data;
+        AttachmentIssueViewDO issue;
         Node inode;
 
         data = am.getAttachment();
         /*
          * the node for the attachment
          */
+        issue = am.getIssue();
         anode.setCell(0, data.getDescription());
         anode.setCell(1, data.getCreatedDate());
         anode.setCell(2, data.getSectionId());
-        anode.setCell(3, am.getIssue() != null ? am.getIssue().getText() : null);
-        anode.setCell(4, data.getId());
+        anode.setCell(3, issue != null ? issue.getText() : null);
+        anode.setCell(4, issue != null ? issue.getSystemUserLoginName() : null);
+        anode.setCell(5, data.getId());
         anode.setData(data.getId());
         anode.setType(ATTACHMENT_LEAF);
         /*

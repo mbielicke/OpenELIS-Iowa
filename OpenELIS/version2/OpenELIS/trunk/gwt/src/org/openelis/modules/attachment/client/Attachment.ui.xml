@@ -25,7 +25,7 @@
                   <ui:text from="{msg.gen_description}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="description" width="230px" field="String" />
+                  <w:TextBox ui:field="description" width="120px" field="String" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.worksheet_createdDate}:" />
@@ -37,8 +37,14 @@
                   <ui:text from="{msg.gen_section}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="querySection" field="Integer" width="100px"
+                  <w:Dropdown ui:field="querySection" width="100px" field="Integer"
                     dropWidth="150px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.attachment_issue}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="issueText" width="70px" field="String" />
                 </td>
                 <td>
                   <w:Button ui:field="searchButton" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" />
@@ -52,7 +58,8 @@
             <r:Column width="240" label="{msg.gen_description}" />
             <r:Column width="115" label="{msg.attachment_createdDate}" />
             <r:Column width="80" label="{msg.gen_section}" />
-            <r:Column width="280" label="{msg.attachment_issue}" />
+            <r:Column width="180" label="{msg.attachment_issue}" />
+            <r:Column width="100" label="{msg.gen_user}" />
             <r:Column width="50" label="{msg.gen_id}" />
             <r:Leaf key="attachment">
               <r:LeafColumn required="true">
@@ -72,7 +79,10 @@
               </r:LeafColumn>
               <r:LeafColumn>
                 <t:LabelCell />
-              </r:LeafColumn>              
+              </r:LeafColumn>
+              <r:LeafColumn>
+                <t:LabelCell />
+              </r:LeafColumn>
               <r:LeafColumn>
                 <t:LabelCell />
               </r:LeafColumn>

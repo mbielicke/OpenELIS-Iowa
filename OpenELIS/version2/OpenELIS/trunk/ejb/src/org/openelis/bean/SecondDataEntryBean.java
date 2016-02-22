@@ -41,7 +41,6 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
@@ -52,6 +51,9 @@ public class SecondDataEntryBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
 
+    @EJB
+    private UserCacheBean           userCache;
+
     private static final SampleMeta meta = new SampleMeta();
 
     public ArrayList<SecondDataEntryVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -61,8 +63,8 @@ public class SecondDataEntryBean {
         QueryBuilderV2 builder;
         SecondDataEntryVO data;
         List<Object[]> list;
+        ArrayList<String> userNameList;
         ArrayList<SecondDataEntryVO> returnList;
-        ArrayList<Integer> userIdList;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -99,12 +101,12 @@ public class SecondDataEntryBean {
 
         prevSamId = null;
         returnList = new ArrayList<SecondDataEntryVO>();
-        userIdList = null;
+        userNameList = null;
         data = null;
         /*
          * create SecondDataEntryVOs from the fetched data; there's only one VO
          * for each sample; so if a sample has been added/updated by multiple
-         * users, their ids are combined into one VO
+         * users, their login names are combined into one VO
          */
         for (Object[] o : list) {
             currSamId = (Integer)o[0];
@@ -113,14 +115,14 @@ public class SecondDataEntryBean {
             userId = (Integer)o[3];
 
             if ( !currSamId.equals(prevSamId)) {
-                userIdList = new ArrayList<Integer>();
-                data = new SecondDataEntryVO(currSamId, accession, domain, userIdList);
+                userNameList = new ArrayList<String>();
+                data = new SecondDataEntryVO(currSamId, accession, domain, userNameList);
                 returnList.add(data);
             }
             
             if (userId != null)
-                userIdList.add(userId);            
-
+                userNameList.add(userCache.getSystemUser(userId).getLoginName());
+            
             prevSamId = currSamId;
         }
 

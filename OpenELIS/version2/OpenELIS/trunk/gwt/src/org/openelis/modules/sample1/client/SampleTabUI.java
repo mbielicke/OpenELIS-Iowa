@@ -19,7 +19,6 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
-import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.OrderEntry;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;

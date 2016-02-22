@@ -30,8 +30,6 @@ import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -71,19 +69,24 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.GetMatchesEvent;
+import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.MultiDropdown;
+import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextArea;
 import org.openelis.ui.widget.TextBox;
@@ -124,7 +127,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     protected TextBox<Integer>                              accessionNumber;
 
     @UiField
-    protected MultiDropdown<Integer>                        historySystemUserIds;
+    protected AutoComplete                                  historySystemUserLoginNames;
 
     @UiField
     protected Calendar                                      receivedDate;
@@ -228,11 +231,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
      */
     private void initialize() {
         String dom;
-        Item<Integer> row;
         Item<String> srow;
-        ArrayList<Item<Integer>> model;
         ArrayList<Item<String>> smodel;
-        ArrayList<SystemUserVO> users;
 
         screen = this;
 
@@ -319,26 +319,71 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? historySystemUserIds : domain;
+                                 return forward ? historySystemUserLoginNames : domain;
                              }
                          });
 
-        addScreenHandler(historySystemUserIds,
+        addScreenHandler(historySystemUserLoginNames,
                          SampleMeta.HISTORY_SYSTEM_USER_ID,
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent<String> event) {
-                                 historySystemUserIds.setValue(getHistorySystemUserIds());
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
+                                 /*
+                                  * -1 is set as the key instead of a user id;
+                                  * that's because the display doesn't show just
+                                  * one user, but all users who added/updated
+                                  * the selected sample; the key can't be null
+                                  * either because then the display will always
+                                  * be blank
+                                  */
+                                 historySystemUserLoginNames.setValue( -1,
+                                                                      getHistorySystemUserNames());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 historySystemUserIds.setEnabled(isState(QUERY));
-                                 historySystemUserIds.setQueryMode(isState(QUERY));
+                                 historySystemUserLoginNames.setEnabled(isState(QUERY));
+                             }
+
+                             public Object getQuery() {
+                                 QueryData qd;
+
+                                 qd = (QueryData)historySystemUserLoginNames.getQuery();
+                                 /*
+                                  * if the query is -1 it means that the user
+                                  * didn't query by user name; -1 is the default
+                                  * key set in the autocomplete
+                                  */
+                                 if (qd != null && "-1".equals(qd.getQuery()))
+                                     return null;
+                                 return qd;
                              }
 
                              public Widget onTab(boolean forward) {
                                  return forward ? receivedDate : accessionNumber;
                              }
                          });
+
+        historySystemUserLoginNames.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                Item<Integer> item;
+                ArrayList<SystemUserVO> users;
+                ArrayList<Item<Integer>> model;
+
+                try {
+                    users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch() +
+                                                                                    "%"));
+                    model = new ArrayList<Item<Integer>>();
+                    for (SystemUserVO user : users) {
+                        item = new Item<Integer>(user.getId(), user.getLoginName());
+                        item.setData(user);
+                        model.add(item);
+                    }
+                    historySystemUserLoginNames.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.toString());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                }
+            }
+        });
 
         addScreenHandler(receivedDate, SampleMeta.RECEIVED_DATE, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
@@ -351,7 +396,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? domain : historySystemUserIds;
+                return forward ? domain : historySystemUserLoginNames;
             }
         });
 
@@ -777,7 +822,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     for (SecondDataEntryVO entry : result) {
                         row = new Item<Integer>(entry.getSampleId(),
                                                 entry.getSampleAccessionNumber(),
-                                                entry.getHistorySystemUserIds(),
+                                                getHistorySystemUserNames(entry),
                                                 entry.getSampleDomain());
                         row.setData(entry);
                         model.add(row);
@@ -838,26 +883,6 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
         domain.setModel(smodel);
         ((Dropdown<String>)table.getColumnWidget(2)).setModel(smodel);
-
-        try {
-            model = new ArrayList<Item<Integer>>();
-            users = UserCache.getEmployees("%");
-            /*
-             * sort the users by login name because the query returns all
-             * employees in the system which are only sorted by id
-             */
-            Collections.sort(users, new SystemUserComparator());
-            for (SystemUserVO u : users) {
-                row = new Item<Integer>(u.getId(), u.getLoginName());
-                model.add(row);
-            }
-
-            historySystemUserIds.setModel(model);
-            ((MultiDropdown<Integer>)table.getColumnWidget(1)).setModel(model);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-        }
     }
 
     public void setState(State state) {
@@ -1300,16 +1325,24 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Returns the ids of the users who added/updated the selected sample
+     * Returns the concatenation of the login names of the users who
+     * added/updated the selected sample
      */
-    private ArrayList<Integer> getHistorySystemUserIds() {
+    private String getHistorySystemUserNames() {
         Row row;
 
         row = table.getRowAt(table.getSelectedRow());
         if (manager == null || row == null)
             return null;
 
-        return ((SecondDataEntryVO)row.getData()).getHistorySystemUserIds();
+        return getHistorySystemUserNames((SecondDataEntryVO)row.getData());
+    }
+
+    /**
+     * Returns the concatenation of the login names in the passed VO
+     */
+    private String getHistorySystemUserNames(SecondDataEntryVO entry) {
+        return DataBaseUtil.concatWithSeparator(entry.getHistorySystemUserLoginNames(), ", ");
     }
 
     /**
@@ -1340,17 +1373,5 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             return Messages.get().secondDataEntry_loadedWithEOrder();
 
         return null;
-    }
-
-    /**
-     * This class is used for sorting, by login name, the list of SystemUserVOs
-     * shown in the dropdown; they need to be sorted because they're fetched
-     * using the wildcard "%" which returns all employees in the system and not
-     * just the employees whose login name begins with a specific letter
-     */
-    private class SystemUserComparator implements Comparator<SystemUserVO> {
-        public int compare(SystemUserVO user1, SystemUserVO user2) {
-            return user1.getLoginName().compareTo(user2.getLoginName());
-        }
     }
 }

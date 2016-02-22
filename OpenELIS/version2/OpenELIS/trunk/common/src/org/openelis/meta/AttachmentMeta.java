@@ -43,7 +43,12 @@ public class AttachmentMeta implements Meta, MetaMap {
                     ITEM_ID = "_attachmentItem.id",
                     ITEM_REFERENCE_ID = "_attachmentItem.referenceId",
                     ITEM_REFERENCE_TABLE_ID = "_attachmentItem.referenceTableId",
-                    ITEM_ATTACHMENT_ID = "_attachmentItem.attachmentId";
+                    ITEM_ATTACHMENT_ID = "_attachmentItem.attachmentId",
+                    ISSUE_ID = "_attachmentIssue.id",
+                    ISSUE_ATTACHMENT_ID = "_attachmentIssue.attachmentId",
+                    ISSUE_TIMESTAMP = "_attachmentIssue.timestamp",
+                    ISSUE_SYSTEM_USER_ID = "_attachmentIssue.systemUserId",
+                    ISSUE_TEXT = "_attachmentIssue.text";
 
     private static HashSet<String> names;
 
@@ -57,7 +62,12 @@ public class AttachmentMeta implements Meta, MetaMap {
                                                   ITEM_ID,
                                                   ITEM_REFERENCE_ID,
                                                   ITEM_REFERENCE_TABLE_ID,
-                                                  ITEM_ATTACHMENT_ID));
+                                                  ITEM_ATTACHMENT_ID,
+                                                  ISSUE_ID,
+                                                  ISSUE_ATTACHMENT_ID,
+                                                  ISSUE_TIMESTAMP,
+                                                  ISSUE_SYSTEM_USER_ID,
+                                                  ISSUE_TEXT));
     }
 
     public static String getId() {
@@ -100,6 +110,26 @@ public class AttachmentMeta implements Meta, MetaMap {
         return ITEM_ATTACHMENT_ID;
     }
 
+    public static String getIssueId() {
+        return ISSUE_ID;
+    }
+
+    public static String getIssueAttachmentId() {
+        return ISSUE_ATTACHMENT_ID;
+    }
+
+    public static String getIssueTimestamp() {
+        return ISSUE_TIMESTAMP;
+    }
+
+    public static String getIssueSystemUserId() {
+        return ISSUE_SYSTEM_USER_ID;
+    }
+
+    public static String getIssueText() {
+        return ISSUE_TEXT;
+    }
+
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
@@ -107,10 +137,14 @@ public class AttachmentMeta implements Meta, MetaMap {
     @Override
     public String buildFrom(String where) {
         String from;
-        
+
         from = "Attachment _attachment ";
+        
         if (where.indexOf("attachmentItem.") > -1)
             from += ",IN (_attachment.attachmentItem) _attachmentItem ";
+        
+        if (where.indexOf("attachmentIssue.") > -1)
+            from += ",IN (_attachment.attachmentIssue) _attachmentIssue ";
 
         return from;
     }

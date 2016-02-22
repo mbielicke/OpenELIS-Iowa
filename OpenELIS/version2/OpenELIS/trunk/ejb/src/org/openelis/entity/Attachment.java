@@ -99,6 +99,10 @@ public class Attachment implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "attachment_id", insertable = false, updatable = false)
     private Collection<AttachmentItem> attachmentItem;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attachment_id", insertable = false, updatable = false)
+    private Collection<AttachmentIssue> attachmentIssue;
 
     @Transient
     private Attachment                 original;
@@ -163,6 +167,14 @@ public class Attachment implements Auditable, Cloneable {
 
     public void setAttachmentItem(Collection<AttachmentItem> attachmentItem) {
         this.attachmentItem = attachmentItem;
+    }
+
+    public Collection<AttachmentIssue> getAttachmentIssue() {
+        return attachmentIssue;
+    }
+
+    public void setAttachmentIssue(Collection<AttachmentIssue> attachmentIssue) {
+        this.attachmentIssue = attachmentIssue;
     }
 
     public void setClone() {
