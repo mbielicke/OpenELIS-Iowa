@@ -663,7 +663,7 @@ public class WorksheetPrintReportBean {
                         form.setField("qc_expiration_"+(i + 1), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
                         qaVDOs = qaVDOMap.get(qlVDO.getQcId());
                         if (qaVDOs != null && !qaVDOs.isEmpty())
-                            form.setField("expected_value_"+(i + 1), qaVDOs.get(0).getValue());
+                            form.setField("qc_expected_value_"+(i + 1), qaVDOs.get(0).getValue());
                     }
                     i++;
                 }
