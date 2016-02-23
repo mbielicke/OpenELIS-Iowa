@@ -270,14 +270,14 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
 
-                case "8x4Arbo":
-                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide8x4Arbo.jasper");
-                    dir = ReportUtil.getResourcePath(url);
-                    jparam.put("WORKSHEET_ID", worksheetId);
-                    status.setMessage("Outputing report").setPercentComplete(20);
-                    jreport = (JasperReport)JRLoader.loadObject(url);
-                    jprint = JasperFillManager.fillReport(jreport, jparam, con);
-                    break;
+//                case "8x4Arbo":
+//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide8x4Arbo.jasper");
+//                    dir = ReportUtil.getResourcePath(url);
+//                    jparam.put("WORKSHEET_ID", worksheetId);
+//                    status.setMessage("Outputing report").setPercentComplete(20);
+//                    jreport = (JasperReport)JRLoader.loadObject(url);
+//                    jprint = JasperFillManager.fillReport(jreport, jparam, con);
+//                    break;
 
                 case "96H":
                     dDS = DiagramDataSource.getInstance(worksheetId, 96);
@@ -317,23 +317,23 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
 
-                case "QFTG":
-                    dDS = DiagramDataSource.getInstance(worksheetId, 36);
-                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
-                    dir = ReportUtil.getResourcePath(url);
-                    status.setMessage("Outputing report").setPercentComplete(20);
-                    jreport = (JasperReport)JRLoader.loadObject(url);
-                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
-                    break;
+//                case "QFTG":
+//                    dDS = DiagramDataSource.getInstance(worksheetId, 36);
+//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
+//                    dir = ReportUtil.getResourcePath(url);
+//                    status.setMessage("Outputing report").setPercentComplete(20);
+//                    jreport = (JasperReport)JRLoader.loadObject(url);
+//                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
+//                    break;
 
-                case "WNV":
-                    dDS = DiagramDataSource.getInstance(worksheetId, 15);
-                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
-                    dir = ReportUtil.getResourcePath(url);
-                    status.setMessage("Outputing report").setPercentComplete(20);
-                    jreport = (JasperReport)JRLoader.loadObject(url);
-                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
-                    break;
+//                case "WNV":
+//                    dDS = DiagramDataSource.getInstance(worksheetId, 15);
+//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
+//                    dir = ReportUtil.getResourcePath(url);
+//                    status.setMessage("Outputing report").setPercentComplete(20);
+//                    jreport = (JasperReport)JRLoader.loadObject(url);
+//                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
+//                    break;
 
                 default:
                     path = fillPDFWorksheet(worksheetId, format);
