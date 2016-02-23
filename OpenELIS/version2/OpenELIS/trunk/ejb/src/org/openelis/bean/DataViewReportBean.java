@@ -1126,7 +1126,8 @@ public class DataViewReportBean {
             }
 
             val = res.getValue();
-            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId())) {
+            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()) ||
+                Constants.dictionary().AUX_DICTIONARY.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(val);
                 val = getDictionaryLabel(dictId);
             }
@@ -2400,6 +2401,9 @@ public class DataViewReportBean {
         ArrayList<String> labels;
         HashMap<String, CellStyle> dtStyles;
 
+        if (columns == null)
+            return;
+        
         s = getSample(sm);
         se = getSampleEnvironmental(sm);
         ss = getSampleSDWIS(sm);

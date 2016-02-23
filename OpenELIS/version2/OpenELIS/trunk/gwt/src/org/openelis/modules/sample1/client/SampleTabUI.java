@@ -80,7 +80,7 @@ public class SampleTabUI extends Screen {
     private static SampleTabUIBinder uiBinder = GWT.create(SampleTabUIBinder.class);
 
     @UiField
-    protected TextBox<Integer>       accessionNumber;
+    protected TextBox<Integer>       accessionNumber, revision;
 
     @UiField
     protected Calendar               collectionDate, collectionTime, receivedDate, releasedDate;
@@ -139,7 +139,7 @@ public class SampleTabUI extends Screen {
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
                              }
 
@@ -159,7 +159,7 @@ public class SampleTabUI extends Screen {
                          });
 
         addScreenHandler(orderId, "orderId", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 orderId.setValue(getOrderId());
             }
 
@@ -199,7 +199,7 @@ public class SampleTabUI extends Screen {
             }
         });
 
-        addScreenHandler(orderLookupButton, "orderLookupButton", new ScreenHandler<Integer>() {
+        addScreenHandler(orderLookupButton, "orderLookupButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 orderLookupButton.setEnabled(isState(DISPLAY, ADD, UPDATE));
             }
@@ -208,7 +208,7 @@ public class SampleTabUI extends Screen {
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
@@ -230,7 +230,7 @@ public class SampleTabUI extends Screen {
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -262,7 +262,7 @@ public class SampleTabUI extends Screen {
                          });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
             }
 
@@ -281,7 +281,7 @@ public class SampleTabUI extends Screen {
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -302,7 +302,7 @@ public class SampleTabUI extends Screen {
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -322,7 +322,7 @@ public class SampleTabUI extends Screen {
                          });
         
         addScreenHandler(releasedDate, SampleMeta.getReleasedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 releasedDate.setValue(getReleasedDate());
             }
 
@@ -332,14 +332,29 @@ public class SampleTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? organizationTable : clientReference;
+                return forward ? revision : clientReference;
+            }
+        });
+        
+        addScreenHandler(revision, SampleMeta.getRevision(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                revision.setValue(getRevision());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                revision.setEnabled(isState(QUERY));
+                revision.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? organizationTable : releasedDate;
             }
         });
 
         addScreenHandler(organizationTable,
                          "organizationTable",
                          new ScreenHandler<ArrayList<Row>>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                                  if ( !isState(QUERY))
                                      organizationTable.setModel(getOrganizationTableModel());
                              }
@@ -410,7 +425,7 @@ public class SampleTabUI extends Screen {
                              }
                              
                              public Widget onTab(boolean forward) {
-                                 return forward ? projectTable : clientReference;
+                                 return forward ? projectTable : revision;
                              }
                          });
 
@@ -563,7 +578,7 @@ public class SampleTabUI extends Screen {
                          });
 
         addScreenHandler(projectTable, "projectTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 if ( !isState(QUERY))
                     projectTable.setModel(getProjectTableModel());
             }
@@ -1087,6 +1102,15 @@ public class SampleTabUI extends Screen {
         if (manager == null)
             return null;
         return manager.getSample().getReleasedDate();
+    }
+    
+    /**
+     * returns the revision or null if the manager is null
+     */
+    private Integer getRevision() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getRevision();
     }
 
     private ArrayList<Row> getOrganizationTableModel() {

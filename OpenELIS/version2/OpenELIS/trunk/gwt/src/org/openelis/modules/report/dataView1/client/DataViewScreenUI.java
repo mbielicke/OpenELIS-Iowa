@@ -32,15 +32,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.Constants;
 import org.openelis.domain.DataView1VO;
 import org.openelis.domain.DataViewAnalyteVO;
-import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.main.client.StatusBarPopupScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;

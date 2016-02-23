@@ -77,7 +77,13 @@
             </td>
             <td>
               <c:Calendar ui:field="releasedDate" width="125px" begin="0" end="4" />
-            </td>          
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_revision}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="revision" width="15px" field="Integer" />
+            </td>        
           </tr>
         </table>
       </g:HTMLPanel>

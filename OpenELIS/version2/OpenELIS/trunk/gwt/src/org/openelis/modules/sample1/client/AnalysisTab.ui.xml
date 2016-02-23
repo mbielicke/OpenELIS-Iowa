@@ -134,7 +134,7 @@
               <ui:text from="{msg.gen_revision}:" />
             </td>
             <td>
-              <w:TextBox ui:field="revision" width="60px" field="Integer" />
+              <w:TextBox ui:field="revision" width="15px" field="Integer" />
             </td>
           </tr>
         </table>
