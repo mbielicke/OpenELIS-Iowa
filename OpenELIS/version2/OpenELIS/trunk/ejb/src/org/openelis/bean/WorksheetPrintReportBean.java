@@ -399,7 +399,7 @@ public class WorksheetPrintReportBean {
     }
     
     private Path fillPDFWorksheet(Integer worksheetId, String templateName) throws Exception {
-        int i, j, formCapacity;
+        int i, j, formCapacity, diagramCapacity;
         AcroFields form;
         AnalysisViewDO aVDO;
         ArrayList<AnalysisQaEventViewDO> aqeVDOs;
@@ -504,6 +504,10 @@ public class WorksheetPrintReportBean {
             form = reader.getAcroFields();
             if (form.getField("capacity") != null)
                 formCapacity = Integer.parseInt(form.getField("capacity"));
+            if (form.getField("diagram_capacity") != null)
+                diagramCapacity = Integer.parseInt(form.getField("diagram_capacity"));
+            else
+                diagramCapacity = formCapacity;
             
             doc = new Document(reader.getPageSizeWithRotation(1));
             writer = new PdfCopy(doc, out);
@@ -511,14 +515,16 @@ public class WorksheetPrintReportBean {
             reader.close();
             
             i = -1;
-            j = 1;
             form = null;
             page = null;
             stamper = null;
             wVDO = wMan.getWorksheet();
             for (WorksheetItemDO wiDO : WorksheetManager1Accessor.getItems(wMan)) {
+                j = wiDO.getPosition() % diagramCapacity;
+                if (j == 0)
+                    j = diagramCapacity;
                 for (WorksheetAnalysisViewDO waVDO : waVDOMap.get(wiDO.getId())) {
-                    if (i == -1 || i == formCapacity) {
+                    if (i == -1 || i > formCapacity || j > diagramCapacity) {
                         if (i != -1) {
                             stamper.setFormFlattening(true);
                             flattenFilledFields(stamper, formCapacity);
@@ -532,13 +538,12 @@ public class WorksheetPrintReportBean {
                         page = new ByteArrayOutputStream();
                         stamper = new PdfStamper(reader, page);
                         form = stamper.getAcroFields();
-                        i = 0;
-                        j = 1;
+                        i = 1;
                     }
                     
-                    form.setField("worksheet_id_"+(i + 1), wVDO.getId().toString());
-                    form.setField("created_date_"+(i + 1), ReportUtil.toString(wVDO.getCreatedDate(), Messages.get().dateTimePattern()));
-                    form.setField("position_"+(i + 1), wiDO.getPosition().toString());
+                    form.setField("worksheet_id_"+(i), wVDO.getId().toString());
+                    form.setField("created_date_"+(i), ReportUtil.toString(wVDO.getCreatedDate(), Messages.get().dateTimePattern()));
+                    form.setField("position_"+(i), wiDO.getPosition().toString());
     
                     if (waVDO.getAnalysisId() != null) {
                         sMan = sMap.get(waVDO.getAnalysisId());
@@ -615,59 +620,58 @@ public class WorksheetPrintReportBean {
                             form.setField("well_label_"+(j), wiDO.getPosition().toString());
                         else
                             form.setField("well_label_"+(j), sDO.getAccessionNumber().toString());
-                        form.setField("accession_number_"+(i + 1), sDO.getAccessionNumber().toString());
+                        form.setField("accession_number_"+(i), sDO.getAccessionNumber().toString());
                         if (sDO.getCollectionDate() != null) {
                             collectionDateTime = ReportUtil.toString(sDO.getCollectionDate(), Messages.get().datePattern());
                             if (sDO.getCollectionTime() != null) {
                                 collectionDateTime += " ";
                                 collectionDateTime += ReportUtil.toString(sDO.getCollectionTime(), Messages.get().timePattern());
                             }
-                            form.setField("collection_date_"+(i + 1), collectionDateTime);
+                            form.setField("collection_date_"+(i), collectionDateTime);
                         }
-                        form.setField("received_date_"+(i + 1), ReportUtil.toString(sDO.getReceivedDate(), Messages.get().dateTimePattern()));
+                        form.setField("received_date_"+(i), ReportUtil.toString(sDO.getReceivedDate(), Messages.get().dateTimePattern()));
                         if (patDO != null) {
-                            form.setField("patient_last_"+(i + 1), patDO.getLastName());
-                            form.setField("patient_first_"+(i + 1), patDO.getFirstName());
+                            form.setField("patient_last_"+(i), patDO.getLastName());
+                            form.setField("patient_first_"+(i), patDO.getFirstName());
                         }
                         if (proDO != null) {
-                            form.setField("provider_last_"+(i + 1), proDO.getLastName());
-                            form.setField("provider_first_"+(i + 1), proDO.getFirstName());
+                            form.setField("provider_last_"+(i), proDO.getLastName());
+                            form.setField("provider_first_"+(i), proDO.getFirstName());
                         }
                         if (seDO != null) {
-                            form.setField("env_location_"+(i + 1), seDO.getLocation());
-                            form.setField("env_description_"+(i + 1), seDO.getDescription());
+                            form.setField("env_location_"+(i), seDO.getLocation());
+                            form.setField("env_description_"+(i), seDO.getDescription());
                         }
                         if (sOrgs != null && sOrgs.size() > 0) {
                             for (SampleOrganizationViewDO soVDO : sOrgs) {
                                 if (Constants.dictionary().ORG_REPORT_TO.equals(soVDO.getTypeId()))
-                                    form.setField("organization_name_"+(i + 1), soVDO.getOrganizationName());
+                                    form.setField("organization_name_"+(i), soVDO.getOrganizationName());
                                 else if (Constants.dictionary().ORG_BILL_TO.equals(soVDO.getTypeId()))
-                                    form.setField("bill_to_name_"+(i + 1), soVDO.getOrganizationName());
+                                    form.setField("bill_to_name_"+(i), soVDO.getOrganizationName());
                             }
                         }
-                        form.setField("type_of_sample_"+(i + 1), siVDO.getTypeOfSample());
-                        form.setField("source_of_sample_"+(i + 1), siVDO.getSourceOfSample());
-                        form.setField("source_other_"+(i + 1), siVDO.getSourceOther());
-                        form.setField("container_reference_"+(i + 1), siVDO.getContainerReference());
-                        form.setField("test_"+(i + 1), aVDO.getTestName());
-                        form.setField("method_"+(i + 1), aVDO.getMethodName());
-                        form.setField("sample_qaevent_"+(i + 1), sQaevents.toString());
-                        form.setField("analysis_qaevent_"+(i + 1), aQaevents.toString());
-                        form.setField("sample_note_"+(i + 1), sNotes.toString());
-                        form.setField("analysis_note_"+(i + 1), aNotes.toString());
+                        form.setField("type_of_sample_"+(i), siVDO.getTypeOfSample());
+                        form.setField("source_of_sample_"+(i), siVDO.getSourceOfSample());
+                        form.setField("source_other_"+(i), siVDO.getSourceOther());
+                        form.setField("container_reference_"+(i), siVDO.getContainerReference());
+                        form.setField("test_"+(i), aVDO.getTestName());
+                        form.setField("method_"+(i), aVDO.getMethodName());
+                        form.setField("sample_qaevent_"+(i), sQaevents.toString());
+                        form.setField("analysis_qaevent_"+(i), aQaevents.toString());
+                        form.setField("sample_note_"+(i), sNotes.toString());
+                        form.setField("analysis_note_"+(i), aNotes.toString());
                     } else if (waVDO.getQcLotId() != null) {
                         qlVDO = qlMap.get(waVDO.getQcLotId());
                         form.setField("well_label_"+(j), qlVDO.getQcName());
-                        form.setField("qc_name_"+(i + 1), qlVDO.getQcName());
-                        form.setField("qc_lot_"+(i + 1), qlVDO.getLotNumber());
-                        form.setField("qc_expiration_"+(i + 1), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
+                        form.setField("qc_name_"+(i), qlVDO.getQcName());
+                        form.setField("qc_lot_"+(i), qlVDO.getLotNumber());
+                        form.setField("qc_expiration_"+(i), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
                         qaVDOs = qaVDOMap.get(qlVDO.getQcId());
                         if (qaVDOs != null && !qaVDOs.isEmpty())
-                            form.setField("qc_expected_value_"+(i + 1), qaVDOs.get(0).getValue());
+                            form.setField("qc_expected_value_"+(i), qaVDOs.get(0).getValue());
                     }
                     i++;
                 }
-                j++;
             }
             stamper.setFormFlattening(true);
             flattenFilledFields(stamper, formCapacity);
