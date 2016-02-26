@@ -699,13 +699,26 @@ public class AnalyteParameterScreenUI extends Screen {
                                 tree.addException(r, c, e);
                             break;
                         case 2:
-                            data.setP1((Double)val);
+                            /*
+                             * if the user entered an invalid number, the value
+                             * in the cell is a String and not a Double
+                             */
+                            if (val instanceof Double)
+                                data.setP1((Double)val);
+                            else
+                                data.setP1(null);
                             break;
                         case 3:
-                            data.setP2((Double)val);
+                            if (val instanceof Double)
+                                data.setP2((Double)val);
+                            else
+                                data.setP2(null);
                             break;
                         case 4:
-                            data.setP3((Double)val);
+                            if (val instanceof Double)
+                                data.setP3((Double)val);
+                            else
+                                data.setP3(null);
                             break;
                     }
                 }

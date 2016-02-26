@@ -182,7 +182,10 @@ public class StorageTabUI extends Screen {
                         }
                         break;
                     case 2:
-                        data.setCheckin((Datetime)val);
+                        if (val instanceof Datetime)
+                            data.setCheckin((Datetime)val);
+                        else 
+                            data.setCheckin(null);
                         if ( !isDateRangeValid(data))
                             table.addException(r,
                                                c,
@@ -192,7 +195,10 @@ public class StorageTabUI extends Screen {
                             table.clearExceptions(r, c);
                         break;
                     case 3:
-                        data.setCheckout((Datetime)val);
+                        if (val instanceof Datetime)
+                            data.setCheckout((Datetime)val);
+                        else 
+                            data.setCheckout(null);
                         if ( !isDateRangeValid(data))
                             table.addException(r,
                                                c,
