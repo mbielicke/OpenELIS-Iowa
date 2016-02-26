@@ -175,7 +175,14 @@ public class TestTabUI extends Screen {
                     uid = node.getData();
                     if (TEST_LEAF.equals(node.getType())) {
                         ot = (IOrderTestViewDO)manager.getObject(uid);
-                        ot.setItemSequence((Integer)val);
+                        /*
+                         * if the user entered an invalid number, the value in
+                         * the cell is a String and not a Integer
+                         */
+                        if (val instanceof Integer)
+                            ot.setItemSequence((Integer)val);
+                        else
+                            ot.setItemSequence(null);
                     } else if (ANALYTE_LEAF.equals(node.getType())) {
                         ota = (IOrderTestAnalyteViewDO)manager.getObject(uid);
                         ota.setTestAnalyteIsReportable((String)val);

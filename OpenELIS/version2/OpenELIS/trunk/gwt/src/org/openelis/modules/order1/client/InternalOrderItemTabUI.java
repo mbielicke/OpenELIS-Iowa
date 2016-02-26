@@ -44,6 +44,7 @@ import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
@@ -106,7 +107,7 @@ public class InternalOrderItemTabUI extends Screen {
 
     protected boolean                           isVisible, canEdit, redraw;
 
-    protected IOrderManager1                     manager;
+    protected IOrderManager1                    manager;
 
     public InternalOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -183,7 +184,14 @@ public class InternalOrderItemTabUI extends Screen {
 
                 switch (c) {
                     case 0:
-                        data.setQuantity((Integer)val);
+                        /*
+                         * if the user entered an invalid number, the value in
+                         * the cell is a String and not a Integer
+                         */
+                        if (val instanceof Integer)
+                            data.setQuantity((Integer)val);
+                        else
+                            data.setQuantity(null);
                         break;
                     case 1:
                         if (val == null) {

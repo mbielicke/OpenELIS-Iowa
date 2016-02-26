@@ -25,11 +25,8 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +35,8 @@ import java.util.logging.Level;
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
@@ -183,7 +180,14 @@ public class SendoutOrderItemTabUI extends Screen {
 
                 switch (c) {
                     case 0:
-                        data.setQuantity((Integer)val);
+                        /*
+                         * if the user entered an invalid number, the value in
+                         * the cell is a String and not a Integer
+                         */
+                        if (val instanceof Integer)
+                            data.setQuantity((Integer)val);
+                        else
+                            data.setQuantity(null);
                         break;
                     case 1:
                         if (val == null) {

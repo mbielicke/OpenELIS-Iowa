@@ -198,7 +198,14 @@ public class VendorOrderItemTabUI extends Screen {
 
                 switch (c) {
                     case 0:
-                        data.setQuantity((Integer)val);
+                        /*
+                         * if the user entered an invalid number, the value in
+                         * the cell is a String and not a Integer
+                         */
+                        if (val instanceof Integer)
+                            data.setQuantity((Integer)val);
+                        else
+                            data.setQuantity(null);
                         break;
                     case 1:
                         if (val == null) {
@@ -217,7 +224,14 @@ public class VendorOrderItemTabUI extends Screen {
                         }
                         break;
                     case 3:
-                        data.setUnitCost((Double)val);
+                        /*
+                         * if the user entered an invalid number, the value in
+                         * the cell is a String and not a Double
+                         */
+                        if (val instanceof Double)
+                            data.setUnitCost((Double)val);
+                        else
+                            data.setUnitCost(null);
                         break;
                     case 4:
                         data.setCatalogNumber((String)val);

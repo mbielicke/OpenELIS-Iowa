@@ -241,13 +241,21 @@ public class SecondaryLabelScreenUI extends Screen {
             @Override
             public void onCellUpdated(CellEditedEvent event) {
                 int r;
+                Object val;
                 Integer n;
                 SecondaryLabelVO data;
                                 
                 if (event.getCol() == 3) {
                     r = event.getRow();
                     data = table.getRowAt(r).getData();
-                    n = table.getValueAt(r,  3);
+                    val = table.getValueAt(r,  3);
+                    /*
+                     * if the user entered an invalid number, the value in
+                     * the cell is a String and not an Integer
+                     */
+                    n = null;  
+                    if (val instanceof Integer)
+                        n = (Integer)val;
                     data.setLabelQty(n);
                     table.clearExceptions(r,  3);
                     if (n == null || n < 1)
