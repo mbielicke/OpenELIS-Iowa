@@ -205,10 +205,16 @@ public class OverridesTabUI extends Screen {
                         overridesTable.setValueAt(r, c, validUsers);
                         break;
                     case 6:
-                        waVDO.setStartedDate((Datetime)val);
+                        if (val instanceof Datetime)
+                            waVDO.setStartedDate((Datetime)val);
+                        else
+                            waVDO.setStartedDate(null); 
                         break;
                     case 7:
-                        waVDO.setCompletedDate((Datetime)val);
+                        if (val instanceof Datetime)
+                            waVDO.setCompletedDate((Datetime)val);
+                        else
+                            waVDO.setCompletedDate(null);
                         break;
                 }
             }
