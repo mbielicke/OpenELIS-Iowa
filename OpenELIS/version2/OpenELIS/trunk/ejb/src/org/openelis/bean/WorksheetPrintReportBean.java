@@ -725,7 +725,7 @@ public class WorksheetPrintReportBean {
             stamper.partialFormFlattening("qc_name_"+i);
             stamper.partialFormFlattening("qc_lot_"+i);
             stamper.partialFormFlattening("qc_expiration_"+i);
-            stamper.partialFormFlattening("expected_value_"+i);
+            stamper.partialFormFlattening("qc_expected_value_"+i);
         }
     }
 }
