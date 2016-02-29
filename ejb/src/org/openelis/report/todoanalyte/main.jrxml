@@ -180,7 +180,7 @@ ORDER BY $P!{ORDER_BY}]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="24" splitType="Prevent">
+		<band height="36" splitType="Prevent">
 			<textField>
 				<reportElement x="0" y="0" width="50" height="12"/>
 				<textElement>
@@ -238,21 +238,27 @@ ORDER BY $P!{ORDER_BY}]]>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "reportToName.jasper"]]></subreportExpression>
 			</subreport>
+			<componentElement>
+				<reportElement key="accessionNumber.barcode" mode="Opaque" x="0" y="12" width="50" height="12"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{accession_number}.toString()]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField>
+				<reportElement x="10" y="24" width="40" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{priority} != null ? "("+$F{priority}+")" : ""]]></textFieldExpression>
+			</textField>
 			<subreport>
-				<reportElement x="54" y="12" width="698" height="12"/>
+				<reportElement x="54" y="12" width="698" height="24"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyte.jasper"]]></subreportExpression>
 			</subreport>
-			<textField>
-				<reportElement x="10" y="12" width="40" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="9" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{priority} != null ? "("+$F{priority}+")" : ""]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
 </jasperReport>
