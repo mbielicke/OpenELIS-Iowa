@@ -120,7 +120,7 @@ public class OrderEntry implements EntryPoint {
         
         window = new org.openelis.ui.widget.Window();
         window.setName(Messages.get().order_sendoutOrder());
-        window.setSize("960px", "588px");
+        window.setSize("1020px", "588px");
         screen = new SendoutOrderScreenUI(window);
         window.setContent(screen);
         OpenELIS.getBrowser().addWindow(window, "sendoutOrder");

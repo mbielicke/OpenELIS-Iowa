@@ -38,15 +38,17 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IOrderContainerDO;
 import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.domain.IOrderReturnVO;
 import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -55,6 +57,8 @@ import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.IOrderMeta;
+import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -63,7 +67,7 @@ import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.report.client.RequestFormReportService;
-import org.openelis.modules.sample1.client.SampleHistoryUtility1;
+import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingService;
@@ -123,9 +127,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiTemplate("SendoutOrder.ui.xml")
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
-
-
-
 
 
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
@@ -205,9 +206,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected RecurrenceTabUI                recurrenceTab;
-
+    
     @UiField(provided = true)
     protected SendoutOrderFillTabUI          fillTab;
+    
+    @UiField(provided = true)
+    protected AttachmentTabUI                attachmentTab;
 
     protected SendoutOrderScreenUI           screen;
 
@@ -231,7 +235,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                                                             IOrderManager1.Load.SAMPLE_DATA,
                                                             IOrderManager1.Load.ORGANIZATION,
                                                             IOrderManager1.Load.ITEMS,
-                                                            IOrderManager1.Load.RECURRENCE
+                                                            IOrderManager1.Load.RECURRENCE,
+                                                            IOrderManager1.Load.ATTACHMENT
                                                     };
     // @formatter:on
 
@@ -299,6 +304,53 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             @Override
             public String getValueMetaKey() {
                 return IOrderMeta.getAuxDataValue();
+            }
+        };
+
+        attachmentTab = new AttachmentTabUI(this) {
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.attachment.count();
+                return 0;
+            }
+
+            @Override
+            public AttachmentItemViewDO get(int i) {
+                return manager.attachment.get(i);
+            }
+
+            @Override
+            public String getAttachmentCreatedDateMetaKey() {
+                return IOrderMeta.getAttachmentItemAttachmentCreatedDate();
+            }
+
+            @Override
+            public String getAttachmentSectionIdKey() {
+                return IOrderMeta.getAttachmentItemAttachmentSectionId();
+            }
+
+            @Override
+            public String getAttachmentDescriptionKey() {
+                return IOrderMeta.getAttachmentItemAttachmentDescription();
+            }
+
+            @Override
+            public AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+                AttachmentItemViewDO atti;
+
+                atti = manager.attachment.add();
+                atti.setAttachmentId(att.getId());
+                atti.setAttachmentCreatedDate(att.getCreatedDate());
+                atti.setAttachmentSectionId(att.getSectionId());
+                atti.setAttachmentDescription(att.getDescription());
+
+                return atti;
+            }
+
+            @Override
+            public void remove(int i) {
+                manager.attachment.remove(i);
             }
         };
 
@@ -519,7 +571,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         // screen fields
         //
         addScreenHandler(id, IOrderMeta.getId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 id.setValue(getId());
             }
 
@@ -534,7 +586,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(neededDays, IOrderMeta.getNeededInDays(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 neededDays.setValue(getNeededDays());
             }
 
@@ -555,7 +607,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(numberOfForms,
                          IOrderMeta.getNumberOfForms(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  numberOfForms.setValue(getNumberOfForms());
                              }
 
@@ -574,7 +626,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(shipFrom, IOrderMeta.getShipFromId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 shipFrom.setValue(getShipFromId());
             }
 
@@ -593,7 +645,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(shipTo, IOrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 setOrganizationNameSelection();
             }
 
@@ -618,7 +670,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(status, IOrderMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -687,7 +739,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(organizationAttention,
                          IOrderMeta.getOrganizationAttention(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  organizationAttention.setValue(getOrganizationAttention());
                              }
 
@@ -706,7 +758,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(orderedDate, IOrderMeta.getOrderedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 orderedDate.setValue(getOrderedDate());
             }
 
@@ -727,7 +779,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(multipleUnit,
                          IOrderMeta.getIorderOrganizationOrganizationAddressMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  multipleUnit.setValue(getMultipleUnit());
                              }
 
@@ -742,7 +794,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(requestedBy, IOrderMeta.getRequestedBy(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 requestedBy.setValue(getRequestedBy());
             }
 
@@ -763,7 +815,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(streetAddress,
                          IOrderMeta.getOrganizationAddressStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  streetAddress.setValue(getStreetAddress());
                              }
 
@@ -778,7 +830,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(costCenter, IOrderMeta.getCostCenterId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 costCenter.setValue(getCostCenterId());
             }
 
@@ -799,7 +851,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(city,
                          IOrderMeta.getOrganizationAddressCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  city.setValue(getCity());
                              }
 
@@ -814,7 +866,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(description, IOrderMeta.getDescription(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 setDescriptionSelection();
             }
 
@@ -841,7 +893,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(orgState,
                          IOrderMeta.getOrganizationAddressState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  orgState.setValue(getState());
                              }
 
@@ -858,7 +910,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         addScreenHandler(zipCode,
                          IOrderMeta.getOrganizationAddressZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  zipCode.setValue(getZipCode());
                              }
 
@@ -878,7 +930,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(organizationTab, "organizationTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 organizationTab.onDataChange();
             }
 
@@ -892,7 +944,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -912,7 +964,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 testTab.onDataChange();
             }
 
@@ -926,7 +978,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(containerTab, "containerTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 containerTab.onDataChange();
             }
 
@@ -940,7 +992,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(itemTab, "itemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 itemTab.onDataChange();
             }
 
@@ -954,7 +1006,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(shippingNotesTab, "shippingNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 shippingNotesTab.onDataChange();
             }
 
@@ -968,7 +1020,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(customerNotesTab, "customerNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 customerNotesTab.onDataChange();
             }
 
@@ -982,7 +1034,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(internalNotesTab, "internalNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 internalNotesTab.onDataChange();
             }
 
@@ -996,7 +1048,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1010,7 +1062,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(recurrenceTab, "recurrenceTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 recurrenceTab.onDataChange();
             }
 
@@ -1024,7 +1076,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(fillTab, "fillTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 fillTab.onDataChange();
             }
 
@@ -1032,6 +1084,26 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 fillTab.setState(event.getState());
             }
         });
+
+        addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                attachmentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                attachmentTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return attachmentTab.getQueryFields();
+            }
+        });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        attachmentTab.setCanQuery(true);
 
         //
         // left hand navigation panel
@@ -1206,6 +1278,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -1261,6 +1340,156 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         orgState.setModel(smodel);
+
+        /*
+         * call for loading a default manager on the screen to create an order
+         */
+        addCall = new AsyncCallbackUI<IOrderManager1>() {
+            public void success(IOrderManager1 result) {
+                manager = result;
+                cache = new HashMap<String, Object>();
+                setData();
+                setState(ADD);
+                fireDataChange();
+                neededDays.setFocus(true);
+                setDone(Messages.get().gen_enterInformationPressCommit());
+            }
+
+            public void failure(Throwable error) {
+                Window.alert(error.getMessage());
+                logger.log(Level.SEVERE, error.getMessage(), error);
+                clearStatus();
+            }
+        };
+
+        /*
+         * call for fetching and locking an order for update
+         */
+        fetchForUpdateCall = new AsyncCallbackUI<IOrderManager1>() {
+            public void success(IOrderManager1 result) {
+                manager = result;
+                if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getIorder()
+                                                                                .getStatusId())) {
+                    Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
+                    try {
+                        manager = OrderService1.get().unlock(manager.getIorder().getId(), elements);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE,
+                                   e.getMessage() != null ? e.getMessage() : "null",
+                                   e);
+                    }
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                } else {
+                    try {
+                        buildCache();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE,
+                                   e.getMessage() != null ? e.getMessage() : "null",
+                                   e);
+                    }
+                    setData();
+                    setState(UPDATE);
+                    fireDataChange();
+                    neededDays.setFocus(true);
+                }
+            }
+
+            public void failure(Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+            }
+
+            public void finish() {
+                clearStatus();
+            }
+        };
+
+        /*
+         * call for adding/updating an order
+         */
+        updateCall = new AsyncCallbackUI<IOrderManager1>() {
+            public void success(IOrderManager1 result) {
+                manager = result;
+                setData();
+                setState(DISPLAY);
+                fireDataChange();
+                clearStatus();
+                cache = null;
+            }
+
+            public void validationErrors(ValidationErrorsList e) {
+                showErrors(e);
+                if ( !e.hasErrors() && e.hasWarnings()) {
+                    if (Window.confirm(getWarnings(e.getErrorList(), true)))
+                        commitUpdate(true);
+                }
+            }
+
+            public void failure(Throwable e) {
+                if (isState(ADD))
+                    Window.alert("commitAdd(): " + e.getMessage());
+                else
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                clearStatus();
+            }
+        };
+
+        /*
+         * call for unlocking an order
+         */
+        if (unlockCall == null) {
+            unlockCall = new AsyncCallbackUI<IOrderManager1>() {
+                public void success(IOrderManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    setDone(Messages.get().gen_updateAborted());
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
+        }
+
+        /*
+         * call for duplicating an order
+         */
+        duplicateCall = new AsyncCallbackUI<IOrderReturnVO>() {
+            public void success(IOrderReturnVO result) {
+                manager = result.getManager();
+                if (result.getErrors().hasWarnings())
+                    Window.alert(getWarnings(result.getErrors().getErrorList(), false));
+                if ( !result.getErrors().hasWarnings() && result.getErrors().hasErrors())
+                    showErrors(result.getErrors());
+                manager.getIorder().setParentIorderId(null);
+                /*
+                 * the screen is in add state, so we need the cache here
+                 */
+                try {
+                    buildCache();
+                } catch (Exception ex) {
+                    Window.alert(ex.getMessage());
+                    logger.log(Level.SEVERE, ex.getMessage(), ex);
+                }
+                setData();
+                setState(ADD);
+                fireDataChange();
+            }
+
+            public void failure(Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        };
     }
 
     /*
@@ -1293,81 +1522,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiHandler("add")
     protected void add(ClickEvent event) {
         setBusy();
-
-        if (addCall == null) {
-            addCall = new AsyncCallbackUI<IOrderManager1>() {
-                public void success(IOrderManager1 result) {
-                    manager = result;
-                    cache = new HashMap<String, Object>();
-                    setData();
-                    setState(ADD);
-                    fireDataChange();
-                    neededDays.setFocus(true);
-                    setDone(Messages.get().gen_enterInformationPressCommit());
-                }
-
-                public void failure(Throwable error) {
-                    Window.alert(error.getMessage());
-                    logger.log(Level.SEVERE, error.getMessage(), error);
-                    clearStatus();
-                }
-            };
-        }
-
         OrderService1.get().getInstance(Constants.iorder().SEND_OUT, addCall);
     }
 
     @UiHandler("update")
     protected void update(ClickEvent event) {
         setBusy(Messages.get().lockForUpdate());
-
-        if (fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<IOrderManager1>() {
-                public void success(IOrderManager1 result) {
-                    manager = result;
-                    if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getIorder()
-                                                                                    .getStatusId())) {
-                        Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
-                        try {
-                            manager = OrderService1.get().unlock(manager.getIorder().getId(),
-                                                                 IOrderManager1.Load.SAMPLE_DATA,
-                                                                 IOrderManager1.Load.ORGANIZATION,
-                                                                 IOrderManager1.Load.ITEMS,
-                                                                 IOrderManager1.Load.RECURRENCE);
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
-                                                                           : "null", e);
-                        }
-                        setData();
-                        setState(DISPLAY);
-                        fireDataChange();
-                    } else {
-                        try {
-                            buildCache();
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
-                                                                           : "null", e);
-                        }
-                        setData();
-                        setState(UPDATE);
-                        fireDataChange();
-                        neededDays.setFocus(true);
-                    }
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-                }
-
-                public void finish() {
-                    clearStatus();
-                }
-            };
-        }
-
         OrderService1.get().fetchForUpdate(manager.getIorder().getId(),
                                            elements,
                                            fetchForUpdateCall);
@@ -1427,42 +1587,11 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         cache = null;
     }
 
-    protected void commitUpdate(final boolean ignoreWarning) {
+    protected void commitUpdate(boolean ignoreWarning) {
         if (isState(ADD))
             setBusy(Messages.get().gen_adding());
         else
             setBusy(Messages.get().gen_updating());
-
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<IOrderManager1>() {
-                public void success(IOrderManager1 result) {
-                    manager = result;
-                    setData();
-                    setState(DISPLAY);
-                    fireDataChange();
-                    clearStatus();
-                    cache = null;
-                }
-
-                public void validationErrors(ValidationErrorsList e) {
-                    showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning) {
-                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
-                            commitUpdate(true);
-                    }
-                }
-
-                public void failure(Throwable e) {
-                    if (isState(ADD))
-                        Window.alert("commitAdd(): " + e.getMessage());
-                    else
-                        Window.alert("commitUpdate(): " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    clearStatus();
-                }
-            };
-        }
-
         OrderService1.get().update(manager, ignoreWarning, updateCall);
     }
 
@@ -1499,61 +1628,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 clearStatus();
                 return;
             }
-
-            if (unlockCall == null) {
-                unlockCall = new AsyncCallbackUI<IOrderManager1>() {
-                    public void success(IOrderManager1 result) {
-                        manager = result;
-                        setData();
-                        setState(DISPLAY);
-                        fireDataChange();
-                        setDone(Messages.get().gen_updateAborted());
-                    }
-
-                    public void failure(Throwable e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        clearStatus();
-                    }
-                };
-            }
-
             OrderService1.get().unlock(manager.getIorder().getId(), elements, unlockCall);
         }
         cache = null;
     }
 
     protected void duplicate() {
-        if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<IOrderReturnVO>() {
-                public void success(IOrderReturnVO result) {
-                    manager = result.getManager();
-                    if (result.getErrors().hasWarnings())
-                        Window.alert(getWarnings(result.getErrors().getErrorList(), false));
-                    if ( !result.getErrors().hasWarnings() && result.getErrors().hasErrors())
-                        showErrors(result.getErrors());
-                    manager.getIorder().setParentIorderId(null);
-                    /*
-                     * the screen is in add state, so we need the cache here
-                     */
-                    try {
-                        buildCache();
-                    } catch (Exception ex) {
-                        Window.alert(ex.getMessage());
-                        logger.log(Level.SEVERE, ex.getMessage(), ex);
-                    }
-                    setData();
-                    setState(ADD);
-                    fireDataChange();
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-            };
-        }
-
         OrderService1.get().duplicate(manager.getIorder().getId(), duplicateCall);
     }
 
@@ -2278,5 +2358,23 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         modal.setContent(shippingScreen);
         shippingScreen.loadShippingData(manager, org.openelis.gwt.screen.Screen.State.DISPLAY);
         clearStatus();
+    }
+
+    /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the order's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(Integer id, boolean isSameWindow) {
+        String name;
+
+        name = isSameWindow ? Messages.get().sampleSDWIS_login() : null;
+        try {
+            AttachmentUtil.displayAttachment(id, name, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

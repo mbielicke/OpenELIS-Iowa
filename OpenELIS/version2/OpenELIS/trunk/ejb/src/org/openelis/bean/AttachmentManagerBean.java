@@ -47,6 +47,7 @@ import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentIssueViewDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -94,6 +95,9 @@ public class AttachmentManagerBean {
 
     @EJB
     private WorksheetBean       worksheet;
+
+    @EJB
+    private IOrderBean          iorder;
 
     private static final Logger log                      = Logger.getLogger("openelis");
 
@@ -809,14 +813,17 @@ public class AttachmentManagerBean {
         AttachmentManager am;
         SampleDO s;
         WorksheetViewDO w;
-        ArrayList<Integer> ids, sids, wids;
+        IOrderViewDO o;
+        ArrayList<Integer> ids, sids, wids, oids;
         ArrayList<AttachmentManager> ams;
         ArrayList<AttachmentDO> as;
         ArrayList<SampleDO> samples;
         ArrayList<WorksheetViewDO> ws;
+        ArrayList<IOrderViewDO> os;
         HashMap<Integer, AttachmentManager> map;
         HashMap<Integer, SampleDO> smap;
         HashMap<Integer, WorksheetViewDO> wmap;
+        HashMap<Integer, IOrderViewDO> omap;
 
         /*
          * to reduce database select calls, we are going to fetch everything for
@@ -862,6 +869,7 @@ public class AttachmentManagerBean {
 
         sids = new ArrayList<Integer>();
         wids = new ArrayList<Integer>();
+        oids = new ArrayList<Integer>();
         for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(ids)) {
             am = map.get(data.getAttachmentId());
             addItem(am, data);
@@ -869,6 +877,8 @@ public class AttachmentManagerBean {
                 sids.add(data.getReferenceId());
             else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId()))
                 wids.add(data.getReferenceId());
+            else if (Constants.table().IORDER.equals(data.getReferenceTableId()))
+                oids.add(data.getReferenceId());
         }
 
         for (AttachmentIssueViewDO data : attachmentIssue.fetchByAttachmentIds(ids)) {
@@ -877,7 +887,7 @@ public class AttachmentManagerBean {
         }
 
         /*
-         * fetch all the samples, worksheets linked to the attachments
+         * fetch all the samples, worksheets, iorders linked to the attachments
          */
         smap = new HashMap<Integer, SampleDO>();
         if (sids.size() > 0) {
@@ -891,6 +901,13 @@ public class AttachmentManagerBean {
             ws = worksheet.fetchByIds(wids);
             for (WorksheetViewDO data : ws)
                 wmap.put(data.getId(), data);
+        }
+        
+        omap = new HashMap<Integer, IOrderViewDO>();
+        if (oids.size() > 0) {
+            os = iorder.fetchByIds(oids);
+            for (IOrderViewDO data : os)
+                omap.put(data.getId(), data);
         }
 
         /*
@@ -909,7 +926,12 @@ public class AttachmentManagerBean {
                         w = wmap.get(data.getReferenceId());
                         data.setReferenceDescription(Messages.get()
                                                              .attachment_worksheetDescription(w.getId()));
+                    } else if (Constants.table().IORDER.equals(data.getReferenceTableId())) {
+                        o = omap.get(data.getReferenceId());
+                        data.setReferenceDescription(Messages.get()
+                                                             .attachment_iorderDescription(o.getId()));
                     }
+                    
                 }
             }
         }

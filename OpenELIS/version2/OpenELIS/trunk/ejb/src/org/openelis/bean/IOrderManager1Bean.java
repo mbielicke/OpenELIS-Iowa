@@ -33,6 +33,7 @@ import static org.openelis.manager.IOrderManager1Accessor.addInternalNote;
 import static org.openelis.manager.IOrderManager1Accessor.addItem;
 import static org.openelis.manager.IOrderManager1Accessor.addOrganization;
 import static org.openelis.manager.IOrderManager1Accessor.addReceipt;
+import static org.openelis.manager.IOrderManager1Accessor.addAttachment;
 import static org.openelis.manager.IOrderManager1Accessor.getAnalytes;
 import static org.openelis.manager.IOrderManager1Accessor.getAuxilliary;
 import static org.openelis.manager.IOrderManager1Accessor.getContainers;
@@ -47,6 +48,7 @@ import static org.openelis.manager.IOrderManager1Accessor.getRemoved;
 import static org.openelis.manager.IOrderManager1Accessor.getSampleNote;
 import static org.openelis.manager.IOrderManager1Accessor.getShippingNote;
 import static org.openelis.manager.IOrderManager1Accessor.getTests;
+import static org.openelis.manager.IOrderManager1Accessor.getAttachments;
 import static org.openelis.manager.IOrderManager1Accessor.setAnalytes;
 import static org.openelis.manager.IOrderManager1Accessor.setAuxilliary;
 import static org.openelis.manager.IOrderManager1Accessor.setContainers;
@@ -62,8 +64,8 @@ import static org.openelis.manager.IOrderManager1Accessor.setRemoved;
 import static org.openelis.manager.IOrderManager1Accessor.setSampleNote;
 import static org.openelis.manager.IOrderManager1Accessor.setShippingNote;
 import static org.openelis.manager.IOrderManager1Accessor.setTests;
-import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
-import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.IOrderManager1Accessor.setAttachments;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +83,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -128,13 +131,13 @@ public class IOrderManager1Bean {
     private LockBean               lock;
 
     @EJB
-    private IOrderBean              iorder;
+    private IOrderBean             iorder;
 
     @EJB
-    private IOrderOrganizationBean  iorderOrganization;
+    private IOrderOrganizationBean iorderOrganization;
 
     @EJB
-    private IOrderItemBean          iorderItem;
+    private IOrderItemBean         iorderItem;
 
     @EJB
     private InventoryXUseBean      iorderFill;
@@ -143,16 +146,16 @@ public class IOrderManager1Bean {
     private InventoryXPutBean      iorderReceipt;
 
     @EJB
-    private IOrderContainerBean     iorderContainer;
+    private IOrderContainerBean    iorderContainer;
 
     @EJB
-    private IOrderTestBean          iorderTest;
+    private IOrderTestBean         iorderTest;
 
     @EJB
     private TestManagerBean        testManager;
 
     @EJB
-    private IOrderTestAnalyteBean   iorderTestAnalyte;
+    private IOrderTestAnalyteBean  iorderTestAnalyte;
 
     @EJB
     private NoteBean               note;
@@ -161,7 +164,7 @@ public class IOrderManager1Bean {
     private AuxDataBean            auxdata;
 
     @EJB
-    private IOrderRecurrenceBean    iorderRecurrence;
+    private IOrderRecurrenceBean   iorderRecurrence;
 
     @EJB
     private PanelBean              panel;
@@ -170,7 +173,7 @@ public class IOrderManager1Bean {
     private AuxDataHelperBean      auxDataHelper;
 
     @EJB
-    private IOrderTestHelperBean    iorderTestHelper;
+    private IOrderTestHelperBean   iorderTestHelper;
 
     @EJB
     private OrganizationBean       organization;
@@ -180,6 +183,9 @@ public class IOrderManager1Bean {
 
     @EJB
     private InventoryItemCacheBean inventoryItem;
+
+    @EJB
+    private AttachmentItemBean     attachmentItem;
 
     private static final Logger    log = Logger.getLogger("openelis");
 
@@ -226,7 +232,7 @@ public class IOrderManager1Bean {
      * elements
      */
     public ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> iorderIds,
-                                               IOrderManager1.Load... elements) throws Exception {
+                                                IOrderManager1.Load... elements) throws Exception {
         return fetchByIds(iorderIds, false, elements);
     }
 
@@ -235,7 +241,7 @@ public class IOrderManager1Bean {
      * elements
      */
     public ArrayList<IOrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                                                 IOrderManager1.Load... elements) throws Exception {
+                                                  IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
 
         ids = new ArrayList<Integer>();
@@ -311,6 +317,13 @@ public class IOrderManager1Bean {
                 setRecurrence(om, data);
         }
 
+        if (el.contains(IOrderManager1.Load.ATTACHMENT)) {
+            setAttachments(om, null);
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids,
+                                                                       Constants.table().IORDER))
+                addAttachment(om, data);
+        }
+
         return om;
     }
 
@@ -323,12 +336,13 @@ public class IOrderManager1Bean {
                               IOrderManager1.Load.ITEMS,
                               IOrderManager1.Load.ORGANIZATION,
                               IOrderManager1.Load.SAMPLE_DATA,
-                              IOrderManager1.Load.RECURRENCE);
+                              IOrderManager1.Load.RECURRENCE,
+                              IOrderManager1.Load.ATTACHMENT);
     }
 
     /**
-     * Returns a locked iorder manager with specified iorder id and requested load
-     * elements
+     * Returns a locked iorder manager with specified iorder id and requested
+     * load elements
      */
     @RolesAllowed("order-update")
     public IOrderManager1 fetchForUpdate(Integer iorderId, IOrderManager1.Load... elements) throws Exception {
@@ -347,14 +361,14 @@ public class IOrderManager1Bean {
      */
     @RolesAllowed("order-update")
     public ArrayList<IOrderManager1> fetchForUpdate(ArrayList<Integer> iorderIds,
-                                                   IOrderManager1.Load... elements) throws Exception {
+                                                    IOrderManager1.Load... elements) throws Exception {
         lock.lock(Constants.table().IORDER, iorderIds);
         return fetchByIds(iorderIds, true, elements);
     }
 
     /**
-     * Unlocks and returns a iorder manager with specified iorder id and requested
-     * load elements
+     * Unlocks and returns a iorder manager with specified iorder id and
+     * requested load elements
      */
     @RolesAllowed({"order-add", "order-update"})
     public IOrderManager1 unlock(Integer iorderId, IOrderManager1.Load... elements) throws Exception {
@@ -373,7 +387,7 @@ public class IOrderManager1Bean {
      */
     @RolesAllowed({"order-add", "order-update"})
     public ArrayList<IOrderManager1> unlock(ArrayList<Integer> iorderIds,
-                                           IOrderManager1.Load... elements) throws Exception {
+                                            IOrderManager1.Load... elements) throws Exception {
         lock.unlock(Constants.table().IORDER, iorderIds);
         return fetchByIds(iorderIds, false, elements);
     }
@@ -466,13 +480,14 @@ public class IOrderManager1Bean {
         if ( !forRecurrence)
             getIorder(om).setRequestedBy(User.getName(ctx));
 
-        if (getIorder(om).getOrganization() != null && !"Y".equals(getIorder(om).getOrganization().getIsActive())) {
+        if (getIorder(om).getOrganization() != null &&
+            !"Y".equals(getIorder(om).getOrganization().getIsActive())) {
             if (forRecurrence) {
                 getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
             }
             errors.add(new FormErrorWarning(Messages.get()
                                                     .order_inactiveOrganizationWarning(getIorder(om).getOrganization()
-                                                                                                   .getName())));
+                                                                                                    .getName())));
             getIorder(om).setOrganization(null);
             getIorder(om).setOrganizationId(null);
         }
@@ -759,6 +774,15 @@ public class IOrderManager1Bean {
              * go through remove list and delete all the unwanted records
              */
             if (getRemoved(om) != null) {
+                /*
+                 * we need to remove objects in the correct order so that
+                 * referential integrity is maintained
+                 */
+                for (DataObject data : getRemoved(om)) {
+                    if (data instanceof IOrderTestAnalyteViewDO)
+                        iorderTestAnalyte.delete( ((IOrderTestAnalyteViewDO)data));
+                }
+
                 for (DataObject data : getRemoved(om)) {
                     if (data instanceof IOrderOrganizationViewDO)
                         iorderOrganization.delete( ((IOrderOrganizationViewDO)data));
@@ -772,16 +796,14 @@ public class IOrderManager1Bean {
                         iorderContainer.delete( ((IOrderContainerDO)data));
                     else if (data instanceof IOrderTestViewDO)
                         iorderTest.delete( ((IOrderTestViewDO)data));
-                    else if (data instanceof IOrderTestAnalyteViewDO)
-                        iorderTestAnalyte.delete( ((IOrderTestAnalyteViewDO)data));
                     else if (data instanceof NoteViewDO)
                         note.delete( ((NoteViewDO)data));
                     else if (data instanceof AuxDataViewDO)
                         auxdata.delete( ((AuxDataViewDO)data));
                     else if (data instanceof IOrderRecurrenceDO)
                         iorderRecurrence.delete((IOrderRecurrenceDO)data);
-                    else
-                        throw new Exception("ERROR: DataObject passed for removal is of unknown type");
+                    else if (data instanceof AttachmentItemViewDO)
+                        attachmentItem.delete( ((AttachmentItemViewDO)data));                    
                 }
             }
             // add/update iorder
@@ -928,6 +950,18 @@ public class IOrderManager1Bean {
                         iorderFill.add(data);
                     } else {
                         iorderFill.update(data);
+                    }
+                }
+            }
+
+            if (getAttachments(om) != null) {
+                for (AttachmentItemViewDO data : getAttachments(om)) {
+                    if (data.getId() == null) {
+                        data.setReferenceTableId(Constants.table().IORDER);
+                        data.setReferenceId(getIorder(om).getId());
+                        attachmentItem.add(data);
+                    } else {
+                        attachmentItem.update(data);
                     }
                 }
             }
@@ -1110,7 +1144,7 @@ public class IOrderManager1Bean {
      * required fields are also set with default values.
      */
     public void createIOrderFromSample(IOrderManager1 om, SampleManager1 sm,
-                                      ArrayList<String> analytes) throws Exception {
+                                       ArrayList<String> analytes) throws Exception {
         Integer accession;
         SampleOrganizationViewDO sRepOrg, sBillOrg;
         IOrderViewDO data;
@@ -1214,7 +1248,7 @@ public class IOrderManager1Bean {
     }
 
     private ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> iorderIds, boolean isUpdate,
-                                                IOrderManager1.Load... elements) throws Exception {
+                                                 IOrderManager1.Load... elements) throws Exception {
         IOrderManager1 om;
         EnumSet<IOrderManager1.Load> el;
         ArrayList<Integer> ids1, ids2, testIds, orgIds;
@@ -1388,6 +1422,15 @@ public class IOrderManager1Bean {
                 setRecurrence(om, data);
             }
         }
+
+        if (el.contains(IOrderManager1.Load.ATTACHMENT)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1,
+                                                                       Constants.table().IORDER)) {
+                om = map1.get(data.getReferenceId());
+                addAttachment(om, data);
+            }
+        }
+
         return oms;
     }
 
@@ -1399,7 +1442,8 @@ public class IOrderManager1Bean {
                           boolean ignoreWarning) throws Exception {
         int rcnt, bcnt;
         Integer iorderId, itemId;
-        ValidationErrorsList e;
+        String prefix;
+        ValidationErrorsList e, ae;
         HashSet<Integer> itemIds;
 
         e = new ValidationErrorsList();
@@ -1414,9 +1458,15 @@ public class IOrderManager1Bean {
             /*
              * order level
              */
-            iorderId = null;
+            iorderId = getIorder(om).getId();
+
+            /*
+             * for display
+             */
+            if (iorderId == null)
+                iorderId = 0;
+
             if (getIorder(om) != null) {
-                iorderId = getIorder(om).getId();
                 if (getIorder(om).isChanged()) {
                     try {
                         iorder.validate(getIorder(om));
@@ -1491,6 +1541,42 @@ public class IOrderManager1Bean {
                     iorderRecurrence.validate(getRecurrence(om));
                 } catch (Exception err) {
                     DataBaseUtil.mergeException(e, err);
+                }
+            }
+
+            /*
+             * all attachment items must be linked to existing attachments; only
+             * uncommitted attachment items need to be validated because
+             * attached attachments can't be deleted
+             */
+            if (getAttachments(om) != null) {
+                prefix = Messages.get().order_orderNumPrefix(iorderId);
+                for (AttachmentItemViewDO data : getAttachments(om)) {
+                    if (data.getId() == null) {
+                        try {
+                            attachmentItem.validate(data);
+                        } catch (Exception err) {
+                            /*
+                             * since attachments can be linked to several
+                             * different types of records, the exceptions added
+                             * by the bean above don't have the prefix
+                             * "Order #"; so that prefix is added here
+                             */
+                            if (err instanceof ValidationErrorsList) {
+                                ae = (ValidationErrorsList)err;
+                                if (ae.hasErrors()) {
+                                    for (Exception ex : ae.getErrorList()) {
+                                        e.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
+                                                                                                      " ",
+                                                                                                      ex.getMessage())));
+
+                                    }
+                                }
+                            } else {
+                                DataBaseUtil.mergeException(e, err);
+                            }
+                        }
+                    }
                 }
             }
         }
