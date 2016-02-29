@@ -142,7 +142,13 @@ public class IOrderMeta implements Meta, MetaMap {
                                    ITEM_INVENTORY_ITEM_NAME = "_iorderItem.inventoryItem.name",
 	                               ITEM_INVENTORY_ITEM_STORE_ID = "_iorderItem.inventoryItem.storeId",
 	                               TEST_NAME = "_test.name",
-	                               TEST_METHOD_NAME = "_test.method.name";
+	                               TEST_METHOD_NAME = "_test.method.name",
+	                               
+	                               ATT_ITEM_REFERENCE_ID = "_attachmentItem.referenceId",
+	                               ATT_ITEM_REFERENCE_TABLE_ID = "_attachmentItem.referenceTableId",
+	                               ATT_ITEM_ATTACHMENT_CREATED_DATE = "_attachmentItem.attachment.createdDate",
+	                               ATT_ITEM_ATTACHMENT_SECTION_ID = "_attachmentItem.attachment.sectionId",
+	                               ATT_ITEM_ATTACHMENT_DESCRIPTION = "_attachmentItem.attachment.description";
 	                                                
 
     private static HashSet<String> names;
@@ -197,7 +203,11 @@ public class IOrderMeta implements Meta, MetaMap {
                                                   
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
                                                   ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID,
-                                                  TEST_NAME, TEST_METHOD_NAME));
+                                                  TEST_NAME, TEST_METHOD_NAME,
+                                                  
+                                                  ATT_ITEM_REFERENCE_ID, ATT_ITEM_REFERENCE_TABLE_ID,
+                                                  ATT_ITEM_ATTACHMENT_CREATED_DATE, ATT_ITEM_ATTACHMENT_SECTION_ID,
+                                                  ATT_ITEM_ATTACHMENT_DESCRIPTION));
     }
 
     public static String getId() {
@@ -583,6 +593,26 @@ public class IOrderMeta implements Meta, MetaMap {
     public static String getTestMethodName() {
         return TEST_METHOD_NAME;
     }
+    
+    public static String getAttachmentItemReferenceId() {
+        return ATT_ITEM_REFERENCE_ID;
+    }
+    
+    public static String getAttachmentItemReferenceTableId() {
+        return ATT_ITEM_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getAttachmentItemAttachmentCreatedDate() {
+        return ATT_ITEM_ATTACHMENT_CREATED_DATE;
+    }
+
+    public static String getAttachmentItemAttachmentSectionId() {
+        return ATT_ITEM_ATTACHMENT_SECTION_ID;
+    }
+
+    public static String getAttachmentItemAttachmentDescription() {
+        return ATT_ITEM_ATTACHMENT_DESCRIPTION;
+    }
 
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -632,6 +662,9 @@ public class IOrderMeta implements Meta, MetaMap {
             from += ", IN (_iorder.auxData) _auxData ";
         if(where.indexOf("iorderRecurrence.") > -1)
             from += ", IN (_iorder.iorderRecurrence) _iorderRecurrence ";
+        
+        if (where.indexOf("attachmentItem.") > -1)
+            from += ", IN (_iorder.attachmentItem) _attachmentItem ";
 
         return from;
     }

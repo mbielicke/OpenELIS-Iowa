@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.InventoryXPutViewDO;
@@ -212,6 +213,20 @@ public class IOrderManager1Accessor {
 
     public static void setRecurrence(IOrderManager1 om, IOrderRecurrenceDO recurrence) {
         om.recurrence = recurrence;
+    }
+    
+    public static ArrayList<AttachmentItemViewDO> getAttachments(IOrderManager1 om) {
+        return om.attachments;
+    }
+    
+    public static void setAttachments(IOrderManager1 om, ArrayList<AttachmentItemViewDO> attachments) {
+        om.attachments = attachments;
+    }
+    
+    public static void addAttachment(IOrderManager1 om, AttachmentItemViewDO attachment) {
+        if (om.attachments == null)
+            om.attachments = new ArrayList<AttachmentItemViewDO>();
+        om.attachments.add(attachment);
     }
 
     public static ArrayList<DataObject> getRemoved(IOrderManager1 om) {
