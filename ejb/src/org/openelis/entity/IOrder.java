@@ -155,6 +155,10 @@ public class IOrder implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
     private Collection<IOrderRecurrence>   iorderRecurrence;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+    private Collection<AttachmentItem>      attachmentItem;
 
     @Transient
     private IOrder                         original;
@@ -335,6 +339,14 @@ public class IOrder implements Auditable, Cloneable {
 
     public void setIorderRecurrence(Collection<IOrderRecurrence> iorderRecurrence) {
         this.iorderRecurrence = iorderRecurrence;
+    }
+
+    public Collection<AttachmentItem> getAttachmentItem() {
+        return attachmentItem;
+    }
+
+    public void setAttachmentItem(Collection<AttachmentItem> attachmentItem) {
+        this.attachmentItem = attachmentItem;
     }
 
     public void setClone() {

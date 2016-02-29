@@ -30,12 +30,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
-import org.openelis.domain.InventoryXPutViewDO;
-import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.IOrderContainerDO;
 import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.IOrderOrganizationViewDO;
@@ -45,6 +44,9 @@ import org.openelis.domain.IOrderTestAnalyteViewDO;
 import org.openelis.domain.IOrderTestDO;
 import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.IOrderViewDO;
+import org.openelis.domain.InventoryXPutViewDO;
+import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
 
 /**
@@ -63,7 +65,8 @@ public class IOrderManager1 implements Serializable {
         ITEMS, // item, fill, receipt
         ORGANIZATION, // organization
         SAMPLE_DATA, // auxdata, test, container
-        RECURRENCE // recurrence
+        RECURRENCE, // recurrence
+        ATTACHMENT // attachment
     };
 
     protected IOrderViewDO                         iorder;
@@ -78,6 +81,7 @@ public class IOrderManager1 implements Serializable {
     protected ArrayList<NoteViewDO>               internalNotes;
     protected ArrayList<AuxDataViewDO>            auxilliary;
     protected IOrderRecurrenceDO                   recurrence;
+    protected ArrayList<AttachmentItemViewDO>     attachments;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID      = -1;
 
@@ -93,6 +97,7 @@ public class IOrderManager1 implements Serializable {
     transient public final SampleNote             sampleNote   = new SampleNote();
     transient public final InternalNote           internalNote = new InternalNote();
     transient public final AuxData                auxData      = new AuxData();
+    transient public final Attachment             attachment   = new Attachment();
     transient private HashMap<String, DataObject> uidMap;
 
     /**
@@ -697,6 +702,57 @@ public class IOrderManager1 implements Serializable {
             if (auxilliary == null)
                 return 0;
             return auxilliary.size();
+        }
+    }
+
+    /**
+     * Class to manage the attachments associated with the iorder
+     */
+    public class Attachment {
+        /**
+         * Returns the attachment item at specified index.
+         */
+        public AttachmentItemViewDO get(int i) {
+            return attachments.get(i);
+        }
+
+        /**
+         * Returns an attachment item
+         */
+        public AttachmentItemViewDO add() {
+            AttachmentItemViewDO data;
+
+            data = new AttachmentItemViewDO();
+            if (attachments == null)
+                attachments = new ArrayList<AttachmentItemViewDO>();
+            attachments.add(data);
+
+            return data;
+        }
+
+        /**
+         * Removes an attachment item from the list
+         */
+        public void remove(int i) {
+            AttachmentItemDO data;
+
+            data = attachments.get(i);
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        public void remove(AttachmentItemDO data) {
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        /**
+         * Returns the number of attachment items associated with this sample
+         */
+        public int count() {
+            if (attachments != null)
+                return attachments.size();
+            return 0;
         }
     }
 

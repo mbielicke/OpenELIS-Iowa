@@ -150,7 +150,10 @@ public class IOrderBean {
                           IOrderMeta.getRequestedBy() + ") ");
         builder.constructWhere(fields);
         if (builder.getWhereClause().indexOf("auxData.") > -1)
-            builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
+            builder.addWhere(IOrderMeta.getAuxDataReferenceTableId() + " = " +
+                             Constants.table().IORDER);
+        if (builder.getWhereClause().indexOf("attachmentItem.") > -1)
+            builder.addWhere(IOrderMeta.getAttachmentItemReferenceTableId() + " = " +
                              Constants.table().IORDER);
         builder.setOrderBy(IOrderMeta.getId() + " DESC");
         query = manager.createQuery(builder.getEJBQL());
