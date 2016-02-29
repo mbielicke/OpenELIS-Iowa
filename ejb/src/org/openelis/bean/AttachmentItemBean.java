@@ -36,7 +36,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentItemDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.entity.AttachmentItem;

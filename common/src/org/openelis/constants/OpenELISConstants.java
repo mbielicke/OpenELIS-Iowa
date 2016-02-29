@@ -2275,6 +2275,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String attachment_fileName();
 
   /**
+   * Translated "Order # {0,number,#0}".
+   * 
+   * @return translated "Order # {0,number,#0}"
+   */
+  @DefaultMessage("Order # {0,number,#0}")
+  @Key("attachment.iorderDescription")
+  String attachment_iorderDescription(Integer arg0);
+
+  /**
    * Translated "Issue".
    * 
    * @return translated "Issue"
@@ -12643,6 +12652,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String order_orderNum();
 
   /**
+   * Translated "Order # {0,number,#0}:".
+   * 
+   * @return translated "Order # {0,number,#0}:"
+   */
+  @DefaultMessage("Order # {0,number,#0}:")
+  @Key("order.orderNumPrefix")
+  String order_orderNumPrefix(Integer arg0);
+
+  /**
    * Translated "History - Organization".
    * 
    * @return translated "History - Organization"
@@ -12850,11 +12868,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String order_showDates();
 
   /**
-   * Translated "Order # {0,number,#0} Status is required".
+   * Translated "Order # {0,number,#0}: Status is required".
    * 
-   * @return translated "Order # {0,number,#0} Status is required"
+   * @return translated "Order # {0,number,#0}: Status is required"
    */
-  @DefaultMessage("Order # {0,number,#0} Status is required")
+  @DefaultMessage("Order # {0,number,#0}: Status is required")
   @Key("order.statusRequiredException")
   String order_statusRequiredException(Integer arg0);
 
