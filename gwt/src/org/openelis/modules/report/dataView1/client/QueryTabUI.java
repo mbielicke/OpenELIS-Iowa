@@ -106,6 +106,8 @@ public class QueryTabUI extends Screen {
 
     protected HashMap<String, String> fieldValues;
 
+    protected int                     fromToFilled;
+
     private static final String       EXCLUDE_ALL = "excludeAll",
                     INCLUDE_NOT_REPORTABLE = "includeNotReportable";
 
@@ -133,9 +135,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberFrom.setValue(getAccessionNumberFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 validateFromTo(accessionNumberFrom, accessionNumberTo);
+                                 validateFromTo(accessionNumberFrom, accessionNumberTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -153,9 +155,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberTo.setValue(getAccessionNumberTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 validateFromTo(accessionNumberFrom, accessionNumberTo);
+                                 validateFromTo(accessionNumberFrom, accessionNumberTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -173,9 +175,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateFrom.setValue(getCollectionDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(collectionDateFrom, collectionDateTo);
+                                 validateFromTo(collectionDateFrom, collectionDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -193,9 +195,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateTo.setValue(getCollectionDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(collectionDateFrom, collectionDateTo);
+                                 validateFromTo(collectionDateFrom, collectionDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -213,9 +215,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateFrom.setValue(getReceivedDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(receivedDateFrom, receivedDateTo);
+                                 validateFromTo(receivedDateFrom, receivedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -233,9 +235,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateTo.setValue(getReceivedDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(receivedDateFrom, receivedDateTo);
+                                 validateFromTo(receivedDateFrom, receivedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -253,9 +255,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateFrom.setValue(getEnteredDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(enteredDateFrom, enteredDateTo);
+                                 validateFromTo(enteredDateFrom, enteredDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -273,9 +275,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateTo.setValue(getEnteredDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(enteredDateFrom, enteredDateTo);
+                                 validateFromTo(enteredDateFrom, enteredDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -293,9 +295,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  releasedDateFrom.setValue(getReleasedDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(releasedDateFrom, releasedDateTo);
+                                 validateFromTo(releasedDateFrom, releasedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -313,9 +315,9 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  releasedDateTo.setValue(getReleasedDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(releasedDateFrom, releasedDateTo);
+                                 validateFromTo(releasedDateFrom, releasedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -467,9 +469,11 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateFrom.setValue(getAnalysisCompletedDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisCompletedDateFrom, analysisCompletedDateTo);
+                                 validateFromTo(analysisCompletedDateFrom,
+                                                analysisCompletedDateTo,
+                                                false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -487,9 +491,11 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateTo.setValue(getAnalysisCompletedDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisCompletedDateFrom, analysisCompletedDateTo);
+                                 validateFromTo(analysisCompletedDateFrom,
+                                                analysisCompletedDateTo,
+                                                false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -508,9 +514,11 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateFrom.setValue(getAnalysisReleasedDateFrom());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisReleasedDateFrom, analysisReleasedDateTo);
+                                 validateFromTo(analysisReleasedDateFrom,
+                                                analysisReleasedDateTo,
+                                                false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -528,9 +536,11 @@ public class QueryTabUI extends Screen {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateTo.setValue(getAnalysisReleasedDateTo());
                              }
-                             
+
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisReleasedDateFrom, analysisReleasedDateTo);
+                                 validateFromTo(analysisReleasedDateFrom,
+                                                analysisReleasedDateTo,
+                                                false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -826,38 +836,31 @@ public class QueryTabUI extends Screen {
     }
 
     public Validation validate() {
-        int pairsFilled;
         Validation validation;
+
+        fromToFilled = 0;
+
+        /*
+         * in a pair of "from" and "to" widgets, if a widget has a value and the
+         * other doesn't, add an error to the widget that doesn't have a value;
+         * keep track of the number of such pairs where both widgets have values
+         */
+        validateFromTo(accessionNumberFrom, accessionNumberTo, true);
+        validateFromTo(collectionDateFrom, collectionDateTo, true);
+        validateFromTo(receivedDateFrom, receivedDateTo, true);
+        validateFromTo(enteredDateFrom, enteredDateTo, true);
+        validateFromTo(releasedDateFrom, releasedDateTo, true);
+        validateFromTo(analysisCompletedDateFrom, analysisCompletedDateTo, true);
+        validateFromTo(analysisReleasedDateFrom, analysisReleasedDateTo, true);
 
         validation = super.validate();
 
-        pairsFilled = 7;
-
         /*
-         * keep track of the number of "from" and "to" pairs where both widgets
-         * have a value
+         * if none of the "from" and "to" pairs of widgets has a value, the
+         * query shouldn't be executed; otherwise the report will take too long
+         * to generate
          */
-        if (isFromToEmpty(accessionNumberFrom, accessionNumberTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(collectionDateFrom, collectionDateTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(receivedDateFrom, receivedDateTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(enteredDateFrom, enteredDateTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(releasedDateFrom, releasedDateTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(analysisCompletedDateFrom, analysisCompletedDateTo))
-            pairsFilled-- ;
-        if (isFromToEmpty(analysisReleasedDateFrom, analysisReleasedDateTo))
-            pairsFilled-- ;
-
-        /*
-         * if none of the "from" and "to" pairs of widgets has values, the query
-         * shouldn't be executed; otherwise the report will take too long to
-         * generate
-         */
-        if (pairsFilled == 0) {
+        if (fromToFilled == 0) {
             validation.addException(new Exception(Messages.get()
                                                           .dataView_atLeastOnePairFilledException()));
             validation.setStatus(Validation.Status.ERRORS);
@@ -1142,11 +1145,13 @@ public class QueryTabUI extends Screen {
      * If one of the widgets in the passed pair of "from" and "to" widgets has a
      * value and the other doesn't, adds "Field Required" error to the widget
      * that doesn't have a value; clears any previous programmatically added
-     * errors
+     * errors; if the passed boolean is true and both widgets have a value,
+     * increments the number that keeps track of how many "from-to" pairs have
+     * values
      */
-    private void validateFromTo(Widget fromWidget, Widget toWidget) {
-        HasExceptions fromHasEx, toHasEx;
+    private void validateFromTo(Widget fromWidget, Widget toWidget, boolean updateFromToFilled) {
         boolean fromEmpty, toEmpty;
+        HasExceptions fromHasEx, toHasEx;
 
         fromEmpty = DataBaseUtil.isEmpty( ((HasValue)fromWidget).getValue());
         toEmpty = DataBaseUtil.isEmpty( ((HasValue)toWidget).getValue());
@@ -1158,17 +1163,10 @@ public class QueryTabUI extends Screen {
         if ( !fromEmpty) {
             if (toEmpty)
                 toHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
+            else if (updateFromToFilled)
+                fromToFilled++ ;
         } else if ( !toEmpty) {
             fromHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
         }
-    }
-
-    /**
-     * Returns true if none of the passed widgets has a value; returns false
-     * otherwise
-     */
-    private boolean isFromToEmpty(HasValue fromWidget, HasValue toWidget) {
-        return DataBaseUtil.isEmpty(fromWidget.getValue()) &&
-               DataBaseUtil.isEmpty(toWidget.getValue());
     }
 }
