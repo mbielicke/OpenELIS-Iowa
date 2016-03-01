@@ -1395,6 +1395,13 @@ public class WorksheetItemTabUI extends Screen {
                                                                                              Messages.get().duplicateRecord()));
                 return;
             }
+            if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(waVDO.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_INPREP.equals(waVDO.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
+                Window.alert(Messages.get().worksheet_wrongStatusNoDuplicate());
+                return;
+            }
         }
 
         if (manager.getTotalCapacity() != null &&

@@ -194,6 +194,11 @@ UIRF Software License are applicable instead of those above.
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel>
+        <w:Button ui:field="expandButton" leftIcon="{res.icon.expandButtonImage}"
+                  text="{msg.gen_expand}" />
+        <w:Button ui:field="collapseButton" leftIcon="{res.icon.collapseButtonImage}"
+                  text="{msg.gen_collapse}" />
+        <g:AbsolutePanel width="10px"/>
         <w:Button ui:field="selectButton" leftIcon="{res.checkbox.Checked}"
                   text="{msg.gen_select}"/>
         <w:Button ui:field="unselectButton" leftIcon="{res.checkbox.Unchecked}"

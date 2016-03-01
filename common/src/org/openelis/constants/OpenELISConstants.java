@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -22991,6 +22991,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Worksheet #")
   @Key("worksheet.worksheetNumber")
   String worksheet_worksheetNumber();
+
+  /**
+   * Translated "Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to duplicate".
+   * 
+   * @return translated "Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to duplicate"
+   */
+  @DefaultMessage("Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to duplicate")
+  @Key("worksheet.wrongStatusNoDuplicate")
+  String worksheet_wrongStatusNoDuplicate();
 
   /**
    * Translated "The following rows are in a status that does not allow edit: {0}".

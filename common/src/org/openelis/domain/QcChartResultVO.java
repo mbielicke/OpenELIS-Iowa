@@ -34,7 +34,7 @@ import org.openelis.ui.common.Datetime;
 public class QcChartResultVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    protected Integer         wId, qcId, analyteId, worksheetAnalysisId;
+    protected Integer         wId, qcId, analyteId, worksheetAnalysisId, qcLinkId;
     protected String          accessionNumber, lotNumber, analyteName, worksheetFormat;
     protected Datetime        worksheetCreatedDate;
     protected String          values[];
@@ -42,12 +42,14 @@ public class QcChartResultVO implements Serializable {
     public QcChartResultVO() {
     }
     
-    public QcChartResultVO(String accessionNumber, String lotNumber, Integer wId, Integer qcId, Integer analyteId, Integer worksheetAnalysisId, String analyteName, String worksheetFormat, Date worksheetCreatedDate,
-                           String v1, String v2, String v3, String v4, String v5, String v6, String v7, String v8,
-                           String v9, String v10, String v11, String v12, String v13, String v14,
-                           String v15, String v16, String v17, String v18, String v19, String v20,
-                           String v21, String v22, String v23, String v24, String v25, String v26,
-                           String v27, String v28, String v29, String v30) {
+    public QcChartResultVO(String accessionNumber, String lotNumber, Integer wId, Integer qcId,
+                           Integer analyteId, Integer worksheetAnalysisId, String analyteName,
+                           String worksheetFormat, Date worksheetCreatedDate, Integer qcLinkId,
+                           String v1, String v2, String v3, String v4, String v5, String v6,
+                           String v7, String v8, String v9, String v10, String v11, String v12,
+                           String v13, String v14, String v15, String v16, String v17, String v18,
+                           String v19, String v20, String v21, String v22, String v23, String v24,
+                           String v25, String v26, String v27, String v28, String v29, String v30) {
 
         values = new String[30];
 
@@ -60,6 +62,7 @@ public class QcChartResultVO implements Serializable {
         setAnalyteName(analyteName);
         setWorksheetFormat(worksheetFormat);
         setWorksheetCreatedDate(DataBaseUtil.toYM(worksheetCreatedDate));
+        setQcLinkId(qcLinkId);
         setValueAt(0, v1);
         setValueAt(1, v2);
         setValueAt(2, v3);
@@ -164,6 +167,14 @@ public class QcChartResultVO implements Serializable {
         this.worksheetCreatedDate = DataBaseUtil.toYM(worksheetCreatedDate);
     }
     
+    public Integer getQcLinkId() {
+        return qcLinkId;
+    }
+
+    public void setQcLinkId(Integer qcLinkId) {
+        this.qcLinkId = qcLinkId;
+    }
+
     public String getValueAt(int index) {
         return values[index];
     }
