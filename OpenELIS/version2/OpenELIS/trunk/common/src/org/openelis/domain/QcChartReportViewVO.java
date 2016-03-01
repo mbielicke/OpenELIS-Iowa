@@ -80,7 +80,7 @@ public class QcChartReportViewVO implements Serializable {
         private static final long serialVersionUID = 1L;
         
         protected Integer         qcId, wId, analyteId;
-        protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot, worksheetFormat;
+        protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot, worksheetFormat, qcLink;
         protected Double          plotValue, mean, meanRecovery, uWL, uCL, lWL, lCL, sd;
         protected Datetime        worksheetCreatedDate;
         protected String          values[];
@@ -235,6 +235,14 @@ public class QcChartReportViewVO implements Serializable {
 
         public void setWorksheetFormat(String worksheetFormat) {
             this.worksheetFormat = DataBaseUtil.trim(worksheetFormat);
+        }
+        
+        public String getQcLink() {
+            return qcLink;
+        }
+
+        public void setQcLink(String qcLink) {
+            this.qcLink = DataBaseUtil.trim(qcLink);
         }
         
         public String getValueAt(int index) {

@@ -167,7 +167,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected Button                                      query, previous, next,
                                                           update, commit, abort,
                                                           lookupWorksheetButton,
-                                                          atozNext, atozPrev, optionsButton,
+                                                          loadResults, optionsButton,
                                                           exportToExcelButton, importFromExcelButton,
                                                           transferResultsButton;
     @UiField
@@ -716,15 +716,27 @@ public class WorksheetCompletionScreenUI extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, loadResults) {
             public void executeQuery(final Query query) {
                 setBusy(Messages.get().querying());
 
                 if (queryCall == null) {
                     queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
                         public void success(ArrayList<IdNameVO> result) {
+                            ArrayList<IdNameVO> addedList;
+                            
                             clearStatus();
-                            setQueryResult(result);
+                            if (nav.getQuery().getPage() == 0) {
+                                setQueryResult(result);
+                                fetchById(result.get(0).getId());
+                                select(0);
+                            } else {
+                                addedList = getQueryResult();
+                                addedList.addAll(result);
+                                setQueryResult(addedList);
+                                select(atozTable.getModel().size() - result.size());
+                                atozTable.scrollToVisible(atozTable.getModel().size() - 1);
+                            }
                         }
                         
                         public void notFound() {

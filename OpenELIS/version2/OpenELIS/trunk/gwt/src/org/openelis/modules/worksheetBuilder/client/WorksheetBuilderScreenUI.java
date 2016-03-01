@@ -71,6 +71,7 @@ import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.report.client.WorksheetLabelReportScreen;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
@@ -135,6 +136,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     private ModulePermission                              userPermission;
     private ScreenNavigator<IdNameVO>                     nav;
     private String                                        selectedUid;
+    private WorksheetLabelReportScreen                    worksheetLabelReportScreen;
     private WorksheetManager1                             manager;
     private WorksheetPrintReportScreen                    worksheetPrintReportScreen;
 
@@ -146,14 +148,15 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected Button                                      query, previous, next,
                                                           add, update, commit, abort,
                                                           lookupWorksheetButton,
-                                                          atozNext, atozPrev, optionsButton,
+                                                          loadResults, optionsButton,
                                                           checkAllAnalytes, uncheckAllAnalytes;
     @UiField
     protected Dropdown<Integer>                           formatId, statusId;
     @UiField
     protected Menu                                        optionsMenu;
     @UiField
-    protected MenuItem                                    printWorksheet, worksheetHistory;
+    protected MenuItem                                    printLabels, printWorksheet,
+                                                          worksheetHistory;
     @UiField
     protected TabLayoutPanel                              tabPanel;
     @UiField
@@ -291,6 +294,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
                 printWorksheet.setEnabled(isState(DISPLAY));
+                printLabels.setEnabled(isState(DISPLAY));
                 worksheetHistory.setEnabled(isState(DISPLAY));
             }
         });
@@ -299,6 +303,13 @@ public class WorksheetBuilderScreenUI extends Screen {
             @Override
             public void execute() {
                 printWorksheet();
+            }
+        });
+
+        printLabels.addCommand(new Command() {
+            @Override
+            public void execute() {
+                printLabels();
             }
         });
 
@@ -556,15 +567,27 @@ public class WorksheetBuilderScreenUI extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, loadResults) {
             public void executeQuery(final Query query) {
                 setBusy(Messages.get().querying());
 
                 if (queryCall == null) {
                     queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
                         public void success(ArrayList<IdNameVO> result) {
+                            ArrayList<IdNameVO> addedList;
+                            
                             clearStatus();
-                            setQueryResult(result);
+                            if (nav.getQuery().getPage() == 0) {
+                                setQueryResult(result);
+                                fetchById(result.get(0).getId());
+                                select(0);
+                            } else {
+                                addedList = getQueryResult();
+                                addedList.addAll(result);
+                                setQueryResult(addedList);
+                                select(atozTable.getModel().size() - result.size());
+                                atozTable.scrollToVisible(atozTable.getModel().size() - 1);
+                            }
                         }
                         
                         public void notFound() {
@@ -1029,6 +1052,37 @@ public class WorksheetBuilderScreenUI extends Screen {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(Messages.get().print());
             modal.setContent(worksheetPrintReportScreen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    protected void printLabels() {
+        ScreenWindow modal;
+
+        try {
+            if (worksheetLabelReportScreen == null) {
+                worksheetLabelReportScreen = new WorksheetLabelReportScreen();
+
+                /*
+                 * we need to make sure that the value of WORKSHEET_ID gets set 
+                 * the first time the screen is brought up
+                 */
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID",
+                                                                 manager.getWorksheet().getId());
+                    }
+                });
+            } else {
+                worksheetLabelReportScreen.reset();
+                worksheetLabelReportScreen.setFieldValue("WORKSHEET_ID", manager.getWorksheet()
+                                                                                .getId());
+            }
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().print());
+            modal.setContent(worksheetLabelReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

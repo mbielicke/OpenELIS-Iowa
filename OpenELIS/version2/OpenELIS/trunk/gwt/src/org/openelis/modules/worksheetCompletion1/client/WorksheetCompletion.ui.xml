@@ -51,9 +51,7 @@
             <g:layer bottom="0px" height="26px">
               <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                 <g:HorizontalPanel>
-                  <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}"
-                            enabled="false" css="{res.atozButton}"/>
-                  <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}"
+                  <w:Button ui:field="loadResults" leftIcon="{res.atozButton.NextPageButtonImage}"
                             enabled="false" css="{res.atozButton}"/>
                 </g:HorizontalPanel>
               </g:HorizontalPanel>

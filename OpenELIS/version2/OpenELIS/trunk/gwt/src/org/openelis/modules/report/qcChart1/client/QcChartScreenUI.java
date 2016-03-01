@@ -105,7 +105,8 @@ public class QcChartScreenUI extends Screen {
 
     @UiField
     protected Button                             getDataButton, plotDataButton,
-                                                 selectButton, unselectButton, selectAllButton,
+                                                 expandButton, collapseButton, selectButton,
+                                                 unselectButton, selectAllButton,
                                                  unselectAllButton;
 
     @UiField
@@ -272,7 +273,7 @@ public class QcChartScreenUI extends Screen {
             }
             
             public Widget onTab(boolean forward) {
-                return forward ? selectButton : plotType;
+                return forward ? expandButton : plotType;
             }
         });
 
@@ -317,9 +318,21 @@ public class QcChartScreenUI extends Screen {
             }
         });
         
+        addScreenHandler(expandButton, "expandButton", new ScreenHandler<Object>() {
+            public Widget onTab(boolean forward) {
+                return forward ? collapseButton : plotDataTree;
+            }
+        });
+
+        addScreenHandler(collapseButton, "collapseButton", new ScreenHandler<Object>() {
+            public Widget onTab(boolean forward) {
+                return forward ? selectButton : expandButton;
+            }
+        });
+
         addScreenHandler(selectButton, "selectButton", new ScreenHandler<Object>() {
             public Widget onTab(boolean forward) {
-                return forward ? unselectButton : plotDataTree;
+                return forward ? unselectButton : collapseButton;
             }
         });
 
@@ -517,6 +530,8 @@ public class QcChartScreenUI extends Screen {
                 anode.add(dnode);
             }
             plotDataButton.setEnabled(true);
+            expandButton.setEnabled(true);
+            collapseButton.setEnabled(true);
             selectAllButton.setEnabled(true);
             unselectAllButton.setEnabled(true);
             setDone(Messages.get().gen_queryingComplete());
@@ -549,6 +564,24 @@ public class QcChartScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Expands the tree at every level
+     */
+    @SuppressWarnings("unused")
+    @UiHandler("expandButton")
+    protected void expand(ClickEvent event) {
+        plotDataTree.expand(1);
+    }
+
+    /**
+     * Collpases the tree at every level
+     */
+    @SuppressWarnings("unused")
+    @UiHandler("collapseButton")
+    protected void collapse(ClickEvent event) {
+        plotDataTree.collapse();
     }
 
     @SuppressWarnings("unused")
@@ -615,6 +648,8 @@ public class QcChartScreenUI extends Screen {
 
     private void disableScreenButtons() {
         plotDataButton.setEnabled(false);
+        expandButton.setEnabled(false);
+        collapseButton.setEnabled(false);
         results = null;
         plotDataTree.setRoot(new Node());
     }
