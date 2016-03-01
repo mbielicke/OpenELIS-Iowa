@@ -332,7 +332,7 @@ public class BillingExportBean {
              * while for other samples, it is the date collected.
              */
             hdr.accession = getSample(sm).getAccessionNumber();
-            if (getSample(sm).getCollectionDate() != null && getSampleEnvironmental(sm) == null)
+            if (getSample(sm).getCollectionDate() != null && getSampleEnvironmental(sm) == null && getSampleSDWIS(sm) == null)
                 hdr.service = DataBaseUtil.toDate(getSample(sm).getCollectionDate());
             else if (getSample(sm).getReceivedDate() != null)
                 hdr.service = DataBaseUtil.toDate(getSample(sm).getReceivedDate());
