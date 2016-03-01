@@ -543,7 +543,8 @@ public class WorksheetPrintReportBean {
                     
                     form.setField("worksheet_id_"+(i), wVDO.getId().toString());
                     form.setField("created_date_"+(i), ReportUtil.toString(wVDO.getCreatedDate(), Messages.get().dateTimePattern()));
-                    form.setField("position_"+(i), wiDO.getPosition().toString());
+                    if (waVDOMap.get(wiDO.getId()).indexOf(waVDO) == 0)
+                        form.setField("position_"+(i), wiDO.getPosition().toString());
     
                     if (waVDO.getAnalysisId() != null) {
                         sMan = sMap.get(waVDO.getAnalysisId());

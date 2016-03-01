@@ -102,6 +102,16 @@ public class LabelBean   {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<LabelDO> fetchList() throws Exception {
+        Query query;
+        List<LabelDO> labels;
+
+        query = manager.createNamedQuery("Label.FetchList");
+        labels = query.getResultList();
+        return DataBaseUtil.toArrayList(labels);
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;

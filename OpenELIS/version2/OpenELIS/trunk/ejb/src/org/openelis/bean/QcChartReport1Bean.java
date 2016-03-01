@@ -71,6 +71,8 @@ import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.domain.QcChartReportViewVO.Value;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetItemDO;
 import org.openelis.meta.QcChartMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -104,6 +106,12 @@ public class QcChartReport1Bean {
     
     @EJB
     private SystemVariableBean                          systemVariable;
+
+    @EJB
+    private WorksheetAnalysisBean                       worksheetAnalysis;
+
+    @EJB
+    private WorksheetItemBean                           worksheetItem;
 
     protected ArrayList<Integer>                        maxChars;
     protected ArrayList<DictionaryDO>                   qcColumns;
@@ -250,6 +258,8 @@ public class QcChartReport1Bean {
     protected Value getCommonFields(QcChartResultVO result) throws Exception {
         int i;
         Value vo;
+        WorksheetAnalysisDO waDO;
+        WorksheetItemDO wiDO;
 
         vo = new Value();
         vo.setIsPlot("Y");
@@ -263,6 +273,12 @@ public class QcChartReport1Bean {
         vo.setWorksheetFormat(result.getWorksheetFormat());
         for (i = 0; i < 30; i++)
             vo.setValueAt(i, result.getValueAt(i));
+        
+        if (result.getQcLinkId() != null) {
+            waDO = worksheetAnalysis.fetchById(result.getQcLinkId());
+            wiDO = worksheetItem.fetchById(waDO.getWorksheetItemId());
+            vo.setQcLink(waDO.getAccessionNumber() + " (" + wiDO.getPosition() + ")");
+        }
 
         return vo;
     }
@@ -688,16 +704,21 @@ public class QcChartReport1Bean {
         setCellValue(cell, "Created Date");
         setMaxChars(cell, maxChars);
 
+        cell = row.createCell(3);
+        cell.setCellStyle(headerStyle);
+        setCellValue(cell, "QC Link");
+        setMaxChars(cell, maxChars);
+
         if (qcColumns != null && !qcColumns.isEmpty()) {
             for (i = 0; i < qcColumns.size(); i++) {
-                cell = row.createCell(i + 3);
+                cell = row.createCell(i + 4);
                 cell.setCellStyle(headerStyle);
                 setCellValue(cell, qcColumns.get(i).getEntry());
                 setMaxChars(cell, maxChars);
             }
         } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
             for (i = 0; i < worksheetHeaders.size(); i++) {
-                cell = row.createCell(i + 3);
+                cell = row.createCell(i + 4);
                 cell.setCellStyle(headerStyle);
                 setCellValue(cell, worksheetHeaders.get(i));
                 setMaxChars(cell, maxChars);
@@ -734,6 +755,11 @@ public class QcChartReport1Bean {
         cell.setCellStyle(baseStyle);
         setCellValue(cell, getDateTimeLabel(value.getWorksheetCreatedDate(), Messages.get().gen_dateTimePattern()));
         setMaxChars(cell, maxChars);
+
+        cell = row.createCell(3);
+        cell.setCellStyle(baseStyle);
+        setCellValue(cell, value.getQcLink());
+        setMaxChars(cell, maxChars);
     }
 
     private void setResultCells(Value value, Row row, String qcFormat, String worksheetFormat) throws Exception {
@@ -745,14 +771,14 @@ public class QcChartReport1Bean {
             j = qcFormat.length() + 1;
             for (i = 0; i < qcColumns.size(); i++) {
                 column = qcColumns.get(i);
-                cell = row.createCell(i + 3);
+                cell = row.createCell(i + 4);
                 cell.setCellStyle(baseStyle);
                 setCellValue(cell, getValue(worksheetFormat, column.getSystemName().substring(j), value));
                 setMaxChars(cell, maxChars);
             }
         } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
             for (i = 0; i < worksheetHeaders.size(); i++) {
-                cell = row.createCell(i + 3);
+                cell = row.createCell(i + 4);
                 cell.setCellStyle(baseStyle);
                 setCellValue(cell, getValue(worksheetFormat, worksheetHeaderNames.get(i), value));
                 setMaxChars(cell, maxChars);
