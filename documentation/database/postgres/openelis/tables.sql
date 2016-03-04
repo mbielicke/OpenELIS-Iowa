@@ -98,7 +98,7 @@ create table attachment
     id                             serial not null,
     created_date                   timestamp not null,
     type_id                        integer,
-    section_id                     integer,
+    section_id                     integer not null,
     description                    varchar(80),
     storage_reference              varchar(255) not null
 );
