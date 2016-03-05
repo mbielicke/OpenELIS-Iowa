@@ -2,7 +2,6 @@ package org.openelis.bean;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -102,7 +101,7 @@ public class TurnaroundMaximumNotificationBean {
         analysisIds = new ArrayList<Integer>();
         try {
             resultList = analysis.fetchForTurnaroundMaximumReport();
-            log.fine("Considering " + resultList.size() + " cases to run");
+            log.info("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0) {
                 for (Object[] result : resultList) {
                     analysisId = (Integer)result[0];
@@ -118,7 +117,7 @@ public class TurnaroundMaximumNotificationBean {
                 }
                 
                 if (analysisIds.size() < 1) {
-                    log.fine("No cases exceeded max time");
+                    log.info("No cases exceeded max time");
                     return;
                 }
 

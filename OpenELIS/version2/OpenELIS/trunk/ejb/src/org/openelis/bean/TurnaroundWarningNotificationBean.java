@@ -101,7 +101,7 @@ public class TurnaroundWarningNotificationBean {
         analysisIds = new ArrayList<Integer>();
         try {
             resultList = analysis.fetchForTurnaroundWarningReport();
-            log.fine("Considering " + resultList.size() + " cases to run");
+            log.info("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0) {
                 for (Object[] result : resultList) {
                     analysisId = (Integer)result[0];
@@ -117,7 +117,7 @@ public class TurnaroundWarningNotificationBean {
                 }
 
                 if (analysisIds.size() < 1) {
-                    log.fine("No cases exceeded warning time");
+                    log.info("No cases exceeded warning time");
                     return;
                 }
 

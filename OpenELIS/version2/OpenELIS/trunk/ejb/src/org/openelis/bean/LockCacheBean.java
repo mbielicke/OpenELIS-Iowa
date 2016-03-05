@@ -96,11 +96,9 @@ public class LockCacheBean {
     public void remove(Lock.Key key) {
         Lock lock;
         
-        lock = locks.get(key);
-        if (lock != null) {
-            locks.remove(key);
+        lock = locks.remove(key);
+        if (lock != null)
             log.fine("Removed - " + lock);
-        }
     }
 
     /**
