@@ -75,6 +75,7 @@ public class PWSFileImportBean {
         status.setPercentComplete(0);
         session.setAttribute("PWSFileImport", status);
         try {
+            logger.info("calling pws importer");
             pwsImportHelper.load(status);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Could not load PWS: " + e.getMessage(), e);
@@ -82,6 +83,7 @@ public class PWSFileImportBean {
         }
 
         try {
+            logger.info("calling pws facility importer");
             pwsFacilityImportHelper.load(status);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Could not load PWS Facilities: " + e.getMessage(), e);
@@ -89,6 +91,7 @@ public class PWSFileImportBean {
         }
 
         try {
+            logger.info("calling pws address importer");
             pwsAddressImportHelper.load(status);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Could not load PWS Addresses: " + e.getMessage(), e);
@@ -96,6 +99,83 @@ public class PWSFileImportBean {
         }
 
         try {
+            logger.info("calling pws monitor importer");
+            pwsMonitorImportHelper.load(status);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not load PWS Monitors: " + e.getMessage(), e);
+            throw e;
+        }
+    }
+    
+    /**
+     * parses just the pws file and updates the database with this data.
+     */
+    public void importPWSFile() throws Exception {
+        ReportStatus status;
+
+        status = new ReportStatus();
+        status.setMessage(Messages.get().gen_initializing());
+        status.setPercentComplete(0);
+        session.setAttribute("PWSFileImport", status);
+        try {
+            logger.info("calling pws importer");
+            pwsImportHelper.load(status);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not load PWS: " + e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * parses just the pws facility file and updates the database with this data.
+     */
+    public void importFacilityFile() throws Exception {
+        ReportStatus status;
+
+        status = new ReportStatus();
+        status.setMessage(Messages.get().gen_initializing());
+        status.setPercentComplete(0);
+        session.setAttribute("PWSFileImport", status);
+        try {
+            logger.info("calling pws facility importer");
+            pwsFacilityImportHelper.load(status);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not load PWS Facilities: " + e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * parses just the pws address file and updates the database with this data.
+     */
+    public void importAddressFile() throws Exception {
+        ReportStatus status;
+
+        status = new ReportStatus();
+        status.setMessage(Messages.get().gen_initializing());
+        status.setPercentComplete(0);
+        session.setAttribute("PWSFileImport", status);
+        try {
+            logger.info("calling pws address importer");
+            pwsAddressImportHelper.load(status);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not load PWS Addresses: " + e.getMessage(), e);
+            throw e;
+        }
+    }
+    
+    /**
+     * parses just the pws monitor file and updates the database with this data.
+     */
+    public void importMonitorFile() throws Exception {
+        ReportStatus status;
+
+        status = new ReportStatus();
+        status.setMessage(Messages.get().gen_initializing());
+        status.setPercentComplete(0);
+        session.setAttribute("PWSFileImport", status);
+        try {
+            logger.info("calling pws monitor importer");
             pwsMonitorImportHelper.load(status);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Could not load PWS Monitors: " + e.getMessage(), e);
