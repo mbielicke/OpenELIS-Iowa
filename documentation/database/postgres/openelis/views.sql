@@ -374,7 +374,7 @@ create or replace view todo_sample_view as
                                                                                        where d.system_name = 'qaevent_override')
                            where sample_item.sample_id = s.id)) then 'Y'
            else 'N'
-       end as sample_result_override
+       end as sample_result_override, s.released_date
   from sample s
        join sample_item si on s.id = si.sample_id
        left join sample_environmental sen on s.id = sen.sample_id

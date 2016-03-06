@@ -1,9 +1,9 @@
-These instructions are used to create and load the inital database for openelis
+These instructions are used to create and load the initial database for openelis
 and security. The openelis database contains all the information for the
 laboratory system while the security database contains permissions
 (authorization) records for system users.
 
-The following steps can be used to create develpment, test, or production
+The following steps can be used to create development, test, or production
 databases depending on need. Our convention is to append "_dev" or "_test"
 after the database name for development and test; production database just
 used "openelis" or "security".
