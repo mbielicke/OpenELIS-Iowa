@@ -32,7 +32,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -68,6 +70,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1Accessor;
@@ -399,7 +402,7 @@ public class WorksheetPrintReportBean {
     }
     
     private Path fillPDFWorksheet(Integer worksheetId, String templateName) throws Exception {
-        int i, j, formCapacity, diagramCapacity;
+        int i, j, formCapacity, diagramCapacity, pageNumber;
         AcroFields form;
         AnalysisViewDO aVDO;
         ArrayList<AnalysisQaEventViewDO> aqeVDOs;
@@ -431,11 +434,13 @@ public class WorksheetPrintReportBean {
         SampleDO sDO;
         SampleItemViewDO siVDO;
         SampleManager1 sMan;
-        String collectionDateTime, dirName;
+        String collectionDateTime, dirName, now;
         StringBuilder aNotes, aQaevents, sNotes, sQaevents;
         WorksheetManager1 wMan;
         WorksheetViewDO wVDO;
 
+        now = ReportUtil.toString(new Date(), Messages.get().dateTimePattern());
+        
         dirName = "";
         try {
             sysVars = systemVariable.fetchByName("worksheet_template_directory", 1);
@@ -449,7 +454,7 @@ public class WorksheetPrintReportBean {
         analysisIds = new ArrayList<Integer>();
         qcLotIds = new ArrayList<Integer>();
         waVDOMap = new HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>>();
-        wMan = worksheetManager.fetchById(worksheetId, WorksheetManager1.Load.DETAIL);
+        wMan = worksheetManager.fetchById(worksheetId, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT);
         for (WorksheetAnalysisViewDO data : WorksheetManager1Accessor.getAnalyses(wMan)) {
             waVDOs = waVDOMap.get(data.getWorksheetItemId());
             if (waVDOs == null) {
@@ -515,6 +520,7 @@ public class WorksheetPrintReportBean {
             reader.close();
             
             i = -1;
+            pageNumber = 0;
             form = null;
             page = null;
             stamper = null;
@@ -526,8 +532,10 @@ public class WorksheetPrintReportBean {
                 for (WorksheetAnalysisViewDO waVDO : waVDOMap.get(wiDO.getId())) {
                     if (i == -1 || i > formCapacity || j > diagramCapacity) {
                         if (i != -1) {
+                            fillReagentFields(form, wMan);
                             stamper.setFormFlattening(true);
-                            flattenFilledFields(stamper, formCapacity);
+                            renameFields(form, pageNumber);
+                            flattenFilledFields(stamper, formCapacity, pageNumber);
                             stamper.close();
                             reader.close();
                             reader = new PdfReader(page.toByteArray());
@@ -539,6 +547,9 @@ public class WorksheetPrintReportBean {
                         stamper = new PdfStamper(reader, page);
                         form = stamper.getAcroFields();
                         i = 1;
+                        pageNumber++;
+
+                        form.setField("current_date_time_", now);
                     }
                     
                     form.setField("worksheet_id_"+(i), wVDO.getId().toString());
@@ -674,8 +685,10 @@ public class WorksheetPrintReportBean {
                     i++;
                 }
             }
+            fillReagentFields(form, wMan);
             stamper.setFormFlattening(true);
-            flattenFilledFields(stamper, formCapacity);
+            renameFields(form, pageNumber);
+            flattenFilledFields(stamper, formCapacity, pageNumber);
             stamper.close();
             reader.close();
             
@@ -693,40 +706,69 @@ public class WorksheetPrintReportBean {
         }
         return path;
     }
+    
+    private void fillReagentFields(AcroFields form, WorksheetManager1 wMan) throws Exception {
+        int i;
+        ArrayList<WorksheetReagentViewDO> wrVDOs;
+        
+        wrVDOs = WorksheetManager1Accessor.getReagents(wMan);
+        if (wrVDOs != null && wrVDOs.size() > 0) {
+            i = 1;
+            for (WorksheetReagentViewDO wrVDO : wrVDOs) {
+                form.setField("reagent_media_name_"+(i), wrVDO.getQcName());
+                form.setField("reagent_media_lot_"+(i), wrVDO.getLotNumber());
+                form.setField("reagent_media_expiration_"+(i), ReportUtil.toString(wrVDO.getExpireDate(), Messages.get().dateTimePattern()));
+                i++;
+            }
+        }
+    }
 
-    private void flattenFilledFields(PdfStamper stamper, int formCapacity) {
+    private void flattenFilledFields(PdfStamper stamper, int formCapacity, int pageNumber) {
         int i;
         
         for (i = 1; i <= formCapacity; i++) {
-            stamper.partialFormFlattening("worksheet_id_"+i);
-            stamper.partialFormFlattening("created_date_"+i);
-            stamper.partialFormFlattening("position_"+i);
-            stamper.partialFormFlattening("well_label_"+i);
-            stamper.partialFormFlattening("accession_number_"+i);
-            stamper.partialFormFlattening("collection_date_"+i);
-            stamper.partialFormFlattening("received_date_"+i);
-            stamper.partialFormFlattening("patient_last_"+i);
-            stamper.partialFormFlattening("patient_first_"+i);
-            stamper.partialFormFlattening("provider_last_"+i);
-            stamper.partialFormFlattening("provider_first_"+i);
-            stamper.partialFormFlattening("env_location_"+i);
-            stamper.partialFormFlattening("env_description_"+i);
-            stamper.partialFormFlattening("organization_name_"+i);
-            stamper.partialFormFlattening("bill_to_name_"+i);
-            stamper.partialFormFlattening("type_of_sample_"+i);
-            stamper.partialFormFlattening("source_of_sample_"+i);
-            stamper.partialFormFlattening("source_other_"+i);
-            stamper.partialFormFlattening("container_reference_"+i);
-            stamper.partialFormFlattening("test_"+i);
-            stamper.partialFormFlattening("method_"+i);
-            stamper.partialFormFlattening("sample_qaevent_"+i);
-            stamper.partialFormFlattening("analysis_qaevent_"+i);
-            stamper.partialFormFlattening("sample_note_"+i);
-            stamper.partialFormFlattening("analysis_note_"+i);
-            stamper.partialFormFlattening("qc_name_"+i);
-            stamper.partialFormFlattening("qc_lot_"+i);
-            stamper.partialFormFlattening("qc_expiration_"+i);
-            stamper.partialFormFlattening("qc_expected_value_"+i);
+            stamper.partialFormFlattening("current_date_time_page"+pageNumber);
+            stamper.partialFormFlattening("worksheet_id_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("created_date_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("position_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("well_label_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("accession_number_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("collection_date_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("received_date_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("patient_last_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("patient_first_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("provider_last_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("provider_first_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("env_location_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("env_description_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("organization_name_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("bill_to_name_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("type_of_sample_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("source_of_sample_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("source_other_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("container_reference_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("test_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("method_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("sample_qaevent_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("analysis_qaevent_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("sample_note_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("analysis_note_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("qc_name_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("qc_lot_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("qc_expiration_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("qc_expected_value_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("reagent_media_name_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("reagent_media_lot_"+i+"_page"+pageNumber);
+            stamper.partialFormFlattening("reagent_media_expiration_"+i+"_page"+pageNumber);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void renameFields(AcroFields form, int pageNumber) {
+        Set<String> fieldNames;
+        
+        fieldNames = ((HashMap<String, AcroFields.Item>)form.getFields().clone()).keySet();
+        for (String fieldName : fieldNames)
+            form.renameField(fieldName, fieldName + "_page" + pageNumber);
     }
 }
