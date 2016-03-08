@@ -116,13 +116,18 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.sampleOrganization_reportTo}:" />
+                  <g:HorizontalPanel>
+                    <g:HorizontalPanel width="23px"/>                    
+                    <w:Dropdown ui:field="organizationTypeId" field="Integer" width="70px" />
+                    <w:Label text=":"/> <!-- styleName="{res.style.Prompt}" -->
+                  </g:HorizontalPanel>
                 </td>
-                <td colspan="3">
-                  <w:TextBox ui:field="reportTo" field="String" width="305px" case="UPPER" />
+                <td>
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="organizationName" field="String" width="125px"
+                      case="UPPER" />
+                  </g:HorizontalPanel>
                 </td>
-              </tr>
-              <tr>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.sample_domain}:" />
                 </td>
@@ -135,7 +140,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="225px" bottom="35px">
+    <g:layer top="210px" bottom="35px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>

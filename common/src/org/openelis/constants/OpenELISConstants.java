@@ -4363,6 +4363,78 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_atLeastOnePairFilledException();
 
   /**
+   * Translated "Bill To Address".
+   * 
+   * @return translated "Bill To Address"
+   */
+  @DefaultMessage("Bill To Address")
+  @Key("dataView.billToAddress")
+  String dataView_billToAddress();
+
+  /**
+   * Translated "Bill To Apt/Suite #".
+   * 
+   * @return translated "Bill To Apt/Suite #"
+   */
+  @DefaultMessage("Bill To Apt/Suite #")
+  @Key("dataView.billToAptSuite")
+  String dataView_billToAptSuite();
+
+  /**
+   * Translated "Bill To Attention".
+   * 
+   * @return translated "Bill To Attention"
+   */
+  @DefaultMessage("Bill To Attention")
+  @Key("dataView.billToAttention")
+  String dataView_billToAttention();
+
+  /**
+   * Translated "Bill To City".
+   * 
+   * @return translated "Bill To City"
+   */
+  @DefaultMessage("Bill To City")
+  @Key("dataView.billToCity")
+  String dataView_billToCity();
+
+  /**
+   * Translated "Bill To Name".
+   * 
+   * @return translated "Bill To Name"
+   */
+  @DefaultMessage("Bill To Name")
+  @Key("dataView.billToName")
+  String dataView_billToName();
+
+  /**
+   * Translated "Bill To #".
+   * 
+   * @return translated "Bill To #"
+   */
+  @DefaultMessage("Bill To #")
+  @Key("dataView.billToNum")
+  String dataView_billToNum();
+
+  /**
+   * Translated "Bill To State".
+   * 
+   * @return translated "Bill To State"
+   */
+  @DefaultMessage("Bill To State")
+  @Key("dataView.billToState")
+  String dataView_billToState();
+
+  /**
+   * Translated "Bill To Zip Code".
+   * 
+   * @return translated "Bill To Zip Code"
+   */
+  @DefaultMessage("Bill To Zip Code")
+  @Key("dataView.billToZipcode")
+  String dataView_billToZipcode();
+
+  /**
    * Translated "By".
    * 
    * @return translated "By"
@@ -4867,6 +4939,78 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_reportStopped();
 
   /**
+   * Translated "Report To Address".
+   * 
+   * @return translated "Report To Address"
+   */
+  @DefaultMessage("Report To Address")
+  @Key("dataView.reportToAddress")
+  String dataView_reportToAddress();
+
+  /**
+   * Translated "Report To Apt/Suite #".
+   * 
+   * @return translated "Report To Apt/Suite #"
+   */
+  @DefaultMessage("Report To Apt/Suite #")
+  @Key("dataView.reportToAptSuite")
+  String dataView_reportToAptSuite();
+
+  /**
+   * Translated "Report To Attention".
+   * 
+   * @return translated "Report To Attention"
+   */
+  @DefaultMessage("Report To Attention")
+  @Key("dataView.reportToAttention")
+  String dataView_reportToAttention();
+
+  /**
+   * Translated "Report To City".
+   * 
+   * @return translated "Report To City"
+   */
+  @DefaultMessage("Report To City")
+  @Key("dataView.reportToCity")
+  String dataView_reportToCity();
+
+  /**
+   * Translated "Report To Name".
+   * 
+   * @return translated "Report To Name"
+   */
+  @DefaultMessage("Report To Name")
+  @Key("dataView.reportToName")
+  String dataView_reportToName();
+
+  /**
+   * Translated "Report To #".
+   * 
+   * @return translated "Report To #"
+   */
+  @DefaultMessage("Report To #")
+  @Key("dataView.reportToNum")
+  String dataView_reportToNum();
+
+  /**
+   * Translated "Report To State".
+   * 
+   * @return translated "Report To State"
+   */
+  @DefaultMessage("Report To State")
+  @Key("dataView.reportToState")
+  String dataView_reportToState();
+
+  /**
+   * Translated "Report To Zip Code".
+   * 
+   * @return translated "Report To Zip Code"
+   */
+  @DefaultMessage("Report To Zip Code")
+  @Key("dataView.reportToZipcode")
+  String dataView_reportToZipcode();
+
+  /**
    * Translated "Reportable Only".
    * 
    * @return translated "Reportable Only"
@@ -4928,6 +5072,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Analysis Fields For Output")
   @Key("dataView.selectAnalysisField")
   String dataView_selectAnalysisField();
+
+  /**
+   * Translated "Select Bill To Fields For Output".
+   * 
+   * @return translated "Select Bill To Fields For Output"
+   */
+  @DefaultMessage("Select Bill To Fields For Output")
+  @Key("dataView.selectBillToField")
+  String dataView_selectBillToField();
 
   /**
    * Translated "Select Environmental Fields For Output".
@@ -5000,6 +5153,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Provider Fields For Output")
   @Key("dataView.selectProviderField")
   String dataView_selectProviderField();
+
+  /**
+   * Translated "Select Report To Fields For Output".
+   * 
+   * @return translated "Select Report To Fields For Output"
+   */
+  @DefaultMessage("Select Report To Fields For Output")
+  @Key("dataView.selectReportToField")
+  String dataView_selectReportToField();
 
   /**
    * Translated "Select Sample Fields For Output".
@@ -12850,6 +13012,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String order_shipTo();
 
   /**
+   * Translated "Ship To Id, Name".
+   * 
+   * @return translated "Ship To Id, Name"
+   */
+  @DefaultMessage("Ship To Id, Name")
+  @Key("order.shipToIdName")
+  String order_shipToIdName();
+
+  /**
    * Translated "Shipping Information".
    * 
    * @return translated "Shipping Information"
@@ -15053,6 +15224,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Get Data")
   @Key("qc.getData")
   String qc_getData();
+
+  /**
+   * Translated "Internal Notes".
+   * 
+   * @return translated "Internal Notes"
+   */
+  @DefaultMessage("Internal Notes")
+  @Key("qc.internalNotes")
+  String qc_internalNotes();
 
   /**
    * Translated "Invalid value for selected type".

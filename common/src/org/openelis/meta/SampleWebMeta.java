@@ -258,6 +258,24 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ADDR_STATE = "_address.state", ADDR_ZIP_CODE = "_address.zipCode",
                     ADDR_COUNTRY = "_address.country",
 
+                    REPORT_TO_ATTENTION = "_reportTo.attention",
+                    REPORT_TO_ORG_ID = "_reportToOrganization.id", REPORT_TO_ORG_NAME = "_reportToOrganization.name",
+
+                    REPORT_TO_ADDR_MULTIPLE_UNIT = "_reportToAddress.multipleUnit",
+                    REPORT_TO_ADDR_STREET_ADDRESS = "_reportToAddress.streetAddress",
+                    REPORT_TO_ADDR_CITY = "_reportToAddress.city", REPORT_TO_ADDR_STATE = "_reportToAddress.state",
+                    REPORT_TO_ADDR_ZIP_CODE = "_reportToAddress.zipCode",
+                    REPORT_TO_ADDR_COUNTRY = "_reportToAddress.country",
+
+                    BILL_TO_ATTENTION = "_billTo.attention",
+                    BILL_TO_ORG_ID = "_billToOrganization.id", BILL_TO_ORG_NAME = "_billToOrganization.name",
+
+                    BILL_TO_ADDR_MULTIPLE_UNIT = "_billToAddress.multipleUnit",
+                    BILL_TO_ADDR_STREET_ADDRESS = "_billToAddress.streetAddress",
+                    BILL_TO_ADDR_CITY = "_billToAddress.city", BILL_TO_ADDR_STATE = "_billToAddress.state",
+                    BILL_TO_ADDR_ZIP_CODE = "_billToAddress.zipCode",
+                    BILL_TO_ADDR_COUNTRY = "_billToAddress.country",
+
                     SAMPLE_PROJECT_ID = "_sampleProject.id",
                     SAMPLE_PROJECT_SAMPLE_ID = "_sampleProject.sampleId",
                     SAMPLE_PROJECT_PROJECT_ID = "_sampleProject.projectId",
@@ -265,7 +283,7 @@ public class SampleWebMeta implements Meta, MetaMap {
 
                     PROJECT_ID = "_project.id", PROJECT_ID_HEADER = "_project.idHeader",
                     PROJECT_NAME = "_project.name", PROJECT_DESCRIPTION = "_project.description",
-                    
+
                     SAMPLE_QA_EVENT_QA_EVENT_NAME = "_sQaevent.name",
 
                     NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
@@ -501,6 +519,20 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ADDR_STATE,
                                                   ADDR_ZIP_CODE,
                                                   ADDR_COUNTRY,
+                                                  REPORT_TO_ATTENTION,
+                                                  REPORT_TO_ORG_ID, REPORT_TO_ORG_NAME,
+                                                  REPORT_TO_ADDR_MULTIPLE_UNIT,
+                                                  REPORT_TO_ADDR_STREET_ADDRESS,
+                                                  REPORT_TO_ADDR_CITY, REPORT_TO_ADDR_STATE,
+                                                  REPORT_TO_ADDR_ZIP_CODE,
+                                                  REPORT_TO_ADDR_COUNTRY,
+                                                  BILL_TO_ATTENTION,
+                                                  BILL_TO_ORG_ID, BILL_TO_ORG_NAME,
+                                                  BILL_TO_ADDR_MULTIPLE_UNIT,
+                                                  BILL_TO_ADDR_STREET_ADDRESS,
+                                                  BILL_TO_ADDR_CITY, BILL_TO_ADDR_STATE,
+                                                  BILL_TO_ADDR_ZIP_CODE,
+                                                  BILL_TO_ADDR_COUNTRY,
                                                   SAMPLE_PROJECT_ID,
                                                   SAMPLE_PROJECT_SAMPLE_ID,
                                                   SAMPLE_PROJECT_PROJECT_ID,
@@ -634,11 +666,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getLocationAddrMultipleUnit() {
         return LOCATION_ADDR_MULTIPLE_UNIT;
     }
-    
+
     public static String getLocationAddrStreetAddress() {
         return LOCATION_ADDR_STREET_ADDRESS;
     }
-    
+
     public static String getLocationAddrCity() {
         return LOCATION_ADDR_CITY;
     }
@@ -646,31 +678,31 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getLocationAddrState() {
         return LOCATION_ADDR_STATE;
     }
-    
+
     public static String getLocationAddrZipCode() {
         return LOCATION_ADDR_ZIP_CODE;
     }
-    
+
     public static String getLocationAddrWorkPhone() {
         return LOCATION_ADDR_WORK_PHONE;
     }
-    
+
     public static String getLocationAddrHomePhone() {
         return LOCATION_ADDR_HOME_PHONE;
     }
-    
+
     public static String getLocationAddrCellPhone() {
         return LOCATION_ADDR_CELL_PHONE;
     }
-    
+
     public static String getLocationAddrFaxPhone() {
         return LOCATION_ADDR_FAX_PHONE;
     }
-    
+
     public static String getLocationAddrEmail() {
         return LOCATION_ADDR_EMAIL;
     }
-    
+
     public static String getLocationAddrCountry() {
         return LOCATION_ADDR_COUNTRY;
     }
@@ -774,7 +806,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getWellReportToAddressCity() {
         return WELL_REPORT_TO_ADDR_CITY;
     }
-    
+
     public static String getWellReportToAddressWorkPhone() {
         return WELL_REPORT_TO_ADDR_WORK_PHONE;
     }
@@ -782,7 +814,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getWellReportToAddressFaxPhone() {
         return WELL_REPORT_TO_ADDR_FAX_PHONE;
     }
-    
+
     public static String getWellLocationAddrId() {
         return WELL_LOCATION_ADDR_ID;
     }
@@ -806,7 +838,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getWellLocationAddrZipCode() {
         return WELL_LOCATION_ADDR_ZIP_CODE;
     }
-    
+
     public static String getWellLocationAddrWorkPhone() {
         return WELL_LOCATION_ADDR_WORK_PHONE;
     }
@@ -854,11 +886,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getSDWISCollector() {
         return SDWIS_COLLECTOR;
     }
-    
+
     public static String getSDWISCollectorHeader() {
         return SDWIS_COLLECTOR_HEADER;
     }
-    
+
     public static String getPwsNumber0() {
         return PWS_NUMBER0;
     }
@@ -1054,7 +1086,7 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getClinicalPatientLastName() {
         return CLIN_PATIENT_LAST_NAME;
     }
-    
+
     public static String getClinicalPatientLastNameHeader() {
         return CLIN_PATIENT_LAST_NAME_HEADER;
     }
@@ -1190,11 +1222,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getAnalysisRevision() {
         return ANALYSIS_REVISION;
     }
-    
+
     public static String getAnalysisSectionId() {
         return ANALYSIS_SECTION_ID;
     }
-    
+
     public static String getAnalysisTypeId() {
         return ANALYSIS_TYPE_ID;
     }
@@ -1350,6 +1382,78 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getAddressCountry() {
         return ADDR_COUNTRY;
     }
+    
+    public static String getReportToAttention() {
+        return REPORT_TO_ATTENTION;
+    }
+    
+    public static String getReportToOrganizationId() {
+        return REPORT_TO_ORG_ID;
+    }
+
+    public static String getReportToOrganizationName() {
+        return REPORT_TO_ORG_NAME;
+    }
+
+    public static String getReportToAddressMultipleUnit() {
+        return REPORT_TO_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getReportToAddressStreetAddress() {
+        return REPORT_TO_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getReportToAddressCity() {
+        return REPORT_TO_ADDR_CITY;
+    }
+
+    public static String getReportToAddressState() {
+        return REPORT_TO_ADDR_STATE;
+    }
+
+    public static String getReportToAddressZipCode() {
+        return REPORT_TO_ADDR_ZIP_CODE;
+    }
+
+    public static String getReportToAddressCountry() {
+        return REPORT_TO_ADDR_COUNTRY;
+    }
+    
+    public static String getBillToAttention() {
+        return BILL_TO_ATTENTION;
+    }
+    
+    public static String getBillToOrganizationId() {
+        return BILL_TO_ORG_ID;
+    }
+
+    public static String getBillToOrganizationName() {
+        return BILL_TO_ORG_NAME;
+    }
+
+    public static String getBillToAddressMultipleUnit() {
+        return BILL_TO_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getBillToAddressStreetAddress() {
+        return BILL_TO_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getBillToAddressCity() {
+        return BILL_TO_ADDR_CITY;
+    }
+
+    public static String getBillToAddressState() {
+        return BILL_TO_ADDR_STATE;
+    }
+
+    public static String getBillToAddressZipCode() {
+        return BILL_TO_ADDR_ZIP_CODE;
+    }
+
+    public static String getBillToAddressCountry() {
+        return BILL_TO_ADDR_COUNTRY;
+    }
 
     public static String getSampleProjectId() {
         return SAMPLE_PROJECT_ID;
@@ -1382,8 +1486,8 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getProjectDescription() {
         return PROJECT_DESCRIPTION;
     }
-    
-    public static String getSampleQAEventQAEventName() {    
+
+    public static String getSampleQAEventQAEventName() {
         return SAMPLE_QA_EVENT_QA_EVENT_NAME;
     }
 

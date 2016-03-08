@@ -27,9 +27,6 @@ package org.openelis.modules.report.dataView1.client;
 
 import static org.openelis.ui.screen.State.*;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.event.DataChangeEvent;
@@ -56,11 +53,14 @@ public class CommonTabUI extends Screen {
     @UiField
     protected CheckBox               accessionNumber, revision, collectionDate, receivedDate,
                     enteredDate, releasedDate, statusId, sampleQAEventQAEventName, projectName,
-                    clientReferenceHeader, sampleOrgId, sampleOrgOrganizationName,
-                    sampleOrgAttention, addressMultipleUnit, addressStreetAddress, addressCity,
-                    addressState, addressZipCode, itemTypeofSampleId, itemSourceOfSampleId,
-                    itemSourceOther, itemContainerId, itemContainerReference, itemItemSequence,
-                    analysisId, analysisTestNameHeader, analysisMethodNameHeader,
+                    clientReferenceHeader, reportToOrganizationId, reportToOrganizationName,
+                    reportToAttention, reportToAddressMultipleUnit, reportToAddressStreetAddress,
+                    reportToAddressCity, reportToAddressState, reportToAddressZipCode,
+                    billToOrganizationId, billToOrganizationName, billToAttention,
+                    billToAddressMultipleUnit, billToAddressStreetAddress, billToAddressCity,
+                    billToAddressState, billToAddressZipCode, itemTypeofSampleId,
+                    itemSourceOfSampleId, itemSourceOther, itemContainerId, itemContainerReference,
+                    itemItemSequence, analysisId, analysisTestNameHeader, analysisMethodNameHeader,
                     analysisStatusIdHeader, analysisRevision, analysisIsReportableHeader,
                     analysisUnitOfMeasureId, analysisQAEventQAEventName, analysisCompletedDate,
                     analysisCompletedBy, analysisReleasedDate, analysisReleasedBy,
@@ -268,163 +268,332 @@ public class CommonTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? sampleOrgId : projectName;
+                                 return forward ? reportToOrganizationId : projectName;
                              }
                          });
 
-        addScreenHandler(sampleOrgId, SampleWebMeta.SAMPLE_ORG_ID, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent<String> event) {
-                sampleOrgId.setValue(getValue(SampleWebMeta.SAMPLE_ORG_ID));
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                addRemoveColumn(SampleWebMeta.SAMPLE_ORG_ID, event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                sampleOrgId.setEnabled(isState(DEFAULT));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? sampleOrgOrganizationName : clientReferenceHeader;
-            }
-        });
-
-        addScreenHandler(sampleOrgOrganizationName,
-                         SampleWebMeta.ORG_NAME,
+        addScreenHandler(reportToOrganizationId,
+                         SampleWebMeta.REPORT_TO_ORG_ID,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
-                                 sampleOrgOrganizationName.setValue(getValue(SampleWebMeta.ORG_NAME));
+                                 reportToOrganizationId.setValue(getValue(SampleWebMeta.REPORT_TO_ORG_ID));
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 addRemoveColumn(SampleWebMeta.ORG_NAME, event.getValue());
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ORG_ID, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sampleOrgOrganizationName.setEnabled(isState(DEFAULT));
+                                 reportToOrganizationId.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? sampleOrgAttention : sampleOrgId;
+                                 return forward ? reportToOrganizationName : clientReferenceHeader;
                              }
                          });
 
-        addScreenHandler(sampleOrgAttention,
-                         SampleWebMeta.SAMPLE_ORG_ATTENTION,
+        addScreenHandler(reportToOrganizationName,
+                         SampleWebMeta.REPORT_TO_ORG_NAME,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
-                                 sampleOrgAttention.setValue(getValue(SampleWebMeta.SAMPLE_ORG_ATTENTION));
+                                 reportToOrganizationName.setValue(getValue(SampleWebMeta.REPORT_TO_ORG_NAME));
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 addRemoveColumn(SampleWebMeta.SAMPLE_ORG_ATTENTION,
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ORG_NAME, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportToOrganizationName.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToAttention : reportToOrganizationId;
+                             }
+                         });
+
+        addScreenHandler(reportToAttention,
+                         SampleWebMeta.REPORT_TO_ATTENTION,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 reportToAttention.setValue(getValue(SampleWebMeta.REPORT_TO_ATTENTION));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ATTENTION,
                                                  event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sampleOrgAttention.setEnabled(isState(DEFAULT));
+                                 reportToAttention.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? addressMultipleUnit : sampleOrgOrganizationName;
+                                 return forward ? reportToAddressMultipleUnit
+                                               : reportToOrganizationName;
                              }
                          });
 
-        addScreenHandler(addressMultipleUnit,
-                         SampleWebMeta.ADDR_MULTIPLE_UNIT,
+        addScreenHandler(reportToAddressMultipleUnit,
+                         SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
-                                 addressMultipleUnit.setValue(getValue(SampleWebMeta.ADDR_MULTIPLE_UNIT));
+                                 reportToAddressMultipleUnit.setValue(getValue(SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT));
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 addRemoveColumn(SampleWebMeta.ADDR_MULTIPLE_UNIT, event.getValue());
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT, event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 addressMultipleUnit.setEnabled(isState(DEFAULT));
+                                 reportToAddressMultipleUnit.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? addressStreetAddress : sampleOrgAttention;
+                                 return forward ? reportToAddressStreetAddress : reportToAttention;
                              }
                          });
 
-        addScreenHandler(addressStreetAddress,
-                         SampleWebMeta.ADDR_STREET_ADDRESS,
+        addScreenHandler(reportToAddressStreetAddress,
+                         SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
-                                 addressStreetAddress.setValue(getValue(SampleWebMeta.ADDR_STREET_ADDRESS));
+                                 reportToAddressStreetAddress.setValue(getValue(SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS));
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 addRemoveColumn(SampleWebMeta.ADDR_STREET_ADDRESS,
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS,
                                                  event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 addressStreetAddress.setEnabled(isState(DEFAULT));
+                                 reportToAddressStreetAddress.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? addressCity : addressMultipleUnit;
+                                 return forward ? reportToAddressCity : reportToAddressMultipleUnit;
                              }
                          });
 
-        addScreenHandler(addressCity, SampleWebMeta.ADDR_CITY, new ScreenHandler<String>() {
+        addScreenHandler(reportToAddressCity, SampleWebMeta.REPORT_TO_ADDR_CITY, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
-                addressCity.setValue(getValue(SampleWebMeta.ADDR_CITY));
+                reportToAddressCity.setValue(getValue(SampleWebMeta.REPORT_TO_ADDR_CITY));
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                addRemoveColumn(SampleWebMeta.ADDR_CITY, event.getValue());
+                addRemoveColumn(SampleWebMeta.REPORT_TO_ADDR_CITY, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                addressCity.setEnabled(isState(DEFAULT));
+                reportToAddressCity.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? addressState : addressStreetAddress;
+                return forward ? reportToAddressState : reportToAddressStreetAddress;
             }
         });
 
-        addScreenHandler(addressState, SampleWebMeta.ADDR_STATE, new ScreenHandler<String>() {
+        addScreenHandler(reportToAddressState,
+                         SampleWebMeta.REPORT_TO_ADDR_STATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 reportToAddressState.setValue(getValue(SampleWebMeta.REPORT_TO_ADDR_STATE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ADDR_STATE, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportToAddressState.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToAddressZipCode : reportToAddressCity;
+                             }
+                         });
+
+        addScreenHandler(reportToAddressZipCode,
+                         SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 reportToAddressZipCode.setValue(getValue(SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportToAddressZipCode.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemTypeofSampleId : reportToAddressState;
+                             }
+                         });
+        
+
+        addScreenHandler(billToOrganizationId,
+                         SampleWebMeta.BILL_TO_ORG_ID,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToOrganizationId.setValue(getValue(SampleWebMeta.BILL_TO_ORG_ID));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ORG_ID, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToOrganizationId.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToOrganizationName : clientReferenceHeader;
+                             }
+                         });
+
+        addScreenHandler(billToOrganizationName,
+                         SampleWebMeta.BILL_TO_ORG_NAME,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToOrganizationName.setValue(getValue(SampleWebMeta.BILL_TO_ORG_NAME));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ORG_NAME, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToOrganizationName.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToAttention : reportToOrganizationId;
+                             }
+                         });
+
+        addScreenHandler(billToAttention,
+                         SampleWebMeta.BILL_TO_ATTENTION,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToAttention.setValue(getValue(SampleWebMeta.BILL_TO_ATTENTION));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ATTENTION,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToAttention.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? billToAddressMultipleUnit
+                                               : billToOrganizationName;
+                             }
+                         });
+
+        addScreenHandler(billToAddressMultipleUnit,
+                         SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToAddressMultipleUnit.setValue(getValue(SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToAddressMultipleUnit.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? billToAddressStreetAddress : reportToAttention;
+                             }
+                         });
+
+        addScreenHandler(billToAddressStreetAddress,
+                         SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToAddressStreetAddress.setValue(getValue(SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS,
+                                                 event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToAddressStreetAddress.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? billToAddressCity : billToAddressMultipleUnit;
+                             }
+                         });
+
+        addScreenHandler(billToAddressCity, SampleWebMeta.BILL_TO_ADDR_CITY, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
-                addressState.setValue(getValue(SampleWebMeta.ADDR_STATE));
+                billToAddressCity.setValue(getValue(SampleWebMeta.BILL_TO_ADDR_CITY));
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                addRemoveColumn(SampleWebMeta.ADDR_STATE, event.getValue());
+                addRemoveColumn(SampleWebMeta.BILL_TO_ADDR_CITY, event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                addressState.setEnabled(isState(DEFAULT));
+                billToAddressCity.setEnabled(isState(DEFAULT));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? addressZipCode : addressCity;
+                return forward ? billToAddressState : billToAddressStreetAddress;
             }
         });
 
-        addScreenHandler(addressZipCode, SampleWebMeta.ADDR_ZIP_CODE, new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent<String> event) {
-                addressZipCode.setValue(getValue(SampleWebMeta.ADDR_ZIP_CODE));
-            }
+        addScreenHandler(billToAddressState,
+                         SampleWebMeta.BILL_TO_ADDR_STATE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToAddressState.setValue(getValue(SampleWebMeta.BILL_TO_ADDR_STATE));
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                addRemoveColumn(SampleWebMeta.ADDR_ZIP_CODE, event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ADDR_STATE, event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                addressZipCode.setEnabled(isState(DEFAULT));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToAddressState.setEnabled(isState(DEFAULT));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? itemTypeofSampleId : addressState;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? billToAddressZipCode : billToAddressCity;
+                             }
+                         });
+
+        addScreenHandler(billToAddressZipCode,
+                         SampleWebMeta.BILL_TO_ADDR_ZIP_CODE,
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent<String> event) {
+                                 billToAddressZipCode.setValue(getValue(SampleWebMeta.BILL_TO_ADDR_ZIP_CODE));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 addRemoveColumn(SampleWebMeta.BILL_TO_ADDR_ZIP_CODE, event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 billToAddressZipCode.setEnabled(isState(DEFAULT));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? itemTypeofSampleId : billToAddressState;
+                             }
+                         });
 
         addScreenHandler(itemTypeofSampleId,
                          SampleWebMeta.ITEM_TYPE_OF_SAMPLE_ID,
@@ -443,7 +612,7 @@ public class CommonTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? itemSourceOfSampleId : addressZipCode;
+                                 return forward ? itemSourceOfSampleId : reportToAddressZipCode;
                              }
                          });
 

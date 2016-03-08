@@ -99,7 +99,7 @@
           </tr>
           <tr>
             <td class="{res.style.Heading}" colspan="7">
-              <ui:text from="{msg.dataView_selectOrganizationField}" />
+              <ui:text from="{msg.dataView_selectReportToField}" />
             </td>
           </tr>
           <tr>
@@ -107,31 +107,31 @@
               <g:HorizontalPanel width="45px" />
             </td>
             <td>
-              <w:CheckBox ui:field="sampleOrgId" />
+              <w:CheckBox ui:field="reportToOrganizationId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.gen_id}" />
             </td>
             <td>
-              <w:CheckBox ui:field="sampleOrgOrganizationName" />
+              <w:CheckBox ui:field="reportToOrganizationName" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.gen_name}" />
             </td>
             <td>
-              <w:CheckBox ui:field="sampleOrgAttention" />
+              <w:CheckBox ui:field="reportToAttention" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.order_attention}" />
             </td>
             <td>
-              <w:CheckBox ui:field="addressMultipleUnit" />
+              <w:CheckBox ui:field="reportToAddressMultipleUnit" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_aptSuite}" />
             </td>
             <td>
-              <w:CheckBox ui:field="addressStreetAddress" />
+              <w:CheckBox ui:field="reportToAddressStreetAddress" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_address}" />
@@ -142,19 +142,87 @@
               <g:HorizontalPanel width="45px" />
             </td>
             <td>
-              <w:CheckBox ui:field="addressCity" />
+              <w:CheckBox ui:field="reportToAddressCity" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_city}" />
             </td>
             <td>
-              <w:CheckBox ui:field="addressState" />
+              <w:CheckBox ui:field="reportToAddressState" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_state}" />
             </td>
             <td>
-              <w:CheckBox ui:field="addressZipCode" />
+              <w:CheckBox ui:field="reportToAddressZipCode" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_zipcode}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectBillToField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToOrganizationId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_id}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToOrganizationName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_name}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAttention" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.order_attention}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAddressMultipleUnit" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_aptSuite}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAddressStreetAddress" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_address}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="45px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAddressCity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_city}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAddressState" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_state}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="billToAddressZipCode" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.address_zipcode}" />

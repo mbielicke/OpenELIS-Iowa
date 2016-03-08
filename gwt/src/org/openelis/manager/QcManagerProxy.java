@@ -43,6 +43,10 @@ public class QcManagerProxy {
     public QcManager fetchWithLots(Integer id) throws Exception {
         return QcService.get().fetchWithLots(id);
     }
+    
+    public QcManager fetchWithNotes(Integer id) throws Exception {
+        return QcService.get().fetchWithNotes(id);
+    }
 
     public QcManager add(QcManager man) throws Exception {
         return QcService.get().add(man);
@@ -58,7 +62,7 @@ public class QcManagerProxy {
 
     public QcManager abortUpdate(Integer id) throws Exception {
         return QcService.get().abortUpdate(id);
-    }
+    }    
 
     @SuppressWarnings("unused")
     public void validate(QcManager man) throws Exception {

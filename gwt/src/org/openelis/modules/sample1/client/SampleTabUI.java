@@ -382,7 +382,7 @@ public class SampleTabUI extends Screen {
                                  QueryData qd;
 
                                  qds = new ArrayList<QueryData>();
-                                 for (int i = 0; i < 9; i++ ) {
+                                 for (int i = 0; i < 10; i++ ) {
                                      qd = (QueryData) ((Queryable)organizationTable.getColumnWidget(i)).getQuery();
                                      if (qd != null) {
                                          switch (i) {
@@ -837,7 +837,8 @@ public class SampleTabUI extends Screen {
 
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
             Constants.domain().PRIVATEWELL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)) {
+            Constants.domain().SDWIS.equals(domain)||
+            Constants.domain().PT.equals(domain)) {
             try {
                 entry = new OrderEntry();
                 orderScreen = entry.addSendoutOrderScreen();           

@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.QcViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -61,6 +62,15 @@ public class QcManagerProxy {
 
         return m;
     }
+    
+    public QcManager fetchWithNotes(Integer id) throws Exception {
+        QcManager m;
+
+        m = fetchById(id);
+        m.getInternalNotes();
+
+        return m;
+    }
 
     public QcManager add(QcManager man) throws Exception {
         Integer id;
@@ -76,6 +86,12 @@ public class QcManagerProxy {
         if (man.lots != null) {
             man.getLots().setQcId(id);
             man.getLots().add();
+        }
+        
+        if (man.internalNotes != null) {
+            man.getInternalNotes().setReferenceId(id);
+            man.getInternalNotes().setReferenceTableId(Constants.table().QC);
+            man.getInternalNotes().add();
         }
 
         return man;
@@ -96,23 +112,26 @@ public class QcManagerProxy {
             man.getLots().setQcId(id);
             man.getLots().update();
         }
+        
+        if (man.internalNotes != null) {
+            man.getInternalNotes().setReferenceId(id);
+            man.getInternalNotes().setReferenceTableId(Constants.table().QC);
+            man.getInternalNotes().update();
+        }
 
         return man;
     }
 
-    @SuppressWarnings("unused")
     public QcManager fetchForUpdate(QcManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    @SuppressWarnings("unused")
     public QcManager fetchForUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    @SuppressWarnings("unused")
     public QcManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;

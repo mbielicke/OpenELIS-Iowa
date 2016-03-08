@@ -10,6 +10,7 @@ import org.openelis.domain.QcLotViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
@@ -299,6 +300,20 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
         
         callback = new Callback<ArrayList<QcAnalyteViewDO>>();
         service.fetchAnalytesByLotId(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchWithNotes(Integer id, AsyncCallback<QcManager> callback) {
+        service.fetchWithNotes(id, callback);
+    }
+
+    @Override
+    public QcManager fetchWithNotes(Integer id) throws Exception {
+        Callback<QcManager> callback;
+        
+        callback = new Callback<QcManager>();
+        service.fetchWithNotes(id, callback);
         return callback.getResult();
     }
 }

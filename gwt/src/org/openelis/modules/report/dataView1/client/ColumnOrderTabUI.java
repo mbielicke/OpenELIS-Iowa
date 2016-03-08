@@ -211,24 +211,43 @@ public class ColumnOrderTabUI extends Screen {
             case SampleWebMeta.CLIENT_REFERENCE_HEADER:
                 return Messages.get().sample_clntRef();
                 /*
-                 * organization fields
+                 * report to fields
                  */
-            case SampleWebMeta.SAMPLE_ORG_ID:
-                return Messages.get().organization_num();
-            case SampleWebMeta.ORG_NAME:
-                return Messages.get().organization_name();
-            case SampleWebMeta.SAMPLE_ORG_ATTENTION:
-                return Messages.get().order_attention();
-            case SampleWebMeta.ADDR_MULTIPLE_UNIT:
-                return Messages.get().address_aptSuite();
-            case SampleWebMeta.ADDR_STREET_ADDRESS:
-                return Messages.get().address_address();
-            case SampleWebMeta.ADDR_CITY:
-                return Messages.get().address_city();
-            case SampleWebMeta.ADDR_STATE:
-                return Messages.get().address_state();
-            case SampleWebMeta.ADDR_ZIP_CODE:
-                return Messages.get().address_zipcode();
+            case SampleWebMeta.REPORT_TO_ORG_ID:
+                return Messages.get().dataView_reportToNum();
+            case SampleWebMeta.REPORT_TO_ORG_NAME:
+                return Messages.get().dataView_reportToName();
+            case SampleWebMeta.REPORT_TO_ATTENTION:
+                return Messages.get().dataView_reportToAttention();
+            case SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT:
+                return Messages.get().dataView_reportToAptSuite();
+            case SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS:
+                return Messages.get().dataView_reportToAddress();
+            case SampleWebMeta.REPORT_TO_ADDR_CITY:
+                return Messages.get().dataView_reportToCity();
+            case SampleWebMeta.REPORT_TO_ADDR_STATE:
+                return Messages.get().dataView_reportToState();
+            case SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE:
+                return Messages.get().dataView_reportToZipcode();
+                /*
+                 * bill to fields
+                 */
+            case SampleWebMeta.BILL_TO_ORG_ID:
+                return Messages.get().dataView_billToNum();
+            case SampleWebMeta.BILL_TO_ORG_NAME:
+                return Messages.get().dataView_billToName();
+            case SampleWebMeta.BILL_TO_ATTENTION:
+                return Messages.get().dataView_billToAttention();
+            case SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT:
+                return Messages.get().dataView_billToAptSuite();
+            case SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS:
+                return Messages.get().dataView_billToAddress();
+            case SampleWebMeta.BILL_TO_ADDR_CITY:
+                return Messages.get().dataView_billToCity();
+            case SampleWebMeta.BILL_TO_ADDR_STATE:
+                return Messages.get().dataView_billToState();
+            case SampleWebMeta.BILL_TO_ADDR_ZIP_CODE:
+                return Messages.get().dataView_billToZipcode();
                 /*
                  * sample item fields
                  */

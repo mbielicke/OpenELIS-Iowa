@@ -148,6 +148,15 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             throw serializeForGWT(anyE);
         }
     }
+
+    @Override
+    public QcManager fetchWithNotes(Integer id) throws Exception {
+        try {        
+            return qcManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    } 
     
     public QcLotViewDO fetchLotById(Integer id) throws Exception {
         try {        
@@ -239,5 +248,5 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             throw serializeForGWT(anyE);
         }
         return data;
-    } 
+    }
 }

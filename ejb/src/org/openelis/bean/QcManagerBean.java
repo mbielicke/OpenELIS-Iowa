@@ -67,6 +67,10 @@ public class QcManagerBean {
     public QcManager fetchWithLots(Integer id) throws Exception {
         return QcManager.fetchWithLots(id);
     }
+    
+    public QcManager fetchWithNotes(Integer id) throws Exception {
+        return QcManager.fetchWithNotes(id);
+    }
 
     public QcManager add(QcManager man) throws Exception {
         UserTransaction ut;
