@@ -263,7 +263,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getQcLotPreparedVolume()}" width="105" align="right"  header="{resource:getString($constants,'preparedVolume')}">
                       <textbox field="Double"/>
                     </col>
-                    <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="right" header="{resource:getString($constants,'preparedUnit')}" filter="true">
+                    <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="left" header="{resource:getString($constants,'preparedUnit')}" filter="true">
                       <dropdown width="150" field="Integer" required="true" />
                     </col>
                     <col key="{meta:getQcLotPreparedById()}" width="145" align="left" header="{resource:getString($constants,'preparedBy')}" sort="true" filter="true">
@@ -300,6 +300,19 @@ UIRF Software License are applicable instead of those above.
                       </appButton>
                     </HorizontalPanel>
                   </widget>
+                </VerticalPanel>
+              </tab>
+              <tab key="internalNote" tab="internalNotesPanel, internalNotesPanel" text="{resource:getString($constants,'internal')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <notes height="310" key="internalNotesPanel" width="660" />
+                  <appButton key="addNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
                 </VerticalPanel>
               </tab>
             </TabPanel>

@@ -132,10 +132,14 @@ public class SampleBean {
         builder.clearWhereClause();
         builder.constructWhere(fields);
         /*
-         * make sure that only the aux data linked to samples is queried
+         * make sure that only the aux data and/or attachments linked to samples
+         * is queried
          */
         if (whereForFrom.indexOf("auxData.") > -1)
             builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
+                             Constants.table().SAMPLE);
+        if (builder.getWhereClause().indexOf("attachmentItem.") > -1)
+            builder.addWhere(SampleMeta.getAttachmentItemReferenceTableId() + " = " +
                              Constants.table().SAMPLE);
         sampleWhere = builder.getWhereClause();
 
@@ -220,7 +224,8 @@ public class SampleBean {
         s = new ArrayList<SampleDO>();
         range = DataBaseUtil.createSubsetRange(accessionNumbers.size());
         for (int i = 0; i < range.size() - 1; i++ ) {
-            query.setParameter("accessions", accessionNumbers.subList(range.get(i), range.get(i + 1)));
+            query.setParameter("accessions", accessionNumbers.subList(range.get(i),
+                                                                      range.get(i + 1)));
             s.addAll(query.getResultList());
         }
 
@@ -557,7 +562,7 @@ public class SampleBean {
                 e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(accession)));
             else if (rec.after(ent))
                 e.add(new FormErrorException(Messages.get()
-                                             .sample_receivedDateAfterEnteredException(accession)));
+                                                     .sample_receivedDateAfterEnteredException(accession)));
         }
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
@@ -580,10 +585,10 @@ public class SampleBean {
             } else if (ent != null) {
                 if (col.before(minEnt))
                     e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedTooOldWarning(accession)));
+                                                         .sample_collectedTooOldWarning(accession)));
                 else if (col.after(ent))
                     e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedDateAfterEnteredException(accession)));
+                                                         .sample_collectedDateAfterEnteredException(accession)));
             }
         }
 

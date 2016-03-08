@@ -135,7 +135,7 @@ public class QAEventTabUI extends Screen {
         screen = this;
 
         addScreenHandler(sampleQATable, "sampleQATable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 sampleQATable.setModel(getSampleQATableModel());
                 showSampleBillableMessage();
             }
@@ -207,7 +207,7 @@ public class QAEventTabUI extends Screen {
 
         addScreenHandler(removeSampleQAButton, "removeSampleQAButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                removeSampleQAButton.setEnabled(false);
+                removeSampleQAButton.setEnabled(isState(ADD, UPDATE) && sampleQATable.getSelectedRow() > -1);
             }
 
             public Widget onTab(boolean forward) {
@@ -226,7 +226,7 @@ public class QAEventTabUI extends Screen {
         });
 
         addScreenHandler(analysisQATable, "analysisQATable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 analysisQATable.setModel(getAnalysisQATableModel());
                 showAnalysisBillableMessage();
             }
@@ -300,7 +300,7 @@ public class QAEventTabUI extends Screen {
                          "removeAnalysisQAButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 removeAnalysisQAButton.setEnabled(false);
+                                 removeAnalysisQAButton.setEnabled(isState(ADD, UPDATE) && analysisQATable.getSelectedRow() > -1);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -324,7 +324,7 @@ public class QAEventTabUI extends Screen {
         addScreenHandler(analysisBillableLabel,
                          "analysisBillableLabel",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  showAnalysisBillableMessage();
                              }
                          });
@@ -394,7 +394,7 @@ public class QAEventTabUI extends Screen {
                             for (i = 0; i < count1; i++ ) {
                                 row = analysisQATable.getRowAt(i);
                                 aqa = manager.qaEvent.get(analysis, i);
-                                if (DataBaseUtil.isDifferent(aqa.getQaeventId(), row.getCell(0)) ||
+                                if (DataBaseUtil.isDifferent(aqa.getQaEventName(), row.getCell(0)) ||
                                     DataBaseUtil.isDifferent(aqa.getTypeId(), row.getCell(1)) ||
                                     DataBaseUtil.isDifferent(aqa.getIsBillable(), row.getCell(2))) {
                                     redraw = true;

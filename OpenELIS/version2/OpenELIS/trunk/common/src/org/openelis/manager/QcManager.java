@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.QcViewDO;
 import org.openelis.ui.common.NotFoundException;
 
@@ -37,6 +38,7 @@ public class QcManager implements Serializable {
     protected QcViewDO                        qc;
     protected QcAnalyteManager                analytes;
     protected QcLotManager                    lots;
+    protected NoteManager                     internalNotes;
 
     protected transient static QcManagerProxy proxy;
 
@@ -47,6 +49,8 @@ public class QcManager implements Serializable {
     protected QcManager() {
         qc = null;
         analytes = null;
+        lots = null;
+        internalNotes = null;
     }
 
     /**
@@ -81,6 +85,10 @@ public class QcManager implements Serializable {
     
     public static QcManager fetchWithLots(Integer id) throws Exception {
         return proxy().fetchWithLots(id);
+    }
+    
+    public static QcManager fetchWithNotes(Integer id) throws Exception {
+        return proxy().fetchWithNotes(id);
     }
 
     public QcManager add() throws Exception {
@@ -138,6 +146,27 @@ public class QcManager implements Serializable {
                 lots = QcLotManager.getInstance();
         }
         return lots;
+    }
+    
+    public NoteManager getInternalNotes() throws Exception {
+        if (internalNotes == null) {
+            if (qc.getId() != null) {
+                try {
+                    internalNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().QC, qc.getId(), false);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
+            if (internalNotes == null) {
+                internalNotes = NoteManager.getInstance();
+                internalNotes.setIsExternal(false);
+            }
+        }
+
+        return internalNotes;
     }
 
     private static QcManagerProxy proxy() {

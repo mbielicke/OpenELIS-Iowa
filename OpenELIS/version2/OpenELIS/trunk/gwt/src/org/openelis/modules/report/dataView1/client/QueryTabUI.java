@@ -86,11 +86,14 @@ public class QueryTabUI extends Screen {
                     analysisReleasedDateFrom, analysisReleasedDateTo;
 
     @UiField
-    protected TextBox<String>         clientReference, reportTo, analysisTestName,
+    protected TextBox<String>         clientReference, organizationName, analysisTestName,
                     analysisMethodName;
 
     @UiField
     protected MultiDropdown<Integer>  projectId, analysisStatusId, analysisSectionId;
+
+    @UiField
+    protected Dropdown<Integer>       organizationTypeId;
 
     @UiField
     protected Dropdown<String>        domain, analysisIsReportable, result, auxData;
@@ -122,22 +125,19 @@ public class QueryTabUI extends Screen {
 
     public void initialize() {
         String dom;
-        Item<Integer> row;
-        Item<String> strow;
         ArrayList<Item<Integer>> model;
         ArrayList<Item<String>> stmodel;
         ArrayList<IdNameVO> projects;
-        ArrayList<DictionaryDO> entries;
 
         addScreenHandler(accessionNumberFrom,
-                         SampleWebMeta.getAccessionNumberFrom(),
+                         SampleWebMeta.ACCESSION_NUMBER_FROM,
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberFrom.setValue(getAccessionNumberFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 validateFromTo(accessionNumberFrom, accessionNumberTo, false);
+                                 validatePair(accessionNumberFrom, accessionNumberTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -150,14 +150,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(accessionNumberTo,
-                         SampleWebMeta.getAccessionNumberTo(),
+                         SampleWebMeta.ACCESSION_NUMBER_TO,
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumberTo.setValue(getAccessionNumberTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 validateFromTo(accessionNumberFrom, accessionNumberTo, false);
+                                 validatePair(accessionNumberFrom, accessionNumberTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -170,14 +170,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(collectionDateFrom,
-                         SampleWebMeta.getCollectionDateFrom(),
+                         SampleWebMeta.COLLECTION_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateFrom.setValue(getCollectionDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(collectionDateFrom, collectionDateTo, false);
+                                 validatePair(collectionDateFrom, collectionDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -190,14 +190,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(collectionDateTo,
-                         SampleWebMeta.getCollectionDateTo(),
+                         SampleWebMeta.COLLECTION_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDateTo.setValue(getCollectionDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(collectionDateFrom, collectionDateTo, false);
+                                 validatePair(collectionDateFrom, collectionDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -210,14 +210,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(receivedDateFrom,
-                         SampleWebMeta.getReceivedDateFrom(),
+                         SampleWebMeta.RECEIVED_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateFrom.setValue(getReceivedDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(receivedDateFrom, receivedDateTo, false);
+                                 validatePair(receivedDateFrom, receivedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -230,14 +230,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(receivedDateTo,
-                         SampleWebMeta.getReceivedDateTo(),
+                         SampleWebMeta.RECEIVED_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  receivedDateTo.setValue(getReceivedDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(receivedDateFrom, receivedDateTo, false);
+                                 validatePair(receivedDateFrom, receivedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -250,14 +250,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(enteredDateFrom,
-                         SampleWebMeta.getEnteredDateFrom(),
+                         SampleWebMeta.ENTERED_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateFrom.setValue(getEnteredDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(enteredDateFrom, enteredDateTo, false);
+                                 validatePair(enteredDateFrom, enteredDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -270,14 +270,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(enteredDateTo,
-                         SampleWebMeta.getEnteredDateTo(),
+                         SampleWebMeta.ENTERED_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  enteredDateTo.setValue(getEnteredDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(enteredDateFrom, enteredDateTo, false);
+                                 validatePair(enteredDateFrom, enteredDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -290,14 +290,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(releasedDateFrom,
-                         SampleWebMeta.getReleasedDateFrom(),
+                         SampleWebMeta.RELEASED_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  releasedDateFrom.setValue(getReleasedDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(releasedDateFrom, releasedDateTo, false);
+                                 validatePair(releasedDateFrom, releasedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -310,14 +310,14 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(releasedDateTo,
-                         SampleWebMeta.getReleasedDateTo(),
+                         SampleWebMeta.RELEASED_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  releasedDateTo.setValue(getReleasedDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(releasedDateFrom, releasedDateTo, false);
+                                 validatePair(releasedDateFrom, releasedDateTo, false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -330,7 +330,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(clientReference,
-                         SampleWebMeta.getClientReference(),
+                         SampleWebMeta.CLIENT_REFERENCE,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
@@ -346,7 +346,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(projectId,
-                         SampleWebMeta.getProjectId(),
+                         SampleWebMeta.PROJECT_ID,
                          new ScreenHandler<ArrayList<Integer>>() {
                              public void onDataChange(DataChangeEvent<ArrayList<Integer>> event) {
                                  projectId.setValue(getProjectId());
@@ -357,27 +357,46 @@ public class QueryTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? reportTo : clientReference;
+                                 return forward ? organizationTypeId : clientReference;
                              }
                          });
+        
+        addScreenHandler(organizationTypeId,
+                         SampleWebMeta.SAMPLE_ORG_TYPE_ID,
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
+                                 organizationTypeId.setValue(getSampleOrgTypeId());
+                             }
 
-        addScreenHandler(reportTo,
-                         SampleWebMeta.getSampleOrgOrganizationName(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent<String> event) {
-                                 reportTo.setValue(getSampleOrgOrganizationName());
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 if (event.getValue() == null)
+                                     organizationTypeId.setValue(Constants.dictionary().ORG_REPORT_TO);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 reportTo.setEnabled(isState(DEFAULT));
+                                 organizationTypeId.setEnabled(isState(DEFAULT));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? domain : projectId;
+                                 return forward ? organizationName : projectId;
                              }
                          });
 
-        addScreenHandler(domain, SampleWebMeta.getDomain(), new ScreenHandler<String>() {
+        addScreenHandler(organizationName, SampleWebMeta.ORG_NAME, new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent<String> event) {
+                organizationName.setValue(getSampleOrgOrganizationName());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                organizationName.setEnabled(isState(DEFAULT));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? domain : organizationTypeId;
+            }
+        });
+
+        addScreenHandler(domain, SampleWebMeta.DOMAIN, new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent<String> event) {
                 domain.setValue(getDomain());
             }
@@ -395,12 +414,12 @@ public class QueryTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? analysisTestName : reportTo;
+                return forward ? analysisTestName : organizationName;
             }
         });
 
         addScreenHandler(analysisTestName,
-                         SampleWebMeta.getAnalysisTestName(),
+                         SampleWebMeta.ANALYSIS_TEST_NAME,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
                                  analysisTestName.setValue(getAnalysisTestName());
@@ -416,7 +435,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisMethodName,
-                         SampleWebMeta.getAnalysisMethodName(),
+                         SampleWebMeta.ANALYSIS_METHOD_NAME,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
                                  analysisMethodName.setValue(getAnalysisMethodName());
@@ -432,7 +451,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisIsReportable,
-                         SampleWebMeta.getAnalysisIsReportable(),
+                         SampleWebMeta.ANALYSIS_IS_REPORTABLE,
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent<String> event) {
                                  analysisIsReportable.setValue(getAnalysisIsReportable());
@@ -448,7 +467,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisStatusId,
-                         SampleWebMeta.getAnalysisStatusId(),
+                         SampleWebMeta.ANALYSIS_STATUS_ID,
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  analysisStatusId.setValue(getAnalysisStatusId());
@@ -464,16 +483,16 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisCompletedDateFrom,
-                         SampleWebMeta.getAnalysisCompletedDateFrom(),
+                         SampleWebMeta.ANALYSIS_COMPLETED_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateFrom.setValue(getAnalysisCompletedDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisCompletedDateFrom,
-                                                analysisCompletedDateTo,
-                                                false);
+                                 validatePair(analysisCompletedDateFrom,
+                                              analysisCompletedDateTo,
+                                              false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -486,16 +505,16 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisCompletedDateTo,
-                         SampleWebMeta.getAnalysisCompletedDateTo(),
+                         SampleWebMeta.ANALYSIS_COMPLETED_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisCompletedDateTo.setValue(getAnalysisCompletedDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisCompletedDateFrom,
-                                                analysisCompletedDateTo,
-                                                false);
+                                 validatePair(analysisCompletedDateFrom,
+                                              analysisCompletedDateTo,
+                                              false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -509,16 +528,16 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisReleasedDateFrom,
-                         SampleWebMeta.getAnalysisReleasedDateFrom(),
+                         SampleWebMeta.ANALYSIS_RELEASED_DATE_FROM,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateFrom.setValue(getAnalysisReleasedDateFrom());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisReleasedDateFrom,
-                                                analysisReleasedDateTo,
-                                                false);
+                                 validatePair(analysisReleasedDateFrom,
+                                              analysisReleasedDateTo,
+                                              false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -531,16 +550,16 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisReleasedDateTo,
-                         SampleWebMeta.getAnalysisReleasedDateTo(),
+                         SampleWebMeta.ANALYSIS_RELEASED_DATE_TO,
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent<Datetime> event) {
                                  analysisReleasedDateTo.setValue(getAnalysisReleasedDateTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 validateFromTo(analysisReleasedDateFrom,
-                                                analysisReleasedDateTo,
-                                                false);
+                                 validatePair(analysisReleasedDateFrom,
+                                              analysisReleasedDateTo,
+                                              false);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -553,7 +572,7 @@ public class QueryTabUI extends Screen {
                          });
 
         addScreenHandler(analysisSectionId,
-                         SampleWebMeta.getAnalysisSectionId(),
+                         SampleWebMeta.ANALYSIS_SECTION_ID,
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  analysisSectionId.setValue(getAnalysisSectionId());
@@ -625,12 +644,18 @@ public class QueryTabUI extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("organization_type")) {
+            if (Constants.dictionary().ORG_REPORT_TO.equals(d.getId()) ||
+                Constants.dictionary().ORG_BILL_TO.equals(d.getId()))
+                model.add(new Item<Integer>(d.getId(), d.getEntry()));
+        }
+        organizationTypeId.setModel(model);
+
+        model = new ArrayList<Item<Integer>>();
         try {
             projects = ProjectService.get().fetchList();
-            for (IdNameVO d : projects) {
-                row = new Item<Integer>(d.getId(), d.getName());
-                model.add(row);
-            }
+            for (IdNameVO d : projects)
+                model.add(new Item<Integer>(d.getId(), d.getName()));
             projectId.setModel(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -639,8 +664,7 @@ public class QueryTabUI extends Screen {
         }
 
         stmodel = new ArrayList<Item<String>>();
-        entries = CategoryCache.getBySystemName("sample_domain");
-        for (DictionaryDO d : entries) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_domain")) {
             dom = null;
             if (Constants.dictionary().ENVIRONMENTAL.equals(d.getId()))
                 dom = Constants.domain().ENVIRONMENTAL;
@@ -655,27 +679,21 @@ public class QueryTabUI extends Screen {
             else if (Constants.dictionary().PT.equals(d.getId()))
                 dom = Constants.domain().PT;
 
-            if (dom != null) {
-                strow = new Item<String>(dom, d.getEntry());
-                stmodel.add(strow);
-            }
+            if (dom != null)
+                stmodel.add(new Item<String>(dom, d.getEntry()));
         }
 
         domain.setModel(stmodel);
 
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status")) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
-            model.add(row);
-        }
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
         analysisStatusId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        for (SectionDO s : SectionCache.getList()) {
-            row = new Item<Integer>(s.getId(), s.getName());
-            model.add(row);
-        }
+        for (SectionDO s : SectionCache.getList())
+            model.add(new Item<Integer>(s.getId(), s.getName()));
 
         analysisSectionId.setModel(model);
 
@@ -758,7 +776,6 @@ public class QueryTabUI extends Screen {
      * QueryData is created for a pair of "from" and "to" widgets
      */
     public ArrayList<QueryData> getQueryFields() {
-        QueryData field;
         ArrayList<QueryData> fields;
 
         fields = new ArrayList<QueryData>();
@@ -795,23 +812,9 @@ public class QueryTabUI extends Screen {
 
         addQueryData(clientReference, SampleWebMeta.getClientReference(), fields);
         addQueryData(projectId, SampleWebMeta.getProjectId(), fields);
-
-        /*
-         * if the user is querying by report-to, add a query field for it; also
-         * add a field for organization type to restrict the query to report-to
-         * organizations only
-         */
-        field = getQueryData(reportTo, SampleWebMeta.getSampleOrgOrganizationName());
-        if (field != null) {
-            fields.add(field);
-
-            field = new QueryData();
-            field.setQuery(Constants.dictionary().ORG_REPORT_TO.toString());
-            field.setKey(SampleWebMeta.getSampleOrgTypeId());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-        }
-
+        addQueryData(organizationName, SampleWebMeta.getSampleOrgOrganizationName(), fields);
+        if (!DataBaseUtil.isEmpty(organizationName.getValue()))
+            addQueryData(organizationTypeId, SampleWebMeta.getSampleOrgTypeId(), fields);
         addQueryData(domain, SampleWebMeta.getDomain(), fields);
         addQueryData(analysisTestName, SampleWebMeta.getAnalysisTestName(), fields);
         addQueryData(analysisMethodName, SampleWebMeta.getAnalysisMethodName(), fields);
@@ -845,13 +848,13 @@ public class QueryTabUI extends Screen {
          * other doesn't, add an error to the widget that doesn't have a value;
          * keep track of the number of such pairs where both widgets have values
          */
-        validateFromTo(accessionNumberFrom, accessionNumberTo, true);
-        validateFromTo(collectionDateFrom, collectionDateTo, true);
-        validateFromTo(receivedDateFrom, receivedDateTo, true);
-        validateFromTo(enteredDateFrom, enteredDateTo, true);
-        validateFromTo(releasedDateFrom, releasedDateTo, true);
-        validateFromTo(analysisCompletedDateFrom, analysisCompletedDateTo, true);
-        validateFromTo(analysisReleasedDateFrom, analysisReleasedDateTo, true);
+        validatePair(accessionNumberFrom, accessionNumberTo, true);
+        validatePair(collectionDateFrom, collectionDateTo, true);
+        validatePair(receivedDateFrom, receivedDateTo, true);
+        validatePair(enteredDateFrom, enteredDateTo, true);
+        validatePair(releasedDateFrom, releasedDateTo, true);
+        validatePair(analysisCompletedDateFrom, analysisCompletedDateTo, true);
+        validatePair(analysisReleasedDateFrom, analysisReleasedDateTo, true);
 
         validation = super.validate();
 
@@ -919,6 +922,13 @@ public class QueryTabUI extends Screen {
 
     private String getSampleOrgOrganizationName() {
         return fieldValues.get(SampleWebMeta.getSampleOrgOrganizationName());
+    }
+
+    private Integer getSampleOrgTypeId() {
+        Integer typeId;
+        
+        typeId = getInteger(SampleWebMeta.getSampleOrgTypeId());
+        return typeId != null ? typeId : Constants.dictionary().ORG_REPORT_TO;
     }
 
     private String getDomain() {
@@ -1098,29 +1108,16 @@ public class QueryTabUI extends Screen {
     private void addQueryData(Queryable widget, String key, ArrayList<QueryData> fields) {
         QueryData field;
 
-        field = getQueryData(widget, key);
-        if (field != null)
-            fields.add(field);
-    }
-
-    /**
-     * Returns a query data created from the passed widget; a query data is
-     * created only if there's a query string specified in the widget; sets the
-     * passed key in the query data
-     */
-    private QueryData getQueryData(Queryable widget, String key) {
-        QueryData field;
-
         field = (QueryData)widget.getQuery();
         /*
          * the key is set here because it's not set when the query data is
          * created; this is because, the widget doesn't know what its key is;
          * the key is in the hashmap for screen handlers
          */
-        if (field != null)
+        if (field != null) {
             field.setKey(key);
-
-        return field;
+            fields.add(field);
+        }
     }
 
     /**
@@ -1142,31 +1139,30 @@ public class QueryTabUI extends Screen {
     }
 
     /**
-     * If one of the widgets in the passed pair of "from" and "to" widgets has a
-     * value and the other doesn't, adds "Field Required" error to the widget
-     * that doesn't have a value; clears any previous programmatically added
-     * errors; if the passed boolean is true and both widgets have a value,
-     * increments the number that keeps track of how many "from-to" pairs have
-     * values
+     * If one of the widgets in the passed pair of widgets has a value and the
+     * other doesn't, adds "Field Required" error to the widget that doesn't
+     * have a value; clears any previous programmatically added errors; if the
+     * passed boolean is true and both widgets have a value, increments the
+     * number that keeps track of how many "from-to" pairs have values
      */
-    private void validateFromTo(Widget fromWidget, Widget toWidget, boolean updateFromToFilled) {
-        boolean fromEmpty, toEmpty;
-        HasExceptions fromHasEx, toHasEx;
+    private void validatePair(Widget leftWidget, Widget rightWidget, boolean updateFromToFilled) {
+        boolean leftEmpty, rightEmpty;
+        HasExceptions leftHasEx, rightHasEx;
 
-        fromEmpty = DataBaseUtil.isEmpty( ((HasValue)fromWidget).getValue());
-        toEmpty = DataBaseUtil.isEmpty( ((HasValue)toWidget).getValue());
-        fromHasEx = (HasExceptions)fromWidget;
-        toHasEx = (HasExceptions)toWidget;
+        leftEmpty = DataBaseUtil.isEmpty( ((HasValue)leftWidget).getValue());
+        rightEmpty = DataBaseUtil.isEmpty( ((HasValue)rightWidget).getValue());
+        leftHasEx = (HasExceptions)leftWidget;
+        rightHasEx = (HasExceptions)rightWidget;
 
-        fromHasEx.clearEndUserExceptions();
-        toHasEx.clearEndUserExceptions();
-        if ( !fromEmpty) {
-            if (toEmpty)
-                toHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
+        leftHasEx.clearEndUserExceptions();
+        rightHasEx.clearEndUserExceptions();
+        if ( !leftEmpty) {
+            if (rightEmpty)
+                rightHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
             else if (updateFromToFilled)
                 fromToFilled++ ;
-        } else if ( !toEmpty) {
-            fromHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
+        } else if ( !rightEmpty) {
+            leftHasEx.addException(new Exception(Messages.get().gen_fieldRequiredException()));
         }
     }
 }

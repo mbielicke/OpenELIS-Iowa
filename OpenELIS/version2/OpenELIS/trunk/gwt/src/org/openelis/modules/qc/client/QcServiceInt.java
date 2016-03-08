@@ -7,6 +7,7 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
@@ -33,6 +34,8 @@ public interface QcServiceInt extends XsrfProtectedService {
     QcManager fetchWithAnalytes(Integer id) throws Exception;
 
     QcManager fetchWithLots(Integer id) throws Exception;
+    
+    QcManager fetchWithNotes(Integer id) throws Exception;
 
     QcLotViewDO fetchLotById(Integer id) throws Exception;
 

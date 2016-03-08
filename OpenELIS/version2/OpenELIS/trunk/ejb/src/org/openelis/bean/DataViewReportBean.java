@@ -1851,7 +1851,7 @@ public class DataViewReportBean {
                     headers.add(Messages.get().sample_clntRef());
                     break;
                 /*
-                 * organization fields
+                 * organization fields (used only for external users)
                  */
                 case SampleWebMeta.SAMPLE_ORG_ID:
                     headers.add(Messages.get().organization_num());
@@ -1883,6 +1883,76 @@ public class DataViewReportBean {
                     break;
                 case SampleWebMeta.ADDR_ZIP_CODE:
                     headers.add(Messages.get().address_zipcode());
+                    fetchOrg = true;
+                    break;
+                /*
+                 * report to fields (used only for internal users)
+                 */
+                case SampleWebMeta.REPORT_TO_ORG_ID:
+                    headers.add(Messages.get().dataView_reportToNum());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ORG_NAME:
+                    headers.add(Messages.get().dataView_reportToName());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ATTENTION:
+                    headers.add(Messages.get().dataView_reportToAttention());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT:
+                    headers.add(Messages.get().dataView_reportToAptSuite());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS:
+                    headers.add(Messages.get().dataView_reportToAddress());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ADDR_CITY:
+                    headers.add(Messages.get().dataView_reportToCity());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ADDR_STATE:
+                    headers.add(Messages.get().dataView_reportToState());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE:
+                    headers.add(Messages.get().dataView_reportToZipcode());
+                    fetchOrg = true;
+                    break;
+                /*
+                 * bill to fields (used only for internal users)
+                 */
+                case SampleWebMeta.BILL_TO_ORG_ID:
+                    headers.add(Messages.get().dataView_billToNum());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ORG_NAME:
+                    headers.add(Messages.get().dataView_billToName());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ATTENTION:
+                    headers.add(Messages.get().dataView_billToAttention());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT:
+                    headers.add(Messages.get().dataView_billToAptSuite());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS:
+                    headers.add(Messages.get().dataView_billToAddress());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_CITY:
+                    headers.add(Messages.get().dataView_billToCity());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_STATE:
+                    headers.add(Messages.get().dataView_billToState());
+                    fetchOrg = true;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_ZIP_CODE:
+                    headers.add(Messages.get().dataView_billToZipcode());
                     fetchOrg = true;
                     break;
                 /*
@@ -2403,7 +2473,7 @@ public class DataViewReportBean {
 
         if (columns == null)
             return;
-        
+
         s = getSample(sm);
         se = getSampleEnvironmental(sm);
         ss = getSampleSDWIS(sm);
@@ -2421,10 +2491,10 @@ public class DataViewReportBean {
              */
             if (getOrganizations(sm) != null) {
                 for (SampleOrganizationViewDO data : getOrganizations(sm)) {
-                    if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId())) {
-                        rd.repToOrg = data;
-                        break;
-                    }
+                    if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
+                        rd.reportToOrg = data;
+                    else if (Constants.dictionary().ORG_BILL_TO.equals(data.getTypeId()))
+                        rd.billToOrg = data;
                 }
             }
 
@@ -2586,31 +2656,71 @@ public class DataViewReportBean {
                     value = s.getClientReference();
                     break;
                 /*
-                 * organization columns
+                 * organization/report-to columns
                  */
                 case SampleWebMeta.SAMPLE_ORG_ID:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationId() : null;
+                case SampleWebMeta.REPORT_TO_ORG_ID:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationId() : null;
                     break;
                 case SampleWebMeta.ORG_NAME:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationName() : null;
+                case SampleWebMeta.REPORT_TO_ORG_NAME:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationName() : null;
                     break;
                 case SampleWebMeta.SAMPLE_ORG_ATTENTION:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationAttention() : null;
+                case SampleWebMeta.REPORT_TO_ATTENTION:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationAttention()
+                                                  : null;
                     break;
                 case SampleWebMeta.ADDR_MULTIPLE_UNIT:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationMultipleUnit() : null;
+                case SampleWebMeta.REPORT_TO_ADDR_MULTIPLE_UNIT:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationMultipleUnit()
+                                                  : null;
                     break;
                 case SampleWebMeta.ADDR_STREET_ADDRESS:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationStreetAddress() : null;
+                case SampleWebMeta.REPORT_TO_ADDR_STREET_ADDRESS:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationStreetAddress()
+                                                  : null;
                     break;
                 case SampleWebMeta.ADDR_CITY:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationCity() : null;
+                case SampleWebMeta.REPORT_TO_ADDR_CITY:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationCity() : null;
                     break;
                 case SampleWebMeta.ADDR_STATE:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationState() : null;
+                case SampleWebMeta.REPORT_TO_ADDR_STATE:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationState() : null;
                     break;
                 case SampleWebMeta.ADDR_ZIP_CODE:
-                    value = rd.repToOrg != null ? rd.repToOrg.getOrganizationZipCode() : null;
+                case SampleWebMeta.REPORT_TO_ADDR_ZIP_CODE:
+                    value = rd.reportToOrg != null ? rd.reportToOrg.getOrganizationZipCode() : null;
+                    break;
+                /*
+                 * bill-to columns
+                 */
+                case SampleWebMeta.BILL_TO_ORG_ID:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationId() : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ORG_NAME:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationName() : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ATTENTION:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationAttention() : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_MULTIPLE_UNIT:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationMultipleUnit()
+                                                : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_STREET_ADDRESS:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationStreetAddress()
+                                                : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_CITY:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationCity() : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_STATE:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationState() : null;
+                    break;
+                case SampleWebMeta.BILL_TO_ADDR_ZIP_CODE:
+                    value = rd.billToOrg != null ? rd.billToOrg.getOrganizationZipCode() : null;
                     break;
                 /*
                  * sample item columns
@@ -3271,10 +3381,10 @@ public class DataViewReportBean {
      * sample, sample item or analysis changes
      */
     private class RowData {
-        Integer                  sampleId, sampleItemId, analysisId;
-        String                   sampleQAs, projNames, completedBy, releasedBy, analysisQAs;
-        Datetime                 collDateTime, birthDateTime;
-        SampleOrganizationViewDO repToOrg;
+        Integer sampleId, sampleItemId, analysisId;
+        String  sampleQAs, projNames, completedBy, releasedBy, analysisQAs;
+        Datetime collDateTime, birthDateTime;
+        SampleOrganizationViewDO reportToOrg, billToOrg;
         SampleItemViewDO         sampleItem;
         AnalysisViewDO           analysis;
 
@@ -3289,7 +3399,8 @@ public class DataViewReportBean {
             releasedBy = null;
             analysisQAs = null;
             birthDateTime = null;
-            repToOrg = null;
+            reportToOrg = null;
+            billToOrg = null;
             sampleItem = null;
             analysis = null;
         }

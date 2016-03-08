@@ -43,6 +43,8 @@ public interface QcServiceIntAsync {
     void fetchWithAnalytes(Integer id, AsyncCallback<QcManager> callback);
 
     void fetchWithLots(Integer id, AsyncCallback<QcManager> callback);
+    
+    void fetchWithNotes(Integer id, AsyncCallback<QcManager> callback);
 
     void fetchAnalytesByLotId(Integer id, AsyncCallback<ArrayList<QcAnalyteViewDO>> callback) ;
     
@@ -53,5 +55,4 @@ public interface QcServiceIntAsync {
     void validateForDelete(QcLotViewDO data, AsyncCallback<QcLotDO> callback);
 
     void fetchActiveByExactName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback);
-
 }

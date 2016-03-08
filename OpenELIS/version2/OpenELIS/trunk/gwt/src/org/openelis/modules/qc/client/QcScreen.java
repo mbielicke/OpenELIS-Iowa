@@ -38,12 +38,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -68,7 +62,14 @@ import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -84,13 +85,15 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class QcScreen extends Screen {
     private QcManager             manager;
-    private ModulePermission      userPermission;
+    private ModulePermission      userModulePermission;
+    private SystemUserPermission  userPermission;
 
     private Tabs                  tab;
     private AnalyteTab            analyteTab;
     private LotTab                lotTab;
+    private InternalNoteTab       internalNoteTab;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
+                    commitButton, abortButton;
     protected MenuItem            duplicate, qcHistory, qcAnalyteHistory, qcLotHistory;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
@@ -102,16 +105,17 @@ public class QcScreen extends Screen {
     private TabPanel              tabPanel;
 
     private enum Tabs {
-        ANALYTE, LOT
+        ANALYTE, LOT, INTERNAL_NOTE
     };
 
     public QcScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
-        
+
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("qc");
-        if (userPermission == null)
+        userPermission = UserCache.getPermission();
+        userModulePermission = userPermission.getModule("qc");
+        if (userModulePermission == null)
             throw new PermissionException(Messages.get().screenPermException("QC Screen"));
 
         tab = Tabs.ANALYTE;
@@ -140,7 +144,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   userPermission.hasSelectPermission());
+                                          userModulePermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -177,7 +181,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 userPermission.hasAddPermission());
+                                        userModulePermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -191,7 +195,7 @@ public class QcScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    userPermission.hasUpdatePermission());
+                                    userModulePermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -229,7 +233,7 @@ public class QcScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                 userPermission.hasAddPermission());
+                                 userModulePermission.hasAddPermission());
             }
         });
 
@@ -254,7 +258,7 @@ public class QcScreen extends Screen {
                 qcAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         qcLotHistory = (MenuItem)def.getWidget("qcLotHistory");
         addScreenHandler(qcLotHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -284,7 +288,7 @@ public class QcScreen extends Screen {
                 id.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         name = (TextBox)def.getWidget(QcMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -345,7 +349,8 @@ public class QcScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = InventoryItemService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = InventoryItemService.get()
+                                               .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
@@ -433,6 +438,22 @@ public class QcScreen extends Screen {
             }
         });
 
+        internalNoteTab = new InternalNoteTab(def,
+                                              window,
+                                              userPermission.getLoginName(),
+                                              userPermission.getSystemUserId());
+        addScreenHandler(internalNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                internalNoteTab.setManager(manager);
+                if (tab == Tabs.INTERNAL_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                internalNoteTab.setState(event.getState());
+            }
+        });
+
         //
         // left hand navigation panel
         //
@@ -485,7 +506,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         userPermission.hasSelectPermission();
+                         userModulePermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -496,7 +517,7 @@ public class QcScreen extends Screen {
 
                 field = new QueryData();
                 field.setKey(QcMeta.getName());
-                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setQuery( ((AppButton)event.getSource()).getAction());
                 field.setType(QueryData.Type.STRING);
 
                 query = new Query();
@@ -545,6 +566,7 @@ public class QcScreen extends Screen {
         // clear all the tabs
         analyteTab.draw();
         lotTab.draw();
+        internalNoteTab.draw();
 
         setFocus(id);
         window.setDone(Messages.get().enterFieldsToQuery());
@@ -670,9 +692,11 @@ public class QcScreen extends Screen {
 
             analyteTab.setManager(manager);
             lotTab.setManager(manager);
+            internalNoteTab.setManager(manager);
 
             analyteTab.draw();
             lotTab.draw();
+            internalNoteTab.draw();
 
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -713,10 +737,11 @@ public class QcScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(Messages.get().qcAnalyteHistory(), Constants.table().QC_ANALYTE,
+        HistoryScreen.showHistory(Messages.get().qcAnalyteHistory(),
+                                  Constants.table().QC_ANALYTE,
                                   refVoList);
     }
-    
+
     private void qcLotHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -737,7 +762,9 @@ public class QcScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(Messages.get().qcLotHistory(), Constants.table().QC_LOT, refVoList);
+        HistoryScreen.showHistory(Messages.get().qcLotHistory(),
+                                  Constants.table().QC_LOT,
+                                  refVoList);
     }
 
     protected boolean fetchById(Integer id) {
@@ -753,6 +780,9 @@ public class QcScreen extends Screen {
                         break;
                     case LOT:
                         manager = QcManager.fetchWithLots(id);
+                        break;
+                    case INTERNAL_NOTE:
+                        manager = QcManager.fetchWithNotes(id);
                         break;
                 }
                 setState(State.DISPLAY);
@@ -780,6 +810,9 @@ public class QcScreen extends Screen {
                 break;
             case LOT:
                 lotTab.draw();
+                break;
+            case INTERNAL_NOTE:
+                internalNoteTab.draw();
                 break;
         }
     }
