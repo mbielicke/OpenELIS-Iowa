@@ -559,23 +559,24 @@ public class SampleManagerOrderHelperBean {
         }
 
         /*
-         * add secondary report-to organizations if any were specified, but only
-         * if they are active
+         * add secondary report-to organizations if any were specified and were
+         * different from the report-to, but only if they are active
          */
         for (IOrderOrganizationViewDO osecOrg : osecOrgs) {
-            if ( (repOrg == null || !osecOrg.getOrganizationId().equals(repOrg.getId())) &&
-                "Y".equals(osecOrg.getOrganizationIsActive())) {
-                secOrg = createOrganization(osecOrg);
-                addOrganization(sm,
-                                createSampleOrganization(secOrg,
-                                                         sm.getNextUID(),
-                                                         osecOrg.getOrganizationAttention(),
-                                                         Constants.dictionary().ORG_SECOND_REPORT_TO));
-                checkIsHoldRefuseSample(secOrg, e);
-            } else {
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_inactiveOrgWarning(accession,
-                                                                              osecOrg.getOrganizationName())));
+            if ( (repOrg == null || !osecOrg.getOrganizationId().equals(repOrg.getId()))) {
+                if ("Y".equals(osecOrg.getOrganizationIsActive())) {
+                    secOrg = createOrganization(osecOrg);
+                    addOrganization(sm,
+                                    createSampleOrganization(secOrg,
+                                                             sm.getNextUID(),
+                                                             osecOrg.getOrganizationAttention(),
+                                                             Constants.dictionary().ORG_SECOND_REPORT_TO));
+                    checkIsHoldRefuseSample(secOrg, e);
+                } else {
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_inactiveOrgWarning(accession,
+                                                                                  osecOrg.getOrganizationName())));
+                }
             }
         }
     }
