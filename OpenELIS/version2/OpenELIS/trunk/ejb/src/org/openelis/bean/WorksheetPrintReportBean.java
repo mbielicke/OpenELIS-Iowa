@@ -549,7 +549,7 @@ public class WorksheetPrintReportBean {
                         i = 1;
                         pageNumber++;
 
-                        form.setField("current_date_time_", now);
+                        form.setField("current_date_time", now);
                     }
                     
                     form.setField("worksheet_id_"+(i), wVDO.getId().toString());
