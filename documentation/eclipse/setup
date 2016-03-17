@@ -25,6 +25,10 @@
       the following and click Add.
       http://storage.googleapis.com/gwt-eclipse-plugin/release
       You will only need to check the “Google Plugin for Eclipse 4.3” module.
+      
+   g. Add the GWT SDK to Eclipse using menu Window -> Preferences.  Go to Google -> GWT,
+      click the add button, navigate to the root directory of the GWT library on
+      your system and click OK.
 
 2. Installing additional packages:
 
