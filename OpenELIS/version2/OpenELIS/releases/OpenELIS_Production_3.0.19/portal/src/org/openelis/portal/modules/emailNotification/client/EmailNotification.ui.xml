@@ -1,0 +1,121 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:wb="urn:import:org.openelis.ui.widget.web"
+	xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+
+	<ui:with type="org.openelis.portal.messages.PortalMessages"
+		field="msg" />
+	<ui:with type="org.openelis.portal.client.resources.Resources"
+		field="res" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+
+	<w:PortalPanel styleName="{res.style.ScreenPanel}">
+		<g:DockPanel>
+			<g:Dock direction="WEST" size="800">
+				<g:HTMLPanel>
+					<table class="{res.style.Form}">
+						<tr>
+							<td>
+								<span style="float:left;font-weight:bold;font-size:13pt;">
+									<ui:text from="{msg.main_emailNotification}" />
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<br />
+							</td>
+						</tr>
+						<tr>
+							<td width="500">
+								<span class="helpText">
+									<ui:text from="{msg.emailNotification_help_description}" />
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<g:LayoutPanel height="300px" width="738px">
+									<g:layer>
+										<t:Table ui:field="table" header="true"
+											styleName="{res.table.ScreenTableWithSides}" enabled="true">
+											<t:Column width="200" label="{msg.emailNotification_org}">
+												<t:DropdownCell>
+													<w:Dropdown ui:field="org" width="250" field="Integer" />
+												</t:DropdownCell>
+											</t:Column>
+											<t:Column width="200" label="{msg.emailNotification_email}">
+												<t:TextBoxCell>
+													<w:TextBox case="MIXED" field="String" />
+												</t:TextBoxCell>
+											</t:Column>
+											<t:Column width="100" label="{msg.emailNotification_filter}">
+												<t:DropdownCell>
+													<w:Dropdown ui:field="filter" width="250" field="String" />
+												</t:DropdownCell>
+											</t:Column>
+											<t:Column width="100"
+												label="{msg.emailNotification_filterValue}">
+												<t:TextBoxCell>
+													<w:TextBox case="MIXED" field="String" />
+												</t:TextBoxCell>
+											</t:Column>
+											<t:Column width="60" label="{msg.sample_received}">
+												<t:CheckBoxCell>
+													<w:CheckBox />
+												</t:CheckBoxCell>
+											</t:Column>
+											<t:Column width="60" label="{msg.sample_released}">
+												<t:CheckBoxCell>
+													<w:CheckBox />
+												</t:CheckBoxCell>
+											</t:Column>
+										</t:Table>
+									</g:layer>
+								</g:LayoutPanel>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<g:HorizontalPanel spacing="10">
+									<w:Button ui:field="addButton" rightText="{msg.emailNotification_add}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<w:Button ui:field="removeButton" rightText="{msg.emailNotification_remove}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<w:Button ui:field="saveButton" rightText="{msg.emailNotification_save}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+								</g:HorizontalPanel>
+							</td>
+						</tr>
+					</table>
+				</g:HTMLPanel>
+			</g:Dock>
+			<g:Dock direction="CENTER">
+				<g:HTMLPanel>
+					<table>
+						<tr>
+							<td>
+								<g:HTML HTML="{msg.emailNotification_help_screen}" />
+							</td>
+						</tr>
+					</table>
+				</g:HTMLPanel>
+			</g:Dock>
+		</g:DockPanel>
+	</w:PortalPanel>
+</ui:UiBinder>
