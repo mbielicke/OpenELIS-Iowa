@@ -1,0 +1,213 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table'>
+
+	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
+
+	<g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+		<g:west size="245">
+			<g:LayoutPanel>
+				<g:layer top="0px" bottom="0px" left="2px" width="40px">
+					<w:AtoZButtons ui:field="atozButtons" multiColumn="true" />
+				</g:layer>
+				<g:layer top="0px" bottom="0px" left="42px" right="0px">
+					<g:LayoutPanel>
+						<g:layer top="0px" bottom="27px">
+							<t:Table ui:field="atozTable" horizontalScroll="ALWAYS"
+								verticalScroll="ALWAYS" header="true"
+								styleName="{res.table.ScreenTableWithSides}">
+								<t:Column width="175" label="{msg.dictionary_catName}">
+									<t:LabelCell />
+								</t:Column>
+							</t:Table>
+						</g:layer>
+						<g:layer bottom="0px" height="27px">
+							<g:HorizontalPanel horizontalAlignment="CENTER"
+								width="100%">
+								<g:HorizontalPanel>
+									<w:Button ui:field="loadResults" image="{res.nextPage}"
+										disabledImage="{res.nextPageDisabled}" enabled="false"
+										css="{res.atozButton}" />
+								</g:HorizontalPanel>
+							</g:HorizontalPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:west>
+		<g:center>
+			<g:LayoutPanel>
+				<g:layer top="0px" height="30px">
+					<g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
+						width="100%">
+						<g:HorizontalPanel>
+							<w:Button css="{res.buttonPanel}" ui:field="query"
+								image="{res.query}" disabledImage="{res.queryDisabled}"
+								rightText="{msg.gen_query}" toggles="true" />
+							<w:Button css="{res.buttonPanel}" ui:field="previous"
+								image="{res.previous}" disabledImage="{res.previousDisabled}"
+								rightText="{msg.gen_previous}" />
+							<w:Button css="{res.buttonPanel}" ui:field="next" image="{res.next}"
+								disabledImage="{res.nextDisabled}" rightText="{msg.gen_next}" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+							<w:Button css="{res.buttonPanel}" ui:field="add" image="{res.add}"
+								disabledImage="{res.addDisabled}" rightText="{msg.gen_add}"
+								toggles="true" />
+							<w:Button css="{res.buttonPanel}" ui:field="update"
+								image="{res.update}" disabledImage="{res.updateDisabled}"
+								rightText="{msg.gen_update}" toggles="true" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+							<w:Button css="{res.buttonPanel}" ui:field="commit"
+								image="{res.commit}" disabledImage="{res.commitDisabled}"
+								rightText="{msg.gen_commit}" />
+							<w:Button css="{res.buttonPanel}" ui:field="abort"
+								image="{res.abort}" disabledImage="{res.abortDisabled}"
+								rightText="{msg.gen_abort}" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+							<w:Menu ui:field="optionsMenu" selfShow="true">
+								<w:display>
+									<w:Button ui:field="optionsButton" css="{res.buttonPanel}"
+										text="{msg.gen_options}" rightIcon="{res.icon.OptionsButtonImage}" />
+								</w:display>
+								<w:MenuItem ui:field="dictionaryHistory" description=""
+									enabled="false" display="{msg.dictionary_dictionaryHistory}" />
+								<w:MenuItem ui:field="categoryHistory" description=""
+									enabled="false" display="{msg.dictionary_categoryHistory}" />
+							</w:Menu>
+						</g:HorizontalPanel>
+					</g:AbsolutePanel>
+				</g:layer>
+				<g:layer top="30px" height="125px">
+					<g:HTMLPanel>
+						<table class="{res.style.Form}">
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_id}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="id" width="60px" field="Integer" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.dictionary_catName}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="name" width="355px" field="String"
+										required="true" case="MIXED" maxLength="50" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_description}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="description" width="425px"
+										field="String" case="MIXED" maxLength="60" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_section}:" />
+								</td>
+								<td colspan="3">
+									<w:Dropdown ui:field="sectionId" width="215px"
+										field="Integer" dropWidth="215px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.dictionary_systemName}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="systemName" width="215px" field="String"
+										case="MIXED" maxLength="30" required="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.dictionary_system}:" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="isSystem" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer top="160px" bottom="0px" left="10px" right="5px">
+					<g:LayoutPanel>
+						<g:layer top="0px" bottom="30px">
+							<t:Table ui:field="table" header="true"
+								styleName="{res.table.ScreenTableWithSides}">
+								<t:Column width="40" label="{msg.gen_active}">
+									<t:CheckBoxCell>
+										<w:CheckBox />
+									</t:CheckBoxCell>
+								</t:Column>
+								<t:Column width="150" label="{msg.dictionary_systemName}">
+									<t:TextBoxCell>
+										<w:TextBox maxLength="30" case="LOWER" field="String" />
+									</t:TextBoxCell>
+								</t:Column>
+								<t:Column width="40" label="{msg.dictionary_code}">
+									<t:TextBoxCell>
+										<w:TextBox maxLength="10" field="String" />
+									</t:TextBoxCell>
+								</t:Column>
+								<t:Column width="240" label="{msg.gen_entry}" required="true">
+									<t:TextBoxCell>
+										<w:TextBox maxLength="255" field="String" />
+									</t:TextBoxCell>
+								</t:Column>
+								<t:Column width="171" label="{msg.dictionary_relEntry}">
+									<t:AutoCompleteCell>
+										<w:AutoComplete ui:field="relatedEntry" case="MIXED"
+											width="171" dropWidth="300px">
+											<w:popup>
+												<t:Table visibleRows="10" header="true">
+													<t:Column width="150" label="{msg.gen_entry}">
+														<t:LabelCell />
+													</t:Column>
+													<t:Column width="150" label="{msg.gen_category}">
+														<t:LabelCell />
+													</t:Column>
+												</t:Table>
+											</w:popup>
+										</w:AutoComplete>
+									</t:AutoCompleteCell>
+								</t:Column>
+							</t:Table>
+						</g:layer>
+						<g:layer bottom="0px" height="30px">
+							<g:HorizontalPanel height="30px">
+								<w:Button ui:field="addEntryButton" css="{res.button}"
+									leftIcon="{res.icon.addRowIcon}" text="{msg.gen_addRow}" />
+								<w:Button ui:field="removeEntryButton" css="{res.button}"
+									leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
+								<w:Button ui:field="moveUpButton" css="{res.button}"
+									leftIcon="{res.icon.arrowUpButtonImage}" text="{msg.gen_moveUp}" />
+								<w:Button ui:field="moveDownButton" css="{res.button}"
+									leftIcon="{res.icon.arrowDownButtonImage}" text="{msg.gen_moveDown}" />
+							</g:HorizontalPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:center>
+	</g:SplitLayoutPanel>
+</ui:UiBinder>

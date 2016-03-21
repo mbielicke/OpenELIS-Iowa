@@ -1,0 +1,251 @@
+@sprite .EditSettings {
+	gwt-image: 'EditSettings';
+}
+
+@sprite .preferenceIcon {
+	gwt-image: 'preferenceIcon';
+}
+
+@sprite .logoutIcon {
+	gwt-image: 'logoutIcon';
+}
+
+@sprite .quickEntryIcon {
+	gwt-image: 'quickEntryIcon';
+}
+
+@sprite .QCIcon {
+	gwt-image: 'QCIcon';
+}
+
+@sprite .sdwisSampleLoginIcon {
+	gwt-image: 'cup';
+}
+
+@sprite .trackingIcon {
+	gwt-image: 'trackingIcon';
+}
+
+@sprite .environmentalSampleLoginIcon {
+	gwt-image: 'worldAdd';
+}
+
+@sprite .privateWellWaterSampleLoginIcon {
+	gwt-image: 'house';
+}
+
+@sprite .projectIcon {
+	gwt-image: 'add';
+}
+
+@sprite .providerIcon {
+	gwt-image: 'providerIcon';
+}
+
+@sprite .organizationIcon {
+	gwt-image: 'organizationIcon';
+}
+
+@sprite .worksheetCreationIcon {
+	gwt-image: 'worksheetCreationIcon';
+}
+
+@sprite .worksheetCompletionIcon {
+	gwt-image: 'worksheetCompletionIcon';
+}
+
+@sprite .addOrCancelIcon {
+	gwt-image: 'addOrCancelIcon';
+}
+
+@sprite .completeIcon {
+    gwt-image: 'completeIcon';   
+}
+
+@sprite .Disabled .completeIcon {
+    gwt-image: 'completeDisabledIcon';   
+}
+
+@sprite .reviewAndReleaseIcon {
+	gwt-image: 'reviewAndReleaseIcon';	
+}
+
+@sprite .Disabled .reviewAndReleaseIcon {
+    gwt-image: 'reviewAndReleaseDisabledIcon';    
+}
+
+@sprite .unreleaseIcon {
+    gwt-image: 'unreleaseIcon';  
+}
+
+@sprite .Disabled .unreleaseIcon {
+    gwt-image: 'unreleaseDisabledIcon';    
+}
+
+@sprite .toDoIcon {
+	gwt-image: 'toDoIcon';
+}
+
+@sprite .labelForIcon {
+	gwt-image: 'labelForIcon';
+}
+
+@sprite .storageIcon {
+	gwt-image: 'storageIcon';
+}
+
+@sprite .orderIcon {
+	gwt-image: 'orderIcon';
+}
+
+@sprite .fillOrderIcon {
+	gwt-image: 'fillOrderIcon';
+}
+
+@sprite .shippingIcon {
+	gwt-image: 'shippingIcon';
+}
+
+@sprite .inventoryReceiptIcon {
+	gwt-image: 'inventoryReceiptIcon';
+}
+
+@sprite .inventoryIcon {
+	gwt-image: 'inventoryIcon';
+}
+
+@sprite .testIcon {
+	gwt-image: 'testIcon';
+}
+
+@sprite .methodIcon {
+	gwt-image: 'methodIcon';
+}
+
+@sprite .panelIcon {
+	gwt-image: 'calculator';
+}
+
+@sprite .QAEventIcon {
+	gwt-image: 'tick';
+}
+
+@sprite .labSectionIcon {
+	gwt-image: 'group';
+}
+
+@sprite .analyteIcon {
+	gwt-image: 'map';
+}
+
+@sprite .dictionaryIcon {
+	gwt-image: 'dictionaryIcon';
+}
+
+@sprite .auxiliaryPromptIcon {
+	gwt-image: 'lightbulb';
+}
+
+@sprite .labelIcon {
+	gwt-image: 'inventoryReceiptIcon';
+}
+
+@sprite .standardNoteIcon {
+	gwt-image: 'note';
+}
+
+@sprite .Disabled .standardNoteIcon {
+	gwt-image: 'noteDisabled';
+}
+
+@sprite .trailerForTestIcon {
+	gwt-image: 'page';
+}
+
+@sprite .storageUnitIcon {
+	gwt-image: 'packageIcon';
+}
+
+@sprite .storageLocationIcon {
+	gwt-image: 'basket';
+}
+
+@sprite .instrumentIcon {
+	gwt-image: 'instrumentIcon';
+}
+
+@sprite .systemVariableIcon {
+	gwt-image: 'brick';
+}
+
+@sprite .historyIcon {
+	gwt-image: 'history';
+}
+
+@sprite .addRowIcon {
+	gwt-image: 'addRowIcon';
+}
+
+@sprite .Disabled .addRowIcon {
+	gwt-image: 'addRowDisabledIcon';
+}
+
+@sprite .removeRowIcon {
+	gwt-image: 'removeRowIcon';
+}
+
+@sprite .Disabled .removeRowIcon {
+	gwt-image: 'removeRowDisabledIcon';
+}
+
+@sprite .findIcon {
+	gwt-image: 'findIcon';
+}
+
+@sprite .Disabled .findIcon {
+	gwt-image: 'findDisabledIcon';
+}
+
+@sprite .selectAllIcon {
+	gwt-image:'selectAllIcon';
+}
+
+@sprite .Disabled .selectAllIcon {
+	gwt-image: 'selectAllDisabledIcon';
+}
+
+@sprite .popoutIcon {
+    gwt-image:'popoutIcon';
+}
+
+@sprite .Disabled .popoutIcon {
+    gwt-image: 'popoutDisabledIcon';
+}
+
+@sprite .fieldLookupIcon {
+    gwt-image:'fieldLookupIcon';
+}
+
+@sprite .Disabled .fieldLookupIcon {
+    gwt-image: 'fieldLookupDisabledIcon';
+}
+
+@sprite .attachedIcon {
+    gwt-image:'attachedIcon';
+}
+
+@sprite .lockedByOtherIcon {
+    gwt-image:'lockedByOtherIcon';
+}
+
+@sprite .lockedBySelfIcon {
+    gwt-image:'lockedBySelfIcon';
+}
+
+@sprite .blankIcon {
+    gwt-image:'blankIcon';
+}
+
+@sprite .chartIcon {
+    gwt-image:'chartIcon';
+}

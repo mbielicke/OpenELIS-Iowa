@@ -1,0 +1,275 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="225px">
+      <g:LayoutPanel>
+        <g:layer top="0px" height="25px" left="0px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Heading}">
+                  <ui:text from="{msg.dataView_sampleFieldSearchBy}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="25px" bottom="0px" left="93px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_accessionNum}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="accessionNumberFrom" field="Integer" width="85px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="accessionNumberTo" field="Integer" width="85px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_collected}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="collectionDateFrom" begin="0" end="2" width="90px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="collectionDateTo" begin="0" end="2" width="90px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_received}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="receivedDateFrom" begin="0" end="4" width="125px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="receivedDateTo" begin="0" end="4" width="125px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_entered}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="enteredDateFrom" begin="0" end="4" width="125px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="enteredDateTo" begin="0" end="4" width="125px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_released}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="releasedDateFrom" begin="0" end="4" width="125px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="releasedDateTo" begin="0" end="4" width="125px" />
+                </td>
+              </tr>
+              <tr colspan="2">
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_clntRef}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="clientReference" field="String" width="125px" case="LOWER" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.project_project}:" />
+                </td>
+                <td>
+                  <w:MultiDropdown ui:field="projectId" field="Integer" width="125px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sampleOrganization_reportTo}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="reportTo" field="String" width="305px" case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_domain}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="domain" field="String" width="125px" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+    <g:layer top="225px" bottom="35px">
+      <g:LayoutPanel>
+        <g:layer top="0px" height="25px" left="0px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Heading}">
+                  <ui:text from="{msg.dataView_analysisFieldSearchBy}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="25px" bottom="0px" left="125px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_test}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="analysisTestName" field="String" width="125px"
+                    case="LOWER" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_method}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="analysisMethodName" field="String" width="125px"
+                    case="LOWER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_reportable}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="analysisIsReportable" field="String" width="85px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_status}:" />
+                </td>
+                <td>
+                  <w:MultiDropdown ui:field="analysisStatusId" field="Integer"
+                    width="125px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.analysis_completed}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="analysisCompletedDateFrom" begin="0" end="2"
+                    width="90px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="analysisCompletedDateTo" begin="0" end="2" width="90px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_released}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="analysisReleasedDateFrom" begin="0" end="4"
+                    width="125px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_to}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="analysisReleasedDateTo" begin="0" end="4" width="125px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_section}:" />
+                </td>
+                <td>
+                  <w:MultiDropdown ui:field="analysisSectionId" field="Integer"
+                    width="151px" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+    <g:layer top="370px" bottom="0px">
+      <g:LayoutPanel>
+        <g:layer top="0px" height="25px" left="0px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Heading}">
+                  <ui:text from="{msg.dataView_filters}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="25px" bottom="0px" left="49px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.dataView_excludeResultOverride}:" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="excludeResultOverride" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.result_result}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="result" field="String" width="150px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.aux_data}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="auxData" field="String" width="150px" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

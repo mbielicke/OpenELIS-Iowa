@@ -1,0 +1,114 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="0px">
+      <g:LayoutPanel>
+        <g:layer left="0" right="0" top="0" height="30px">
+          <g:HTMLPanel>
+            <table>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_description}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="description" width="230px" field="String" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.worksheet_createdDate}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="createdDate" width="115px" begin="0" end="4" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_section}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="querySection" field="Integer" width="100px"
+                    dropWidth="150px" />
+                </td>
+                <td>
+                  <w:Button ui:field="searchButton" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="30px" bottom="25px">
+          <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
+            <r:Column width="240" label="{msg.gen_description}" />
+            <r:Column width="115" label="{msg.attachment_createdDate}" />
+            <r:Column width="80" label="{msg.gen_section}" />
+            <r:Column width="280" label="{msg.attachment_issue}" />
+            <r:Column width="50" label="{msg.gen_id}" />
+            <r:Leaf key="attachment">
+              <r:LeafColumn required="true">
+                <t:TextBoxCell>
+                  <w:TextBox field="String" />
+                </t:TextBoxCell>
+              </r:LeafColumn>
+              <r:LeafColumn>
+                <t:CalendarCell>
+                  <c:Calendar width="115" begin="0" end="4" />
+                </t:CalendarCell>
+              </r:LeafColumn>
+              <r:LeafColumn>
+                <t:DropdownCell>
+                  <w:Dropdown ui:field="tableSection" field="Integer" dropWidth="150" />
+                </t:DropdownCell>
+              </r:LeafColumn>
+              <r:LeafColumn>
+                <t:LabelCell />
+              </r:LeafColumn>              
+              <r:LeafColumn>
+                <t:LabelCell />
+              </r:LeafColumn>
+            </r:Leaf>
+            <r:Leaf key="attachmentItem">
+              <r:LeafColumn>
+                <t:LabelCell />
+              </r:LeafColumn>
+            </r:Leaf>
+            <r:Leaf key="clickForMore">
+              <r:LeafColumn>
+                <t:LabelCell />
+              </r:LeafColumn>
+            </r:Leaf>
+          </r:Tree>
+        </g:layer>
+        <g:layer bottom="0px" height="25px">
+          <g:HorizontalPanel width="100%">
+            <g:HorizontalPanel>
+              <w:Button ui:field="attachButton" leftIcon="{res.icon.addRowIcon}" text="{msg.attachment_attach}" />
+            </g:HorizontalPanel>
+            <g:HorizontalPanel width="100%" horizontalAlignment="ALIGN_RIGHT">
+              <g:HorizontalPanel>
+                <w:Button ui:field="updateButton" leftIcon="{res.icon.UpdateButtonImage}"
+                  text="{msg.gen_update}" />
+                <w:Button ui:field="deleteButton" leftIcon="{res.icon.DeleteButtonImage}"
+                  text="{msg.gen_delete}" />
+                <w:Button ui:field="commitButton" leftIcon="{res.icon.CommitButtonImage}"
+                  text="{msg.gen_commit}" />
+                <w:Button ui:field="abortButton" leftIcon="{res.icon.AbortButtonImage}"
+                  text="{msg.gen_abort}" />
+              </g:HorizontalPanel>
+            </g:HorizontalPanel>
+          </g:HorizontalPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
