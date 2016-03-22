@@ -568,28 +568,38 @@ Phone # 319-335-4500 or
 					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
 					<rightPen lineWidth="0.25" lineStyle="Solid"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[
-
-PLACE THE ACCESSION LABEL WITHIN THIS BOX]]></text>
+				<text><![CDATA[FOR INTERNAL USE ONLY]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="255" y="222" width="149" height="24" forecolor="#000000" backcolor="#D2D2D2"/>
-				<textElement>
+				<reportElement key="" positionType="Float" mode="Opaque" x="255" y="199" width="149" height="69" forecolor="#8C8C8C" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[
- BUILD ID _________________]]></text>
+				<text><![CDATA[FOR INTERNAL USE ONLY]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="85" y="222" width="149" height="24" forecolor="#000000" backcolor="#D1D1D1"/>
-				<textElement>
+				<reportElement key="" positionType="Float" mode="Opaque" x="85" y="199" width="149" height="69" forecolor="#8C8C8C" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[
- BUILD ID _________________]]></text>
+				<text><![CDATA[FOR INTERNAL USE ONLY]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="372" y="146" width="89" height="10"/>
