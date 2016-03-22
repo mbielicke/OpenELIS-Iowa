@@ -1601,7 +1601,7 @@ public class WorksheetManager1Bean {
         //
         if (lastSubsetList.isEmpty())
             lastSubsetList = lastBothList;
-        pos = twDO.getSubsetCapacity() - lastSubsetList.size() - 1;
+        pos = twDO.getSubsetCapacity() - lastSubsetList.size();
         for (i = 0; i < lastSubsetList.size(); i++) {
             twiDO = lastSubsetList.get(i);
             for (j = pos; j < twDO.getTotalCapacity(); j += twDO.getSubsetCapacity())
