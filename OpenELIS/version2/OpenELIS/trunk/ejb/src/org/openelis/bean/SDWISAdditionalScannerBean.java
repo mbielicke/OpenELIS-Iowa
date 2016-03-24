@@ -26,7 +26,7 @@
 package org.openelis.bean;
 
 import static org.openelis.manager.IOrderManager1Accessor.getItems;
-import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,7 +67,7 @@ public class SDWISAdditionalScannerBean {
     private SystemVariableBean  systemVariable;
 
     @EJB
-    private IOrderManager1Bean   orderManager;
+    private IOrderManager1Bean  orderManager;
 
     @EJB
     private SampleManager1Bean  sampleManager;
@@ -88,11 +88,12 @@ public class SDWISAdditionalScannerBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void scan() throws Exception {
-        boolean open, processed;
+        boolean open, processed, openAllYear;
         int multi;
         String val;
         Datetime current, lastYear;
-        Calendar cal, vCal, lastYearCal;
+        // TODO remove this aprilFirst variable
+        Calendar cal, vCal, lastYearCal, aprilFirst;
         PWSDO p;
         PWSManager pwsm;
         SampleSDWISViewDO sdwis;
@@ -153,6 +154,12 @@ public class SDWISAdditionalScannerBean {
         pwsms = new HashMap<Integer, PWSManager>();
         facilityMap = new HashMap<Integer, ArrayList<PWSViolationDO>>();
         multi = 0;
+        aprilFirst = Calendar.getInstance();
+        aprilFirst.set(Calendar.YEAR, 2016);
+        aprilFirst.set(Calendar.MONTH, Calendar.APRIL);
+        aprilFirst.set(Calendar.DAY_OF_MONTH, 1);
+        aprilFirst.set(Calendar.HOUR_OF_DAY, 0);
+        aprilFirst.set(Calendar.MINUTE, 0);
 
         for (PWSViolationDO v : pwsViolation.fetchAll()) {
 
@@ -173,18 +180,21 @@ public class SDWISAdditionalScannerBean {
             p = pws.fetchByTinwsysIsNumber(v.getTinwsysIsNumber());
 
             /*
-             * determine if the pws is open currently
+             * determine if the pws is open currently and if it is open all year
              */
-            if (p.getEndMonth() < p.getStartMonth())
+            if (p.getEndMonth() < p.getStartMonth()) {
                 open = ( (cal.get(Calendar.MONTH) + 1 > p.getStartMonth() || cal.get(Calendar.MONTH) + 1 < p.getEndMonth()) ||
                         (cal.get(Calendar.MONTH) + 1 == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) + 1 == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
                        DataBaseUtil.isAfter(current, p.getEffBeginDt()) &&
                        (p.getEffEndDt() == null || DataBaseUtil.isAfter(p.getEffEndDt(), current));
-            else
+                openAllYear = (p.getStartMonth() - p.getEndMonth() == 1);
+            } else {
                 open = ( (cal.get(Calendar.MONTH) + 1 > p.getStartMonth() && cal.get(Calendar.MONTH) + 1 < p.getEndMonth()) ||
                         (cal.get(Calendar.MONTH) + 1 == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) + 1 == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
                        DataBaseUtil.isAfter(current, p.getEffBeginDt()) &&
                        (p.getEffEndDt() == null || DataBaseUtil.isAfter(p.getEffEndDt(), current));
+                openAllYear = (p.getStartMonth() == 1 && p.getEndMonth() == 12);
+            }
 
             if (open) {
 
@@ -242,24 +252,42 @@ public class SDWISAdditionalScannerBean {
                     continue;
                 }
 
-                /*
-                 * If the facility samples quarterly, only consider violations
-                 * from up to one year ago
-                 */
-                if ("QUARTERLY".equals(data.getFrequencyName()) &&
-                    DataBaseUtil.isAfter(lastYear, v.getViolationDate())) {
+                // TODO remove this code once all samples collected before april
+                // 1, 2016 have been completely processed
+                if (aprilFirst.getTime().after(getSample(sm).getCollectionDate().getDate())) {
+                    /*
+                     * If the facility samples quarterly, only consider
+                     * violations from up to one year ago
+                     */
+                    if ("QUARTERLY".equals(data.getFrequencyName()) &&
+                        DataBaseUtil.isAfter(lastYear, v.getViolationDate())) {
+                        processedList.add(v);
+                        continue;
+                    }
+
+                    /*
+                     * send five additional bottles
+                     */
+                    multi = 5;
+
+                    for (Integer oid : oids)
+                        createOrder(sm, pwsm, oid, analytes, v, multi);
                     processedList.add(v);
-                    continue;
+                } else {
+                    /*
+                     * If the facility samples quarterly and is open all year
+                     * and the violation was within the last year, send three
+                     * additional bottles
+                     */
+                    if ("QUARTERLY".equals(data.getFrequencyName()) && openAllYear &&
+                        !DataBaseUtil.isAfter(lastYear, v.getViolationDate())) {
+                        multi = 3;
+
+                        for (Integer oid : oids)
+                            createOrder(sm, pwsm, oid, analytes, v, multi);
+                    }
+                    processedList.add(v);
                 }
-
-                /*
-                 * send five additional bottles
-                 */
-                multi = 5;
-
-                for (Integer oid : oids)
-                    createOrder(sm, pwsm, oid, analytes, v, multi);
-                processedList.add(v);
             }
         }
 

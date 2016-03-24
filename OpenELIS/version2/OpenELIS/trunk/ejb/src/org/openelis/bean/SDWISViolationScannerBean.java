@@ -85,7 +85,7 @@ public class SDWISViolationScannerBean {
     private SampleManager1Bean  sampleManager;
 
     @EJB
-    private IOrderManager1Bean   orderManager;
+    private IOrderManager1Bean  orderManager;
 
     @EJB
     private TestResultBean      testResult;
@@ -99,6 +99,8 @@ public class SDWISViolationScannerBean {
     private static final Logger log                  = Logger.getLogger("openelis");
 
     private static final String triggerSamplePointId = "TG";
+
+    private Calendar            aprilFirst;
 
     /**
      * Finds samples with positive results and creates orders for repeat samples
@@ -245,6 +247,12 @@ public class SDWISViolationScannerBean {
          * category and is of the routine sample type
          */
         pwsms = new HashMap<Integer, PWSManager>();
+        aprilFirst = Calendar.getInstance();
+        aprilFirst.set(Calendar.YEAR, 2016);
+        aprilFirst.set(Calendar.MONTH, Calendar.APRIL);
+        aprilFirst.set(Calendar.DAY_OF_MONTH, 1);
+        aprilFirst.set(Calendar.HOUR_OF_DAY, 0);
+        aprilFirst.set(Calendar.MINUTE, 0);
         for (SampleManager1 sm : sms) {
             sdwis = getSampleSDWIS(sm);
 
@@ -349,10 +357,14 @@ public class SDWISViolationScannerBean {
                 if (data.getNumberSamples() != null &&
                     DataBaseUtil.isSame(getSampleSDWIS(sm).getFacilityId(), data.getStAsgnIdentCd()) &&
                     DataBaseUtil.isSame(series, data.getTiaanlgpTiaanlytName())) {
-                    if (data.getNumberSamples() == 1)
-                        multi = 4;
-                    else if (data.getNumberSamples() > 1)
+                    if (aprilFirst.getTime().after(getSample(sm).getCollectionDate().getDate())) {
+                        if (data.getNumberSamples() == 1)
+                            multi = 4;
+                        else if (data.getNumberSamples() > 1)
+                            multi = 3;
+                    } else {
                         multi = 3;
+                    }
                     break;
                 }
             }
