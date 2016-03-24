@@ -62,7 +62,7 @@ FROM   sample s
                               tr.id = r.test_result_id AND
                               tr.flags_id in (SELECT dictionary.id
                                               FROM   dictionary
-                                              WHERE  dictionary.system_name matches 'rf_*a*')
+                                              WHERE  dictionary.system_name like 'rf_%a%')
        JOIN dictionary d1 on d1.id = tr.type_id
        JOIN analyte an on an.id = r.analyte_id
 WHERE  s.domain = 'C' AND
