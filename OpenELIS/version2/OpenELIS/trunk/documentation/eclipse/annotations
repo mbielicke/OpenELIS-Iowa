@@ -1,0 +1,24 @@
+1. Right click on the project and go to properties to set up the annotation processing.
+   Use screenshots annotation-step-1 & 2
+
+2. Delete the *Service and *ServiceIntAsync files in client package.
+
+3. Rename *ServiceInt to just be *Service
+
+4. Add the @Service annotation to the in the *Service interface, import it from the UI project. 
+
+5. After saving the file the *ServiceAsync and *ServiceImpl files will be created.
+   You will not see them in your workspace, however, they will reside in the .apt-generated
+   source folder.
+
+6. You will also see a validation error on the *Service interface complaining about the GWT
+   validation not finding the Async version. You can just set the validator to ignore this
+   since we will always create it. There is a screenshot (annotation-step-3) to do this.
+
+7. The *ServiceImpl is now created as an enum Singleton. To use it in the screen just use
+
+   *ServiceImpl.INSTANCE.method();
+
+   Or set an instance variable 
+
+   *ServiceImpl service = *ServiceImpl.INSTANCE;
