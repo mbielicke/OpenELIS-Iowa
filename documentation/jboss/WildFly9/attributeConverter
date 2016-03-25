@@ -1,0 +1,29 @@
+An AttributeConverter is an interceptor in JPA that will convert entity types to database
+compatible type. For example, a Datetime class can do the following in an entity:
+
+ @Column(name = "project_end")
+ @Convert(converter=YDConverter.class)
+ private Datetime projectEnd;
+
+The converter code looks like this:
+
+@Converter
+public class YDConverter implements AttributeConverter<Datetime, Date> {
+
+	@Override
+	public Date convertToDatabaseColumn(Datetime attribute) {
+		return DataBaseUtil.toDate(attribute);
+	}
+
+	@Override
+	public Datetime convertToEntityAttribute(Date dbData) {
+		return DataBaseUtil.toYD(dbData);
+	}
+}
+
+This uses the Datetime class only when interacting with the entity and the precision of the date
+is coded only in one place. The interceptor ensures that the correct precision is always applied
+when data is persisted or fetched.
+
+This also allows us to code the constructor in a DO to accept Datetime instead of Date and allows
+us to remove all the DataBaseUtil conversion checks.

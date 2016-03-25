@@ -1,0 +1,81 @@
+Apply SHL Patch to GWT Source
+
+1. First make sure that Ant 1.7.0 or later is installed
+
+   sudo apt-get install ant
+
+2. You will also need git client installed
+
+   sudo apt-get install git
+
+3. From a dir you have permissions to run the following commands
+
+   git clone https://gwt.googlesource.com/gwt gwt-project
+   git clone https://github.com/gwtproject/tools.git
+
+4. You should now have two new dirs: gwt-project, tools
+
+5. To see what release tags are in the repository type the following
+
+   cd to gwt-project
+   git tag -l
+
+6. Checkout a release as a working branch by typing the following
+
+   git checkout -b shl-gwt-2.7.0 tags/2.7.0
+   
+   Above will check out a working copy of release 2.7.0 to branch shl-gwt-2.7.0.
+   You can then type
+
+   git status
+
+   to confirm you are on the branch
+
+7. Make sure JAVA_HOME is pointing to a JDK by doing
+
+   export JAVA_HOME=/usr/local/java/JDK_PATH
+
+8. This will build the the gwt zip distribution for the platform it is currently 
+   being built on without the sample code. This step can be omitted since the patch is not 
+   applied yet, but it might be good to know it will build before changing code.
+
+   ant dist-dev
+
+9. To apply the patch download it to gwt-project and type the following
+
+   git apply shl-gwt.patch
+
+   If you are a applying a patch from a previous release the patch my need to be altered in
+   order to work if files the patch modifies were altered in the latest release
+
+10.If the patch succeeded with only white space errors you should be good to go.
+
+     git status
+
+     to see a list of files modified and added by the patch. You can edit common.ant.xml
+     to and set the gwt.version property to the release version you are now building,
+     or in the command line you can type export GWT_VERSION=2.7.0  before building again
+
+11.Again type: ant dist-dev to build the project again with the patch changes.
+
+12.If the project build succeeds you can find the zip file at ~/gwt-project/buid/dist.
+   if the project fails try and resolve any java errors in the output and run ant dist-dev
+
+13.Now that you have a successful build you can commit the working changes to your branch.
+   If you needed to alter files to make the last patch work and even if you didn't, you
+   should make a new patch file so it can be used for future releases. To do that make
+   sure all your work is committed by doing git status.  Once everything is committed then do
+
+   git show shl-gwt-2.7.0 > shl-gwt.patch
+
+   This will create a new patch with all the changes you just committed.   
+
+14.If you run into a scenario where major changes are required to fit a patch or you want to
+   code a feature into the project, then follow the steps in the README.txt file that is found
+   under ~/gwt-project/eclipse. You will want to start with a separate new workspace when
+   following these directions. If you run into issues such as the code can not be checked out 
+   or build errors.  You may want to refer to:
+   
+   http://www.gwtproject.org/makinggwtbetter.html#workingoncode  
+
+   To verify the URLs in this document has not changed or if extra steps to build have been added.
