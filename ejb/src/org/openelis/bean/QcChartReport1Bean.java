@@ -563,10 +563,10 @@ public class QcChartReport1Bean {
             tempQcColumns = new ArrayList<DictionaryDO>();
             tempQcColumns.addAll(qcColumns);
             for (i = tempQcColumns.size() - 1; i > -1; i--) {
-                if (emptyColumns.contains(i + 3)) {
+                if (emptyColumns.contains(i + 4)) {
                     tempQcColumns.remove(i);
-                    removeColumn(sheet, i + 3);
-                    maxChars.remove(i + 3);
+                    removeColumn(sheet, i + 4);
+                    maxChars.remove(i + 4);
                 }
             }
             
@@ -574,7 +574,7 @@ public class QcChartReport1Bean {
              * Create named ranges for the graph to be able to locate the appropriate
              * data
              */
-            columnIndex = 3;
+            columnIndex = 4;
             for (i = 0; i < tempQcColumns.size(); i++) {
                 dict = tempQcColumns.get(i);
                 if (!DataBaseUtil.isEmpty(dict.getCode())) {
@@ -602,7 +602,7 @@ public class QcChartReport1Bean {
              * that column multiplied by 256; this is because the default width of
              * one character is 1/256 units in Excel
              */
-            for (i = 3; i < maxChars.size(); i++)
+            for (i = 4; i < maxChars.size(); i++)
                 sheet.setColumnWidth(i, maxChars.get(i) * 256);
         } else if (worksheetHeaders != null && worksheetHeaders.size() > 0) {
             /*
