@@ -520,7 +520,7 @@ public class WorksheetPrintReportBean {
             reader.close();
             
             i = -1;
-            pageNumber = 0;
+            pageNumber = -1;
             form = null;
             page = null;
             stamper = null;
