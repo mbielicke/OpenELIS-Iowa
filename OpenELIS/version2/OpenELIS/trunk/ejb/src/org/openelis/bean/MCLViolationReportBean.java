@@ -526,6 +526,7 @@ public class MCLViolationReportBean {
             body.append(analysis.getFacilityId());
     
         body.append("<br>\r\n")
+            .append("Sample Point ID ").append(analysis.getSamplePointId()).append("<br>\r\n")
             .append("Sample Point Description ");
         
         if (analysis.getLocation() != null)
