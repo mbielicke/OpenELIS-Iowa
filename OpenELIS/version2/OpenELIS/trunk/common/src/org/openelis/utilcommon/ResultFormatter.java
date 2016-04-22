@@ -443,8 +443,8 @@ public class ResultFormatter implements Serializable {
      * Formatted result objects
      */
     public static class FormattedValue {
-        int    id, type;
-        String display;
+        int     id, type;
+        String  display;
         boolean isActive;
 
         public FormattedValue() {
@@ -469,7 +469,7 @@ public class ResultFormatter implements Serializable {
         public String getDisplay() {
             return display;
         }
-        
+
         public boolean getIsActive() {
             return isActive;
         }
@@ -652,8 +652,8 @@ public class ResultFormatter implements Serializable {
      * Dictionary Item
      */
     static class DictionaryItem extends Item {
-        int id;
-        String text;
+        int     id;
+        String  text;
         boolean isActive;
 
         /**
@@ -700,9 +700,9 @@ public class ResultFormatter implements Serializable {
          * Parses and format date and time
          */
         public String format(String value) throws ParseException {
-            Date d;
+            Date d, invalid;
             String format;
-            DateTimeFormat dtf;
+            DateTimeFormat dtf, idtf;
 
             format = null;
             if (isTypeDate(type))
@@ -717,8 +717,17 @@ public class ResultFormatter implements Serializable {
              */
             dtf = new DateTimeFormat(format, new DefaultDateTimeFormatInfo()) {
             };
+            idtf = new DateTimeFormat(Messages.get().dateTimePattern(),
+                                      new DefaultDateTimeFormatInfo()) {
+            };
             try {
                 d = dtf.parseStrict(value);
+                /*
+                 * Disallow dates after year 2199
+                 */
+                invalid = idtf.parseStrict("2200-01-01 00:00");
+                if ( !d.before(invalid))
+                    throw new Exception();
                 return dtf.format(d);
             } catch (Exception e) {
                 throw new ParseException(Messages.get().illegalDateTimeValueException());
