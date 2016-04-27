@@ -38,7 +38,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.secondDataEntry.client.SDWISTabUI.Operation;
 import org.openelis.modules.secondDataEntry.client.field.AccessionNumber;
 import org.openelis.modules.secondDataEntry.client.field.AuxData;
 import org.openelis.modules.secondDataEntry.client.field.ClientReference;
@@ -56,11 +55,11 @@ import org.openelis.modules.secondDataEntry.client.field.EnvLocationAddrState;
 import org.openelis.modules.secondDataEntry.client.field.EnvLocationAddrStreetAddress;
 import org.openelis.modules.secondDataEntry.client.field.EnvLocationAddrZipCode;
 import org.openelis.modules.secondDataEntry.client.field.EnvPriority;
+import org.openelis.modules.secondDataEntry.client.field.OrderId;
 import org.openelis.modules.secondDataEntry.client.field.ReceivedDate;
 import org.openelis.modules.secondDataEntry.client.field.SampleOrganization;
 import org.openelis.modules.secondDataEntry.client.field.SampleProject;
 import org.openelis.modules.secondDataEntry.client.field.SampleQAEvent;
-import org.openelis.modules.secondDataEntry.client.field.OrderId;
 import org.openelis.modules.secondDataEntry.client.field.VerificationField;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.ShortcutHandler;
@@ -646,6 +645,9 @@ public class EnvironmentalTabUI extends VerificationScreen {
     private void execute(Operation operation) {
         VerificationField field;
 
+        if (!isState(UPDATE))
+            return;
+        
         field = null;
         if (auxDataTable.isEditing()) {
             /*
