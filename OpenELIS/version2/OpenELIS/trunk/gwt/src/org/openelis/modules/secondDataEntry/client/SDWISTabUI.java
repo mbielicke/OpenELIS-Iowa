@@ -602,6 +602,9 @@ public class SDWISTabUI extends VerificationScreen {
     private void execute(Operation operation) {
         VerificationField field;
 
+        if (!isState(UPDATE))
+            return;
+        
         field = null;
         if (auxDataTable.isEditing()) {
             /*

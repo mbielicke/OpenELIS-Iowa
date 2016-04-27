@@ -38,7 +38,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.secondDataEntry.client.SDWISTabUI.Operation;
 import org.openelis.modules.secondDataEntry.client.field.AccessionNumber;
 import org.openelis.modules.secondDataEntry.client.field.AuxData;
 import org.openelis.modules.secondDataEntry.client.field.ClientReference;
@@ -700,6 +699,9 @@ public class ClinicalTabUI extends VerificationScreen {
     private void execute(Operation operation) {
         VerificationField field;
 
+        if (!isState(UPDATE))
+            return;
+        
         field = null;
         if (auxDataTable.isEditing()) {
             /*
