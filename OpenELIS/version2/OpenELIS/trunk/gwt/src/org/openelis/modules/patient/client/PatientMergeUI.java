@@ -239,7 +239,7 @@ public class PatientMergeUI extends Screen {
                             break;
                             
                         case 1:
-                            if (fromPatients.size() > 0) {
+                            if (fromPatients != null && fromPatients.size() > 0) {
                                 for (PatientDO data : fromPatients) {
                                     if (pDO.getId().equals(data.getId())) {
                                         Window.alert(Messages.get().patientMerge_duplicateFromTo());
