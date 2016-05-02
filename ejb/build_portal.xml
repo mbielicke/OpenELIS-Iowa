@@ -35,6 +35,7 @@
             <include name="org/openelis/manager/*.class" />
             <include name="org/openelis/report/**/*" />
             <include name="org/openelis/scriptlet/*.class" />
+            <include name="org/openelis/scriptlet/**/*.class" />
 			<include name="org/openelis/utils/*.class" />
 			<include name="ehcache.xml" />
 			<include name="dataExchangeDefault.xsl" />
@@ -74,6 +75,7 @@
 			<include name="org/openelis/domain/*.class" />
 			<include name="org/openelis/exception/*.class" />
 			<include name="org/openelis/scriptlet/*.class" />
+            <include name="org/openelis/scriptlet/**/*.class" />
 			<!--<include name="org/openelis/manager/*.class" /> -->
 			<include name="org/openelis/messages/*.class" />
 			<include name="org/openelis/meta/*.class" />
@@ -112,7 +114,7 @@
 		<zipfileset dir="deploylib" prefix="lib" includes="*.jar"/>
 	</ear>
 	
-	<copy file="build/openelis.ear" todir="/usr/local/java/wildfly/standalone/deployments"/>
+	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
 	
 	<delete dir="deploylib"/>
 
