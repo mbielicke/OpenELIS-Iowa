@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -16576,6 +16576,78 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_historyException();
 
   /**
+   * Translated "Invalid adjusted weight of 0.0".
+   * 
+   * @return translated "Invalid adjusted weight of 0.0"
+   */
+  @DefaultMessage("Invalid adjusted weight of 0.0")
+  @Key("result.invalidAdjWeightOfZeroException")
+  String result_invalidAdjWeightOfZeroException();
+
+  /**
+   * Translated "Invalid number of fetus".
+   * 
+   * @return translated "Invalid number of fetus"
+   */
+  @DefaultMessage("Invalid number of fetus")
+  @Key("result.invalidNumFetusException")
+  String result_invalidNumFetusException();
+
+  /**
+   * Translated "Invalid result of 0.0".
+   * 
+   * @return translated "Invalid result of 0.0"
+   */
+  @DefaultMessage("Invalid result of 0.0")
+  @Key("result.invalidResultOfZeroException")
+  String result_invalidResultOfZeroException();
+
+  /**
+   * Translated "Missing birth date".
+   * 
+   * @return translated "Missing birth date"
+   */
+  @DefaultMessage("Missing birth date")
+  @Key("result.missingBirthDateException")
+  String result_missingBirthDateException();
+
+  /**
+   * Translated "Missing collected date".
+   * 
+   * @return translated "Missing collected date"
+   */
+  @DefaultMessage("Missing collected date")
+  @Key("result.missingCollectedDateException")
+  String result_missingCollectedDateException();
+
+  /**
+   * Translated "Missing entered date".
+   * 
+   * @return translated "Missing entered date"
+   */
+  @DefaultMessage("Missing entered date")
+  @Key("result.missingEnteredDateException")
+  String result_missingEnteredDateException();
+
+  /**
+   * Translated "Missing Ultrasound and LMP gestational age".
+   * 
+   * @return translated "Missing Ultrasound and LMP gestational age"
+   */
+  @DefaultMessage("Missing Ultrasound and LMP gestational age")
+  @Key("result.missingUSLMPGAException")
+  String result_missingUSLMPGAException();
+
+  /**
+   * Translated "No median for gestational age: {0,number,#0}   ".
+   * 
+   * @return translated "No median for gestational age: {0,number,#0}   "
+   */
+  @DefaultMessage("No median for gestational age: {0,number,#0}   ")
+  @Key("result.noMedianForGestAgeException")
+  String result_noMedianForGestAgeException(Integer arg0);
+
+  /**
    * Translated "Result(s) Overridden".
    * 
    * @return translated "Result(s) Overridden"
@@ -16592,6 +16664,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.")
   @Key("result.partSamNotFoundException")
   String result_partSamNotFoundException(Integer arg0,  String arg1,  String arg2,  Integer arg3);
+
+  /**
+   * Translated "{0} required to compute median for {1}".
+   * 
+   * @return translated "{0} required to compute median for {1}"
+   */
+  @DefaultMessage("{0} required to compute median for {1}")
+  @Key("result.pvaluesNotFoundException")
+  String result_pvaluesNotFoundException(String arg0,  String arg1);
 
   /**
    * Translated "Result".
@@ -16826,6 +16907,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample")
   @Key("sample")
   String sample();
+
+  /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} -".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} -"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} -")
+  @Key("sample.accessionAnalysisPrefix")
+  String sample_accessionAnalysisPrefix(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Accession #".
@@ -18905,6 +18995,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Search")
   @Key("search")
   String search();
+
+  /**
+   * Translated "Analyses".
+   * 
+   * @return translated "Analyses"
+   */
+  @DefaultMessage("Analyses")
+  @Key("secondDataEntry.analyses")
+  String secondDataEntry_analyses();
+
+  /**
+   * Translated "ana_{0,number,#0}".
+   * 
+   * @return translated "ana_{0,number,#0}"
+   */
+  @DefaultMessage("ana_{0,number,#0}")
+  @Key("secondDataEntry.analysisLogText")
+  String secondDataEntry_analysisLogText(Integer arg0);
+
+  /**
+   * Translated "Analysis ''{0}'' has not been verified".
+   * 
+   * @return translated "Analysis ''{0}'' has not been verified"
+   */
+  @DefaultMessage("Analysis ''{0}'' has not been verified")
+  @Key("secondDataEntry.analysisNotVerified")
+  String secondDataEntry_analysisNotVerified(String arg0);
 
   /**
    * Translated "aux_{0,number,#0}".

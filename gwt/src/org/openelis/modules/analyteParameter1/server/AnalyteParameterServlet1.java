@@ -63,7 +63,7 @@ public class AnalyteParameterServlet1 extends RemoteServlet implements AnalytePa
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
-    }    
+    }
     
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
         try {

@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.clinicalSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -761,7 +757,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
                              }
 
@@ -783,7 +779,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(orderId,
                          SampleMeta.getEorderPaperOrderValidator(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  orderId.setValue(getOrderId());
                              }
 
@@ -813,12 +809,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setCollectionDate(event.getValue());
+                                 runScriptlets(null, SampleMeta.getCollectionDate(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -851,7 +848,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -886,7 +883,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
                 if (receivedDate.isEnabled() && revalidate)
                     revalidate(receivedDate);
@@ -923,7 +920,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -944,7 +941,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -982,7 +979,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientId,
                          SampleMeta.getClinicalPatientId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientId.setValue(getPatientId());
                              }
 
@@ -1029,7 +1026,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientLastName,
                          SampleMeta.getClinicalPatientLastName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientLastName.setValue(getPatientLastName());
                                  if (revalidate)
                                      revalidate(patientLastName);
@@ -1057,7 +1054,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientFirstName,
                          SampleMeta.getClinicalPatientFirstName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientFirstName.setValue(getPatientFirstName());
                                  if (revalidate)
                                      revalidate(patientFirstName);
@@ -1085,7 +1082,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientBirthDate,
                          SampleMeta.getClinicalPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  patientBirthDate.setValue(getPatientBirthDate());
                                  if (revalidate)
                                      revalidate(patientBirthDate);
@@ -1111,7 +1108,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientNationalId,
                          SampleMeta.getClinicalPatientNationalId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientNationalId.setValue(getPatientNationalId());
                              }
 
@@ -1139,7 +1136,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrMultipleUnit,
                          SampleMeta.getClinicalPatientAddrMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
                              }
 
@@ -1166,7 +1163,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrStreetAddress,
                          SampleMeta.getClinicalPatientAddrStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
                              }
 
@@ -1193,7 +1190,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrCity,
                          SampleMeta.getClinicalPatientAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrCity.setValue(getPatientAddressCity());
                              }
 
@@ -1217,7 +1214,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrState,
                          SampleMeta.getClinicalPatientAddrState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrState.setValue(getPatientAddressState());
                              }
 
@@ -1241,7 +1238,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrZipCode,
                          SampleMeta.getClinicalPatientAddrZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrZipCode.setValue(getPatientAddressZipCode());
                              }
 
@@ -1267,7 +1264,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientAddrHomePhone,
                          SampleMeta.getClinicalPatientAddrHomePhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                              }
 
@@ -1293,7 +1290,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientGender.setValue(getPatientGenderId());
                              }
 
@@ -1317,7 +1314,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientRace,
                          SampleMeta.getClinicalPatientRaceId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientRace.setValue(getPatientRaceId());
                              }
 
@@ -1341,7 +1338,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(patientEthnicity,
                          SampleMeta.getClinicalPatientEthnicityId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientEthnicity.setValue(getPatientEthnicityId());
                              }
 
@@ -1391,7 +1388,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(providerLastName,
                          SampleMeta.getClinicalProviderLastName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  providerLastName.setValue(getProviderId(), getProviderLastName());
                              }
 
@@ -1465,7 +1462,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(providerFirstName,
                          SampleMeta.getClinicalProviderFirstName(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  providerFirstName.setValue(getProviderFirstName());
                              }
 
@@ -1482,7 +1479,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(providerPhone,
                          SampleMeta.getClinicalProviderPhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  providerPhone.setValue(getProviderPhone());
                              }
 
@@ -1518,7 +1515,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
             }
 
@@ -1596,7 +1593,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(billToName, BILL_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setBillTo(getSampleOrganization(manager, Constants.dictionary().ORG_BILL_TO));
             }
 
@@ -1675,7 +1672,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setProject(getFirstProject(manager));
                              }
 
@@ -1759,7 +1756,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  sampleItemAnalysisTreeTab.onDataChange();
                              }
 
@@ -1773,7 +1770,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1795,7 +1792,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1817,7 +1814,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1839,7 +1836,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1855,7 +1852,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1869,7 +1866,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1885,7 +1882,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1901,7 +1898,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1921,7 +1918,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -4467,7 +4464,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         manager.getSampleClinical().setPatientId(data.getId());
         manager.getSampleClinical().setPatient(data);
 
-        runScriptlets(null, SampleMeta.getClinicalPatientId(), null);
+        runScriptlets(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
 
         evaluateEdit();
         setData();
