@@ -65,6 +65,10 @@ public class EJBFactory {
     public static AnalyteParameterBean getAnalyteParameter() {
         return lookup("AnalyteParameterBean");
     }
+    
+    public static AnalyteParameterManager1Bean getAnalyteParameterManager1() {
+        return lookup("AnalyteParameterManager1Bean");
+    }
 
     public static AuxDataBean getAuxData() {
         return lookup("AuxDataBean");
