@@ -6016,7 +6016,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (getPatientAddressStreetAddress() != null)
             patientAddrStreetAddress.clearExceptions();
 
-        runScriptlets(null, SampleMeta.getNeonatalPatientId(), null);
+        runScriptlets(null, SampleMeta.getNeonatalPatientId(), Action_Before.PATIENT);
     }
 
     /**
@@ -6036,7 +6036,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (getNextOfKinAddressStreetAddress() != null)
             nextOfKinAddrStreetAddress.clearExceptions();
 
-        runScriptlets(null, SampleMeta.getNeonatalNextOfKinId(), null);
+        runScriptlets(null, SampleMeta.getNeonatalNextOfKinId(), Action_Before.PATIENT);
     }
 
     /**
