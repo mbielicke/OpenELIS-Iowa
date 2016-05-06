@@ -1026,6 +1026,8 @@ public class AttachmentScreenUI extends Screen {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
                 public void success(ArrayList<AttachmentManager> result) {
+                    int index;
+                    
                     /*
                      * this map is used to link a tree node with the manager
                      * containing the attachment or attachment item that it's
@@ -1038,10 +1040,11 @@ public class AttachmentScreenUI extends Screen {
                         managers.put(am.getAttachment().getId(), am);
 
                     setState(DISPLAY);
+                    index = isNewQuery ? index = 0 : tree.getRowCount()-1;
                     loadTree(result, isNewQuery, true, isLoadedFromQuery);
                     clearStatus();
-                    tree.selectNodeAt(0);
-                    nodeSelected(0);
+                    tree.selectNodeAt(index);
+                    nodeSelected(index);
                     searchSuccessful();
                 }
 
@@ -1216,10 +1219,7 @@ public class AttachmentScreenUI extends Screen {
             if (isLoadedFromQuery) {
                 /*
                  * add the node for "Click for more...", because the tree is
-                 * getting reloaded and is showing the results of a query; this
-                 * node is of type AttachmentNode and not Node because otherwise
-                 * it won't have the blank icon and so the alignment of the text
-                 * won't be like the other nodes at the top level
+                 * getting reloaded and is showing the results of a query
                  */
                 node = new Node(1);
                 node.setCell(0, Messages.get().gen_clickForMore());
