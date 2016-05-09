@@ -36,6 +36,8 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.TextBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -58,11 +60,13 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
 
     @UiField
     protected TextBox<Integer>                    worksheetNum;
-    
+
     @UiField
     protected Button                              okButton, cancelButton;
-    
-    protected Integer                             worksheetId; 
+
+    protected Integer                             worksheetId;
+
+    protected ScheduledCommand                    cmd;
 
     public QueryByWorksheetLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -71,7 +75,7 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
 
     public void initialize() {
         addScreenHandler(worksheetNum, "worksheetNum", new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 worksheetNum.setValue(null);
             }
 
@@ -82,11 +86,19 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 worksheetNum.setEnabled(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? okButton : cancelButton;
+            }
         });
-        
+
         addScreenHandler(okButton, "okButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 okButton.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? cancelButton : worksheetNum;
             }
         });
 
@@ -94,20 +106,38 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 cancelButton.setEnabled(true);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? worksheetNum : okButton;
+            }
         });
     }
-    
+
     public void setData() {
         clearErrors();
         setState(state);
         fireDataChange();
+
+        /*
+         * without this scheduled command, setting focus on the textbox doesn't
+         * work
+         */
+        if (cmd == null) {
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    worksheetNum.setFocus(true);
+                }
+            };
+        }
+        Scheduler.get().scheduleDeferred(cmd);
     }
-    
+
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     /**
      * overridden to respond to the user clicking "ok"
      */
@@ -117,9 +147,9 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
      * overridden to respond to the user clicking "cancel"
      */
     public abstract void cancel();
-    
+
     /**
-     * returns the worksheet id entered by the user 
+     * returns the worksheet id entered by the user
      */
     public Integer getWorksheetId() {
         return worksheetId;
@@ -132,12 +162,12 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
         finishEditing();
 
         validation = validate();
-        
+
         if (validation.getStatus() == Status.ERRORS) {
             setError(Messages.get().gen_correctErrors());
             return;
         }
-            
+
         window.close();
         ok();
     }
