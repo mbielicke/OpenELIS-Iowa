@@ -47,8 +47,8 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This class is used to allow specifying the id of a worksheet for fetching the
- * analyses linked to it
+ * This class is used to allow specifying a worksheet's id to fetch the analyses
+ * linked to it
  */
 public abstract class QueryByWorksheetLookupUI extends Screen {
 
@@ -96,7 +96,7 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 okButton.setEnabled(true);
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? cancelButton : worksheetNum;
             }
@@ -106,7 +106,7 @@ public abstract class QueryByWorksheetLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 cancelButton.setEnabled(true);
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? worksheetNum : okButton;
             }
