@@ -61,6 +61,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -122,7 +124,7 @@ public class ToBeVerifiedTabUI extends Screen {
         load = true;
 
         addScreenHandler(table, "toBeVerifiedTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 table.setModel(getTableModel());
 
                 redraw = true;
@@ -132,6 +134,12 @@ public class ToBeVerifiedTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
+            }
+        });
+        
+        table.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                parentBus.fireEvent(event);
             }
         });
 

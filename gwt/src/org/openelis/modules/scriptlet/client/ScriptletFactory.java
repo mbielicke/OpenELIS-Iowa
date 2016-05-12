@@ -93,6 +93,10 @@ public class ScriptletFactory {
                 script = (T)new org.openelis.scriptlet.ms.ntd.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
                                                                         managedId);
                 break;
+            case "scriptlet_ms_conf1":
+                script = (T)new org.openelis.scriptlet.ms.conf.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
+                                                                        managedId);
+                break;
         }
 
         return script;

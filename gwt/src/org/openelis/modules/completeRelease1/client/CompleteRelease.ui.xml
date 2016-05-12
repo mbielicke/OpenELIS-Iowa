@@ -44,6 +44,7 @@
             <w:MenuItem ui:field="unreleaseAnalysis" icon="{res.icon.unreleaseIcon}"
               display="{msg.completeRelease_unrelease}" />
             <w:CheckMenuItem ui:field="previewFinalReport" display="{msg.finalreport_preview}" />
+            <w:CheckMenuItem ui:field="previewTRF" display="{msg.completeRelease_previewTRF}" />
             <w:MenuItem ui:field="queryByWorksheet" display="{msg.completeRelease_queryByWorksheet}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"

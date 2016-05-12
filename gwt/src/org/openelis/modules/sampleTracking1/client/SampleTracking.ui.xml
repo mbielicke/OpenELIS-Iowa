@@ -52,6 +52,7 @@
               display="{msg.sampleTracking_unrelease}" />
             <w:MenuItem ui:field="viewFinalReport" icon="{res.icon.unreleaseIcon}"
               display="{msg.finalreport_view}" />
+            <w:MenuItem ui:field="viewTRF" icon="{res.icon.unreleaseIcon}" display="{msg.sampleTracking_viewTRF}" />
             <w:MenuItem ui:field="changeDomain" icon="{res.icon.unreleaseIcon}" display="{msg.sampleTracking_changeDomain}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"

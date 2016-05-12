@@ -179,7 +179,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     historyAnalysisQA, historyAuxData;
 
     @UiField
-    protected CheckMenuItem                    previewFinalReport;
+    protected CheckMenuItem                    previewFinalReport, previewTRF;
 
     @UiField
     protected Dropdown<Integer>                sampleStatus, analysisStatus;
@@ -272,8 +272,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, HashSet<Integer>>         scriptlets;
 
-    protected Integer                                    lastAccession, neonatalScriptletId,
-                    envScriptletId, sdwisScriptletId;
+    protected Integer                                    lastReportAccession, lastTRFAccession,
+                    neonatalScriptletId, envScriptletId, sdwisScriptletId;
 
     protected static final SampleManager1.Load           singleResultElements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -310,7 +310,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (UserCache.getPermission().getModule("samplecompleterelease") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Complete and Release Screen"));
-        
+
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
@@ -474,7 +474,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) &&
+                                  samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -534,8 +535,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addDataChangeHandler(new DataChangeEvent.Handler() {
-            public void onDataChange(DataChangeEvent event) {
+        addDataChangeHandler(new DataChangeEvent.Handler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 previewFinalReport();
             }
         });
@@ -550,6 +551,25 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             @Override
             public void execute() {
                 previewFinalReport();
+            }
+        });
+
+        addDataChangeHandler(new DataChangeEvent.Handler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                previewTRF();
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                previewTRF.setEnabled(true);
+            }
+        });
+
+        previewTRF.addCommand(new Command() {
+            @Override
+            public void execute() {
+                previewTRF();
             }
         });
 
@@ -836,7 +856,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(sampleTab, "sampleTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleTab.onDataChange();
             }
 
@@ -856,7 +876,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 environmentalTab.onDataChange();
             }
 
@@ -875,7 +895,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         environmentalTab.setCanQuery(false);
 
         addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 privateWellTab.onDataChange();
             }
 
@@ -894,7 +914,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         privateWellTab.setCanQuery(false);
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sdwisTab.onDataChange();
             }
 
@@ -913,7 +933,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         sdwisTab.setCanQuery(false);
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 neonatalTab.onDataChange();
             }
 
@@ -927,7 +947,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 clinicalTab.onDataChange();
             }
 
@@ -954,7 +974,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         clinicalTab.setCanQuery(false);
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 ptTab.onDataChange();
             }
 
@@ -973,7 +993,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         ptTab.setCanQuery(false);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 quickEntryTab.onDataChange();
             }
 
@@ -987,7 +1007,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1008,7 +1028,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         sampleItemTab.setCanQuery(false);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1030,7 +1050,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1052,7 +1072,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1068,7 +1088,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1082,7 +1102,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1098,7 +1118,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the table is selected
                  */
@@ -1114,7 +1134,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1133,7 +1153,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         auxDataTab.setCanQuery(false);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -1315,7 +1335,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
                                                                              null));
         setDone(Messages.get().gen_enterFieldsToQuery());
-        lastAccession = null;
+        lastReportAccession = null;
+        lastTRFAccession = null;
     }
 
     /**
@@ -1741,7 +1762,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                     setData();
                     setState(DISPLAY);
-                    lastAccession = null;
+                    lastReportAccession = null;
+                    lastTRFAccession = null;
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
                     clearStatus();
@@ -1915,19 +1937,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * unchecking and checking the checkbox and not having to click the
              * row for a different sample
              */
-            lastAccession = null;
+            lastReportAccession = null;
             return;
         }
 
         if ( !isState(DISPLAY) || table.getSelectedRows().length != 1 || manager == null ||
-            manager.getSample().getAccessionNumber().equals(lastAccession))
+            (manager.getSample().getAccessionNumber().equals(lastReportAccession)))
             return;
 
-        lastAccession = manager.getSample().getAccessionNumber();
+        lastReportAccession = manager.getSample().getAccessionNumber();
         query = new Query();
         field = new QueryData();
         field.setKey("ACCESSION_NUMBER");
-        field.setQuery(lastAccession.toString());
+        field.setQuery(lastReportAccession.toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
@@ -1949,9 +1971,36 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             public void onFailure(Throwable e) {
                 setError("Failed");
                 Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
             }
         });
+    }
+
+    /**
+     * shows the TRF for the selected row's sample
+     */
+    private void previewTRF() {
+        if ( !previewTRF.isChecked()) {
+            /*
+             * this allows showing the TRF for a sample just by unchecking and
+             * checking the checkbox and not having to click the row for a
+             * different sample
+             */
+            lastTRFAccession = null;
+            return;
+        }
+
+        if ( !isState(DISPLAY) || table.getSelectedRows().length != 1 || manager == null ||
+            (manager.getSample().getAccessionNumber().equals(lastTRFAccession)))
+            return;
+
+        lastTRFAccession = manager.getSample().getAccessionNumber();
+        try {
+            AttachmentUtil.displayTRF(manager.getSample().getId(), null, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+        }
     }
 
     /**
@@ -2602,7 +2651,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                     setData();
                     setState(DISPLAY);
-                    lastAccession = null;
+                    lastReportAccession = null;
+                    lastTRFAccession = null;
                     refreshTabs(data, false);
                     clearStatus();
                 }
@@ -2820,7 +2870,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
     }
-    
 
     /**
      * Enables or disables the menu item for patient history, based on the
@@ -2833,7 +2882,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         historyPatient.setEnabled(isState(DISPLAY) &&
                                   (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
     }
-    
+
     /**
      * Enables or disables the menu item for patient relation history, based on
      * the domain of the sample and the state
@@ -3226,7 +3275,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         fireDataChange();
         bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
                                                                              null));
-        lastAccession = null;
+        lastReportAccession = null;
+        lastTRFAccession = null;
 
         setBusy(Messages.get().gen_querying());
         try {
