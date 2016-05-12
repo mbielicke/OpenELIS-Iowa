@@ -1,12 +1,13 @@
 package org.openelis.modules.todo1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
+import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.report.client.ToDoReportScreen;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingEntry;
@@ -27,6 +28,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -41,39 +44,41 @@ public class ToDoScreenUI extends Screen {
     interface ToDoUiBinder extends UiBinder<Widget, ToDoScreenUI> {
     };
 
-    private static final ToDoUiBinder       uiBinder = GWT.create(ToDoUiBinder.class);
+    private static final ToDoUiBinder uiBinder = GWT.create(ToDoUiBinder.class);
 
     @UiField
-    protected Button                        refreshButton, detailsButton, exportButton;
-    
-    @UiField
-    protected CheckMenuItem                 showTrf,  mySection;
+    protected Button                  refreshButton, detailsButton, exportButton;
 
     @UiField
-    protected TabLayoutPanel                tabPanel;
+    protected CheckMenuItem           showTrf, mySection;
+
+    @UiField
+    protected TabLayoutPanel          tabPanel;
 
     @UiField(provided = true)
-    protected LoggedInTabUI                 loggedInTab;
+    protected LoggedInTabUI           loggedInTab;
 
     @UiField(provided = true)
-    protected InitiatedTabUI                initiatedTab;
+    protected InitiatedTabUI          initiatedTab;
 
     @UiField(provided = true)
-    protected WorksheetTabUI                worksheetTab;
+    protected WorksheetTabUI          worksheetTab;
 
     @UiField(provided = true)
-    protected CompletedTabUI                completedTab;
+    protected CompletedTabUI          completedTab;
 
     @UiField(provided = true)
-    protected ReleasedTabUI                 releasedTab;
+    protected ReleasedTabUI           releasedTab;
 
     @UiField(provided = true)
-    protected ToBeVerifiedTabUI             toBeVerifiedTab;
+    protected ToBeVerifiedTabUI       toBeVerifiedTab;
 
     @UiField(provided = true)
-    protected OtherTabUI                    otherTab;
+    protected OtherTabUI              otherTab;
 
-    protected ToDoScreenUI                  screen;
+    protected ToDoScreenUI            screen;
+
+    protected Integer                 lastSampleId;
 
     public ToDoScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -84,7 +89,7 @@ public class ToDoScreenUI extends Screen {
             logger.log(Level.SEVERE, e.getMessage(), e);
             window.close();
         }
-        
+
         loggedInTab = new LoggedInTabUI(this);
         initiatedTab = new InitiatedTabUI(this);
         worksheetTab = new WorksheetTabUI(this);
@@ -107,7 +112,7 @@ public class ToDoScreenUI extends Screen {
                 refreshButton.setEnabled(true);
                 detailsButton.setEnabled(true);
                 exportButton.setEnabled(true);
-                
+
                 loggedInTab.setState(state);
                 initiatedTab.setState(state);
                 worksheetTab.setState(state);
@@ -121,10 +126,10 @@ public class ToDoScreenUI extends Screen {
         /*
          * option menu
          */
-        showTrf.setEnabled(false);
+        showTrf.setEnabled(true);
         showTrf.addCommand(new Command() {
             public void execute() {
-                //showTrf();
+                showTrf();
             }
         });
 
@@ -140,11 +145,17 @@ public class ToDoScreenUI extends Screen {
                 otherTab.setMySectionOnly(mySection.isChecked());
             }
         });
-        
+
         /*
          * tabs
          */
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
+
+        bus.addHandler(SelectionEvent.getType(), new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                showTrf();
+            }
+        });
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -156,7 +167,7 @@ public class ToDoScreenUI extends Screen {
             }
         });
     }
-    
+
     @UiHandler({"refreshButton"})
     protected void refresh(ClickEvent event) {
         loggedInTab.refresh();
@@ -171,7 +182,7 @@ public class ToDoScreenUI extends Screen {
     @UiHandler({"detailsButton"})
     protected void details(ClickEvent event) {
         Integer id;
-        
+
         id = null;
         try {
             switch (tabPanel.getSelectedIndex()) {
@@ -216,7 +227,7 @@ public class ToDoScreenUI extends Screen {
     @UiHandler({"exportButton"})
     protected void export(ClickEvent event) {
         ToDoReportScreen export;
-        
+
         try {
             export = new ToDoReportScreen(window);
             export.setMySectionOnly(mySection.isChecked());
@@ -227,7 +238,7 @@ public class ToDoScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        
+
         clearStatus();
     }
 
@@ -242,7 +253,7 @@ public class ToDoScreenUI extends Screen {
         try {
             entry = new SampleTrackingEntry();
             trackingScreen = entry.addScreen();
-            
+
             ids = new ArrayList<Integer>();
             ids.add(id);
             cmd = new ScheduledCommand() {
@@ -256,7 +267,7 @@ public class ToDoScreenUI extends Screen {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        
+
         clearStatus();
     }
 
@@ -270,7 +281,7 @@ public class ToDoScreenUI extends Screen {
         try {
             entry = new WorksheetCompletionEntry();
             worksheetScreen = entry.addScreen();
-            
+
             cmd = new ScheduledCommand() {
                 @Override
                 public void execute() {
@@ -284,5 +295,60 @@ public class ToDoScreenUI extends Screen {
         }
 
         clearStatus();
+    }
+
+    private void showTrf() {
+        Integer id;
+
+        if ( !showTrf.isChecked()) {
+            /*
+             * this allows showing the TRF for a sample just by unchecking and
+             * checking the checkbox and not having to click the row for a
+             * different sample
+             */
+            lastSampleId = null;
+            return;
+        }
+
+        id = null;
+        switch (tabPanel.getSelectedIndex()) {
+            case 0:
+                id = loggedInTab.getSelectedId();
+                break;
+            case 1:
+                id = initiatedTab.getSelectedId();
+                break;
+            case 2:
+                /*
+                 * ignore because this is worksheet tab 
+                 */
+                return;
+            case 3:
+                id = completedTab.getSelectedId();
+                break;
+            case 4:
+                id = releasedTab.getSelectedId();
+                break;
+            case 5:
+                id = toBeVerifiedTab.getSelectedId();
+                break;
+            case 6:
+                id = otherTab.getSelectedId();
+                break;
+        }
+
+        if (id == null) {
+            setError(Messages.get().todo_selectRowMessage());
+        } else if ( !id.equals(lastSampleId)) {
+            clearStatus();
+            lastSampleId = id;
+            try {
+                AttachmentUtil.displayTRF(id, null, window);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+            }
+        }
+
     }
 }

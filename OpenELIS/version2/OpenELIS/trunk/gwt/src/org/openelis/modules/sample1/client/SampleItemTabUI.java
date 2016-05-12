@@ -38,6 +38,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -408,6 +409,10 @@ public class SampleItemTabUI extends Screen {
         sampleItem.setTypeOfSample(display);
         parentBus.fireEvent(new SampleItemChangeEvent(displayedUid,
                                                       SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
+        parentBus.fireEventFromSource(new RunScriptletEvent(displayedUid,
+                                                            null,
+                                                            Action_Before.SAMPLE_ITEM),
+                                      screen);
     }
 
     private Integer getSourceOfSampleId() {

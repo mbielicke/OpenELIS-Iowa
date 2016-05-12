@@ -125,7 +125,7 @@ public class SampleHistoryUtility1 {
     }
 
     /**
-     * shows the history of sample neonatal
+     * shows the history of sample clinical
      */
     public static void clinical(SampleManager1 manager) {
         IdNameVO hist;

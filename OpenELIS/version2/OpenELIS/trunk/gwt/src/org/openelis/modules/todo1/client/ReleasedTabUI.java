@@ -51,6 +51,8 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.utilcommon.TurnaroundUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -101,12 +103,18 @@ public class ReleasedTabUI extends Screen {
         load = true;
 
         addScreenHandler(table, "releasedTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
+            }
+        });
+        
+        table.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                parentBus.fireEvent(event);
             }
         });
 

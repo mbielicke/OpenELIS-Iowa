@@ -164,7 +164,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected Menu                                       optionsMenu, historyMenu;
 
     @UiField
-    protected MenuItem                                   unreleaseSample, viewFinalReport,
+    protected MenuItem                                   unreleaseSample, viewFinalReport, viewTRF,
                     changeDomain, historySample, historySampleSpecific, historyPatient,
                     historyPatientRelation, historySampleProject, historySampleOrganization,
                     historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
@@ -571,6 +571,25 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             @Override
             public void execute() {
                 viewFinalReport();
+            }
+        });
+        
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                viewFinalReport.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        viewTRF.addCommand(new Command() {
+            @Override
+            public void execute() {
+                viewTRF();
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                viewTRF.setEnabled(isState(DISPLAY));
             }
         });
 
@@ -2115,6 +2134,18 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
         });
+    }
+
+    /**
+     * Shows the TRF for the selected row's sample
+     */
+    private void viewTRF() {
+        try {
+            AttachmentUtil.displayTRF(manager.getSample().getId(), null, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+        }
     }
 
     /**

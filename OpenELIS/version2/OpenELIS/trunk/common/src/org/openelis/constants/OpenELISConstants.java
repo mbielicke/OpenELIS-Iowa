@@ -3886,6 +3886,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String completeRelease_onHoldWarning(String arg0);
 
   /**
+   * Translated "Preview TRF".
+   * 
+   * @return translated "Preview TRF"
+   */
+  @DefaultMessage("Preview TRF")
+  @Key("completeRelease.previewTRF")
+  String completeRelease_previewTRF();
+
+  /**
    * Translated "Query By Worksheet".
    * 
    * @return translated "Query By Worksheet"
@@ -9086,6 +9095,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Sample")
   @Key("history.sample")
   String history_sample();
+
+  /**
+   * Translated "History - Sample Animal".
+   * 
+   * @return translated "History - Sample Animal"
+   */
+  @DefaultMessage("History - Sample Animal")
+  @Key("history.sampleAnimal")
+  String history_sampleAnimal();
 
   /**
    * Translated "History - Sample Clinical".
@@ -15226,15 +15244,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qc_getData();
 
   /**
-   * Translated "Internal Notes".
-   * 
-   * @return translated "Internal Notes"
-   */
-  @DefaultMessage("Internal Notes")
-  @Key("qc.internalNotes")
-  String qc_internalNotes();
-
-  /**
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
@@ -16963,11 +16972,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
-   * Translated "Accession # {0,number,#0}:".
+   * Translated "Accession # {0,number,#0}: ".
    * 
-   * @return translated "Accession # {0,number,#0}:"
+   * @return translated "Accession # {0,number,#0}: "
    */
-  @DefaultMessage("Accession # {0,number,#0}:")
+  @DefaultMessage("Accession # {0,number,#0}: ")
   @Key("sample.accessionPrefix")
   String sample_accessionPrefix(Integer arg0);
 
@@ -17726,6 +17735,69 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Status needs to be ''{0}'' to unrelease")
   @Key("sample.wrongStatusUnrelease")
   String sample_wrongStatusUnrelease(String arg0);
+
+  /**
+   * Translated "Animal Info".
+   * 
+   * @return translated "Animal Info"
+   */
+  @DefaultMessage("Animal Info")
+  @Key("sampleAnimal.animalInfo")
+  String sampleAnimal_animalInfo();
+
+  /**
+   * Translated "Common".
+   * 
+   * @return translated "Common"
+   */
+  @DefaultMessage("Common")
+  @Key("sampleAnimal.common")
+  String sampleAnimal_common();
+
+  /**
+   * Translated "Animal Sample Login".
+   * 
+   * @return translated "Animal Sample Login"
+   */
+  @DefaultMessage("Animal Sample Login")
+  @Key("sampleAnimal.login")
+  String sampleAnimal_login();
+
+  /**
+   * Translated "Fully login animal sample and analysis related information.".
+   * 
+   * @return translated "Fully login animal sample and analysis related information."
+   */
+  @DefaultMessage("Fully login animal sample and analysis related information.")
+  @Key("sampleAnimal.loginDescription")
+  String sampleAnimal_loginDescription();
+
+  /**
+   * Translated "Patient Info".
+   * 
+   * @return translated "Patient Info"
+   */
+  @DefaultMessage("Patient Info")
+  @Key("sampleAnimal.patientInfo")
+  String sampleAnimal_patientInfo();
+
+  /**
+   * Translated "Sample Animal".
+   * 
+   * @return translated "Sample Animal"
+   */
+  @DefaultMessage("Sample Animal")
+  @Key("sampleAnimal.sampleAnimal")
+  String sampleAnimal_sampleAnimal();
+
+  /**
+   * Translated "Scientific".
+   * 
+   * @return translated "Scientific"
+   */
+  @DefaultMessage("Scientific")
+  @Key("sampleAnimal.scientific")
+  String sampleAnimal_scientific();
 
   /**
    * Translated "Sample Cat".
@@ -18763,6 +18835,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sampleTracking_unreleaseMessage();
 
   /**
+   * Translated "View TRF".
+   * 
+   * @return translated "View TRF"
+   */
+  @DefaultMessage("View TRF")
+  @Key("sampleTracking.viewTRF")
+  String sampleTracking_viewTRF();
+
+  /**
    * Translated "Sample Type".
    * 
    * @return translated "Sample Type"
@@ -19004,15 +19085,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Analyses")
   @Key("secondDataEntry.analyses")
   String secondDataEntry_analyses();
-
-  /**
-   * Translated "ana_{0,number,#0}".
-   * 
-   * @return translated "ana_{0,number,#0}"
-   */
-  @DefaultMessage("ana_{0,number,#0}")
-  @Key("secondDataEntry.analysisLogText")
-  String secondDataEntry_analysisLogText(Integer arg0);
 
   /**
    * Translated "Analysis ''{0}'' has not been verified".
