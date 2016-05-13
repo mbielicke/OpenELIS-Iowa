@@ -156,7 +156,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                     orderContainerHistory, auxDataHistory;
 
     @UiField
-    protected TextBox<Integer>               id, neededDays, numberOfForms;
+    protected TextBox<Integer>               id, neededDays, numberOfForms, organizationId;
 
     @UiField
     protected TextBox<String>                organizationAttention, multipleUnit, requestedBy,
@@ -172,7 +172,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected Dropdown<String>               orgState;
 
     @UiField
-    protected AutoComplete                   shipTo, description;
+    protected AutoComplete                   organizationName, description;
 
     @UiField
     protected TabLayoutPanel                 tabPanel;
@@ -640,11 +640,26 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? shipTo : numberOfForms;
+                return forward ? organizationId : numberOfForms;
+            }
+        });
+        
+        addScreenHandler(organizationId, IOrderMeta.getOrganizationId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent<Integer> event) {
+                organizationId.setValue(getOrganizationId());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                organizationId.setEnabled(isState(QUERY));
+                organizationId.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? organizationName : shipFrom;
             }
         });
 
-        addScreenHandler(shipTo, IOrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
+        addScreenHandler(organizationName, IOrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent<Integer> event) {
                 setOrganizationNameSelection();
             }
@@ -654,16 +669,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                shipTo.setEnabled(isState(QUERY, ADD, UPDATE));
-                shipTo.setQueryMode(isState(QUERY));
+                organizationName.setEnabled(isState(QUERY, ADD, UPDATE));
+                organizationName.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? status : shipFrom;
+                return forward ? status : organizationId;
             }
         });
 
-        shipTo.addGetMatchesHandler(new GetMatchesHandler() {
+        organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 getOrganizationMatches(event.getMatch());
             }
@@ -732,7 +747,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? organizationAttention : shipTo;
+                return forward ? organizationAttention : organizationName;
             }
         });
 
@@ -1878,21 +1893,67 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         return (T)obj;
     }
 
+    /*
+     * getters and setters
+     */
+    private Integer getId() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getId();
+    }
+
+    private Integer getNeededDays() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getNeededInDays();
+    }
+
+    private void setNeededDays(Integer neededDays) {
+        manager.getIorder().setNeededInDays(neededDays);
+    }
+
+    private Integer getNumberOfForms() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getNumberOfForms();
+    }
+
+    private void setNumberOfForms(Integer numberOfForms) {
+        manager.getIorder().setNumberOfForms(numberOfForms);
+    }
+    
+    private Integer getShipFromId() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getShipFromId();
+    }
+
+    private void setShipFromId(Integer shipFromId) {
+        manager.getIorder().setShipFromId(shipFromId);
+    }
+    
+    private Integer getOrganizationId() {
+        OrganizationDO org;
+
+        org = getShipTo();
+        return org != null ? org.getId() : null;
+    }
+    
     private void setOrganizationNameSelection() {
         OrganizationDO org;
 
         org = getShipTo();
         if (org != null)
-            shipTo.setValue(org.getId(), org.getName());
+            organizationName.setValue(org.getId(), org.getName());
         else
-            shipTo.setValue(null, "");
+            organizationName.setValue(null, "");
     }
 
     private void getOrganizationNameFromSelection() {
         AutoCompleteValue row;
         OrganizationDO org;
 
-        row = shipTo.getValue();
+        row = organizationName.getValue();
         if (row == null || row.getId() == null) {
             /*
              * this method is called only when the ship-to changes and if there
@@ -1901,7 +1962,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
              */
             manager.getIorder().setOrganizationId(null);
             manager.getIorder().setOrganization(null);
-            shipTo.setValue(null, "");
+            organizationId.setValue(null);
+            organizationName.setValue(null, "");
             multipleUnit.setValue(null);
             streetAddress.setValue(null);
             city.setValue(null);
@@ -1911,7 +1973,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             org = (OrganizationDO)row.getData();
             manager.getIorder().setOrganizationId(org.getId());
             manager.getIorder().setOrganization(org);
-            shipTo.setValue(org.getId(), org.getName());
+            organizationId.setValue(org.getId());
+            organizationName.setValue(org.getId(), org.getName());
             multipleUnit.setValue(org.getAddress().getMultipleUnit());
             streetAddress.setValue(org.getAddress().getStreetAddress());
             city.setValue(org.getAddress().getCity());
@@ -1955,7 +2018,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
                 model.add(row);
             }
-            shipTo.showAutoMatches(model);
+            organizationName.showAutoMatches(model);
         } catch (Throwable e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1963,6 +2026,92 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         clearStatus();
     }
 
+    private Integer getStatusId() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getStatusId();
+    }
+
+    private void setStatusId(Integer statusId) {
+        manager.getIorder().setStatusId(statusId);
+    }
+    
+    private String getOrganizationAttention() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getOrganizationAttention();
+    }
+
+    private void setOrganizationAttention(String organizationAttention) {
+        manager.getIorder().setOrganizationAttention(organizationAttention);
+    }
+    
+    private Datetime getOrderedDate() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getOrderedDate();
+    }
+
+    private void setOrderedDate(Datetime date) {
+        manager.getIorder().setOrderedDate(date);
+    }
+
+    private String getMultipleUnit() {
+        OrganizationDO org;
+
+        org = getShipTo();
+        if (org == null)
+            return null;
+        return org.getAddress().getMultipleUnit();
+    }
+
+    private String getRequestedBy() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getRequestedBy();
+    }
+
+    private void setRequestedBy(String requestedBy) {
+        manager.getIorder().setRequestedBy(requestedBy);
+    }
+
+    private String getStreetAddress() {
+        OrganizationDO org;
+
+        org = getShipTo();
+        if (org == null)
+            return null;
+        return org.getAddress().getStreetAddress();
+    }
+
+    private String getZipCode() {
+        OrganizationDO org;
+
+        org = getShipTo();
+        if (org == null)
+            return null;
+        return org.getAddress().getZipCode();
+    }
+
+    private Integer getCostCenterId() {
+        if (manager == null)
+            return null;
+        return manager.getIorder().getCostCenterId();
+    }
+
+    private void setCostCenterId(Integer costCenterId) {
+        manager.getIorder().setCostCenterId(costCenterId);
+    }
+    
+    private String getCity() {
+        OrganizationDO org;
+
+        org = getShipTo();
+        if (org == null)
+            return null;
+        return org.getAddress().getCity();
+    }
+    
     private void setDescriptionSelection() {
         if (manager == null)
             description.setValue(null, "");
@@ -1981,7 +2130,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             data = (IdNameVO)row.getData();
             manager.getIorder().setDescription(data.getName());
         }
-
     }
 
     private void getDescriptionMatches(String match) {
@@ -2023,129 +2171,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         clearStatus();
     }
 
-    /*
-     * getters and setters
-     */
-    private Integer getId() {
+    private String getDescription() {
         if (manager == null)
             return null;
-        return manager.getIorder().getId();
-    }
-
-    private Integer getNeededDays() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getNeededInDays();
-    }
-
-    private void setNeededDays(Integer neededDays) {
-        manager.getIorder().setNeededInDays(neededDays);
-    }
-
-    private Integer getNumberOfForms() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getNumberOfForms();
-    }
-
-    private void setNumberOfForms(Integer numberOfForms) {
-        manager.getIorder().setNumberOfForms(numberOfForms);
-    }
-
-    private String getMultipleUnit() {
-        OrganizationDO org;
-
-        org = getShipTo();
-        if (org == null)
-            return null;
-        return org.getAddress().getMultipleUnit();
-    }
-
-    private String getOrganizationAttention() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getOrganizationAttention();
-    }
-
-    private void setOrganizationAttention(String organizationAttention) {
-        manager.getIorder().setOrganizationAttention(organizationAttention);
-    }
-
-    private String getRequestedBy() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getRequestedBy();
-    }
-
-    private void setRequestedBy(String requestedBy) {
-        manager.getIorder().setRequestedBy(requestedBy);
-    }
-
-    private String getStreetAddress() {
-        OrganizationDO org;
-
-        org = getShipTo();
-        if (org == null)
-            return null;
-        return org.getAddress().getStreetAddress();
-    }
-
-    private String getCity() {
-        OrganizationDO org;
-
-        org = getShipTo();
-        if (org == null)
-            return null;
-        return org.getAddress().getCity();
-    }
-
-    private String getZipCode() {
-        OrganizationDO org;
-
-        org = getShipTo();
-        if (org == null)
-            return null;
-        return org.getAddress().getZipCode();
-    }
-
-    private Datetime getOrderedDate() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getOrderedDate();
-    }
-
-    private void setOrderedDate(Datetime date) {
-        manager.getIorder().setOrderedDate(date);
-    }
-
-    private Integer getStatusId() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getStatusId();
-    }
-
-    private void setStatusId(Integer statusId) {
-        manager.getIorder().setStatusId(statusId);
-    }
-
-    private Integer getShipFromId() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getShipFromId();
-    }
-
-    private void setShipFromId(Integer shipFromId) {
-        manager.getIorder().setShipFromId(shipFromId);
-    }
-
-    private Integer getCostCenterId() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getCostCenterId();
-    }
-
-    private void setCostCenterId(Integer costCenterId) {
-        manager.getIorder().setCostCenterId(costCenterId);
+        return manager.getIorder().getDescription();
     }
 
     private String getState() {
@@ -2155,12 +2184,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         if (org == null)
             return null;
         return org.getAddress().getState();
-    }
-
-    private String getDescription() {
-        if (manager == null)
-            return null;
-        return manager.getIorder().getDescription();
     }
 
     /**

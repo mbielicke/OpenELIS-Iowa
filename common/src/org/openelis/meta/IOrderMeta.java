@@ -116,8 +116,7 @@ public class IOrderMeta implements Meta, MetaMap {
 	                               TEST_IORDER_ID = "_iorderTest.iorderId",
 	                               TEST_ITEM_SEQUENCE = "_iorderTest.itemSequence",
 	                               TEST_SORT_ORDER = "_iorderTest.sortOrder",
-	                               TEST_REFERENCE_ID = "_iorderTest.referenceId",
-	                               TEST_REFERENCE_TABLE_ID = "_iorderTest.referenceTableId",
+	                               TEST_TEST_ID = "_iorderTest.testId",
 	                               
 	                               AUX_DATA_ID = "_auxData.id",
 	                               AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
@@ -192,7 +191,7 @@ public class IOrderMeta implements Meta, MetaMap {
                                                   CONT_ITEM_SEQUENCE, CONT_TYPE_OF_SAMPLE_ID,
                                                   
                                                   TEST_ID, TEST_IORDER_ID, TEST_ITEM_SEQUENCE, TEST_SORT_ORDER,
-                                                  TEST_REFERENCE_ID, TEST_REFERENCE_TABLE_ID,
+                                                  TEST_TEST_ID,
                                                   
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID, AUX_DATA_REFERENCE_ID,
                                                   AUX_DATA_REFERENCE_TABLE_ID, AUX_DATA_IS_REPORTABLE,
@@ -502,12 +501,8 @@ public class IOrderMeta implements Meta, MetaMap {
         return TEST_SORT_ORDER;
     }
     
-    public static String getTestReferenceId() {
-        return TEST_REFERENCE_ID;
-    }
-    
-    public static String getTestReferenceTableId() {
-        return TEST_REFERENCE_TABLE_ID;
+    public static String getTestTestId() {
+        return TEST_TEST_ID;
     }
     
     public static String getAuxDataId(){

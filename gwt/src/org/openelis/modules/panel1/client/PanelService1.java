@@ -22,6 +22,8 @@ public interface PanelService1 extends XsrfProtectedService {
     PanelManager1 fetchById(Integer id) throws Exception;
 
     ArrayList<PanelDO> fetchByName(String name) throws Exception;
+    
+    ArrayList<TestMethodVO> fetchByTestIdOrNameWithTests(String name) throws Exception;
 
     ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception;
 

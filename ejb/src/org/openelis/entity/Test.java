@@ -68,7 +68,10 @@ import org.openelis.utils.Auditable;
                         "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
                         "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name)"
-                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.id in (:ids)"),                  
+                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.id in (:ids)"),
+    @NamedQuery( name = "Test.FetchActiveById",
+                query = "select distinct new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,m.id,m.name,m.description,t.isActive,t.activeBegin,t.activeEnd)"
+                      + " from Test t LEFT JOIN t.method m where t.isActive = 'Y' and t.id = :id"),
     @NamedQuery( name = "Test.FetchByName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
