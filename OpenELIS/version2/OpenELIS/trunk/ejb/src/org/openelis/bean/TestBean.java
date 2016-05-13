@@ -95,6 +95,22 @@ public class TestBean {
         
         return DataBaseUtil.toArrayList(t);
     }
+    
+    public TestMethodVO fetchActiveById(Integer testId) throws Exception {
+        TestMethodVO data;
+        Query query;
+
+        query = manager.createNamedQuery("Test.FetchActiveById");
+        query.setParameter("id", testId);
+        try {
+            data = (TestMethodVO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception {
         Query query;

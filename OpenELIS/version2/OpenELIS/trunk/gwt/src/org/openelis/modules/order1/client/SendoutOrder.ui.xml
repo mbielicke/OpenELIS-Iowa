@@ -141,32 +141,36 @@
                   <w:Dropdown ui:field="shipFrom" width="203px" field="Integer" required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.order_shipTo}:" />
+                  <ui:text from="{msg.order_shipToIdName}:" />
                 </td>
                 <td colspan="3">
-                  <w:AutoComplete ui:field="shipTo" width="270px" case="UPPER"
-                    dropWidth="565px" required="true"
-                  >
-                    <w:popup>
-                      <t:Table visibleRows="10" header="true">
-                        <t:Column width="250" label="{msg.gen_name}">
-                          <t:LabelCell />
-                        </t:Column>
-                        <t:Column width="70" label="{msg.address_aptSuite}">
-                          <t:LabelCell />
-                        </t:Column>
-                        <t:Column width="110" label="{msg.address_street}">
-                          <t:LabelCell />
-                        </t:Column>
-                        <t:Column width="100" label="{msg.address_city}">
-                          <t:LabelCell />
-                        </t:Column>
-                        <t:Column width="20" label="{msg.address_st}">
-                          <t:LabelCell />
-                        </t:Column>
-                      </t:Table>
-                    </w:popup>
-                  </w:AutoComplete>
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="organizationId" width="35px" field="Integer" />
+                    <g:HorizontalPanel width = "4px"/>
+                    <w:AutoComplete ui:field="organizationName" width="227px" case="UPPER"
+                      dropWidth="565px" required="true"
+                    >
+                      <w:popup>
+                        <t:Table visibleRows="10" header="true">
+                          <t:Column width="250" label="{msg.gen_name}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="70" label="{msg.address_aptSuite}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="110" label="{msg.address_street}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="100" label="{msg.address_city}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="20" label="{msg.address_st}">
+                            <t:LabelCell />
+                          </t:Column>
+                        </t:Table>
+                      </w:popup>
+                    </w:AutoComplete>
+                  </g:HorizontalPanel>
                 </td>
               </tr>
               <tr>

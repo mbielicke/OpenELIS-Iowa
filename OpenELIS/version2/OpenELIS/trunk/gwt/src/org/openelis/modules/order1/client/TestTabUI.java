@@ -115,7 +115,7 @@ public class TestTabUI extends Screen {
 
     private void initialize() {
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 if ( !isState(QUERY))
                     tree.setRoot(getRoot());
             }
@@ -132,7 +132,7 @@ public class TestTabUI extends Screen {
                 QueryData qd;
 
                 qds = new ArrayList<QueryData>();
-                for (int i = 0; i < 3; i++ ) {
+                for (int i = 0; i < 4; i++ ) {
                     qd = (QueryData)tree.getValueAt(0, i);
                     if (qd != null) {
                         switch (i) {
@@ -140,9 +140,12 @@ public class TestTabUI extends Screen {
                                 qd.setKey(IOrderMeta.getTestItemSequence());
                                 break;
                             case 1:
-                                qd.setKey(IOrderMeta.getTestName());
+                                qd.setKey(IOrderMeta.getTestTestId());
                                 break;
                             case 2:
+                                qd.setKey(IOrderMeta.getTestName());
+                                break;
+                            case 3:
                                 qd.setKey(IOrderMeta.getTestMethodName());
                                 break;
                         }
@@ -192,7 +195,7 @@ public class TestTabUI extends Screen {
         });
 
         addScreenHandler(testName, "testName", new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 testName.setValue(null);
             }
 
@@ -381,15 +384,16 @@ public class TestTabUI extends Screen {
         for (i = 0; i < manager.test.count(); i++ ) {
             ot = manager.test.get(i);
 
-            tnode = new Node(4);
+            tnode = new Node(5);
             tnode.setType(TEST_LEAF);
             tnode.setCell(0, ot.getItemSequence());
             /*
              * create label for the test
              */
-            tnode.setCell(1, ot.getTestName());
-            tnode.setCell(2, ot.getMethodName());
-            tnode.setCell(3, ot.getDescription());
+            tnode.setCell(1, ot.getTestId());
+            tnode.setCell(2, ot.getTestName());
+            tnode.setCell(3, ot.getMethodName());
+            tnode.setCell(4, ot.getDescription());
             tnode.setData(Constants.uid().get(ot));
             root.add(tnode);
 
@@ -429,8 +433,7 @@ public class TestTabUI extends Screen {
 
         try {
             setBusy();
-            tests = PanelService1Impl.INSTANCE.fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
-                                                                                                     "%"));
+            tests = PanelService1Impl.INSTANCE.fetchByTestIdOrNameWithTests(QueryFieldUtil.parseAutocomplete(name));
 
             model = new ArrayList<Item<Integer>>();
             for (TestMethodVO t : tests) {

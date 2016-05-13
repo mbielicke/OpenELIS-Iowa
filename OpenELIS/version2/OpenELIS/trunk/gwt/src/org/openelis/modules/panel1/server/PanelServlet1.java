@@ -33,12 +33,15 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.PanelBean;
 import org.openelis.bean.PanelItemBean;
 import org.openelis.bean.PanelManager1Bean;
+import org.openelis.bean.TestBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.manager.PanelManager1;
 import org.openelis.modules.panel1.client.PanelService1;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -55,6 +58,9 @@ public class PanelServlet1 extends RemoteServlet implements PanelService1 {
 
     @EJB
     PanelBean                 panel;
+
+    @EJB
+    TestBean                  test;
 
     public PanelManager1 getInstance() throws Exception {
         try {
@@ -78,6 +84,24 @@ public class PanelServlet1 extends RemoteServlet implements PanelService1 {
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+    }
+
+    public ArrayList<TestMethodVO> fetchByTestIdOrNameWithTests(String name) throws Exception {
+        int id;
+        ArrayList<TestMethodVO> list;
+
+        try {
+            id = Integer.parseInt(name);
+            list = new ArrayList<TestMethodVO>(1);
+            list.add(test.fetchActiveById(id));
+        } catch (NumberFormatException e) {
+            list = panel.fetchByNameWithTests(name + "%", 100);
+        } catch (NotFoundException e) {
+            list = new ArrayList<TestMethodVO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
     }
 
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception {

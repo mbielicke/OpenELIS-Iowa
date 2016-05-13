@@ -127,7 +127,7 @@ public class OrganizationTabUI extends Screen {
         Item<Integer> item;
 
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 if ( !isState(QUERY))
                     table.setModel(getTableModel());
             }
@@ -142,7 +142,7 @@ public class OrganizationTabUI extends Screen {
                 QueryData qd;
 
                 qds = new ArrayList<QueryData>();
-                for (int i = 0; i < 9; i++ ) {
+                for (int i = 0; i < 10; i++ ) {
                     qd = (QueryData) ((Queryable)table.getColumnWidget(i)).getQuery();
                     if (qd != null) {
                         switch (i) {
@@ -153,24 +153,27 @@ public class OrganizationTabUI extends Screen {
                                 qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAttention());
                                 break;
                             case 2:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationName());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationId());
                                 break;
                             case 3:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressMultipleUnit());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationName());
                                 break;
                             case 4:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressStreetAddress());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressMultipleUnit());
                                 break;
                             case 5:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCity());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressStreetAddress());
                                 break;
                             case 6:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressState());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCity());
                                 break;
                             case 7:
-                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressZipCode());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressState());
                                 break;
                             case 8:
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressZipCode());
+                                break;
+                            case 9:
                                 qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCountry());
                                 break;
                         }
@@ -184,7 +187,7 @@ public class OrganizationTabUI extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(QUERY) && ! (isState(ADD, UPDATE) && event.getCol() <= 2))
+                if ( !isState(QUERY) && ! (isState(ADD, UPDATE) && (event.getCol() < 2 || event.getCol() == 3)))
                     event.cancel();
             }
         });
@@ -209,7 +212,7 @@ public class OrganizationTabUI extends Screen {
                     case 1:
                         data.setOrganizationAttention((String)val);
                         break;
-                    case 2:
+                    case 3:
                         if (val == null) {
                             data.setOrganizationId(null);
                             data.setOrganizationName(null);
@@ -219,12 +222,13 @@ public class OrganizationTabUI extends Screen {
                             data.setOrganizationAddressState(null);
                             data.setOrganizationAddressZipCode(null);
                             data.setOrganizationAddressCountry(null);
-                            table.setValueAt(r, 3, null);
+                            table.setValueAt(r, 2, null);
                             table.setValueAt(r, 4, null);
                             table.setValueAt(r, 5, null);
                             table.setValueAt(r, 6, null);
                             table.setValueAt(r, 7, null);
                             table.setValueAt(r, 8, null);
+                            table.setValueAt(r, 9, null);
                         } else {
                             org = (OrganizationDO) ( ((AutoCompleteValue)val).getData());
                             if (org != null) {
@@ -238,12 +242,13 @@ public class OrganizationTabUI extends Screen {
                                 data.setOrganizationAddressState(org.getAddress().getState());
                                 data.setOrganizationAddressZipCode(org.getAddress().getZipCode());
                                 data.setOrganizationAddressCountry(org.getAddress().getCountry());
-                                table.setValueAt(r, 3, org.getAddress().getMultipleUnit());
-                                table.setValueAt(r, 4, org.getAddress().getStreetAddress());
-                                table.setValueAt(r, 5, org.getAddress().getCity());
-                                table.setValueAt(r, 6, org.getAddress().getState());
-                                table.setValueAt(r, 7, org.getAddress().getZipCode());
-                                table.setValueAt(r, 8, org.getAddress().getCountry());
+                                table.setValueAt(r, 2, org.getId());
+                                table.setValueAt(r, 4, org.getAddress().getMultipleUnit());
+                                table.setValueAt(r, 5, org.getAddress().getStreetAddress());
+                                table.setValueAt(r, 6, org.getAddress().getCity());
+                                table.setValueAt(r, 7, org.getAddress().getState());
+                                table.setValueAt(r, 8, org.getAddress().getZipCode());
+                                table.setValueAt(r, 9, org.getAddress().getCountry());
                             }
                         }
                         break;
@@ -378,20 +383,20 @@ public class OrganizationTabUI extends Screen {
             for (int i = 0; i < count1; i++ ) {
                 r = table.getRowAt(i);
                 org = manager.organization.get(i);
-                if (r.getCell(2) != null)
-                    name = ((AutoCompleteValue)r.getCell(2)).getDisplay();
+                if (r.getCell(3) != null)
+                    name = ((AutoCompleteValue)r.getCell(3)).getDisplay();
                 else
                     name = null;
                 if (DataBaseUtil.isDifferent(org.getTypeId(), r.getCell(0)) ||
                     DataBaseUtil.isDifferent(org.getOrganizationAttention(), r.getCell(1)) ||
                     DataBaseUtil.isDifferent(org.getOrganizationName(), name) ||
-                    DataBaseUtil.isDifferent(org.getOrganizationAddressMultipleUnit(), r.getCell(3)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressMultipleUnit(), r.getCell(4)) ||
                     DataBaseUtil.isDifferent(org.getOrganizationAddressStreetAddress(),
-                                             r.getCell(4)) ||
-                    DataBaseUtil.isDifferent(org.getOrganizationAddressCity(), r.getCell(5)) ||
-                    DataBaseUtil.isDifferent(org.getOrganizationAddressState(), r.getCell(6)) ||
-                    DataBaseUtil.isDifferent(org.getOrganizationAddressZipCode(), r.getCell(7)) ||
-                    DataBaseUtil.isDifferent(org.getOrganizationAddressCountry(), r.getCell(8))) {
+                                             r.getCell(5)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressCity(), r.getCell(6)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressState(), r.getCell(7)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressZipCode(), r.getCell(8)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressCountry(), r.getCell(9))) {
                     redraw = true;
                     break;
                 }
@@ -426,18 +431,19 @@ public class OrganizationTabUI extends Screen {
 
         for (i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
-            row = new Row(9);
+            row = new Row(10);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());
+            row.setCell(2, data.getOrganizationId());
             if (data.getOrganizationId() != null)
-                row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
+                row.setCell(3, new AutoCompleteValue(data.getOrganizationId(),
                                                      data.getOrganizationName()));
-            row.setCell(3, data.getOrganizationAddressMultipleUnit());
-            row.setCell(4, data.getOrganizationAddressStreetAddress());
-            row.setCell(5, data.getOrganizationAddressCity());
-            row.setCell(6, data.getOrganizationAddressState());
-            row.setCell(7, data.getOrganizationAddressZipCode());
-            row.setCell(8, data.getOrganizationAddressCountry());
+            row.setCell(4, data.getOrganizationAddressMultipleUnit());
+            row.setCell(5, data.getOrganizationAddressStreetAddress());
+            row.setCell(6, data.getOrganizationAddressCity());
+            row.setCell(7, data.getOrganizationAddressState());
+            row.setCell(8, data.getOrganizationAddressZipCode());
+            row.setCell(9, data.getOrganizationAddressCountry());
             row.setData(data);
             model.add(row);
         }
