@@ -442,6 +442,8 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         SectionViewDO sectionVDO;
         StringBuffer message;
         
+        setBusy(Messages.get().gen_adding());
+        
         message = new StringBuffer();
         selections = new ArrayList<Row>();
         selectedRows = analysesTable.getSelectedRows();
@@ -469,6 +471,8 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
             Window.alert(Messages.get().worksheet_itemsNotAdded()+":\n\n"+message.toString());
         if (selections.size() > 0)
             bus.fireEventFromSource(new RowsAddedEvent(selections), this);
+        
+        setDone(Messages.get().gen_addingComplete());
     }
 
     @SuppressWarnings("unused")
