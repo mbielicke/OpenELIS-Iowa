@@ -351,6 +351,12 @@ public class WorksheetLabelReportBean {
                     }
     
                     switch (format) {
+                        case ".5x1 small storage":
+                            if (waVDO.getAnalysisId() != null) {
+                                labelReport.smallStorage(ps, Integer.parseInt(accession), 1);
+                            }
+                            break;
+
                         case "1x2 acc+rec":
                             if (waVDO.getAnalysisId() != null) {
                                 labelReport.accessionReceivedLabel(ps,

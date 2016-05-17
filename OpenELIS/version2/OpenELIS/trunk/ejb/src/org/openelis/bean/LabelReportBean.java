@@ -219,6 +219,17 @@ public class LabelReportBean {
     }
     
     /*
+     * Print a small storage label
+     */
+    public void smallStorage(PrintStream f, int accession, int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO50,35^B2N,50,N,N^FD"+accession+"^FS");     // barcoded accession
+        f.print("^FO75,95^AF^FD"+accession+"^FS");             // accession
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
+    
+    /*
      * Print a small worksheet analysis label
      */
     public void worksheetAnalysisSmallLabel(PrintStream f, String accession, String worksheetPosition,

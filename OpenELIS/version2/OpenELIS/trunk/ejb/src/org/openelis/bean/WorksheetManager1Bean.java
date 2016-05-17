@@ -160,7 +160,7 @@ public class WorksheetManager1Bean {
      * Returns a new instance of worksheet manager with pre-initailized worksheet
      * and other structures.
      */
-    public WorksheetManager1 getInstance() throws Exception {
+    public WorksheetManager1 getInstance() {
         WorksheetManager1 wm;
         WorksheetViewDO w;
         Datetime now;
@@ -1491,7 +1491,7 @@ public class WorksheetManager1Bean {
             if (Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId()) || 
                 Constants.dictionary().POS_FIXED.equals(twiDO.getTypeId()) ||
                 Constants.dictionary().POS_FIXED_ALWAYS.equals(twiDO.getTypeId())) {
-                for (j = twiDO.getPosition(); j < twDO.getTotalCapacity(); j += twDO.getSubsetCapacity())
+                for (j = twiDO.getPosition(); j <= twDO.getTotalCapacity(); j += twDO.getSubsetCapacity())
                     qcTemplate[j - 1] = twiDO;
             } else if (Constants.dictionary().POS_RANDOM.equals(twiDO.getTypeId())) {
                 randList.add(twiDO);
@@ -1604,7 +1604,7 @@ public class WorksheetManager1Bean {
         pos = twDO.getSubsetCapacity() - lastSubsetList.size();
         for (i = 0; i < lastSubsetList.size(); i++) {
             twiDO = lastSubsetList.get(i);
-            for (j = pos; j < twDO.getTotalCapacity(); j += twDO.getSubsetCapacity())
+            for (j = pos; j <= twDO.getTotalCapacity(); j += twDO.getSubsetCapacity())
                 qcTemplate[j] = twiDO;
             pos++;
         }
