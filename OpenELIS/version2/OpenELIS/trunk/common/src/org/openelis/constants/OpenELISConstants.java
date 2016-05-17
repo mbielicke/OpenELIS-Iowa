@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -3371,6 +3371,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("The sample must be fully logged in")
   @Key("cantVerifyQuickEntry")
   String cantVerifyQuickEntry();
+
+  /**
+   * Translated "Accession # {0}: Cannot remove Analysis {1} - One or more results are linked to it".
+   * 
+   * @return translated "Accession # {0}: Cannot remove Analysis {1} - One or more results are linked to it"
+   */
+  @DefaultMessage("Accession # {0}: Cannot remove Analysis {1} - One or more results are linked to it")
+  @Key("caseAnalysis.cantRemoveException")
+  String caseAnalysis_cantRemoveException(String arg0,  String arg1);
+
+  /**
+   * Translated "Cannot remove Sample Accession # {0}: One or more analyses are linked to it".
+   * 
+   * @return translated "Cannot remove Sample Accession # {0}: One or more analyses are linked to it"
+   */
+  @DefaultMessage("Cannot remove Sample Accession # {0}: One or more analyses are linked to it")
+  @Key("caseSample.cantRemoveException")
+  String caseSample_cantRemoveException(String arg0);
 
   /**
    * Translated "Category Name".
@@ -8071,6 +8089,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_move();
 
   /**
+   * Translated "Move Bottom".
+   * 
+   * @return translated "Move Bottom"
+   */
+  @DefaultMessage("Move Bottom")
+  @Key("gen.moveBottom")
+  String gen_moveBottom();
+
+  /**
    * Translated "Move Down".
    * 
    * @return translated "Move Down"
@@ -8087,6 +8114,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("<<")
   @Key("gen.moveLeft")
   String gen_moveLeft();
+
+  /**
+   * Translated "Move Top".
+   * 
+   * @return translated "Move Top"
+   */
+  @DefaultMessage("Move Top")
+  @Key("gen.moveTop")
+  String gen_moveTop();
 
   /**
    * Translated "Move Up".

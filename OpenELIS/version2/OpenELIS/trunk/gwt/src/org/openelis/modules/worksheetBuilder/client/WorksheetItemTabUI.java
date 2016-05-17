@@ -122,20 +122,21 @@ public class WorksheetItemTabUI extends Screen {
     protected AutoComplete                              description, unitOfMeasureId;
     @UiField
     protected Button                                    addRowButton, duplicateRowButton,
-                                                        loadTemplateButton, moveDownButton,
-                                                        moveUpButton, removeRowButton,
-                                                        undoQcsButton;
+                                                        loadTemplateButton, moveButton,
+                                                        removeRowButton, undoQcsButton;
     @UiField
     protected Dropdown<Integer>                         analysisStatusId, qcLink;
     @UiField
     protected Menu                                      addRowMenu, loadTemplateMenu,
-                                                        undoQcsMenu;
+                                                        moveMenu, undoQcsMenu;
     @UiField
     protected MenuItem                                  insertAnalysisAbove, insertAnalysisThisPosition,
                                                         insertAnalysisBelow, insertFromWorksheetAbove,
                                                         insertFromWorksheetBelow, 
                                                         insertFromQcTableAbove,
                                                         insertFromQcTableBelow, 
+                                                        moveBottomButton, moveDownButton,
+                                                        moveTopButton, moveUpButton,
                                                         undoAll, undoManual, undoTemplate;
     @UiField
     protected Table                                     worksheetItemTable;
@@ -195,6 +196,7 @@ public class WorksheetItemTabUI extends Screen {
         addScreenHandler(worksheetItemTable, "worksheetItemTable", new ScreenHandler<ArrayList<Item<String>>>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetItemTable.setModel(getTableModel());
+                enableMoveMenu(false);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -203,7 +205,7 @@ public class WorksheetItemTabUI extends Screen {
                 worksheetItemTable.unselectAll();
             }
         });
-
+        
         worksheetItemTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
                 int itemIndex;
@@ -225,23 +227,37 @@ public class WorksheetItemTabUI extends Screen {
                         wiDO = manager.item.getById(waVDO.getWorksheetItemId());
                         itemIndex = manager.item.indexOf(wiDO);
 
-                        if (itemIndex != 0 && worksheetItemTable.getSelectedRows().length == 1)
+                        if (itemIndex != 0 && worksheetItemTable.getSelectedRows().length == 1) {
+                            moveMenu.setEnabled(true);
+                            moveButton.setEnabled(true);
                             moveUpButton.setEnabled(true);
-                        else
+                            moveTopButton.setEnabled(true);
+                        } else {
                             moveUpButton.setEnabled(false);
+                            moveTopButton.setEnabled(false);
+                        }
 
                         if (itemIndex != manager.item.count() - 1 &&
-                            worksheetItemTable.getSelectedRows().length == 1)
+                            worksheetItemTable.getSelectedRows().length == 1) {
+                            moveMenu.setEnabled(true);
+                            moveButton.setEnabled(true);
                             moveDownButton.setEnabled(true);
-                        else
+                            moveBottomButton.setEnabled(true);
+                        } else {
                             moveDownButton.setEnabled(false);
+                            moveBottomButton.setEnabled(false);
+                        }
+                        
+                        if (manager.item.count() == 1 || worksheetItemTable.getSelectedRows().length != 1) {
+                            moveMenu.setEnabled(false);
+                            moveButton.setEnabled(false);
+                        }
                     }
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, (String)row.getData());
                 } else {
                     removeRowButton.setEnabled(false);
                     duplicateRowButton.setEnabled(true);
-                    moveUpButton.setEnabled(true);
-                    moveDownButton.setEnabled(true);
+                    enableMoveMenu(false);
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, null);
                 }
                 
@@ -472,6 +488,34 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
+        moveTopButton.addCommand(new Command() {
+            @Override
+            public void execute() {
+                moveRowTop();
+            }
+        });
+
+        moveUpButton.addCommand(new Command() {
+            @Override
+            public void execute() {
+                moveRowUp();
+            }
+        });
+
+        moveDownButton.addCommand(new Command() {
+            @Override
+            public void execute() {
+                moveRowDown();
+            }
+        });
+
+        moveBottomButton.addCommand(new Command() {
+            @Override
+            public void execute() {
+                moveRowBottom();
+            }
+        });
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 int i, j;
@@ -487,9 +531,8 @@ public class WorksheetItemTabUI extends Screen {
                 removeRowButton.setEnabled(false);
                 enableLoadTemplateMenu(false);
                 enableUndoQcsMenu(false);
+                enableMoveMenu(false);
                 duplicateRowButton.setEnabled(false);
-                moveDownButton.setEnabled(false);
-                moveUpButton.setEnabled(false);
 
                 enableAddRowMenu(isState(ADD, UPDATE) && canEdit);
                 for (i = 0; i < worksheetItemTable.getColumnCount(); i++) {
@@ -1421,9 +1464,7 @@ public class WorksheetItemTabUI extends Screen {
         worksheetItemTable.selectRowAt(index);
     }
         
-    @SuppressWarnings("unused")
-    @UiHandler("moveDownButton")
-    protected void moveRowDown(ClickEvent event) {
+    protected void moveRowDown() {
         int index, itemIndex;
         String uid;
         WorksheetItemDO wiDO;
@@ -1451,15 +1492,17 @@ public class WorksheetItemTabUI extends Screen {
         // we need to enable/disable the move buttons accordingly
         //
         itemIndex++;
-        if (itemIndex >= manager.item.count() - 1)
+        if (itemIndex >= manager.item.count() - 1) {
             moveDownButton.setEnabled(false);
-        if (!moveUpButton.isEnabled() && itemIndex > 0)
+            moveBottomButton.setEnabled(false);
+        }
+        if (!moveUpButton.isEnabled() && itemIndex > 0) {
             moveUpButton.setEnabled(true);
+            moveTopButton.setEnabled(true);
+        }
     }
         
-    @SuppressWarnings("unused")
-    @UiHandler("moveUpButton")
-    protected void moveRowUp(ClickEvent event) {
+    protected void moveRowUp() {
         int index, itemIndex;
         String uid;
         WorksheetItemDO wiDO;
@@ -1487,10 +1530,92 @@ public class WorksheetItemTabUI extends Screen {
         // we need to enable/disable the move buttons accordingly
         //
         itemIndex--;
-        if (!moveDownButton.isEnabled() && itemIndex < manager.item.count() - 1)
+        if (!moveDownButton.isEnabled() && itemIndex < manager.item.count() - 1) {
             moveDownButton.setEnabled(true);
-        if (itemIndex <= 0)
+            moveBottomButton.setEnabled(true);
+        }
+        if (itemIndex <= 0) {
             moveUpButton.setEnabled(false);
+            moveTopButton.setEnabled(false);
+        }
+    }
+        
+    protected void moveRowBottom() {
+        int index, itemIndex;
+        String uid;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
+
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
+        }
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+        itemIndex = manager.item.indexOf(wiDO);
+        while (itemIndex < manager.item.count() - 1) {
+            manager.item.move(itemIndex, false);
+            itemIndex++;
+        }
+        worksheetItemTable.setModel(getTableModel());
+        index = worksheetItemTable.getRowCount() - 1;
+        uid = manager.getUid(waVDO);
+        while (!uid.equals((String)worksheetItemTable.getRowAt(index).getData()))
+            index--;
+        worksheetItemTable.selectRowAt(index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        moveDownButton.setEnabled(false);
+        moveBottomButton.setEnabled(false);
+        if (!moveUpButton.isEnabled()) {
+            moveUpButton.setEnabled(true);
+            moveTopButton.setEnabled(true);
+        }
+    }
+        
+    protected void moveRowTop() {
+        int index, itemIndex;
+        String uid;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
+
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
+        }
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+        itemIndex = manager.item.indexOf(wiDO);
+        while (itemIndex > 0) {
+            manager.item.move(itemIndex, true);
+            itemIndex--;
+        }
+        worksheetItemTable.setModel(getTableModel());
+        index = 0;
+        uid = manager.getUid(waVDO);
+        while (!uid.equals((String)worksheetItemTable.getRowAt(index).getData()))
+            index++;
+        worksheetItemTable.selectRowAt(index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        if (!moveDownButton.isEnabled()) {
+            moveDownButton.setEnabled(true);
+            moveBottomButton.setEnabled(true);
+        }
+        moveUpButton.setEnabled(false);
+        moveTopButton.setEnabled(false);
     }
         
     private void enableAddRowMenu(boolean enable) {
@@ -1525,6 +1650,15 @@ public class WorksheetItemTabUI extends Screen {
         undoAll.setEnabled(enable);
         undoManual.setEnabled(enable);
         undoTemplate.setEnabled(enable);
+    }
+    
+    private void enableMoveMenu(boolean enable) {
+        moveMenu.setEnabled(enable);
+        moveButton.setEnabled(enable);
+        moveTopButton.setEnabled(enable);
+        moveUpButton.setEnabled(enable);
+        moveDownButton.setEnabled(enable);
+        moveBottomButton.setEnabled(enable);
     }
     
     private void copyDO(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
