@@ -123,7 +123,7 @@ public class EOrderImportBean {
         Element orderElem, eorderElem, eorderBodyElem, eorderLinkElem, eorderLinkItemElem,
                 prevEOrderBodyElem;
         NodeList nodes, nodes2;
-        String organizationName, placerOrderNum;
+        String bodyXml, organizationName, placerOrderNum;
 
         document = XMLUtil.load(file.toAbsolutePath().toString());
         orderElem = (Element)document.getDocumentElement();
@@ -138,7 +138,10 @@ public class EOrderImportBean {
         eorderBodyElem = (Element)orderElem.getElementsByTagName("eorder_body").item(0);
         eorderBodyDO = new EOrderBodyDO();
         eorderBodyDO.setEOrderId(eorderDO.getId());
-        eorderBodyDO.setXml(XMLUtil.toString(eorderBodyElem));
+        bodyXml = XMLUtil.toString(eorderBodyElem);
+        if (bodyXml != null)
+            bodyXml = bodyXml.replaceAll("[^\\n\\r\\t\\p{Print}]", "?");
+        eorderBodyDO.setXml(bodyXml);
 
         eorderLinkElem = (Element)orderElem.getElementsByTagName("eorder_link").item(0);
         nodes = eorderLinkElem.getElementsByTagName("eorder_link_item");
