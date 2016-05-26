@@ -46,6 +46,7 @@ import javax.sql.DataSource;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
@@ -535,7 +536,7 @@ public class WorksheetPrintReportBean {
                             fillReagentFields(form, wMan);
                             stamper.setFormFlattening(true);
                             renameFields(form, pageNumber);
-                            flattenFilledFields(stamper, formCapacity, pageNumber);
+                            flattenFilledFields(stamper, form, formCapacity, pageNumber);
                             stamper.close();
                             reader.close();
                             reader = new PdfReader(page.toByteArray());
@@ -689,7 +690,7 @@ public class WorksheetPrintReportBean {
             fillReagentFields(form, wMan);
             stamper.setFormFlattening(true);
             renameFields(form, pageNumber);
-            flattenFilledFields(stamper, formCapacity, pageNumber);
+            flattenFilledFields(stamper, form, formCapacity, pageNumber);
             stamper.close();
             reader.close();
             
@@ -724,43 +725,43 @@ public class WorksheetPrintReportBean {
         }
     }
 
-    private void flattenFilledFields(PdfStamper stamper, int formCapacity, int pageNumber) {
+    private void flattenFilledFields(PdfStamper stamper, AcroFields form, int formCapacity, int pageNumber) {
         int i;
         
         for (i = 1; i <= formCapacity; i++) {
             stamper.partialFormFlattening("current_date_time_page"+pageNumber);
             stamper.partialFormFlattening("worksheet_id_"+i+"_page"+pageNumber);
             stamper.partialFormFlattening("created_date_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("position_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("well_label_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("accession_number_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("collection_date_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("received_date_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("patient_last_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("patient_first_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("provider_last_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("provider_first_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("env_location_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("env_description_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("organization_name_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("bill_to_name_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("type_of_sample_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("source_of_sample_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("source_other_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("container_reference_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("test_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("method_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("sample_qaevent_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("analysis_qaevent_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("sample_note_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("analysis_note_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("qc_name_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("qc_lot_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("qc_expiration_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("qc_expected_value_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("reagent_media_name_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("reagent_media_lot_"+i+"_page"+pageNumber);
-            stamper.partialFormFlattening("reagent_media_expiration_"+i+"_page"+pageNumber);
+            form.setFieldProperty("position_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("well_label_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("accession_number_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("collection_date_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("received_date_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("patient_last_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("patient_first_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("provider_last_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("provider_first_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("env_location_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("env_description_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("organization_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("bill_to_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("type_of_sample_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("source_of_sample_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("source_other_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("container_reference_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("test_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("method_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("sample_qaevent_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("analysis_qaevent_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("sample_note_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("analysis_note_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_lot_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_expiration_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_expected_value_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("reagent_media_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("reagent_media_lot_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("reagent_media_expiration_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
         }
     }
     
