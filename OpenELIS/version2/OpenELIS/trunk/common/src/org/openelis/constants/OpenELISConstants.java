@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -23189,6 +23189,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("No Analytes Found For Selected Row")
   @Key("worksheet.noAnalytesFoundForRow")
   String worksheet_noAnalytesFoundForRow();
+
+  /**
+   * Translated "You do not have permission to view worksheets that contain patient data".
+   * 
+   * @return translated "You do not have permission to view worksheets that contain patient data"
+   */
+  @DefaultMessage("You do not have permission to view worksheets that contain patient data")
+  @Key("worksheet.noPermToViewPatientException")
+  String worksheet_noPermToViewPatientException();
 
   /**
    * Translated "One or More items are linked to this row. Please unlink them before removing this row.".
