@@ -54,6 +54,7 @@ import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -219,7 +220,7 @@ public class WorksheetBean {
     @SuppressWarnings("unchecked")
     public ArrayList<AnalysisViewVO> fetchAnalysesByView(ArrayList<QueryData> fields, 
                                                          int first, int max) throws Exception {
-        List list = null;
+        List list = null, newList;
         Query query;
         QueryBuilderV2 builder;
 
@@ -265,6 +266,25 @@ public class WorksheetBean {
         list = DataBaseUtil.toArrayList(query.getResultList());
         if (list.isEmpty())
             throw new NotFoundException();
+        
+        /*
+         * exclude records with patient data if the user does not have permission
+         * to view them.
+         */
+        try {
+            userCache.applyPermission("patient", ModuleFlags.SELECT);
+        } catch (Exception anyE) {
+            newList = new ArrayList<AnalysisViewVO>();
+            for (AnalysisViewVO aVVO : (ArrayList<AnalysisViewVO>) list) {
+                if (Constants.domain().CLINICAL.equals(aVVO.getDomain()) ||
+                    Constants.domain().NEONATAL.equals(aVVO.getDomain()))
+                    continue;
+                newList.add(aVVO);
+            }
+            if (newList.isEmpty())
+                throw new NotFoundException();
+            list = newList;
+        }
 
         return (ArrayList<AnalysisViewVO>)list;
     }
