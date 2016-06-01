@@ -89,8 +89,10 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
@@ -203,15 +205,17 @@ public class WorksheetManager1Bean {
         WorksheetManager1 wm;
         ArrayList<Integer> ids1, ids2;
         ArrayList<ResultViewDO> resultList;
+        ArrayList<SampleManager1> sMans;
         ArrayList<WorksheetManager1> wms;
         HashMap<Integer, ArrayList<ResultViewDO>> rMap;
         HashMap<Integer, HashMap<Integer, ArrayList<ResultViewDO>>> arMap;
         HashMap<Integer, Integer> anaIdMap;
         HashMap<Integer, TestAnalyteViewDO> taMap;
-        HashMap<Integer, WorksheetManager1> map1, map2;
+        HashMap<Integer, WorksheetManager1> map1, map2, wmsByAnalysisId;
         HashSet<Integer> anaIds, testIds;
         EnumSet<WorksheetManager1.Load> el;
         ResultViewDO rVDO;
+        SystemUserPermission userPerm;
         TestAnalyteViewDO taVDO;
 
         /*
@@ -278,6 +282,7 @@ public class WorksheetManager1Bean {
                 anaIds = new HashSet<Integer>();
                 anaIdMap = new HashMap<Integer, Integer>();
                 testIds = new HashSet<Integer>();
+                wmsByAnalysisId = new HashMap<Integer, WorksheetManager1>();
                 for (WorksheetAnalysisViewDO data : analysis.fetchByWorksheetIds(ids1)) {
                     wm = map1.get(data.getWorksheetId());
                     addAnalysis(wm, data);
@@ -289,6 +294,7 @@ public class WorksheetManager1Bean {
                         anaIds.add(data.getAnalysisId());
                         anaIdMap.put(data.getId(), data.getAnalysisId());
                         testIds.add(data.getTestId());
+                        wmsByAnalysisId.put(data.getAnalysisId(), wm);
                     }
                 }
         
@@ -343,6 +349,30 @@ public class WorksheetManager1Bean {
                     for (WorksheetQcResultViewDO data : wqResult.fetchByWorksheetAnalysisIds(ids2)) {
                         wm = map2.get(data.getWorksheetAnalysisId());
                         addQcResult(wm, data);
+                    }
+                }
+                
+                /*
+                 * If the user does not have permission to view patient data, remove
+                 * all worksheets from the query results that have patient data
+                 */
+                if (!anaIds.isEmpty()) {
+                    userPerm = userCache.getPermission();
+                    if (userPerm == null || !userPerm.has("patient", ModuleFlags.SELECT)) {
+                        sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(anaIds), SampleManager1.Load.SINGLEANALYSIS);
+                        for (SampleManager1 sMan : sMans) {
+                            if ((Constants.domain().CLINICAL.equals(SampleManager1Accessor.getSample(sMan).getDomain()) ||
+                                 Constants.domain().NEONATAL.equals(SampleManager1Accessor.getSample(sMan).getDomain())) &&
+                                SampleManager1Accessor.getAnalyses(sMan).size() > 0) {
+                                for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sMan)) {
+                                    wm = wmsByAnalysisId.get(aVDO.getId());
+                                    if (wm != null)
+                                        wms.remove(wm);
+                                }
+                            }
+                        }
+                        if (wms.isEmpty())
+                            throw new Exception(Messages.get().worksheet_noPermToViewPatientException());
                     }
                 }
             }
