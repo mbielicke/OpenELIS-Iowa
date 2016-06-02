@@ -617,7 +617,7 @@ public class ClinicalTabUI extends Screen {
         parentBus.addHandler(PatientLockEvent.getType(), new PatientLockEvent.Handler() {
             @Override
             public void onPatientLock(PatientLockEvent event) {
-                if (screen == event.getSource())
+                if (screen == event.getSource() || manager.getSampleClinical() == null)
                     return;
 
                 if (event.getAction() == PatientLockEvent.Action.LOCK) {
@@ -1067,52 +1067,13 @@ public class ClinicalTabUI extends Screen {
         manager.getSampleClinical().getPatient().setEthnicityId(ethnicityId);
     }
 
-    private Integer getProviderId() {
-        if (manager == null || manager.getSampleClinical() == null)
-            return null;
-        return manager.getSampleClinical().getProviderId();
-    }
-
-    private void setProviderId(Integer providerId) {
-        manager.getSampleClinical().setProviderId(providerId);
-    }
-
-    private void setProvider(ProviderDO data) {
-        if (data == null || data.getId() == null)
-            setProviderId(null);
-        else
-            setProviderId(data.getId());
-        manager.getSampleClinical().setProvider(data);
-        providerLastName.setValue(getProviderId(), getProviderLastName());
-        providerFirstName.setValue(getProviderFirstName());
-    }
-
-    private String getProviderLastName() {
-        if (manager == null || manager.getSampleClinical() == null ||
-            manager.getSampleClinical().getProvider() == null)
-            return null;
-        return manager.getSampleClinical().getProvider().getLastName();
-    }
-
-    private String getProviderFirstName() {
-        if (manager == null || manager.getSampleClinical() == null ||
-            manager.getSampleClinical().getProvider() == null)
-            return null;
-        return manager.getSampleClinical().getProvider().getFirstName();
-    }
-
-    private String getProviderPhone() {
-        if (manager == null || manager.getSampleClinical() == null ||
-            manager.getSampleClinical().getProvider() == null)
-            return null;
-        return manager.getSampleClinical().getProviderPhone();
-    }
-
-    private void setProviderPhone(String providerPhone) {
-        manager.getSampleClinical().setProviderPhone(providerPhone);
-    }
-
-    private void lookupPatient(PatientDO data, boolean dontShowIfSinglePatient) {
+    /**
+     * Makes the patient lookup screen find patients matching the data in the
+     * DO. If the flag is true then the screen is not shown if no patient was
+     * found, otherwise the screen is shown regardless. Sets the patient
+     * selected after the query as the sample's patient.
+     */
+    private void lookupPatient(PatientDO data, boolean dontShowIfNoPatient) {
         if (patientLookup == null) {
             patientLookup = new PatientLookupUI() {
                 boolean nidUsedForOther;
@@ -1156,7 +1117,7 @@ public class ClinicalTabUI extends Screen {
             };
         }
 
-        patientLookup.query(data, dontShowIfSinglePatient);
+        patientLookup.query(data, dontShowIfNoPatient);
     }
 
     /**
@@ -1193,7 +1154,7 @@ public class ClinicalTabUI extends Screen {
         bus.fireEvent(new PatientChangeEvent());
         setFocusToNext();
     }
-
+    
     /**
      * sets the focus to the first enabled widget in the tabbing order after
      * "focusedWidget"
@@ -1209,5 +1170,68 @@ public class ClinicalTabUI extends Screen {
             focusNextWidget(focusedWidget, true);
             focusedWidget = null;
         }
+    }
+
+    /**
+     * returns the provider's id or null if the manager is null
+     */
+    private Integer getProviderId() {
+        if (manager == null || manager.getSampleClinical() == null)
+            return null;
+        return manager.getSampleClinical().getProviderId();
+    }
+
+    /**
+     * sets the provider's id
+     */
+    private void setProviderId(Integer providerId) {
+        manager.getSampleClinical().setProviderId(providerId);
+    }
+
+    /**
+     * returns the provider's last name or null if the manager is null
+     */
+    private String getProviderLastName() {
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
+            return null;
+        return manager.getSampleClinical().getProvider().getLastName();
+    }
+
+    /**
+     * returns the provider's first name or null if the manager is null
+     */
+    private String getProviderFirstName() {
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
+            return null;
+        return manager.getSampleClinical().getProvider().getFirstName();
+    }
+
+    /**
+     * returns provider phone or null if the manager is null
+     */
+    private String getProviderPhone() {
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
+            return null;
+        return manager.getSampleClinical().getProviderPhone();
+    }
+
+    /**
+     * sets provider phone
+     */
+    private void setProviderPhone(String providerPhone) {
+        manager.getSampleClinical().setProviderPhone(providerPhone);
+    }
+
+    private void setProvider(ProviderDO data) {
+        if (data == null || data.getId() == null)
+            setProviderId(null);
+        else
+            setProviderId(data.getId());
+        manager.getSampleClinical().setProvider(data);
+        providerLastName.setValue(getProviderId(), getProviderLastName());
+        providerFirstName.setValue(getProviderFirstName());
     }
 }

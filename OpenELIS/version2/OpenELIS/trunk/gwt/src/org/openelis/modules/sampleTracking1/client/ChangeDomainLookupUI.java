@@ -42,6 +42,8 @@ import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -65,8 +67,10 @@ public abstract class ChangeDomainLookupUI extends Screen {
 
     @UiField
     protected Button                          okButton, cancelButton;
-    
-    protected String selectedDomain;
+
+    protected String                          selectedDomain;
+
+    protected ScheduledCommand                cmd;
 
     public ChangeDomainLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -78,26 +82,38 @@ public abstract class ChangeDomainLookupUI extends Screen {
         Item<String> row;
         ArrayList<Item<String>> model;
         ArrayList<DictionaryDO> list;
-        
+
         addScreenHandler(domain, "domain", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 domain.setValue(selectedDomain);
             }
-            
+
             public void onStateChange(StateChangeEvent event) {
                 domain.setEnabled(true);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? okButton : cancelButton;
+            }
         });
-        
+
         addScreenHandler(okButton, "okButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 okButton.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? cancelButton : domain;
             }
         });
 
         addScreenHandler(cancelButton, "cancelButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 cancelButton.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? domain : okButton;
             }
         });
 
@@ -126,11 +142,25 @@ public abstract class ChangeDomainLookupUI extends Screen {
         domain.setModel(model);
     }
 
-    public void setDomain(String domain) {
-        selectedDomain = domain;
+    public void setDomain(String selectedDomain) {
+        this.selectedDomain = selectedDomain;
         clearErrors();
         setState(state);
         fireDataChange();
+
+        /*
+         * without this scheduled command, setting focus on the dropdown doesn't
+         * work
+         */
+        if (cmd == null) {
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    domain.setFocus(true);
+                }
+            };
+        }
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     public void setState(State state) {
@@ -147,8 +177,8 @@ public abstract class ChangeDomainLookupUI extends Screen {
      * overridden to respond to the user clicking "cancel"
      */
     public abstract void cancel();
-    
-    /** 
+
+    /**
      * returns the selected domain
      */
     public String getDomain() {
@@ -162,12 +192,12 @@ public abstract class ChangeDomainLookupUI extends Screen {
         finishEditing();
 
         validation = validate();
-        
+
         if (validation.getStatus() == Status.ERRORS) {
             setError(Messages.get().gen_correctErrors());
             return;
         }
-        
+
         selectedDomain = domain.getValue();
         window.close();
         ok();

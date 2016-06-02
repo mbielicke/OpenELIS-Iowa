@@ -394,7 +394,7 @@ UIRF Software License are applicable instead of those above.
                 </tab>
                 <tab key="analyteTab" tab="analyteTable,analyteTable" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="analyteTable" width="607" maxRows="8" multiSelect="true" showScroll="ALWAYS">
+                    <table key="analyteTable" width="602" maxRows="8" multiSelect="true" showScroll="ALWAYS">
                       <col key="analyteLookup" width="152" header="1">
                         <autoComplete width="125" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
@@ -475,7 +475,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
-                          <dropdown key="{meta:getAnalyteScriptletId()}" width="96" popWidth = "165" field="Integer"/>
+                          <dropdown key="{meta:getAnalyteScriptletId()}" width="92" popWidth = "165" field="Integer"/>
                         </row>
                       </TablePanel>
                     </HorizontalPanel>
@@ -495,7 +495,7 @@ UIRF Software License are applicable instead of those above.
                           <col key="{meta:getResultFlagsId()}" width="95" header="{resource:getString($constants,'flags')}">
                             <dropdown width="115" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{meta:getResultSignificantDigits()}" width="45" header="{resource:getString($constants,'significantDigits')}">
+                          <col key="{meta:getResultSignificantDigits()}" width="40" header="{resource:getString($constants,'significantDigits')}">
                             <textbox case="MIXED" field="Integer" />
                           </col>
                           <col key="{meta:getResultRoundingMethodId()}" width="104" header="{resource:getString($constants,'roundingMethod')}">

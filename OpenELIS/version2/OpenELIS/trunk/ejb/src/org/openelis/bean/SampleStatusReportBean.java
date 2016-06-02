@@ -28,6 +28,9 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -41,8 +44,10 @@ import org.openelis.bean.AnalysisQAEventBean;
 import org.openelis.bean.ProjectBean;
 import org.openelis.bean.SampleQAEventBean;
 import org.openelis.bean.UserCacheBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleViewVO;
@@ -56,6 +61,9 @@ import org.openelis.utils.ReportUtil;
 @SecurityDomain("openelis")
 public class SampleStatusReportBean {
 
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager               manager;
+
     @EJB
     private ProjectBean                 project;
 
@@ -68,18 +76,24 @@ public class SampleStatusReportBean {
     @EJB
     private UserCacheBean               userCache;
 
-    @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;
+    @EJB
+    private DictionaryCacheBean         dictionaryCache;
+
+    @EJB
+    private EventLogBean                eventLog;
 
     private static final SampleViewMeta meta = new SampleViewMeta();
+
+    private static final Logger         log  = Logger.getLogger("openelis");
 
     /**
      * fetch samples that match the search criteria
      */
     @RolesAllowed("w_status-select")
     public ArrayList<SampleViewVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
-        String clause, orgIds;
+        String clause, orgIds, source, text;
         HashMap<String, String> clauseMap;
+        HashSet<Integer> accNumSet;
         ArrayList<SampleViewVO> returnList;
 
         returnList = new ArrayList<SampleViewVO>();
@@ -101,7 +115,38 @@ public class SampleStatusReportBean {
         if (DataBaseUtil.isEmpty(orgIds))
             return returnList;
 
-        return getSamples(fields, orgIds);
+        returnList = getSamples(fields, orgIds);
+        if (returnList.size() > 0) {
+            /*
+             * the event log records the accession numbers for all samples shown
+             * in the report
+             */
+            accNumSet = new HashSet<Integer>();
+            text = null;
+            for (SampleViewVO data : returnList) {
+                if ( !accNumSet.contains(data.getAccessionNumber())) {
+                    accNumSet.add(data.getAccessionNumber());
+                    text = DataBaseUtil.concatWithSeparator(text, ", ", data.getAccessionNumber());
+                }
+            }
+            source = Messages.get().sampleStatusReport_eventLogMessage(userCache.getSystemUser()
+                                                                                .getLoginName());
+            try {
+                eventLog.add(new EventLogDO(null,
+                                            dictionaryCache.getIdBySystemName("log_type_report"),
+                                            source,
+                                            null,
+                                            null,
+                                            Constants.dictionary().LOG_LEVEL_INFO,
+                                            null,
+                                            null,
+                                            text));
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to add log entry for: " + source, e);
+            }
+        }
+
+        return returnList;
     }
 
     /**

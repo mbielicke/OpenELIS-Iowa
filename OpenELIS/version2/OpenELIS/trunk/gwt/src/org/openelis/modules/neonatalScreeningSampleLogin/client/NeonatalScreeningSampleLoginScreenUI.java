@@ -359,7 +359,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (UserCache.getPermission().getModule("sampleneonatal") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Neonatal Screening Sample Login Screen"));
-        
+
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
@@ -536,7 +536,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                               samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -547,7 +548,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) &&
+                                  samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -839,6 +841,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  return forward ? collectionDate : accessionNumber;
                              }
                          });
+
+        orderId.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String ordId, prevOrdId;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    ordId = manager.getSampleClinical().getPaperOrderValidator();
+                    prevOrdId = previousManager.getSampleClinical().getPaperOrderValidator();
+                    /*
+                     * we don't want to incur the cost of importing the order if
+                     * the order id in the previous manager is the same as the
+                     * one in the current manager
+                     */
+                    if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
+                        orderId.setValue(prevOrdId);
+                        setOrderId(prevOrdId);
+                    }
+                    screen.focusNextWidget((Focusable)orderId, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {

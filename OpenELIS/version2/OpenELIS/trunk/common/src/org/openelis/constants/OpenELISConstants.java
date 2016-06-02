@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -4588,6 +4588,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_filters();
 
   /**
+   * Translated "Based on HIPAA regulations, patient data needs to be securely stored.  ".
+   * 
+   * @return translated "Based on HIPAA regulations, patient data needs to be securely stored.  "
+   */
+  @DefaultMessage("Based on HIPAA regulations, patient data needs to be securely stored.  ")
+  @Key("dataView.hipaaNotification")
+  String dataView_hipaaNotification();
+
+  /**
    * Translated "Include Not Reportable".
    * 
    * @return translated "Include Not Reportable"
@@ -4777,11 +4786,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_nextOfKinZipcode();
 
   /**
-   * Translated "You do not have the permission to view patient fields".
+   * Translated "You do not have permission to patient-related fields.".
    * 
-   * @return translated "You do not have the permission to view patient fields"
+   * @return translated "You do not have permission to patient-related fields."
    */
-  @DefaultMessage("You do not have the permission to view patient fields")
+  @DefaultMessage("You do not have permission to patient-related fields.")
   @Key("dataView.noPermToViewPatientException")
   String dataView_noPermToViewPatientException();
 
@@ -4838,15 +4847,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient City")
   @Key("dataView.patientCity")
   String dataView_patientCity();
-
-  /**
-   * Translated "Patient-related fields cannot be selected. ".
-   * 
-   * @return translated "Patient-related fields cannot be selected. "
-   */
-  @DefaultMessage("Patient-related fields cannot be selected. ")
-  @Key("dataView.patientFieldsDisabled")
-  String dataView_patientFieldsDisabled();
 
   /**
    * Translated "Patient First Name".
@@ -5218,11 +5218,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_selectSdwisField();
 
   /**
-   * Translated "These fields can be selected only after choosing this domain on Query tab.".
+   * Translated "To enable these fields choose this domain on Query tab.".
    * 
-   * @return translated "These fields can be selected only after choosing this domain on Query tab."
+   * @return translated "To enable these fields choose this domain on Query tab."
    */
-  @DefaultMessage("These fields can be selected only after choosing this domain on Query tab.")
+  @DefaultMessage("To enable these fields choose this domain on Query tab.")
   @Key("dataView.tabFieldsDisabled")
   String dataView_tabFieldsDisabled();
 
@@ -7043,6 +7043,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("finalreport{0}r{1,number,#0}-{2}.pdf")
   @Key("finalreport.attachmentEsaveFileName")
   String finalreport_attachmentEsaveFileName(String arg0,  Integer arg1,  String arg2);
+
+  /**
+   * Translated "Final Report {0}".
+   * 
+   * @return translated "Final Report {0}"
+   */
+  @DefaultMessage("Final Report {0}")
+  @Key("finalreport.eventLogMessage")
+  String finalreport_eventLogMessage(String arg0);
 
   /**
    * Translated "Preview Final Report".
@@ -17026,6 +17035,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_addWithTRF();
 
   /**
+   * Translated "Animal".
+   * 
+   * @return translated "Animal"
+   */
+  @DefaultMessage("Animal")
+  @Key("sample.animal")
+  String sample_animal();
+
+  /**
    * Translated "Sample is released. You cannot add an analysis.".
    * 
    * @return translated "Sample is released. You cannot add an analysis."
@@ -17773,13 +17791,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_wrongStatusUnrelease(String arg0);
 
   /**
-   * Translated "Animal Info".
+   * Translated "Animal/Exposure Info".
    * 
-   * @return translated "Animal Info"
+   * @return translated "Animal/Exposure Info"
    */
-  @DefaultMessage("Animal Info")
-  @Key("sampleAnimal.animalInfo")
-  String sampleAnimal_animalInfo();
+  @DefaultMessage("Animal/Exposure Info")
+  @Key("sampleAnimal.animalExposureInfo")
+  String sampleAnimal_animalExposureInfo();
 
   /**
    * Translated "Common".
@@ -17789,6 +17807,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Common")
   @Key("sampleAnimal.common")
   String sampleAnimal_common();
+
+  /**
+   * Translated "Accession # {0,number,#0}: Common name is required".
+   * 
+   * @return translated "Accession # {0,number,#0}: Common name is required"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Common name is required")
+  @Key("sampleAnimal.commonNameRequiredException")
+  String sampleAnimal_commonNameRequiredException(Integer arg0);
 
   /**
    * Translated "Animal Sample Login".
@@ -17807,15 +17834,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Fully login animal sample and analysis related information.")
   @Key("sampleAnimal.loginDescription")
   String sampleAnimal_loginDescription();
-
-  /**
-   * Translated "Patient Info".
-   * 
-   * @return translated "Patient Info"
-   */
-  @DefaultMessage("Patient Info")
-  @Key("sampleAnimal.patientInfo")
-  String sampleAnimal_patientInfo();
 
   /**
    * Translated "Sample Animal".
@@ -18779,6 +18797,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample Status")
   @Key("sampleStatus")
   String sampleStatus();
+
+  /**
+   * Translated "Sample Status {0}".
+   * 
+   * @return translated "Sample Status {0}"
+   */
+  @DefaultMessage("Sample Status {0}")
+  @Key("sampleStatusReport.eventLogMessage")
+  String sampleStatusReport_eventLogMessage(String arg0);
 
   /**
    * Translated "A sample''s domain can only be changed once during an update".

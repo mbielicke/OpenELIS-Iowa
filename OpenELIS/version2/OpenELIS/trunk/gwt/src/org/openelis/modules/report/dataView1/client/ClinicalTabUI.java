@@ -495,7 +495,8 @@ public class ClinicalTabUI extends Screen {
                 String dtxt, ptxt;
 
                 dtxt = canEditDomain ? null : Messages.get().dataView_tabFieldsDisabled();
-                ptxt = canEditPatient ? null : Messages.get().dataView_patientFieldsDisabled();
+                ptxt = canEditPatient ? Messages.get().dataView_hipaaNotification()
+                                     : Messages.get().dataView_noPermToViewPatientException();
 
                 fieldsDisabledLabel.setText(DataBaseUtil.concatWithSeparator(dtxt, " ", ptxt));
             }

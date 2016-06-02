@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.todo1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +42,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ToDoSampleViewVO;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -93,6 +94,8 @@ public class ToBeVerifiedTabUI extends Screen {
 
     protected EventBus                                 parentBus;
 
+    protected PatientPermission                         patientPermission;
+
     private boolean                                    visible, load, redraw;
 
     private ArrayList<ToDoSampleViewVO>                samples;
@@ -107,9 +110,10 @@ public class ToBeVerifiedTabUI extends Screen {
 
     private AsyncCallback<ArrayList<ToDoSampleViewVO>> getVerifiedCall;
 
-    public ToBeVerifiedTabUI(Screen parentScreen) {
+    public ToBeVerifiedTabUI(Screen parentScreen, PatientPermission patientPermission) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.patientPermission = patientPermission;
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
@@ -136,7 +140,7 @@ public class ToBeVerifiedTabUI extends Screen {
                 table.setEnabled(true);
             }
         });
-        
+
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 parentBus.fireEvent(event);
@@ -307,6 +311,8 @@ public class ToBeVerifiedTabUI extends Screen {
         model = new ArrayList<Row>();
         if (samples != null) {
             for (ToDoSampleViewVO s : samples) {
+                if (!patientPermission.canViewSample(s))
+                    continue;
                 row = new Row(s.getAccessionNumber(),
                               s.getDomain(),
                               TurnaroundUtil.getCombinedYM(s.getCollectionDate(),
