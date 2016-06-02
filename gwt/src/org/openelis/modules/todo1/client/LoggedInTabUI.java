@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.todo1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +43,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -95,6 +96,8 @@ public class LoggedInTabUI extends Screen {
 
     protected EventBus                               parentBus;
 
+    protected PatientPermission                      patientPermission;
+
     private boolean                                  visible, load, draw, mySection;
 
     private ArrayList<AnalysisViewVO>                analyses;
@@ -109,9 +112,10 @@ public class LoggedInTabUI extends Screen {
 
     private AsyncCallback<ArrayList<AnalysisViewVO>> getLoggedInCall;
 
-    public LoggedInTabUI(Screen parentScreen) {
+    public LoggedInTabUI(Screen parentScreen, PatientPermission patientPermission) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.patientPermission = patientPermission;
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
@@ -139,7 +143,7 @@ public class LoggedInTabUI extends Screen {
                 table.setEnabled(true);
             }
         });
-        
+
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 parentBus.fireEvent(event);
@@ -248,9 +252,9 @@ public class LoggedInTabUI extends Screen {
         };
 
         /*
-         * call to fetch data. the scheduled command is performed so we can
-         * show the busy state while it is fetching data; it is only done on
-         * this tab because this tab is the first visible tab that is opened.
+         * call to fetch data. the scheduled command is performed so we can show
+         * the busy state while it is fetching data; it is only done on this tab
+         * because this tab is the first visible tab that is opened.
          */
         loadCmd = new ScheduledCommand() {
             @Override
@@ -328,7 +332,8 @@ public class LoggedInTabUI extends Screen {
             perm = UserCache.getPermission();
 
             for (AnalysisViewVO a : analyses) {
-                if (mySection && perm.getSection(a.getSectionName()) == null)
+                if ( (mySection && perm.getSection(a.getSectionName()) == null) ||
+                    !patientPermission.canViewSample(a))
                     continue;
 
                 row = new Row(a.getAccessionNumber(),

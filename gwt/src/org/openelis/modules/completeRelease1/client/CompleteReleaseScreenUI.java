@@ -71,6 +71,7 @@ import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
@@ -250,6 +251,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected ModulePermission                 samplePermission;
 
+    protected PatientPermission                patientPermission;
+
     protected CompleteReleaseScreenUI          screen;
 
     protected TestSelectionLookupUI            testSelectionLookup;
@@ -314,6 +317,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
+
+        patientPermission = new PatientPermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -2625,8 +2630,25 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
+                    int i;
                     UUID data;
                     ArrayList<Row> model;
+
+                    /*
+                     * don't show samples containing patient info if the user
+                     * doesn't have permission to view patients
+                     */
+                    i = 0;
+                    while (i < result.size()) {
+                        if ( !patientPermission.canViewSample(result.get(i).getSample()))
+                            result.remove(i);
+                        else
+                            i++ ;
+                    }
+                    if (result.size() == 0) {
+                        notFound();
+                        return;
+                    }
 
                     /*
                      * this map is used to link a table row with the manager

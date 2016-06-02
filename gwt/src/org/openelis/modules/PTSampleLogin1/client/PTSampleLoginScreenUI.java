@@ -775,8 +775,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                      * one in the current manager
                      */
                     if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
-                        setOrderId(prevOrdId);
                         orderId.setValue(prevOrdId);
+                        setOrderId(prevOrdId);                        
                     }
                     screen.focusNextWidget((Focusable)orderId, true);
                     event.preventDefault();

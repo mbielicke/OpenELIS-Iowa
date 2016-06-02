@@ -56,6 +56,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.patient.client.PatientService;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
@@ -114,8 +115,6 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     public static final SecondDataEntryUiBinder             uiBinder      = GWT.create(SecondDataEntryUiBinder.class);
 
-    protected ModulePermission                              samplePermission;
-
     @UiField
     protected Table                                         table;
 
@@ -168,6 +167,10 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected SecondDataEntryScreenUI                       screen;
 
+    protected ModulePermission                              samplePermission;
+
+    protected PatientPermission                             patientPermission;
+
     protected HashMap<String, Object>                       cache;
 
     protected SecondDataEntryServiceImpl                    service       = SecondDataEntryServiceImpl.INSTANCE;
@@ -181,7 +184,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected Query                                         query;
 
-    protected static int                                    ROWS_PER_PAGE = 23;
+    protected static int                                    ROWS_PER_PAGE = 100;
 
     protected boolean                                       allowScanTrf, scanTrfFetched;
 
@@ -206,6 +209,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
+
+        patientPermission = new PatientPermission();
 
         environmentalTab = new EnvironmentalTabUI(this);
         sdwisTab = new SDWISTabUI(this);
@@ -774,17 +779,35 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 if (queryCall == null) {
                     queryCall = new AsyncCallbackUI<ArrayList<SecondDataEntryVO>>() {
                         public void success(ArrayList<SecondDataEntryVO> result) {
+                            int i;
                             ArrayList<SecondDataEntryVO> addedList;
 
                             clearStatus();
+                            /*
+                             * don't show samples containing patient info if the
+                             * user doesn't have permission to view patients
+                             */
+                            i = 0;
+                            while (i < result.size()) {
+                                if ( !patientPermission.canViewSample(result.get(i)))
+                                    result.remove(i);
+                                else
+                                    i++ ;
+                            }
+
                             if (nav.getQuery().getPage() == 0) {
+                                if (result.size() == 0) {
+                                    notFound();
+                                    return;
+                                }
                                 setQueryResult(result);
                             } else {
+                                if (result.size() == 0)
+                                    return;
                                 addedList = getQueryResult();
                                 addedList.addAll(result);
                                 setQueryResult(addedList);
                                 select(table.getModel().size() - result.size());
-                                table.scrollToVisible(table.getModel().size() - 1);
                             }
                         }
 
@@ -806,7 +829,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                         }
                     };
                 }
-                query.setRowsPerPage(23);
+                query.setRowsPerPage(ROWS_PER_PAGE);
                 service.query(query, queryCall);
             }
 

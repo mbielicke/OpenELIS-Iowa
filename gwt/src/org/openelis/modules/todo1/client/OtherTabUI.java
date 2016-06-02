@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.todo1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +43,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -98,6 +99,8 @@ public class OtherTabUI extends Screen {
 
     protected EventBus                               parentBus;
 
+    protected PatientPermission                      patientPermission;
+
     private boolean                                  visible, load, draw, mySection;
 
     private ArrayList<AnalysisViewVO>                analyses;
@@ -112,9 +115,10 @@ public class OtherTabUI extends Screen {
 
     private AsyncCallback<ArrayList<AnalysisViewVO>> getOtherCall;
 
-    public OtherTabUI(Screen parentScreen) {
+    public OtherTabUI(Screen parentScreen, PatientPermission patientPermission) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
+        this.patientPermission = patientPermission;
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
@@ -144,7 +148,7 @@ public class OtherTabUI extends Screen {
                 table.setEnabled(true);
             }
         });
-        
+
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 parentBus.fireEvent(event);
@@ -335,7 +339,8 @@ public class OtherTabUI extends Screen {
             perm = UserCache.getPermission();
 
             for (AnalysisViewVO a : analyses) {
-                if (mySection && perm.getSection(a.getSectionName()) == null)
+                if ( (mySection && perm.getSection(a.getSectionName()) == null) ||
+                    !patientPermission.canViewSample(a))
                     continue;
 
                 row = new Row(a.getAccessionNumber(),

@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -39,6 +40,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.data.Query;
@@ -62,6 +64,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -84,14 +87,17 @@ public class FinalReportSingleReprintScreen extends Screen {
     private FinalReportSingleReprintReportScreen finalReportScreen;
     private String                               VIEW_PDF_KEY = "-view-";
     private Integer                              orgGeneralFaxNumberId;
+    protected PatientPermission                  patientPermission;
 
     public FinalReportSingleReprintScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSingleReprintDef.class));
-        
+
         setWindow(window);
 
         reset();
-        
+
+        patientPermission = new PatientPermission();
+
         try {
             CategoryCache.getBySystemNames("parameter_type");
         } catch (Exception e) {
@@ -107,7 +113,7 @@ public class FinalReportSingleReprintScreen extends Screen {
 
     private void initialize() {
         screen = this;
-        
+
         accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -116,7 +122,7 @@ public class FinalReportSingleReprintScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 Integer accNum;
-                
+
                 manager = null;
                 accNum = event.getValue();
                 data.setAccessionNumber(accNum);
@@ -125,25 +131,33 @@ public class FinalReportSingleReprintScreen extends Screen {
                 data.setFaxNumber(null);
                 data.setToName(null);
                 data.setToCompany(null);
-                
+
                 try {
                     if (accNum != null) {
                         window.setBusy(Messages.get().fetching());
                         manager = SampleManager.fetchWithAllDataByAccessionNumber(accNum);
+                        clearErrors();
+                        /*
+                         * don't show samples containing patient info if the user
+                         * doesn't have permission to view patients
+                         */
+                        if ( !patientPermission.canViewSample(manager.getSample())) {
+                            manager = null;
+                            notFound();
+                        } else {
+                            window.clearStatus();
+                        }
                     }
-                    window.clearStatus();
                 } catch (NotFoundException e) {
-                    data.setAccessionNumber(null);
-                    window.setDone(Messages.get().noRecordsFound());
+                    notFound();
                 } catch (Exception e) {
                     data.setAccessionNumber(null);
                     Window.alert(e.getMessage());
                     window.clearStatus();
-                }                             
-                
+                }
+
                 organization.setModel(getOrgModel());
                 destination.setModel(getDestModel());
-                clearErrors();
                 DataChangeEvent.fire(screen);
             }
 
@@ -163,7 +177,7 @@ public class FinalReportSingleReprintScreen extends Screen {
                 checked = "Y".equals(val);
                 enablePrintFields(checked);
                 setPrintFieldsRequired(checked);
-                if (!checked)
+                if ( !checked)
                     clearExceptionsFromPrintFields();
             }
 
@@ -176,9 +190,9 @@ public class FinalReportSingleReprintScreen extends Screen {
                 checked = "Y".equals(val);
                 enablePrintFields(checked);
                 setPrintFieldsRequired(checked);
-                if (!checked)
+                if ( !checked)
                     clearExceptionsFromPrintFields();
-                
+
                 data.setIsFax(checked ? "N" : "Y");
                 DataChangeEvent.fire(screen, fax);
             }
@@ -229,7 +243,7 @@ public class FinalReportSingleReprintScreen extends Screen {
                 checked = "Y".equals(val);
                 enableFaxFields(checked);
                 setFaxFieldsRequired(checked);
-                if (!checked)
+                if ( !checked)
                     clearExceptionsFromFaxFields();
             }
 
@@ -242,9 +256,9 @@ public class FinalReportSingleReprintScreen extends Screen {
                 checked = "Y".equals(val);
                 enableFaxFields(checked);
                 setFaxFieldsRequired(checked);
-                if (!checked)
+                if ( !checked)
                     clearExceptionsFromFaxFields();
-                
+
                 data.setIsPrint(checked ? "N" : "Y");
                 DataChangeEvent.fire(screen, print);
             }
@@ -263,9 +277,9 @@ public class FinalReportSingleReprintScreen extends Screen {
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 TableDataRow row;
                 FaxVO faxVO;
-                
+
                 data.setDestinationId(event.getValue());
-                                                
+
                 row = destination.getSelection();
                 if (row != null) {
                     faxVO = (FaxVO)row.data;
@@ -273,17 +287,17 @@ public class FinalReportSingleReprintScreen extends Screen {
                     data.setToName(faxVO.getToName());
                     data.setToCompany(faxVO.getToCompany());
                 }
-                
-                DataChangeEvent.fire(screen,faxNumber);
-                DataChangeEvent.fire(screen,toName);
-                DataChangeEvent.fire(screen,toCompany);
+
+                DataChangeEvent.fire(screen, faxNumber);
+                DataChangeEvent.fire(screen, toName);
+                DataChangeEvent.fire(screen, toCompany);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 destination.enable(false);
             }
         });
-        
+
         faxNumber = (TextBox)def.getWidget("faxNumber");
         addScreenHandler(faxNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -408,8 +422,8 @@ public class FinalReportSingleReprintScreen extends Screen {
             window.close();
             Window.alert("Unable to fetch dictionary id for 'org_general_fax_number'");
         }
-    }            
-    
+    }
+
     private void runReport() {
         Integer id;
         Query query;
@@ -420,22 +434,22 @@ public class FinalReportSingleReprintScreen extends Screen {
             window.setError(Messages.get().correctErrors());
             return;
         }
-        
-        query = new Query();    
-        
+
+        query = new Query();
+
         field = new QueryData();
         field.setKey("ACCESSION_NUMBER");
         field.setQuery(data.getAccessionNumber().toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
-        
+
         if ("Y".equals(data.getIsPrint())) {
             field = new QueryData();
             field.setKey("PRINTER");
             field.setQuery(data.getPrinter());
             field.setType(QueryData.Type.STRING);
             query.setFields(field);
-            
+
             id = data.getOrganizationId();
             if (id != null) {
                 field = new QueryData();
@@ -453,57 +467,57 @@ public class FinalReportSingleReprintScreen extends Screen {
                 field.setType(QueryData.Type.STRING);
                 query.setFields(field);
             }
-            
+
             field = new QueryData();
             field.setKey("FAX_NUMBER");
             field.setQuery(data.getFaxNumber());
             field.setType(QueryData.Type.STRING);
             query.setFields(field);
-            
+
             field = new QueryData();
             field.setKey("FROM_COMPANY");
             field.setQuery(data.getFrom());
             field.setType(QueryData.Type.STRING);
             query.setFields(field);
-            
+
             field = new QueryData();
             field.setKey("FAX_ATTENTION");
             field.setQuery(data.getToName());
             field.setType(QueryData.Type.STRING);
             query.setFields(field);
-            
+
             field = new QueryData();
             field.setKey("TO_COMPANY");
             field.setQuery(data.getToCompany());
             field.setType(QueryData.Type.STRING);
             query.setFields(field);
-            
+
             field = new QueryData();
             field.setKey("FAX_NOTE");
             field.setQuery(data.getNote());
             field.setType(QueryData.Type.STRING);
-            query.setFields(field);            
+            query.setFields(field);
         }
-        
+
         try {
-            if (finalReportScreen == null) 
-                finalReportScreen = new FinalReportSingleReprintReportScreen(window);  
+            if (finalReportScreen == null)
+                finalReportScreen = new FinalReportSingleReprintReportScreen(window);
             else
                 finalReportScreen.setWindow(window);
-            
+
             finalReportScreen.runReport(query);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-    }    
-    
+    }
+
     private void reset() {
         Preferences prefs;
-        
+
         data = new FormVO();
         data.setIsPrint("Y");
-        data.setIsFax("N");     
+        data.setIsFax("N");
         data.setFrom(Messages.get().fromCompany());
         data.setNote("");
         try {
@@ -516,15 +530,20 @@ public class FinalReportSingleReprintScreen extends Screen {
         manager = null;
     }
 
+    private void notFound() {
+        data.setAccessionNumber(null);
+        window.setDone(Messages.get().noRecordsFound());
+    }
+
     private void enablePrintFields(boolean enable) {
         organization.enable(enable);
         printer.enable(enable);
     }
-    
+
     private void setPrintFieldsRequired(boolean required) {
         printer.getField().required = required;
     }
-    
+
     private void clearExceptionsFromPrintFields() {
         printer.clearExceptions();
     }
@@ -536,18 +555,18 @@ public class FinalReportSingleReprintScreen extends Screen {
         toName.enable(enable);
         toCompany.enable(enable);
         comment.enable(enable);
-    }  
-    
+    }
+
     private void setFaxFieldsRequired(boolean required) {
         faxNumber.getField().required = required;
         from.getField().required = required;
     }
-    
+
     private void clearExceptionsFromFaxFields() {
         faxNumber.clearExceptions();
         from.clearExceptions();
     }
-    
+
     private ArrayList<TableDataRow> getOrgModel() {
         int i;
         Integer orgId;
@@ -555,19 +574,18 @@ public class FinalReportSingleReprintScreen extends Screen {
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SampleDO sample;
-        SamplePrivateWellViewDO well;        
+        SamplePrivateWellViewDO well;
         OrganizationDO org;
         SampleOrganizationViewDO samOrg;
-        SamplePrivateWellManager wellMan;        
+        SamplePrivateWellManager wellMan;
         SampleOrganizationManager orgs;
-        
+
         model = new ArrayList<TableDataRow>();
         row = new TableDataRow(null, "");
         model.add(row);
 
-        if (manager == null)             
+        if (manager == null)
             return model;
-        
 
         sample = manager.getSample();
         orgIds = new ArrayList<Integer>();
@@ -577,13 +595,14 @@ public class FinalReportSingleReprintScreen extends Screen {
                 well = wellMan.getPrivateWell();
                 org = well.getOrganization();
                 /*
-                 * if this sample is that of domain private well and if its report-to
-                 * is an organization that it's added to the list shown in the dropdown  
+                 * if this sample is that of domain private well and if its
+                 * report-to is an organization that it's added to the list
+                 * shown in the dropdown
                  */
                 if (org != null) {
                     orgId = org.getId();
                     orgIds.add(orgId);
-                    
+
                     row = new TableDataRow(orgId, org.getName());
                     model.add(row);
                 }
@@ -591,13 +610,14 @@ public class FinalReportSingleReprintScreen extends Screen {
 
             orgs = manager.getOrganizations();
             /*
-             * all unique organizations associated with the sample except the one
-             * for bill-to are added to the dropdown  
+             * all unique organizations associated with the sample except the
+             * one for bill-to are added to the dropdown
              */
             for (i = 0; i < orgs.count(); i++ ) {
                 samOrg = orgs.getOrganizationAt(i);
                 orgId = samOrg.getOrganizationId();
-                if ( !orgIds.contains(orgId) && !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
+                if ( !orgIds.contains(orgId) &&
+                    !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
                     row = new TableDataRow(orgId, samOrg.getOrganizationName());
                     model.add(row);
                     orgIds.add(orgId);
@@ -607,10 +627,10 @@ public class FinalReportSingleReprintScreen extends Screen {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getDestModel() {
         int i;
         Integer orgId;
@@ -618,18 +638,18 @@ public class FinalReportSingleReprintScreen extends Screen {
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SampleDO sample;
-        SamplePrivateWellViewDO well;        
+        SamplePrivateWellViewDO well;
         OrganizationDO org;
         OrganizationParameterDO param;
         FaxVO faxVO;
         SampleOrganizationViewDO samOrg;
-        SamplePrivateWellManager wellMan;        
+        SamplePrivateWellManager wellMan;
         SampleOrganizationManager orgs;
-        
+
         model = new ArrayList<TableDataRow>();
 
-        if (manager == null) 
-            return model;        
+        if (manager == null)
+            return model;
 
         sample = manager.getSample();
         orgIds = new ArrayList<Integer>();
@@ -639,54 +659,56 @@ public class FinalReportSingleReprintScreen extends Screen {
                 well = wellMan.getPrivateWell();
                 org = well.getOrganization();
                 /*
-                 * if this sample is that of domain private well and if its report-to
-                 * is an organization that it's added to the list shown in the dropdown  
+                 * if this sample is that of domain private well and if its
+                 * report-to is an organization that it's added to the list
+                 * shown in the dropdown
                  */
                 if (org != null) {
                     orgId = org.getId();
                     orgIds.add(orgId);
-                    
-                    faxVO = new FaxVO();                    
+
+                    faxVO = new FaxVO();
                     faxVO.setToName(well.getReportToAttention());
                     faxVO.setToCompany(org.getName());
-                    
+
                     param = getOrganizationFax(orgId);
-                    if (param != null) 
+                    if (param != null)
                         faxVO.setFaxNumber(param.getValue());
-                    
+
                     row = new TableDataRow(orgId, org.getName());
-                    row.data = faxVO;                                                            
+                    row.data = faxVO;
                     model.add(row);
                 }
             }
 
             orgs = manager.getOrganizations();
             /*
-             * all unique organizations associated with the sample are added to 
-             * the dropdown  
+             * all unique organizations associated with the sample are added to
+             * the dropdown
              */
             for (i = 0; i < orgs.count(); i++ ) {
                 samOrg = orgs.getOrganizationAt(i);
                 orgId = samOrg.getOrganizationId();
-                if ( !orgIds.contains(orgId) && !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {                    
-                    faxVO = new FaxVO();                
+                if ( !orgIds.contains(orgId) &&
+                    !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
+                    faxVO = new FaxVO();
                     faxVO.setToCompany(samOrg.getOrganizationName());
                     faxVO.setToName(samOrg.getOrganizationAttention());
-                    
+
                     param = getOrganizationFax(orgId);
-                    if (param != null) 
-                        faxVO.setFaxNumber(param.getValue());               
-                    
-                    row = new TableDataRow(orgId, samOrg.getOrganizationName());                    
-                    row.data = faxVO;                    
+                    if (param != null)
+                        faxVO.setFaxNumber(param.getValue());
+
+                    row = new TableDataRow(orgId, samOrg.getOrganizationName());
+                    row.data = faxVO;
                     model.add(row);
-                    
+
                     orgIds.add(orgId);
                 }
             }
-            
+
             /*
-             * this dropdown also shows the option for getting the values for 
+             * this dropdown also shows the option for getting the values for
              * fax # etc. from the aux-data, if any, for this sample
              */
             row = new TableDataRow(null, Messages.get().fromSample());
@@ -696,19 +718,19 @@ public class FinalReportSingleReprintScreen extends Screen {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-        
+
         return model;
     }
-    
+
     private FaxVO getAuxDataFax() {
         FaxVO faxVO;
         AuxDataViewDO aux;
         AuxDataManager auxm;
-        
+
         faxVO = new FaxVO();
         /*
-         * fetch the AuxDataManager and set the values of attention
-         * and fax number if the corresponding analytes are found  
+         * fetch the AuxDataManager and set the values of attention and fax
+         * number if the corresponding analytes are found
          */
         try {
             auxm = manager.getAuxData();
@@ -723,10 +745,10 @@ public class FinalReportSingleReprintScreen extends Screen {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-        
+
         return faxVO;
     }
-    
+
     private OrganizationParameterDO getOrganizationFax(Integer orgId) {
         OrganizationManager1 om;
         OrganizationParameterDO op, faxOp;
@@ -734,10 +756,11 @@ public class FinalReportSingleReprintScreen extends Screen {
         faxOp = null;
         try {
             /*
-             * return the parameter of type "final report fax number" if this 
+             * return the parameter of type "final report fax number" if this
              * organization has one
              */
-            om = OrganizationService1Impl.INSTANCE.fetchById(orgId, new OrganizationManager1.Load[]{OrganizationManager1.Load.PARAMETERS});
+            om = OrganizationService1Impl.INSTANCE.fetchById(orgId,
+                                                             new OrganizationManager1.Load[] {OrganizationManager1.Load.PARAMETERS});
             for (int i = 0; i < om.parameter.count(); i++ ) {
                 op = om.parameter.get(i);
                 if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId())) {
@@ -756,10 +779,10 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         return faxOp;
     }
-    
+
     class FaxVO {
         private String faxNumber, from, toName, toCompany;
-        
+
         public String getFaxNumber() {
             return faxNumber;
         }
@@ -792,11 +815,11 @@ public class FinalReportSingleReprintScreen extends Screen {
             this.toCompany = DataBaseUtil.toString(toCompany);
         }
     }
-    
+
     class FormVO extends FaxVO {
 
         private Integer accessionNumber, organizationId, destinationId;
-        private String isPrint, printer, isFax, note;   
+        private String  isPrint, printer, isFax, note;
 
         public Integer getAccessionNumber() {
             return accessionNumber;
@@ -845,13 +868,13 @@ public class FinalReportSingleReprintScreen extends Screen {
         public void setDestinationId(Integer destinationId) {
             this.destinationId = destinationId;
         }
-        
+
         public String getNote() {
             return note;
         }
 
         public void setNote(String note) {
             this.note = DataBaseUtil.toString(note);
-        } 
+        }
     }
 }

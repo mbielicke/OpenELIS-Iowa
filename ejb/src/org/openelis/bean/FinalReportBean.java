@@ -42,6 +42,7 @@ import org.openelis.domain.AttachmentItemDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.EventLogDO;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationParameterDO;
@@ -74,40 +75,40 @@ public class FinalReportBean {
     private EntityManager               manager;
 
     @Resource
-    private SessionContext            ctx;
+    private SessionContext              ctx;
 
     @EJB
-    private SessionCacheBean          session;
+    private SessionCacheBean            session;
 
     @EJB
-    private SampleBean                sample;
+    private SampleBean                  sample;
 
     @EJB
-    private LockBean                  lock;
+    private LockBean                    lock;
 
     @EJB
-    private AnalysisBean              analysis;
+    private AnalysisBean                analysis;
 
     @EJB
-    private PrinterCacheBean          printer;
+    private PrinterCacheBean            printer;
 
     @EJB
-    private AuxDataBean               auxData;
+    private AuxDataBean                 auxData;
 
     @EJB
-    private OrganizationParameterBean organizationParameter;
+    private OrganizationParameterBean   organizationParameter;
 
     @EJB
-    private SystemVariableBean        systemVariable;
+    private SystemVariableBean          systemVariable;
 
     @EJB
-    private AttachmentManagerBean     attachmentManager;
+    private AttachmentManagerBean       attachmentManager;
 
     @EJB
-    private AttachmentItemBean        attachmentItem;
+    private AttachmentItemBean          attachmentItem;
 
     @EJB
-    private SectionCacheBean          section;
+    private SectionCacheBean            section;
 
     @EJB
     private ProjectBean                 project;
@@ -115,7 +116,13 @@ public class FinalReportBean {
     @EJB
     private UserCacheBean               userCache;
 
-    private static final Logger       log = Logger.getLogger("openelis");
+    @EJB
+    private DictionaryCacheBean         dictionaryCache;
+
+    @EJB
+    private EventLogBean                eventLog;
+
+    private static final Logger         log  = Logger.getLogger("openelis");
     private static final SampleViewMeta meta = new SampleViewMeta();
 
     /**
@@ -399,7 +406,7 @@ public class FinalReportBean {
         if (orgPrintList.size() == 0)
             throw new InconsistencyException("Final report for accession number " + accession +
                                              " has incorrect status,\nmissing information, or has no analysis ready to be printed or faxed");
-
+        addEventLog(orgPrintList);
         print(orgPrintList, "R", false, status, printer);
 
         return status;
@@ -451,6 +458,7 @@ public class FinalReportBean {
             throw e;
         }
 
+        addEventLog(printList);
         print(printList, "C", false, status, "-view-");
 
         return status;
@@ -670,7 +678,7 @@ public class FinalReportBean {
              */
             if (Constants.domain().PT.equals(result.getDomain()))
                 continue;
-            
+
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
                 try {
@@ -768,7 +776,7 @@ public class FinalReportBean {
             timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
             analysis.updatePrintedDate(anaSet, timeStamp);
         }
-        
+
         log.fine("Printing the reports");
         print(printList, "R", true, status, printer);
 
@@ -975,6 +983,7 @@ public class FinalReportBean {
         if (orgPrintList.size() == 0)
             throw new InconsistencyException("No sample(s) were selected for the report");
 
+        addEventLog(orgPrintList);
         print(orgPrintList, "R", false, status, "-view-");
 
         return status;
@@ -1187,5 +1196,41 @@ public class FinalReportBean {
         if (range != null)
             return range.replace("..", ":00' and '").concat(":00");
         return null;
+    }
+    
+    /**
+     * adds an event log specifying which user ran the report and on which
+     * samples
+     */
+    private void addEventLog(ArrayList<OrganizationPrint> orgPrintList) {
+        String source, text;
+        HashSet<Integer> accNumSet;
+        /*
+         * the event log records the accession numbers for all samples shown in
+         * the report
+         */
+        accNumSet = new HashSet<Integer>();
+        text = null;
+        for (OrganizationPrint o : orgPrintList) {
+            if ( !accNumSet.contains(o.getAccessionNumber())) {
+                accNumSet.add(o.getAccessionNumber());
+                text = DataBaseUtil.concatWithSeparator(text, ", ", o.getAccessionNumber());
+            }
+        }
+        source = Messages.get()
+                         .finalreport_eventLogMessage(userCache.getSystemUser().getLoginName());
+        try {
+            eventLog.add(new EventLogDO(null,
+                                        dictionaryCache.getIdBySystemName("log_type_report"),
+                                        source,
+                                        null,
+                                        null,
+                                        Constants.dictionary().LOG_LEVEL_INFO,
+                                        null,
+                                        null,
+                                        text));
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add log entry for: " + source, e);
+        }
     }
 }

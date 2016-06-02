@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.todo1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +43,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
@@ -96,6 +97,8 @@ public class InitiatedTabUI extends Screen {
 
     protected EventBus                               parentBus;
 
+    protected PatientPermission                      patientPermission;
+
     private boolean                                  visible, load, draw, mySection;
 
     private ArrayList<AnalysisViewVO>                analyses;
@@ -110,9 +113,10 @@ public class InitiatedTabUI extends Screen {
 
     private AsyncCallback<ArrayList<AnalysisViewVO>> getInitiatedCall;
 
-    public InitiatedTabUI(Screen parentScreen) {
+    public InitiatedTabUI(Screen parentScreen, PatientPermission patientPermission) {
         this.parentScreen = parentScreen;
-        parentBus = parentScreen.getEventBus();
+        this.parentBus = parentScreen.getEventBus();
+        this.patientPermission = patientPermission;
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
@@ -140,7 +144,7 @@ public class InitiatedTabUI extends Screen {
                 table.setEnabled(true);
             }
         });
-        
+
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 parentBus.fireEvent(event);
@@ -320,7 +324,8 @@ public class InitiatedTabUI extends Screen {
             now = Datetime.getInstance();
 
             for (AnalysisViewVO a : analyses) {
-                if (mySection && perm.getSection(a.getSectionName()) == null)
+                if ( (mySection && perm.getSection(a.getSectionName()) == null) ||
+                    !patientPermission.canViewSample(a))
                     continue;
 
                 initDays = 0;

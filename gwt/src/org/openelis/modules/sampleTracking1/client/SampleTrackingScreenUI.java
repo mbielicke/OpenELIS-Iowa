@@ -69,6 +69,7 @@ import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
@@ -240,6 +241,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected ModulePermission                           samplePermission, unreleasePermission,
                     changeDomainPermission;
 
+    protected PatientPermission                          patientPermission;
+
     protected SampleTrackingScreenUI                     screen;
 
     protected TestSelectionLookupUI                      testSelectionLookup;
@@ -266,7 +269,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected Query                                      query;
 
-    protected static int                                 ROWS_PER_PAGE = 16, DEEPEST_LEVEL = 3;
+    protected static int                                 ROWS_PER_PAGE = 500, DEEPEST_LEVEL = 3;
 
     protected ScriptletRunner<SampleSO>                  scriptletRunner;
 
@@ -320,6 +323,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         changeDomainPermission = UserCache.getPermission().getModule("sampledomainchange");
         if (changeDomainPermission == null)
             changeDomainPermission = new ModulePermission();
+
+        patientPermission = new PatientPermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -573,7 +578,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 viewFinalReport();
             }
         });
-        
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 viewFinalReport.setEnabled(isState(DISPLAY));
@@ -656,11 +661,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                String domain;
-
-                domain = manager != null ? manager.getSample().getDomain() : null;
-                historyPatient.setEnabled(isState(DISPLAY) &&
-                                          (Constants.domain().CLINICAL.equals(domain) || Constants.domain().NEONATAL.equals(domain)));
+                enablePatientHistory();
             }
         });
 
@@ -679,11 +680,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                String domain;
-
-                domain = manager != null ? manager.getSample().getDomain() : null;
-                historyPatientRelation.setEnabled(isState(DISPLAY) &&
-                                                  (Constants.domain().NEONATAL.equals(domain)));
+                enablePatientRelationHistory();
             }
         });
 
@@ -2784,9 +2781,28 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
-                    int index;
+                    int i, index;
                     UUID data;
-                    Node root, first, last;
+                    Node root, first;
+
+                    /*
+                     * don't show samples containing patient info if the user
+                     * doesn't have permission to view patients
+                     */
+                    i = 0;
+                    while (i < result.size()) {
+                        if ( !patientPermission.canViewSample(result.get(i).getSample()))
+                            result.remove(i);
+                        else
+                            i++ ;
+                    }
+                    if (result.size() == 0) {
+                        if (query.getPage() == 0)
+                            notFound();
+                        else
+                            clearStatus();
+                        return;
+                    }
 
                     /*
                      * if "managers" is null, it's a new query i.e. the first
@@ -2813,15 +2829,11 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
                     /*
                      * reload the tree; select the first node of the newest page
-                     * and load the screen with its sample's data; make sure
-                     * that only the nodes of the newest page are in the visible
-                     * area
+                     * and load the screen with its sample's data
                      */
                     tree.setRoot(root);
                     first = root.getChildAt(index);
-                    last = root.getLastChild();
                     tree.selectNodeAt(first);
-                    tree.scrollToVisible(tree.getNodeViewIndex(last));
 
                     data = first.getData();
                     manager = managers.get(data.sampleId);
@@ -3840,7 +3852,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * changes the domain of the currently selected sample to passed value and
+     * Changes the domain of the currently selected sample to passed value and
      * reloads the screen with the changed manager
      */
     private void changeDomain(String domain) {

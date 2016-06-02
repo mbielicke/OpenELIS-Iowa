@@ -56,6 +56,7 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SectionPermission;
@@ -547,8 +548,12 @@ public class AttachmentManagerBean {
         ReportStatus status;
         SystemUserPermission perm;
         SectionPermission sp;
+        ModulePermission mp;
         SectionViewDO sect;
         OutputStream out;
+        ArrayList<Integer> ids;
+        ArrayList<SampleDO> samples;
+        ArrayList<AttachmentItemViewDO> items;
 
         /*
          * make sure that the attachment wasn't deleted
@@ -556,12 +561,42 @@ public class AttachmentManagerBean {
         data = attachment.fetchById(attachmentId);
 
         /*
-         * check whether the user has permission to view this attachment and
-         * throw an exception if this isn't the case
+         * find out if this attachment is attached to a sample; don't show the
+         * attachment if the sample contains patient data and the user doesn't
+         * have permission to view patients
+         */
+        ids = new ArrayList<Integer>();
+        ids.add(attachmentId);
+        items = attachmentItem.fetchByAttachmentIds(ids);
+        perm = userCache.getPermission();
+        if (items.size() > 0) {
+            ids.clear();
+            for (AttachmentItemViewDO ai : items) {
+                if (Constants.table().SAMPLE.equals(ai.getReferenceTableId()))
+                    ids.add(ai.getReferenceId());
+            }
+            if (ids.size() > 0) {
+                samples = sample.fetchByIds(ids);
+                mp = perm.getModule("patient");
+                for (SampleDO s : samples) {
+                    if ((Constants.domain().CLINICAL.equals(s.getDomain()) ||
+                        Constants.domain().NEONATAL.equals(s.getDomain())) &&
+                        (mp == null || !mp.hasSelectPermission()))
+                        throw new InconsistencyException(Messages.get()
+                                                                 .attachment_viewPermException(data.getDescription()));
+                }
+            }
+        }
+        ids = null;
+        items = null;
+        samples = null;
+
+        /*
+         * don't show the attachment if the user doesn't have permission to view
+         * it
          */
         if (data.getSectionId() != null) {
             sect = sectionCache.getById(data.getSectionId());
-            perm = userCache.getPermission();
             sp = perm.getSection(sect.getName());
 
             if (sp == null || !sp.hasViewPermission())
@@ -902,7 +937,7 @@ public class AttachmentManagerBean {
             for (WorksheetViewDO data : ws)
                 wmap.put(data.getId(), data);
         }
-        
+
         omap = new HashMap<Integer, IOrderViewDO>();
         if (oids.size() > 0) {
             os = iorder.fetchByIds(oids);
@@ -931,7 +966,7 @@ public class AttachmentManagerBean {
                         data.setReferenceDescription(Messages.get()
                                                              .attachment_iorderDescription(o.getId()));
                     }
-                    
+
                 }
             }
         }

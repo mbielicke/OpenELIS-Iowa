@@ -35,7 +35,10 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.modules.sample1.client.PatientPermission;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -80,15 +83,18 @@ public class ReleasedTabUI extends Screen {
 
     protected EventBus                               parentBus;
 
+    protected PatientPermission                      patientPermission;
+
     private boolean                                  visible, load, mySection;
 
     private ArrayList<AnalysisViewVO>                analyses;
 
     private AsyncCallback<ArrayList<AnalysisViewVO>> getReleasedCall;
 
-    public ReleasedTabUI(Screen parentScreen) {
+    public ReleasedTabUI(Screen parentScreen, PatientPermission patientPermission) {
         this.parentScreen = parentScreen;
-        parentBus = parentScreen.getEventBus();
+        this.parentBus = parentScreen.getEventBus();
+        this.patientPermission = patientPermission;
 
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
@@ -111,7 +117,7 @@ public class ReleasedTabUI extends Screen {
                 table.setEnabled(true);
             }
         });
-        
+
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 parentBus.fireEvent(event);
@@ -217,7 +223,8 @@ public class ReleasedTabUI extends Screen {
             perm = UserCache.getPermission();
 
             for (AnalysisViewVO a : analyses) {
-                if (mySection && perm.getSection(a.getSectionName()) == null)
+                if ( (mySection && perm.getSection(a.getSectionName()) == null) ||
+                    !patientPermission.canViewSample(a))
                     continue;
 
                 row = new Row(a.getAccessionNumber(),

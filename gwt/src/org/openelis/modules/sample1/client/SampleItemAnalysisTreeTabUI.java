@@ -226,6 +226,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 if (SAMPLE_ITEM_LEAF.equals(row.getType())) {
                     item = (SampleItemViewDO)manager.getObject(uid);
                     manager.item.remove(item);
+                    removeRowButton.setEnabled(false);
                 }
             }
         });

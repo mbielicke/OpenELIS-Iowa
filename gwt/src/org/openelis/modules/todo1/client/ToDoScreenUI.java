@@ -10,6 +10,7 @@ import org.openelis.constants.Messages;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.report.client.ToDoReportScreen;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingEntry;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionEntry;
@@ -78,10 +79,15 @@ public class ToDoScreenUI extends Screen {
 
     protected ToDoScreenUI            screen;
 
+    protected PatientPermission       patientPermission;
+
     protected Integer                 lastSampleId;
 
     public ToDoScreenUI(WindowInt window) throws Exception {
         setWindow(window);
+
+        patientPermission = new PatientPermission();
+
         try {
             CategoryCache.getBySystemNames(new String[] {"sample_domain", "analysis_status"});
         } catch (Exception e) {
@@ -90,13 +96,13 @@ public class ToDoScreenUI extends Screen {
             window.close();
         }
 
-        loggedInTab = new LoggedInTabUI(this);
-        initiatedTab = new InitiatedTabUI(this);
+        loggedInTab = new LoggedInTabUI(this, patientPermission);
+        initiatedTab = new InitiatedTabUI(this, patientPermission);
         worksheetTab = new WorksheetTabUI(this);
-        completedTab = new CompletedTabUI(this);
-        releasedTab = new ReleasedTabUI(this);
-        toBeVerifiedTab = new ToBeVerifiedTabUI(this);
-        otherTab = new OtherTabUI(this);
+        completedTab = new CompletedTabUI(this, patientPermission);
+        releasedTab = new ReleasedTabUI(this, patientPermission);
+        toBeVerifiedTab = new ToBeVerifiedTabUI(this, patientPermission);
+        otherTab = new OtherTabUI(this, patientPermission);
 
         initWidget((Widget)uiBinder.createAndBindUi(this));
 
@@ -320,7 +326,7 @@ public class ToDoScreenUI extends Screen {
                 break;
             case 2:
                 /*
-                 * ignore because this is worksheet tab 
+                 * ignore because this is worksheet tab
                  */
                 return;
             case 3:

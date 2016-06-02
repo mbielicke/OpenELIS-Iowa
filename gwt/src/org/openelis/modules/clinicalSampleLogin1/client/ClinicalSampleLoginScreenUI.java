@@ -336,7 +336,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         if (UserCache.getPermission().getModule("sampleclinical") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("Clinical Sample Login Screen"));
-        
+
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
@@ -508,7 +508,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                               samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -519,7 +520,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) &&
+                                  samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -799,6 +801,30 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
                          });
 
+        orderId.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String ordId, prevOrdId;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    ordId = manager.getSampleClinical().getPaperOrderValidator();
+                    prevOrdId = previousManager.getSampleClinical().getPaperOrderValidator();
+                    /*
+                     * we don't want to incur the cost of importing the order if
+                     * the order id in the previous manager is the same as the
+                     * one in the current manager
+                     */
+                    if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
+                        orderId.setValue(prevOrdId);
+                        setOrderId(prevOrdId);
+                    }
+                    screen.focusNextWidget((Focusable)orderId, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orderLookupButton.setEnabled(isState(DISPLAY) ||
@@ -981,10 +1007,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientId.setValue(getPatientId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientId(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2943,7 +2965,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 }
             };
             Scheduler.get().scheduleDeferred(cmd);
-            
+
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -3884,7 +3906,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * Returns the order id or null if the manager is null
      */
     private String getOrderId() {
-        if (manager == null)
+        if (manager == null || manager.getSampleClinical() == null)
             return null;
         return manager.getSampleClinical().getPaperOrderValidator();
     }
@@ -4126,13 +4148,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             manager.getSampleClinical().getPatient() == null)
             return null;
         return manager.getSampleClinical().getPatient().getId();
-    }
-
-    /**
-     * Sets the patient's id
-     */
-    private void setPatientId(Integer id) {
-        manager.getSampleClinical().getPatient().setId(id);
     }
 
     /**
