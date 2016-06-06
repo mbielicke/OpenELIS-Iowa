@@ -1,0 +1,395 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:o="urn:import:org.openelis.modules.order1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:west size="250">
+      <g:LayoutPanel>
+        <g:layer top="0px" bottom="0px" left="2px" width="20px">
+          <w:ButtonGroup ui:field="atozButtons">
+            <g:AbsolutePanel styleName="{res.atozButton.ButtonPanel}">
+              <w:Button text="#" action=">0" enabled="true" css="{res.atozButton}" />
+            </g:AbsolutePanel>
+          </w:ButtonGroup>
+        </g:layer>
+        <g:layer top="0px" bottom="0px" left="22px" right="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="27px">
+              <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" verticalScroll="ALWAYS"
+                header="true" styleName="{res.table.ScreenTableWithSides}"
+              >
+                <t:Column width="75" label="{msg.order_orderNum}">
+                  <t:LabelCell />
+                </t:Column>
+                <t:Column width="150" label="{msg.order_requestedBy}">
+                  <t:LabelCell />
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="27px">
+              <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+                <g:HorizontalPanel>
+                  <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}"
+                    enabled="false" css="{res.atozButton}" />
+                  <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}"
+                    enabled="false" css="{res.atozButton}" />
+                </g:HorizontalPanel>
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:west>
+    <g:center>
+      <g:LayoutPanel>
+        <g:layer top="0px" height="30px">
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+            <g:HorizontalPanel>
+              <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
+                text="{msg.gen_query}" toggles="true" />
+              <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}"
+                text="{msg.gen_previous}" />
+              <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}"
+                text="{msg.gen_next}" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
+                text="{msg.gen_add}" toggles="true" />
+              <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
+                text="{msg.gen_update}" toggles="true" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+                text="{msg.gen_commit}" />
+              <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
+                text="{msg.gen_abort}" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Menu ui:field="optionsMenu" selfShow="true">
+                <w:display>
+                  <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                    rightIcon="{res.icon.OptionsButtonImage}" />
+                </w:display>
+                <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
+                  display="{msg.gen_duplicateRecord}" />
+                <!-- <html>&lt;hr/&gt;</html> -->
+                <w:MenuItem ui:field="shippingInfo" enabled="false" icon="{res.icon.shippingIcon}"
+                  display="{msg.order_shippingInfo}" />
+                <w:MenuItem ui:field="orderRequestForm" description="" enabled="false"
+                  display="{msg.gen_orderRequestForm}" />
+                <!-- <html>&lt;hr/&gt;</html> -->
+                <w:Menu icon="{res.icon.historyIcon}" display="{msg.gen_history}" ui:field="historyMenu"
+                  selfShow="true" showBelow="false"
+                >
+                  <w:MenuItem ui:field="orderHistory" description="" enabled="false"
+                    display="{msg.order_order}" />
+                  <w:MenuItem ui:field="orderOrganizationHistory" description="" enabled="false"
+                    display="{msg.gen_organization}" />
+                  <w:MenuItem ui:field="orderItemHistory" description="" enabled="false"
+                    display="{msg.gen_item}" />
+                  <w:MenuItem ui:field="orderTestHistory" description="" enabled="false"
+                    display="{msg.gen_test}" />
+                  <w:MenuItem ui:field="orderContainerHistory" description="" enabled="false"
+                    display="{msg.gen_container}" />
+                  <w:MenuItem ui:field="auxDataHistory" description="" enabled="false"
+                    display="{msg.aux_data}" />
+                </w:Menu>
+              </w:Menu>
+            </g:HorizontalPanel>
+          </g:AbsolutePanel>
+        </g:layer>
+        <g:layer top="30px" height="200px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_orderNum}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="id" width="90px" field="Integer" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_neededDays}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="neededDays" width="35px" field="Integer" required="true" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_numForms}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="numberOfForms" width="35px" field="Integer"
+                    required="true" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_shipFrom}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="shipFrom" width="203px" field="Integer" required="true" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_shipTo}:" />
+                </td>
+                <td colspan="3">
+                  <w:AutoComplete ui:field="shipTo" width="270px" case="UPPER"
+                    dropWidth="565px" required="true"
+                  >
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="250" label="{msg.gen_name}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="70" label="{msg.address_aptSuite}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="110" label="{msg.address_street}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="100" label="{msg.address_city}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="20" label="{msg.address_st}">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_status}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="status" width="100px" field="Integer" dropWidth="120px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_attention}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="organizationAttention" width="270px" field="String"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_orderDate}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="orderedDate" width="90px" required="true" begin="0"
+                    end="2" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_aptSuite}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="multipleUnit" maxLength="30" width="270px" field="String"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_requestedBy}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="requestedBy" width="203px" field="String" case="LOWER" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_address}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="streetAddress" maxLength="30" width="270px" field="String"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.order_costCenter}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="costCenter" width="203px" field="Integer"
+                    required="true" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_city}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="city" case="UPPER" maxLength="30" width="270px"
+                    field="String" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_description}:" />
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="description" width="203px" case="LOWER"
+                    dropWidth="310px"
+                  >
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="310" label="{msg.gen_description}">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_state}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="orgState" width="35px" field="String" case="UPPER" />
+                </td>
+                <!-- <td> <widget> <HorizontalPanel width="10" /> </widget> </td> -->
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_zipcode}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="zipCode" maxLength="30" width="77px" field="String" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="210px" bottom="0px">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="25" barUnit="PX">
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_organization}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:OrganizationTabUI ui:field="organizationTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.aux_data}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <a:AuxDataTabUI ui:field="auxDataTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_test}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:TestTabUI ui:field="testTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_container}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:ContainerTabUI ui:field="containerTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_item}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:SendoutOrderItemTabUI ui:field="itemTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_shipping}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:ShippingNotesTabUI ui:field="shippingNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.order_customer}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:CustomerNotesTabUI ui:field="customerNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.gen_internal}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:InternalNotesTabUI ui:field="internalNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.sample_sample}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:SampleNotesTabUI ui:field="sampleNotesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.order_recur}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:RecurrenceTabUI ui:field="recurrenceTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.order_filled}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <o:SendoutOrderFillTabUI ui:field="fillTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.attachment_attachment}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <s:AttachmentTabUI ui:field="attachmentTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+          </w:TabLayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:center>
+  </g:SplitLayoutPanel>
+</ui:UiBinder>

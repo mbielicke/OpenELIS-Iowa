@@ -1,0 +1,572 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:s="urn:import:org.openelis.modules.sample1.client"
+  xmlns:d='urn:import:org.openelis.modules.secondDataEntry.client'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="25px" left="12%" width="100%">
+      <g:HorizontalPanel horizontalAlignment="CENTER">
+        <w:Label text="{msg.secondDataEntry_secondDataEntryHeading}" styleName="{res.style.Heading}" />
+        <g:HorizontalPanel width="175px" />
+        <w:Label text="{msg.secondDataEntry_firstDataEntryHeading}" styleName="{res.style.Heading}" />
+      </g:HorizontalPanel>
+    </g:layer>
+    <g:layer top="25px" bottom="0px">
+      <g:ScrollPanel width="100%" height="100%">
+        <g:HTMLPanel>
+          <table class="{res.style.Form}">
+            <tr ui:field="verEnvAccessionNumber" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_accessionNum}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
+                  <g:Image ui:field="accessionNumberIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="accessionNumberIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="accessionNumber1" width="75px" field="Integer" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvOrderId" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.order_orderNum}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="orderId" width="75px" field="Integer" />
+                  <g:Image ui:field="orderIdIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="orderIdIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="orderId1" width="75px" field="Integer" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvCollectionDate" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_collected}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="collectionDate" width="90px" begin="0" end="2" />
+                  <g:Image ui:field="collectionDateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="collectionDateIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="collectionDate1" width="90px" begin="0" end="2" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvCollectionTime" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_time}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="collectionTime" width="60px" begin="3" end="4" />
+                  <g:Image ui:field="collectionTimeIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="collectionTimeIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="collectionTime1" width="60px" begin="3" end="4" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvReceivedDate" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_received}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
+                  <g:Image ui:field="receivedDateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="receivedDateIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="receivedDate1" width="125px" begin="0" end="4" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvClientReference" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_clntRef}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clientReference" width="196px" case="LOWER" field="String"
+                    maxLength="20" />
+                  <g:Image ui:field="clientReferenceIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clientReferenceIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clientReference1" width="196px" case="LOWER" field="String"
+                  maxLength="20" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvIsHazardous" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:CheckBox ui:field="envIsHazardous" />
+                  <g:Image ui:field="envIsHazardousIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envIsHazardousIC" />
+              </td>
+              <td>
+                <w:CheckBox ui:field="envIsHazardous1" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvPriority" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_priority}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envPriority" field="Integer" width="24px" />
+                  <g:Image ui:field="envPriorityIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envPriorityIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envPriority1" field="Integer" width="24px" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvCollector" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_collector}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envCollector" case="LOWER" field="String" width="235px"
+                    maxLength="40" />
+                  <g:Image ui:field="envCollectorIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envCollectorIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envCollector1" case="LOWER" field="String" width="235px"
+                  maxLength="40" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvCollectorPhone" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_phone}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envCollectorPhone" field="String" width="115px"
+                    maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
+                  <g:Image ui:field="envCollectorPhoneIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envCollectorPhoneIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envCollectorPhone1" field="String" width="115px"
+                  maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvDescription" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_description}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envDescription" field="String" width="280px"
+                    maxLength="40" />
+                  <g:Image ui:field="envDescriptionIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envDescriptionIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envDescription1" field="String" width="280px"
+                  maxLength="40" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocation" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_location}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envLocation" width="231px" field="String" case="LOWER"
+                    maxLength="40" />
+                  <g:Image ui:field="envLocationIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envLocation1" width="231px" field="String" case="LOWER"
+                  maxLength="40" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationMultipleUnit" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_aptSuite}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envLocationAddrMultipleUnit" field="String" width="231px"
+                    case="UPPER" />
+                  <g:Image ui:field="envLocationAddrMultipleUnitIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrMultipleUnitIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envLocationAddrMultipleUnit1" field="String" width="231px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationStreetAddress" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_address}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envLocationAddrStreetAddress" field="String" width="231px"
+                    case="UPPER" />
+                  <g:Image ui:field="envLocationAddrStreetAddressIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrStreetAddressIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envLocationAddrStreetAddress1" field="String" width="231px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationCity" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_city}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envLocationAddressCity" field="String" width="98px"
+                    case="UPPER" />
+                  <g:Image ui:field="envLocationAddrCityIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrCityIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envLocationAddressCity1" field="String" width="98px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationState" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_state}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="envLocationAddrState" field="String" width="42px"
+                    case="UPPER" />
+                  <g:Image ui:field="envLocationAddrStateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrStateIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="envLocationAddrState1" field="String" width="42px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationZipCode" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_zipcode}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="envLocationAddrZipCode" field="String" width="75px"
+                    case="UPPER" mask="{msg.gen_zipcodePattern}" />
+                  <g:Image ui:field="envLocationAddrZipCodeIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrZipCodeIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="envLocationAddrZipCode1" field="String" width="75px"
+                  case="UPPER" mask="{msg.gen_zipcodePattern}" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvLocationCountry" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_country}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="envLocationAddrCountry" field="String" width="231px" />
+                  <g:Image ui:field="envLocationAddrCountryIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="envLocationAddrCountryIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="envLocationAddrCountry1" field="String" width="231px" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvReportTo" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sampleOrganization_reportTo}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:AutoComplete ui:field="reportToName" width="180px"
+                          dropWidth="565px" case="UPPER"
+                        >
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="250" label="{msg.gen_name}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="70" label="{msg.address_aptSuite}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="110" label="{msg.address_street}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="100" label="{msg.address_city}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="20" label="{msg.address_st}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                        <g:Image ui:field="reportToNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="reportToDetails" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="reportToNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="reportToName1" width="180px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="reportToDetails1" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verEnvBillTo" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sampleOrganization_billTo}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:AutoComplete ui:field="billToName" width="180px"
+                          dropWidth="565px" case="UPPER"
+                        >
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="250" label="{msg.gen_name}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="70" label="{msg.address_aptSuite}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="110" label="{msg.address_street}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="100" label="{msg.address_city}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="20" label="{msg.address_st}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                        <g:Image ui:field="billToNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="billToDetails" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="billToNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="billToName1" width="180px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="billToDetails1" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verEnvProject" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.project_project}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:AutoComplete ui:field="projectName" width="180px" case="LOWER"
+                    dropWidth="440px"
+                  >
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="150" label="{msg.gen_name}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="275" label="{msg.gen_description}">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                  <g:Image ui:field="projectNameIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="projectNameIC" />
+              </td>
+              <td>
+                <w:AutoComplete ui:field="projectName1" width="190px" case="LOWER" />
+              </td>
+            </tr>
+            <tr ui:field="verEnvSampleQAEvents" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_qaEvents}:" />
+              </td>
+              <td colspan="5">
+                <g:LayoutPanel height="100px" width="430px">
+                  <g:layer top="0px" bottom="0px">
+                    <t:Table ui:field="sampleQATable" header="true"
+                      styleName="{res.table.ScreenTableWithSides}"
+                    >
+                      <t:Column width="51" label="{msg.secondDataEntry_verified}">
+                        <t:CheckBoxCell />
+                      </t:Column>
+                      <t:Column width="215" label="{msg.gen_name}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="110" label="{msg.gen_type}">
+                        <t:DropdownCell>
+                          <w:Dropdown field="Integer" dropWidth="110" />
+                        </t:DropdownCell>
+                      </t:Column>
+                      <t:Column width="51" label="{msg.gen_billable}">
+                        <t:CheckBoxCell />
+                      </t:Column>
+                    </t:Table>
+                  </g:layer>
+                </g:LayoutPanel>
+              </td>
+            </tr>
+            <tr ui:field="verEnvAuxData" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.aux_data}:" />
+              </td>
+              <td colspan="5">
+                <g:LayoutPanel height="250px" width="560px">
+                  <g:layer top="0px" bottom="0px">
+                    <t:Table ui:field="auxDataTable" header="true"
+                      styleName="{res.table.ScreenTableWithSides}"
+                    >
+                      <t:Column width="160" label="{msg.gen_analyte}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="160" label="{msg.secondDataEntry_secondDataEntryHeading}">
+                        <s:ResultCell />
+                      </t:Column>
+                      <t:Column width="20" label="">
+                        <t:ImageCell />
+                      </t:Column>
+                      <t:Column width="20" label="">
+                        <t:ImageCell />
+                      </t:Column>
+                      <t:Column width="160" label="{msg.secondDataEntry_firstDataEntryHeading}">
+                        <s:ResultCell />
+                      </t:Column>
+                    </t:Table>
+                  </g:layer>
+                </g:LayoutPanel>
+              </td>
+            </tr>
+          </table>
+        </g:HTMLPanel>
+      </g:ScrollPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
