@@ -52,10 +52,13 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
@@ -84,6 +87,9 @@ public class AbnormalsCallListReportBean {
 
     @EJB
     private PrinterCacheBean    printers;
+
+    @EJB
+    private UserCacheBean       userCache;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -151,7 +157,7 @@ public class AbnormalsCallListReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String dir, printer, printstat, section, test, userName;
+        String dir, domain, printer, printstat, section, test, userName;
         Timestamp fromDate, toDate;
 
         /*
@@ -182,6 +188,18 @@ public class AbnormalsCallListReportBean {
             test = "";
 
         /*
+         * If the user does not have permission to view patient date, exclude samples
+         * from the Clinical and Neonatal domains.
+         */
+        domain = "";
+        try {
+            userCache.applyPermission("patient", ModuleFlags.SELECT);
+        } catch (PermissionException permE) {
+            domain = " and s.domain not in ('" + Constants.domain().CLINICAL +
+                     "','" + Constants.domain().NEONATAL + "')";
+        }
+
+        /*
          * start the report
          */
         con = null;
@@ -199,6 +217,7 @@ public class AbnormalsCallListReportBean {
             jparam.put("TO_DATE", toDate);
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
+            jparam.put("DOMAIN", domain);
             jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 

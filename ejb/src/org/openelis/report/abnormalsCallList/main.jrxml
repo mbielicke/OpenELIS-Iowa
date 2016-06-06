@@ -28,6 +28,9 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
+	<parameter name="DOMAIN" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT o.id AS o_id, o.name AS o_name, adr.street_address, adr.city, adr.state, adr.zip_code,
        s.id AS s_id, s.accession_number, s.collection_date, s.collection_time, s.client_reference, s.domain,
@@ -72,7 +75,7 @@ WHERE  s.domain = 'C' AND
                            sample_qaevent.type_id = (SELECT dictionary.id
                                                      FROM   dictionary
                                                      WHERE  dictionary.system_name = 'qaevent_override'))
-       $P!{TEST} $P!{SECTION}
+       $P!{TEST} $P!{SECTION} $P!{DOMAIN}
 ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
 	</queryString>
 	<field name="o_id" class="java.lang.Integer"/>
