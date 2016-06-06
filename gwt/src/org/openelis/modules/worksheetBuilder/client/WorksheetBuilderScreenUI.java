@@ -1171,7 +1171,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 
                     public void failure(Throwable e) {
                         fetchById(null);
-                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        Window.alert(Messages.get().gen_fetchFailed() + "; " + e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                     
