@@ -25,8 +25,11 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
@@ -147,6 +150,17 @@ public class VerificationReportBean {
         } else {
             userNames = userName;
             userWhere = " and h.system_user_id = " + userCache.getId();
+        }
+        
+        /*
+         * If the user does not have permission to view patient date, exclude samples
+         * from the Clinical and Neonatal domains.
+         */
+        try {
+            userCache.applyPermission("patient", ModuleFlags.SELECT);
+        } catch (PermissionException permE) {
+            userWhere += " and s.domain not in ('" + Constants.domain().CLINICAL +
+                         "','" + Constants.domain().NEONATAL + "')";
         }
 
         /*
