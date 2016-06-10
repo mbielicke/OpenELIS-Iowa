@@ -483,8 +483,10 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         parentBus.addHandler(RemoveAnalysisEvent.getType(), new RemoveAnalysisEvent.Handler() {
             @Override
             public void onAnalysisRemove(RemoveAnalysisEvent event) {
-                if (event.getSource() != screen)
+                if (event.getSource() != screen) {
                     onDataChange();
+                    removeRowButton.setEnabled(false);
+                }
             }
         });
     }
