@@ -374,7 +374,7 @@
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
+				<text><![CDATA[Donald L. Simmons, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="20" width="142" height="10"/>
