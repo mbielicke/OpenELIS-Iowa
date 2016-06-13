@@ -479,12 +479,22 @@ public class IOrderManager1Bean {
         getIorder(om).setOrderedDate(now);
         if ( !forRecurrence)
             getIorder(om).setRequestedBy(User.getName(ctx));
+       
+        if (getIorder(om).getCostCenterId() != null) {
+            dict = dictionary.getById(getIorder(om).getCostCenterId());
+            if ("N".equals(dict.getIsActive())) {
+                if (forRecurrence)
+                    getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                errors.add(new FormErrorWarning(Messages.get()
+                                                        .order_inactiveCostCenterWarning(dict.getEntry())));
+                getIorder(om).setCostCenterId(null);
+            }
+        }
 
         if (getIorder(om).getOrganization() != null &&
             !"Y".equals(getIorder(om).getOrganization().getIsActive())) {
-            if (forRecurrence) {
+            if (forRecurrence)
                 getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
-            }
             errors.add(new FormErrorWarning(Messages.get()
                                                     .order_inactiveOrganizationWarning(getIorder(om).getOrganization()
                                                                                                     .getName())));
@@ -500,9 +510,8 @@ public class IOrderManager1Bean {
                     data.setIorderId(null);
                     orgs.add(data);
                 } else {
-                    if (forRecurrence) {
+                    if (forRecurrence)
                         getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
-                    }
                     errors.add(new FormErrorWarning(Messages.get()
                                                             .order_inactiveOrganizationWarning(data.getOrganizationName())));
                 }

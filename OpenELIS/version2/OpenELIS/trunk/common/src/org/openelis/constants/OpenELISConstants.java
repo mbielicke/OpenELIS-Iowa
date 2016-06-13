@@ -4381,6 +4381,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_analysisQAEvent();
 
   /**
+   * Translated "Animal Common Name".
+   * 
+   * @return translated "Animal Common Name"
+   */
+  @DefaultMessage("Animal Common Name")
+  @Key("dataView.animalCommonName")
+  String dataView_animalCommonName();
+
+  /**
+   * Translated "Animal Location".
+   * 
+   * @return translated "Animal Location"
+   */
+  @DefaultMessage("Animal Location")
+  @Key("dataView.animalLocation")
+  String dataView_animalLocation();
+
+  /**
+   * Translated "Animal Scientific Name".
+   * 
+   * @return translated "Animal Scientific Name"
+   */
+  @DefaultMessage("Animal Scientific Name")
+  @Key("dataView.animalScientificName")
+  String dataView_animalScientificName();
+
+  /**
    * Translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled".
    * 
    * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled"
@@ -4487,6 +4514,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Common")
   @Key("dataView.common")
   String dataView_common();
+
+  /**
+   * Translated "Common Name".
+   * 
+   * @return translated "Common Name"
+   */
+  @DefaultMessage("Common Name")
+  @Key("dataView.commonName")
+  String dataView_commonName();
 
   /**
    * Translated "Completed By".
@@ -5083,6 +5119,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_saveQuery();
 
   /**
+   * Translated "Scientific Name".
+   * 
+   * @return translated "Scientific Name"
+   */
+  @DefaultMessage("Scientific Name")
+  @Key("dataView.scientificName")
+  String dataView_scientificName();
+
+  /**
    * Translated "Please select at least one common or domain field".
    * 
    * @return translated "Please select at least one common or domain field"
@@ -5099,6 +5144,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Analysis Fields For Output")
   @Key("dataView.selectAnalysisField")
   String dataView_selectAnalysisField();
+
+  /**
+   * Translated "Select Animal Fields For Output".
+   * 
+   * @return translated "Select Animal Fields For Output"
+   */
+  @DefaultMessage("Select Animal Fields For Output")
+  @Key("dataView.selectAnimalField")
+  String dataView_selectAnimalField();
 
   /**
    * Translated "Select Bill To Fields For Output".
@@ -12616,6 +12670,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String order_inactiveContainerWarning(String arg0);
 
   /**
+   * Translated "The cost center {0} is inactive and was not duplicated".
+   * 
+   * @return translated "The cost center {0} is inactive and was not duplicated"
+   */
+  @DefaultMessage("The cost center {0} is inactive and was not duplicated")
+  @Key("order.inactiveCostCenterWarning")
+  String order_inactiveCostCenterWarning(String arg0);
+
+  /**
    * Translated "The inventory item {0} is inactive and was not duplicated".
    * 
    * @return translated "The inventory item {0} is inactive and was not duplicated"
@@ -17791,13 +17854,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String sample_wrongStatusUnrelease(String arg0);
 
   /**
-   * Translated "Animal/Exposure Info".
+   * Translated "Animal Info".
    * 
-   * @return translated "Animal/Exposure Info"
+   * @return translated "Animal Info"
    */
-  @DefaultMessage("Animal/Exposure Info")
-  @Key("sampleAnimal.animalExposureInfo")
-  String sampleAnimal_animalExposureInfo();
+  @DefaultMessage("Animal Info")
+  @Key("sampleAnimal.animalInfo")
+  String sampleAnimal_animalInfo();
 
   /**
    * Translated "Common".
