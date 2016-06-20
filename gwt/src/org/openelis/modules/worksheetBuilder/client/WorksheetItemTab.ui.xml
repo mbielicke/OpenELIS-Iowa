@@ -31,7 +31,7 @@
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" bottom="25px">
+    <g:layer top="0px" bottom="50px">
       <t:Table ui:field="worksheetItemTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="50" label="{msg.worksheet_position}">
@@ -102,7 +102,8 @@
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="0px" height="25px">
+    <g:layer bottom="0px" height="50px">
+      <g:VerticalPanel>
       <g:HorizontalPanel>
         <w:Menu ui:field="addRowMenu" selfShow="true">
           <w:display>
@@ -132,6 +133,18 @@
         </w:Menu>
         <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}"
                   text="{msg.gen_removeRow}"/>
+        <w:Button ui:field="duplicateRowButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
+                  text="{msg.gen_duplicateRecord}"/>
+        <w:Button ui:field="moveTopButton" leftIcon="{res.icon.arrowUpButtonImage}"
+                  text="{msg.gen_moveTop}"/>
+        <w:Button ui:field="moveUpButton" leftIcon="{res.icon.arrowUpButtonImage}"
+                  text="{msg.gen_moveUp}"/>
+        <w:Button ui:field="moveDownButton" leftIcon="{res.icon.arrowDownButtonImage}"
+                  text="{msg.gen_moveDown}"/>
+        <w:Button ui:field="moveBottomButton" leftIcon="{res.icon.arrowDownButtonImage}"
+                  text="{msg.gen_moveBottom}"/>
+      </g:HorizontalPanel>
+      <g:HorizontalPanel>
         <w:Menu ui:field="loadTemplateMenu" selfShow="true">
           <w:display>
             <w:Button ui:field="loadTemplateButton" text="{msg.worksheet_loadTemplate}"
@@ -149,22 +162,8 @@
           <w:MenuItem ui:field="undoManual" description="" enabled="false"
                       icon="{res.icon.removeRowIcon}" display="{msg.worksheet_undoManual}"/>
         </w:Menu>
-        <w:Button ui:field="duplicateRowButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
-                  text="{msg.gen_duplicateRecord}"/>
-        <w:Menu ui:field="moveMenu" selfShow="true">
-          <w:display>
-            <w:Button ui:field="moveButton" text="{msg.gen_move}" rightIcon="{res.icon.OptionsButtonImage}"/>
-          </w:display>
-          <w:MenuItem ui:field="moveTopButton" description="" enabled="false"
-                      icon="{res.icon.arrowUpButtonImage}" display="{msg.gen_moveTop}"/>
-          <w:MenuItem ui:field="moveUpButton" description="" enabled="false"
-                      icon="{res.icon.arrowUpButtonImage}" display="{msg.gen_moveUp}"/>
-          <w:MenuItem ui:field="moveDownButton" description="" enabled="false"
-                      icon="{res.icon.arrowDownButtonImage}" display="{msg.gen_moveDown}"/>
-          <w:MenuItem ui:field="moveBottomButton" description="" enabled="false"
-                      icon="{res.icon.arrowDownButtonImage}" display="{msg.gen_moveBottom}"/>
-        </w:Menu>
       </g:HorizontalPanel>
+      </g:VerticalPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>
