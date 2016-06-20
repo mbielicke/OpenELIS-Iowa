@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IOrderViewDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
@@ -54,6 +56,9 @@ public class RequestformReportBean {
 
     @EJB
     private PrinterCacheBean    printers;
+
+    @EJB
+    private SystemVariableBean  systemVariable;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -106,6 +111,7 @@ public class RequestformReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         IOrderViewDO data;
+        SystemVariableDO svDO;
 
         /*
          * push status into session so we can query it while the report is
@@ -135,6 +141,13 @@ public class RequestformReportBean {
                 throw new InconsistencyException("You must specify a valid Send-out order #");
             }
         }
+        
+        try {
+            svDO = systemVariable.fetchByName("sdwis_aux_group_ids");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "System Variable 'sdwis_aux_group_ids' is not available", e);
+            throw e;
+        }
 
         /*
          * start the report
@@ -150,6 +163,7 @@ public class RequestformReportBean {
             jparam = new HashMap<String, Object>();
             jparam.put("ORDER_ID", orderId);
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("SDWIS_AUX_IDS", svDO.getValue());
 
             status.setMessage("Outputing report").setPercentComplete(20);
 

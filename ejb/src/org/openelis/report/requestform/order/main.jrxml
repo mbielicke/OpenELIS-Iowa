@@ -14,6 +14,7 @@
 	<parameter name="ORDER_CUSTOMER_REFERENCE_TABLE_ID" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[65]]></defaultValueExpression>
 	</parameter>
+	<parameter name="SDWIS_AUX_IDS" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
        o.id, o.organization_id, o.organization_attention, oo1.organization_id as report_to_id,
@@ -277,6 +278,9 @@ Phone # 319-335-4500 or
 				<reportElement key="auxData" positionType="Float" x="85" y="18" width="490" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ORDER_ID">
 					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SDWIS_AUX_IDS">
+					<subreportParameterExpression><![CDATA[$P{SDWIS_AUX_IDS}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<returnValue subreportVariable="PWS_COUNT" toVariable="PWS_COUNT"/>
