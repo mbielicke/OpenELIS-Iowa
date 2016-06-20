@@ -30,7 +30,7 @@ public class WorksheetBuilderEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().worksheetBuilder());
-                    window.setSize("1061px", "527px");
+                    window.setSize("1061px", "552px");
                     screen = new WorksheetBuilderScreenUI(window);
                     window.setContent(screen);
                     screen.initialize();
