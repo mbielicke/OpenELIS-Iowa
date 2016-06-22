@@ -177,14 +177,14 @@ public class SampleOrganizationManager implements Serializable {
     public void validate(String domain) throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
 
-        proxy().validate(this, !domain.equals(SampleManager.WELL_DOMAIN_FLAG), errorsList);
+        proxy().validate(this, true, errorsList);
 
         if (errorsList.size() > 0)
             throw errorsList;
     }
 
     public void validate(String domain, ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, !domain.equals(SampleManager.WELL_DOMAIN_FLAG), errorsList);
+        proxy().validate(this, true, errorsList);
     }
 
     // these are friendly methods so only managers and proxies can call this

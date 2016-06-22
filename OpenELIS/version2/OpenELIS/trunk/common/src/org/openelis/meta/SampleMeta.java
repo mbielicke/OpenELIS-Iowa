@@ -75,47 +75,6 @@ public class SampleMeta implements Meta, MetaMap {
                     LOCATION_ADDR_EMAIL = "_locationAddress.email",
                     LOCATION_ADDR_COUNTRY = "_locationAddress.country",
 
-                    // sample private well
-                    WELL_ID = "_samplePrivateWell.id",
-                    WELL_SAMPLE_ID = "_samplePrivateWell.sampleId",
-
-                    // TODO remove this after converting the login screens to
-                    // the new framework
-                    WELL_ORGANIZATION_ID = "_samplePrivateWell.organizationId",
-                    WELL_REPORT_TO_NAME = "_samplePrivateWell.reportToName",
-                    WELL_REPORT_TO_ATTENTION = "_samplePrivateWell.reportToAttention",
-                    WELL_REPORT_TO_ADDRESS_ID = "_samplePrivateWell.reportToAddressId",
-                    WELL_LOCATION = "_samplePrivateWell.location",
-                    WELL_LOCATION_ADDRESS_ID = "_samplePrivateWell.locationAddressId",
-                    WELL_OWNER = "_samplePrivateWell.owner",
-                    WELL_COLLECTOR = "_samplePrivateWell.collector",
-                    WELL_WELL_NUMBER = "_samplePrivateWell.wellNumber",
-                    WELL_ORGANIZATION_NAME = "_wellOrganization.name",
-                    WELL_REPORT_TO_ADDR_ID = "_privateWellReportToAddress.id",
-                    WELL_REPORT_TO_ADDR_MULTIPLE_UNIT = "_privateWellReportToAddress.multipleUnit",
-                    WELL_REPORT_TO_ADDR_STREET_ADDRESS = "_privateWellReportToAddress.streetAddress",
-                    WELL_REPORT_TO_ADDR_CITY = "_privateWellReportToAddress.city",
-                    WELL_REPORT_TO_ADDR_STATE = "_privateWellReportToAddress.state",
-                    WELL_REPORT_TO_ADDR_ZIP_CODE = "_privateWellReportToAddress.zipCode",
-                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_privateWellReportToAddress.workPhone",
-                    WELL_REPORT_TO_ADDR_HOME_PHONE = "_privateWellReportToAddress.homePhone",
-                    WELL_REPORT_TO_ADDR_CELL_PHONE = "_privateWellReportToAddress.cellPhone",
-                    WELL_REPORT_TO_ADDR_FAX_PHONE = "_privateWellReportToAddress.faxPhone",
-                    WELL_REPORT_TO_ADDR_EMAIL = "_privateWellReportToAddress.email",
-                    WELL_REPORT_TO_ADDR_COUNTRY = "_privateWellReportToAddress.country",
-
-                    WELL_LOCATION_ADDR_MULTIPLE_UNIT = "_wellLocationAddress.multipleUnit",
-                    WELL_LOCATION_ADDR_STREET_ADDRESS = "_wellLocationAddress.streetAddress",
-                    WELL_LOCATION_ADDR_CITY = "_wellLocationAddress.city",
-                    WELL_LOCATION_ADDR_STATE = "_wellLocationAddress.state",
-                    WELL_LOCATION_ADDR_ZIP_CODE = "_wellLocationAddress.zipCode",
-                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone",
-                    WELL_LOCATION_ADDR_HOME_PHONE = "_wellLocationAddress.homePhone",
-                    WELL_LOCATION_ADDR_CELL_PHONE = "_wellLocationAddress.cellPhone",
-                    WELL_LOCATION_ADDR_FAX_PHONE = "_wellLocationAddress.faxPhone",
-                    WELL_LOCATION_ADDR_EMAIL = "_wellLocationAddress.email",
-                    WELL_LOCATION_ADDR_COUNTRY = "wellLocationAddress.country",
-
                     // sample sdwis
                     SDWIS_ID = "_sampleSDWIS.id",
                     SDWIS_SAMPLE_ID = "_sampleSDWIS.sampleId",
@@ -435,41 +394,6 @@ public class SampleMeta implements Meta, MetaMap {
                                                   LOCATION_ADDR_FAX_PHONE,
                                                   LOCATION_ADDR_EMAIL,
                                                   LOCATION_ADDR_COUNTRY,
-                                                  WELL_ID,
-                                                  WELL_SAMPLE_ID,
-                                                  WELL_ORGANIZATION_ID,
-                                                  WELL_REPORT_TO_NAME,
-                                                  WELL_REPORT_TO_ATTENTION,
-                                                  WELL_REPORT_TO_ADDRESS_ID,
-                                                  WELL_LOCATION,
-                                                  WELL_LOCATION_ADDRESS_ID,
-                                                  WELL_OWNER,
-                                                  WELL_COLLECTOR,
-                                                  WELL_WELL_NUMBER,
-                                                  WELL_ORGANIZATION_NAME,
-                                                  WELL_REPORT_TO_ADDR_ID,
-                                                  WELL_REPORT_TO_ADDR_MULTIPLE_UNIT,
-                                                  WELL_REPORT_TO_ADDR_STREET_ADDRESS,
-                                                  WELL_REPORT_TO_ADDR_CITY,
-                                                  WELL_REPORT_TO_ADDR_STATE,
-                                                  WELL_REPORT_TO_ADDR_ZIP_CODE,
-                                                  WELL_REPORT_TO_ADDR_WORK_PHONE,
-                                                  WELL_REPORT_TO_ADDR_HOME_PHONE,
-                                                  WELL_REPORT_TO_ADDR_CELL_PHONE,
-                                                  WELL_REPORT_TO_ADDR_FAX_PHONE,
-                                                  WELL_REPORT_TO_ADDR_EMAIL,
-                                                  WELL_REPORT_TO_ADDR_COUNTRY,
-                                                  WELL_LOCATION_ADDR_MULTIPLE_UNIT,
-                                                  WELL_LOCATION_ADDR_STREET_ADDRESS,
-                                                  WELL_LOCATION_ADDR_CITY,
-                                                  WELL_LOCATION_ADDR_STATE,
-                                                  WELL_LOCATION_ADDR_ZIP_CODE,
-                                                  WELL_LOCATION_ADDR_WORK_PHONE,
-                                                  WELL_LOCATION_ADDR_HOME_PHONE,
-                                                  WELL_LOCATION_ADDR_CELL_PHONE,
-                                                  WELL_LOCATION_ADDR_FAX_PHONE,
-                                                  WELL_LOCATION_ADDR_EMAIL,
-                                                  WELL_LOCATION_ADDR_COUNTRY,
                                                   SDWIS_ID,
                                                   SDWIS_SAMPLE_ID,
                                                   SDWIS_PWS_ID,
@@ -852,142 +776,6 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getEnvLocationAddressId() {
         return ENV_LOCATION_ADDRESS_ID;
-    }
-
-    public static String getWellId() {
-        return WELL_ID;
-    }
-
-    public static String getWellSampleId() {
-        return WELL_SAMPLE_ID;
-    }
-
-    public static String getWellOrganizationId() {
-        return WELL_ORGANIZATION_ID;
-    }
-
-    public static String getWellReportToName() {
-        return WELL_REPORT_TO_NAME;
-    }
-
-    public static String getWellReportToAttention() {
-        return WELL_REPORT_TO_ATTENTION;
-    }
-
-    public static String getWellReportToAddressId() {
-        return WELL_REPORT_TO_ADDRESS_ID;
-    }
-
-    public static String getWellLocation() {
-        return WELL_LOCATION;
-    }
-
-    public static String getWellLocationAddressId() {
-        return WELL_LOCATION_ADDRESS_ID;
-    }
-
-    public static String getWellOwner() {
-        return WELL_OWNER;
-    }
-
-    public static String getWellCollector() {
-        return WELL_COLLECTOR;
-    }
-
-    public static String getWellWellNumber() {
-        return WELL_WELL_NUMBER;
-    }
-
-    public static String getWellOrganizationName() {
-        return WELL_ORGANIZATION_NAME;
-    }
-
-    public static String getWellReportToAddressMultipleUnit() {
-        return WELL_REPORT_TO_ADDR_MULTIPLE_UNIT;
-    }
-
-    public static String getWellReportToAddressStreetAddress() {
-        return WELL_REPORT_TO_ADDR_STREET_ADDRESS;
-    }
-
-    public static String getWellReportToAddressCity() {
-        return WELL_REPORT_TO_ADDR_CITY;
-    }
-
-    public static String getWellReportToAddressState() {
-        return WELL_REPORT_TO_ADDR_STATE;
-    }
-
-    public static String getWellReportToAddressZipCode() {
-        return WELL_REPORT_TO_ADDR_ZIP_CODE;
-    }
-
-    public static String getWellReportToAddressWorkPhone() {
-        return WELL_REPORT_TO_ADDR_WORK_PHONE;
-    }
-
-    public static String getWellReportToAddressHomePhone() {
-        return WELL_REPORT_TO_ADDR_HOME_PHONE;
-    }
-
-    public static String getWellReportToAddressCellPhone() {
-        return WELL_REPORT_TO_ADDR_CELL_PHONE;
-    }
-
-    public static String getWellReportToAddressFaxPhone() {
-        return WELL_REPORT_TO_ADDR_FAX_PHONE;
-    }
-
-    public static String getWellReportToAddressEmail() {
-        return WELL_REPORT_TO_ADDR_EMAIL;
-    }
-
-    public static String getWellReportToAddressCountry() {
-        return WELL_REPORT_TO_ADDR_COUNTRY;
-    }
-
-    public static String getWellLocationAddrMultipleUnit() {
-        return WELL_LOCATION_ADDR_MULTIPLE_UNIT;
-    }
-
-    public static String getWellLocationAddrStreetAddress() {
-        return WELL_LOCATION_ADDR_STREET_ADDRESS;
-    }
-
-    public static String getWellLocationAddrCity() {
-        return WELL_LOCATION_ADDR_CITY;
-    }
-
-    public static String getWellLocationAddrState() {
-        return WELL_LOCATION_ADDR_STATE;
-    }
-
-    public static String getWellLocationAddrZipCode() {
-        return WELL_LOCATION_ADDR_ZIP_CODE;
-    }
-
-    public static String getWellLocationAddrWorkPhone() {
-        return WELL_LOCATION_ADDR_WORK_PHONE;
-    }
-
-    public static String getWellLocationAddrHomePhone() {
-        return WELL_LOCATION_ADDR_HOME_PHONE;
-    }
-
-    public static String getWellLocationAddrCellPhone() {
-        return WELL_LOCATION_ADDR_CELL_PHONE;
-    }
-
-    public static String getWellLocationAddrFaxPhone() {
-        return WELL_LOCATION_ADDR_FAX_PHONE;
-    }
-
-    public static String getWellLocationAddrEmail() {
-        return WELL_LOCATION_ADDR_EMAIL;
-    }
-
-    public static String getWellLocationAddrCountry() {
-        return WELL_LOCATION_ADDR_COUNTRY;
     }
 
     public static String getSDWISId() {
@@ -1954,24 +1742,6 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("locationAddress.") > -1)
             from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";
-
-        // sample private well
-        if (where.indexOf("samplePrivateWell.") > -1 ||
-            where.indexOf("privateWellReportToAddress") > -1 ||
-            where.indexOf("wellOrganization.") > -1 || where.indexOf("wellLocationAddress.") > -1)
-            from += ", IN (_sample.samplePrivateWell) _samplePrivateWell ";
-
-        if (where.indexOf("wellOrganization.") > -1 ||
-            where.indexOf("privateWellReportToAddress") > -1)
-            from += " LEFT JOIN _samplePrivateWell.organization _wellOrganization ";
-
-        if (where.indexOf("privateWellReportToAddress") > -1) {
-            from += " LEFT JOIN _wellOrganization.address _address ";
-            from += " LEFT JOIN _samplePrivateWell.reportToAddress _privateWellReportToAddress ";
-        }
-
-        if (where.indexOf("wellLocationAddress.") > -1)
-            from += ", IN (_samplePrivateWell.locationAddress) _wellLocationAddress ";
 
         // sample sdwis
         if (where.indexOf("sampleSDWIS.") > -1)

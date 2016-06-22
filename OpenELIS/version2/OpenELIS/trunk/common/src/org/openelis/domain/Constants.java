@@ -124,7 +124,7 @@ public class Constants implements Serializable {
                         QAEVENT = 19, NOTE = 20, STANDARD_NOTE = 21, TEST = 22, TEST_ANALYTE = 23,
                         TEST_RESULT = 24, TEST_REFLEX = 25, TEST_WORKSHEET = 26,
                         TEST_WORKSHEET_ITEM = 27, SECTION = 28, TEST_TRAILER = 29, METHOD = 30,
-                        SAMPLE_PRIVATE_WELL = 31, PROJECT = 33, PROJECT_PARAMETER = 34,
+                        PROJECT = 33, PROJECT_PARAMETER = 34,
                         INVENTORY_ITEM = 35, INVENTORY_COMPONENT = 36, INVENTORY_LOCATION = 37,
                         INVENTORY_RECEIPT = 38, IORDER = 39, IORDER_ITEM = 40, INSTRUMENT = 41,
                         INSTRUMENT_LOG = 42, INSTRUMENT_METHOD = 43, HISTORY = 44,
@@ -165,14 +165,13 @@ public class Constants implements Serializable {
     public static class Domain implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        public final String       QUICKENTRY, ENVIRONMENTAL, SDWIS, PRIVATEWELL, NEONATAL,
+        public final String       QUICKENTRY, ENVIRONMENTAL, SDWIS, NEONATAL,
                         CLINICAL, ANIMAL, PT;
 
         private Domain() {
             QUICKENTRY = "Q";
             ENVIRONMENTAL = "E";
             SDWIS = "S";
-            PRIVATEWELL = "W";
             NEONATAL = "N";
             CLINICAL = "C";
             ANIMAL = "A";
@@ -228,7 +227,7 @@ public class Constants implements Serializable {
                         RESULT_FLAG_DPH, ROUND_INT, ROUND_INT_SIG_FIG, ROUND_INT_SIG_FIG_NOE,
                         ROUND_SIG_FIG, ROUND_SIG_FIG_NOE, SAMPLE_COMPLETED, SAMPLE_ERROR,
                         SAMPLE_LOGGED_IN, SAMPLE_NOT_VERIFIED, SAMPLE_RELEASED, ANIMAL,
-                        ENVIRONMENTAL, CLINICAL, NEWBORN, PT, PRIVATE_WELL, QUICK_ENTRY, SDWIS,
+                        ENVIRONMENTAL, CLINICAL, NEWBORN, PT, QUICK_ENTRY, SDWIS,
                         SDWIS_CATEGORY_BACTERIAL, SDWIS_CATEGORY_CHEMICAL, SDWIS_CATEGORY_LEAD,
                         SDWIS_CATEGORY_RADCHEM, SECTION_MCL_VIOLATION_EMAIL,
                         SHIPPING_STATUS_PROCESSED, SHIPPING_STATUS_SHIPPED, SMPL_TYPE_RT,

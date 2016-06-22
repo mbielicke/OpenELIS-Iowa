@@ -56,8 +56,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   CLINICAL_DOMAIN_FLAG = "C", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
-                                                  PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
-                                                  QUICK_ENTRY = "Q";
+                                                  PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", QUICK_ENTRY = "Q";
 
     protected transient boolean                   unreleaseWithNotes;
     protected transient static SampleManagerProxy proxy;
@@ -223,8 +222,6 @@ public class SampleManager implements Serializable, HasAuxDataInt {
                         domainManager = SampleHumanManager.findBySampleId(sample.getId());
                     else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
                         domainManager = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
-                    else if (domain.equals(WELL_DOMAIN_FLAG))
-                        domainManager = SamplePrivateWellManager.fetchBySampleId(sample.getId());
                     else if (domain.equals(SDWIS_DOMAIN_FLAG))
                         domainManager = SampleSDWISManager.fetchBySampleId(sample.getId());
 
@@ -252,8 +249,6 @@ public class SampleManager implements Serializable, HasAuxDataInt {
             domainManager = SampleHumanManager.getInstance();
         else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
             domainManager = SampleEnvironmentalManager.getInstance();
-        else if (domain.equals(WELL_DOMAIN_FLAG))
-            domainManager = SamplePrivateWellManager.getInstance();
         else if (domain.equals(SDWIS_DOMAIN_FLAG))
             domainManager = SampleSDWISManager.getInstance();
     }
