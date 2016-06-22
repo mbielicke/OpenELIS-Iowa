@@ -15,12 +15,7 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                            as (
 
    select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
-       s.collection_time, s.entered_date,
-       case
-           when spw.organization_id is not null then spw_org.name
-           when spw.report_to_name is not null then spw.report_to_name
-           else o.name
-       end,
+       s.collection_time, s.entered_date, o.name,
        case
            when s.domain = 'E' then
                case
@@ -34,11 +29,6 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                case
                    when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
-               end
-           when s.domain = 'W' then
-               case
-                   when spw.owner is not null then '[own]' || trim(spw.owner)
-                   else null
                end
            when s.domain = 'S' then
                case
@@ -100,11 +90,6 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                    when o.name is not null then '[rpt]' || trim(o.name)
                    else ''
                end
-           when s.domain = 'W' then
-               case
-                   when spw.location is not null then '[loc]' || trim(spw.location)
-                   else null
-               end
            when s.domain = 'C' then
                case
                    when pat.last_name is not null then trim(pat.last_name) || ', '
@@ -153,8 +138,6 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
        join method m on t.method_id = m.id
        join section sec on a.section_id = sec.id
        left join sample_environmental sen on s.id = sen.sample_id
-       left join sample_private_well spw on s.id = spw.sample_id
-       left join organization spw_org on spw.organization_id = spw_org.id
        left join sample_sdwis ssd on s.id = ssd.sample_id
        left join pws on ssd.pws_id = pws.id
        left join sample_clinical scl on s.id = scl.sample_id
@@ -202,33 +185,18 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
 
    select s.id, s.domain, s.accession_number, s.revision, s.received_date,
        s.collection_date, s.collection_time, s.status_id,
-       s.client_reference, s.released_date,
-       case
-           when s.domain = 'W' then spwo.id
-           else o.id
-       end,
-       case
-           when s.domain = 'W' then spwo.name
-           else o.name
-       end,
+       s.client_reference, s.released_date, o.id, o.name,
        case 
            when s.domain = 'E' then sen.collector
            when s.domain = 'S' then ssd.collector
-           when s.domain = 'W' then spw.collector
            else null
        end,
        case 
            when s.domain = 'E' then sen.location
            when s.domain = 'S' then ssd.location
-           when s.domain = 'W' then spw.location
            else null
        end,
-       case
-           when s.domain = 'E' then ead.city
-           when s.domain = 'W' then wad.city
-           else null
-       end,
-       p.id, p.name, pws.number0,
+       ead.city, p.id, p.name, pws.number0,
        pws.name, ssd.facility_id,
        case 
            when s.domain = 'C' then cpa.last_name
@@ -275,9 +243,6 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        left join provider pv on scl.provider_id = pv.id
        left join sample_neonatal snn on s.id = snn.sample_id
        left join patient npa on snn.patient_id = npa.id
-       left join sample_private_well spw on s.id = spw.sample_id
-       left join organization spwo on spw.organization_id = spwo.id
-       left join address wad on spw.location_address_id = wad.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -317,12 +282,7 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                               released_date) as (
 
    select s.id, s.domain, s.accession_number, s.received_date, s.collection_date,
-       s.collection_time,
-       case
-           when spw.organization_id is not null then spw_org.name
-           when spw.report_to_name is not null then spw.report_to_name
-           else o.name
-       end,
+       s.collection_time, o.name,
        case
            when s.domain = 'E' then
                case
@@ -336,11 +296,6 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                case
                    when sen.location is not null then '[loc]' || trim(sen.location)
                    else ''
-               end
-           when s.domain = 'W' then
-               case
-                   when spw.owner is not null then '[own]' || trim(spw.owner)
-                   else null
                end
            when s.domain = 'S' then
                case
@@ -400,8 +355,6 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
   from sample s
        join sample_item si on s.id = si.sample_id
        left join sample_environmental sen on s.id = sen.sample_id
-       left join sample_private_well spw on s.id = spw.sample_id
-       left join organization spw_org on spw.organization_id = spw_org.id
        left join sample_sdwis ssd on s.id = ssd.sample_id
        left join pws on ssd.pws_id = pws.id
        left join sample_clinical scl on s.id = scl.sample_id
@@ -468,15 +421,6 @@ create view worksheet_analysis_view (id, worksheet_item_id, position, worksheet_
                            when o.name is not null then '[rpt]' || trim(o.name)
                            else ''
                        end
-                   when s.domain = 'W' then
-                       case
-                           when spw.location is not null then '[loc]' || trim(spw.location) || ' '
-                           else ''
-                       end ||
-                       case
-                           when o.name is not null then '[rpt]' || trim(o.name)
-                           else ''
-                       end
                    when s.domain = 'C' then
                        case
                            when pat.last_name is not null then trim(pat.last_name) || ', '
@@ -527,8 +471,6 @@ create view worksheet_analysis_view (id, worksheet_item_id, position, worksheet_
        left join sample_item si on a.sample_item_id = si.id
        left join sample s on si.sample_id = s.id
        left join sample_environmental sen on s.id = sen.sample_id
-       left join sample_private_well spw on s.id = spw.sample_id
-       left join organization spw_org on spw.organization_id = spw_org.id
        left join sample_sdwis ssd on s.id = ssd.sample_id
        left join pws on ssd.pws_id = pws.id
        left join sample_clinical scl on s.id = scl.sample_id

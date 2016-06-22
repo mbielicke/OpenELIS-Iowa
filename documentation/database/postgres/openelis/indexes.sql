@@ -246,10 +246,6 @@ create unique index sample_organization_1_idx on sample_organization(id);
 create        index sample_organization_2_idx on sample_organization(sample_id);
 create        index sample_organization_3_idx on sample_organization(organization_id);
 
-create unique index sample_private_well_1_idx on sample_private_well(id);
-create unique index sample_private_well_2_idx on sample_private_well(sample_id);
-create        index sample_private_well_3_idx on sample_private_well(organization_id);
-
 create unique index sample_project_1_idx on sample_project(id);
 create        index sample_project_2_idx on sample_project(sample_id);
 create        index sample_project_3_idx on sample_project(project_id);
@@ -434,7 +430,6 @@ alter table sample_environmental add primary key(id);
 alter table sample_item add primary key(id);
 alter table sample_neonatal add primary key(id);
 alter table sample_organization add primary key(id);
-alter table sample_private_well add primary key(id);
 alter table sample_project add primary key(id);
 alter table sample_pt add primary key(id);
 alter table sample_qaevent add primary key(id);
@@ -681,10 +676,6 @@ alter table sample_neonatal add foreign key(provider_id) references provider(id)
 alter table sample_organization add foreign key(sample_id) references sample(id);
 alter table sample_organization add foreign key(organization_id) references organization(id);
 alter table sample_organization add foreign key(type_id) references dictionary(id);
-
-alter table sample_private_well add foreign key(sample_id) references sample(id);
-alter table sample_private_well add foreign key(report_to_address_id) references address(id);
-alter table sample_private_well add foreign key(location_address_id) references address(id);
 
 alter table sample_project add foreign key(sample_id) references sample(id);
 alter table sample_project add foreign key(project_id) references project(id);

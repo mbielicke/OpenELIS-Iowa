@@ -879,21 +879,6 @@ create table sample_organization
     type_id                        integer not null
 );
 
-create table sample_private_well
-(
-    id                             serial not null,
-    sample_id                      integer not null,
-    organization_id                integer,
-    report_to_name                 varchar(30),
-    report_to_attention            varchar(30),
-    report_to_address_id           integer,
-    location                       varchar(40),
-    location_address_id            integer,
-    owner                          varchar(30),
-    collector                      varchar(30),
-    well_number                    integer
-);
-
 create table sample_project
 (
     id                             serial not null,
