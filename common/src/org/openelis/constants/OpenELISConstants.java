@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -2399,15 +2399,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Attention")
   @Key("attention")
   String attention();
-
-  /**
-   * Translated "Attn".
-   * 
-   * @return translated "Attn"
-   */
-  @DefaultMessage("Attn")
-  @Key("attn")
-  String attn();
 
   /**
    * Translated "Authentication Failure".
@@ -5216,15 +5207,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Patient Fields For Output")
   @Key("dataView.selectPatientField")
   String dataView_selectPatientField();
-
-  /**
-   * Translated "Select Private Well Fields For Output".
-   * 
-   * @return translated "Select Private Well Fields For Output"
-   */
-  @DefaultMessage("Select Private Well Fields For Output")
-  @Key("dataView.selectPrivateWellField")
-  String dataView_selectPrivateWellField();
 
   /**
    * Translated "Select Provider Fields For Output".
@@ -9259,15 +9241,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String history_samplePT();
 
   /**
-   * Translated "History - Private Well".
-   * 
-   * @return translated "History - Private Well"
-   */
-  @DefaultMessage("History - Private Well")
-  @Key("history.samplePrivateWell")
-  String history_samplePrivateWell();
-
-  /**
    * Translated "History - Sample Project".
    * 
    * @return translated "History - Sample Project"
@@ -9383,15 +9356,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("History - Sample Organization")
   @Key("historySampleOrganization")
   String historySampleOrganization();
-
-  /**
-   * Translated "History - Private Well".
-   * 
-   * @return translated "History - Private Well"
-   */
-  @DefaultMessage("History - Private Well")
-  @Key("historySamplePrivateWell")
-  String historySamplePrivateWell();
 
   /**
    * Translated "History - Sample Project".
@@ -13417,15 +13381,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String orgHistory();
 
   /**
-   * Translated "Org Id".
-   * 
-   * @return translated "Org Id"
-   */
-  @DefaultMessage("Org Id")
-  @Key("orgId")
-  String orgId();
-
-  /**
    * Translated "Samples from {0} are to be held or refused   ".
    * 
    * @return translated "Samples from {0} are to be held or refused   "
@@ -14792,60 +14747,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Priority Profile")
   @Key("priorityProfile")
   String priorityProfile();
-
-  /**
-   * Translated "Private Well".
-   * 
-   * @return translated "Private Well"
-   */
-  @DefaultMessage("Private Well")
-  @Key("privateWell")
-  String privateWell();
-
-  /**
-   * Translated "Private Well Final Report".
-   * 
-   * @return translated "Private Well Final Report"
-   */
-  @DefaultMessage("Private Well Final Report")
-  @Key("privateWellFinalReport")
-  String privateWellFinalReport();
-
-  /**
-   * Translated "Private Well Info".
-   * 
-   * @return translated "Private Well Info"
-   */
-  @DefaultMessage("Private Well Info")
-  @Key("privateWellInfo")
-  String privateWellInfo();
-
-  /**
-   * Translated "Private Well Water Sample".
-   * 
-   * @return translated "Private Well Water Sample"
-   */
-  @DefaultMessage("Private Well Water Sample")
-  @Key("privateWellWaterSample")
-  String privateWellWaterSample();
-
-  /**
-   * Translated "Private Well Water Sample Login".
-   * 
-   * @return translated "Private Well Water Sample Login"
-   */
-  @DefaultMessage("Private Well Water Sample Login")
-  @Key("privateWellWaterSampleLogin")
-  String privateWellWaterSampleLogin();
-
-  /**
-   * Translated "Fully login private well water sample and analysis related information.".
-   * 
-   * @return translated "Fully login private well water sample and analysis related information."
-   */
-  @DefaultMessage("Fully login private well water sample and analysis related information.")
-  @Key("privateWellWaterSampleLoginDescription")
-  String privateWellWaterSampleLoginDescription();
 
   /**
    * Translated "Process".
@@ -16468,15 +16369,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String report_outputReport();
 
   /**
-   * Translated "Private Well Attachment".
-   * 
-   * @return translated "Private Well Attachment"
-   */
-  @DefaultMessage("Private Well Attachment")
-  @Key("report.privateWellAttachment")
-  String report_privateWellAttachment();
-
-  /**
    * Translated "Reset".
    * 
    * @return translated "Reset"
@@ -17636,15 +17528,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: This sample must have a patient record")
   @Key("sample.patientRequiredException")
   String sample_patientRequiredException(Integer arg0);
-
-  /**
-   * Translated "Private Well".
-   * 
-   * @return translated "Private Well"
-   */
-  @DefaultMessage("Private Well")
-  @Key("sample.privateWell")
-  String sample_privateWell();
 
   /**
    * Translated "Sample Project".
@@ -19769,15 +19652,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Organization Fields For Output")
   @Key("selectOrganizationField")
   String selectOrganizationField();
-
-  /**
-   * Translated "Select Private Well Fields For Output".
-   * 
-   * @return translated "Select Private Well Fields For Output"
-   */
-  @DefaultMessage("Select Private Well Fields For Output")
-  @Key("selectPrivateWellField")
-  String selectPrivateWellField();
 
   /**
    * Translated "Please select a record to update first".
@@ -22928,24 +22802,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Please select at least one sample, then press Run Report")
   @Key("web.noSampleSelected")
   String web_noSampleSelected();
-
-  /**
-   * Translated "Well/Collector Info".
-   * 
-   * @return translated "Well/Collector Info"
-   */
-  @DefaultMessage("Well/Collector Info")
-  @Key("wellCollectorInfo")
-  String wellCollectorInfo();
-
-  /**
-   * Translated "Well Num".
-   * 
-   * @return translated "Well Num"
-   */
-  @DefaultMessage("Well Num")
-  @Key("wellNum")
-  String wellNum();
 
   /**
    * Translated "Work #".
