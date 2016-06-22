@@ -294,10 +294,6 @@ public class EJBFactory {
         return lookup("SampleOrganizationBean");
     }
 
-    public static SamplePrivateWellBean getSamplePrivateWell() {
-        return lookup("SamplePrivateWellBean");
-    }
-
     public static SampleProjectBean getSampleProject() {
         return lookup("SampleProjectBean");
     }

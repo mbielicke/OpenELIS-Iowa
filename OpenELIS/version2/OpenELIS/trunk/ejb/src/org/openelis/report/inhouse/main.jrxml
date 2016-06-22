@@ -87,27 +87,6 @@ SELECT
       m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
 FROM
       sample s
-      join sample_private_well sd on sd.sample_id = s.id
-      join sample_item si on si.sample_id = s.id
-      join analysis a on a.sample_item_id = si.id
-      join test t on t.id = a.test_id
-      join method m on m.id = t.method_id
-      join section sec on sec.id = a.section_id
-      join dictionary d on d.id = a.status_id
-      join dictionary d1 on d1.id = si.type_of_sample_id
-WHERE
-      s.entered_date between $P{FROM} and $P{TO} and
-      s.domain = 'W'
-      $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
-
-UNION
-
-SELECT
-      s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-      null::integer, t.name as t_name, t.time_ta_average, t.time_holding,
-      m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
-FROM
-      sample s
       join sample_organization sd on sd.sample_id = s.id
       join sample_item si on si.sample_id = s.id
       join analysis a on a.sample_item_id = si.id
@@ -118,7 +97,7 @@ FROM
       join dictionary d1 on d1.id = si.type_of_sample_id
 WHERE
       s.entered_date between $P{FROM} and $P{TO} and
-      s.domain not in ('E', 'W', 'S')
+      s.domain not in ('E', 'S')
       $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 
 ORDER BY $P!{ORDER_BY}]]>

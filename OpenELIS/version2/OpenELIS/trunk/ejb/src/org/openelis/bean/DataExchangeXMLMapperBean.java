@@ -38,7 +38,6 @@ import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
 import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
 import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
 import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
-import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
 import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 import static org.openelis.manager.SampleManager1Accessor.getUsers;
@@ -91,7 +90,6 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleQcVO;
@@ -277,14 +275,6 @@ public class DataExchangeXMLMapperBean {
 
                 if (getSampleEnvironmental(sm).getLocationAddress().getId() != null)
                     root.appendChild(toXML(doc, getSampleEnvironmental(sm).getLocationAddress()));
-            } else if (getSamplePrivateWell(sm) != null) {
-                root.appendChild(toXML(doc, getSamplePrivateWell(sm)));
-
-                if (getSamplePrivateWell(sm).getReportToAddress().getId() != null)
-                    root.appendChild(toXML(doc, getSamplePrivateWell(sm).getReportToAddress()));
-
-                if (getSamplePrivateWell(sm).getLocationAddress().getId() != null)
-                    root.appendChild(toXML(doc, getSamplePrivateWell(sm).getLocationAddress()));
             } else if (getSampleSDWIS(sm) != null) {
                 root.appendChild(toXML(doc, getSampleSDWIS(sm)));
                 root.appendChild(toXML(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
@@ -734,21 +724,6 @@ public class DataExchangeXMLMapperBean {
         setText(doc, elm, "collector_phone", environmental.getCollectorPhone());
         setText(doc, elm, "location", environmental.getLocation());
         setAttribute(elm, "location_address_id", environmental.getLocationAddress().getId());
-
-        return elm;
-    }
-
-    public Element toXML(Document doc, SamplePrivateWellViewDO privateWell) {
-        Element elm;
-
-        elm = doc.createElement("sample_private_well");
-        setAttribute(elm, "id", privateWell.getId());
-        setAttribute(elm, "sample_id", privateWell.getSampleId());
-        setText(doc, elm, "location", privateWell.getLocation());
-        setAttribute(elm, "location_address_id", privateWell.getLocationAddress().getId());
-        setText(doc, elm, "owner", privateWell.getOwner());
-        setText(doc, elm, "collector", privateWell.getCollector());
-        setText(doc, elm, "well_number", privateWell.getWellNumber());
 
         return elm;
     }

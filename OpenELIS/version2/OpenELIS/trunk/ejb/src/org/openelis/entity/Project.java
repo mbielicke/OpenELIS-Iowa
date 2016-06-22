@@ -85,11 +85,7 @@ import org.openelis.utils.Auditable;
                    " from sample_organization so, sample_project sp, project p" +
                    " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and so.type_id in (select id from dictionary where system_name in ('org_report_to')) and" +
                    " sp.project_id = p.id and sp.is_permanent = 'Y'" +
-                   " UNION " +
-                   "select p.id p_id, CAST(p.name AS varchar(20)) p_name, p.description p_description" +
-                   " from sample_private_well so, sample_project sp, project p" +
-                   " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and sp.project_id = p.id and sp.is_permanent = 'Y'"+
-                   "order by p_name ",
+                   " order by p_name ",
            resultSetMapping="Project.FetchForSampleStatusReport")}) 
 @SqlResultSetMappings({    
     @SqlResultSetMapping(name="Project.FetchForSampleStatusReport",

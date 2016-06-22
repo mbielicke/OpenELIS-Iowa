@@ -264,19 +264,6 @@ ORDER BY
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sampleEnvironmental.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="samplePrivateWell" x="0" y="24" width="752" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA["W".equals($F{domain})]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"samplePrivateWell.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
 				<reportElement key="sampleQuickEntry" x="0" y="24" width="752" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["Q".equals($F{domain})]]></printWhenExpression>
 				</reportElement>

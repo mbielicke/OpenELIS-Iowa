@@ -25,7 +25,12 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.getProjects;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.setAuxiliary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +54,6 @@ import org.openelis.domain.PWSDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
@@ -96,7 +100,6 @@ public class AuxDataHelperBean {
     private static final Logger      log = Logger.getLogger("openelis");
 
     public static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
-                    SAMPLE_WELL_AUX_DATA = "sample_well_aux_data",
                     SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
                     SMPL_COLLECTED_DATE = "smpl_collected_date",
                     SMPL_COLLECTED_TIME = "smpl_collected_time",
@@ -106,7 +109,7 @@ public class AuxDataHelperBean {
                     LOC_CITY = "loc_city", LOC_STATE = "loc_state", LOC_ZIP_CODE = "loc_zip_code",
                     LOC_COUNTRY = "loc_country", PRIORITY = "priority",
                     COLLECTOR_PHONE = "collector_phone", DESCRIPTION = "description",
-                    PROJECT_NAME = "project_name", OWNER = "owner", WELL_NUMBER = "well_number",
+                    PROJECT_NAME = "project_name",
                     PWS_ID = "pws_id", STATE_LAB_NUM = "state_lab_num",
                     FACILITY_ID = "facility_id", SAMPLE_TYPE = "sample_type",
                     SAMPLE_CAT = "sample_cat", SAMPLE_PT_ID = "sample_pt_id", YES = "yes",
@@ -291,8 +294,6 @@ public class AuxDataHelperBean {
             copyGeneralFields(sm, auxGrp, e);
             if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
                 copyEnvironmentalFields(accession, getSampleEnvironmental(sm), auxGrp, e);
-            else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-                copyPrivateWellFields(accession, getSamplePrivateWell(sm), auxGrp, e);
             else if (Constants.domain().SDWIS.equals(data.getDomain()))
                 copySDWISFields(accession, getSampleSDWIS(sm), auxGrp, e);
             auxGrps.remove(domainGrpId);
@@ -334,8 +335,6 @@ public class AuxDataHelperBean {
         data = getSample(sm);
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
             fillEnvironmentalAuxData(sm, auxiliary, anaSet);
-        else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-            fillPrivateWellAuxData(sm, auxiliary, anaSet);
         else if (Constants.domain().SDWIS.equals(data.getDomain()))
             fillSdwisAuxData(sm, auxiliary, anaSet);
     }
@@ -457,41 +456,6 @@ public class AuxDataHelperBean {
                 env.setDescription(data.getValue());
             } else {
                 copyAddressFields(accession, data, e, extId, env.getLocationAddress());
-            }
-        }
-    }
-
-    /**
-     * Sets values of private well fields from the corresponding aux data in the
-     * list. Adds warnings or throws exception for invalid data.
-     */
-    private void copyPrivateWellFields(Integer accession, SamplePrivateWellViewDO well,
-                                       HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
-        Integer w;
-        String extId;
-
-        for (AuxDataViewDO data : grp.values()) {
-            extId = data.getAnalyteExternalId();
-            if (LOCATION.equals(extId)) {
-                well.setLocation(data.getValue());
-            } else if (OWNER.equals(extId)) {
-                well.setOwner(data.getValue());
-            } else if (COLLECTOR.equals(extId)) {
-                well.setCollector(data.getValue());
-            } else if (WELL_NUMBER.equals(extId)) {
-                try {
-                    w = null;
-                    if (data.getValue() != null)
-                        w = new Integer(data.getValue());
-                    well.setWellNumber(w);
-                } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(accession,
-                                                                                    "well number",
-                                                                                    data.getValue())));
-                }
-            } else {
-                copyAddressFields(accession, data, e, extId, well.getLocationAddress());
             }
         }
     }
@@ -655,8 +619,6 @@ public class AuxDataHelperBean {
         name = null;
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
             name = SAMPLE_ENV_AUX_DATA;
-        else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-            name = SAMPLE_WELL_AUX_DATA;
         else if (Constants.domain().SDWIS.equals(data.getDomain()))
             name = SAMPLE_SDWIS_AUX_DATA;
 
@@ -849,78 +811,6 @@ public class AuxDataHelperBean {
             } else if (DESCRIPTION.equals(extId)) {
                 data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                 data.setValue(env.getDescription());
-            } else if (PROJECT_NAME.equals(extId)) {
-                if (getProjects(sm) != null) {
-                    for (SampleProjectViewDO p : getProjects(sm)) {
-                        if ("Y".equals(p.getIsPermanent())) {
-                            data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                            data.setValue(p.getProjectName());
-                            break;
-                        }
-                    }
-                }
-            } else if (ORIG_SAMPLE_NUMBER.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_NUMERIC);
-                data.setValue(sample.getAccessionNumber().toString());
-            }
-        }
-    }
-
-    /**
-     * Fill the aux data of an order with the private well data of a sample,
-     * based on a list of aux data external IDs to copy. If the aux data is
-     * already filled with data, don't fill it with new data.
-     */
-    private void fillPrivateWellAuxData(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary,
-                                        HashSet<String> analytes) {
-        String extId;
-        SamplePrivateWellViewDO well;
-        SampleDO sample;
-        AddressDO address;
-
-        well = getSamplePrivateWell(sm);
-        address = well.getLocationAddress();
-        sample = getSample(sm);
-        for (AuxDataViewDO data : auxiliary) {
-            extId = data.getAnalyteExternalId();
-            if ( !analytes.contains(extId) || data.getValue() != null)
-                continue;
-            if (SMPL_COLLECTED_DATE.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_DATE);
-                data.setValue(DataBaseUtil.toString(sample.getCollectionDate()));
-            } else if (SMPL_COLLECTED_TIME.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_TIME);
-                data.setValue(DataBaseUtil.toString(sample.getCollectionTime()));
-            } else if (SMPL_CLIENT_REF.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                data.setValue(sample.getClientReference());
-            } else if (LOCATION.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                data.setValue(well.getLocation());
-            } else if (LOC_MULT_UNIT.equals(extId) && address != null) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_UPPER);
-                data.setValue(address.getMultipleUnit());
-            } else if (LOC_STREET_ADDRESS.equals(extId) && address != null) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_UPPER);
-                data.setValue(address.getStreetAddress());
-            } else if (LOC_CITY.equals(extId) && address != null) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_UPPER);
-                data.setValue(address.getCity());
-            } else if (LOC_STATE.equals(extId) && address != null) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_UPPER);
-                data.setValue(address.getState());
-            } else if (LOC_ZIP_CODE.equals(extId) && address != null) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                data.setValue(address.getZipCode());
-            } else if (OWNER.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                data.setValue(well.getOwner());
-            } else if (COLLECTOR.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
-                data.setValue(well.getCollector());
-            } else if (WELL_NUMBER.equals(extId)) {
-                data.setTypeId(Constants.dictionary().AUX_NUMERIC);
-                data.setValue(DataBaseUtil.toString(well.getWellNumber()));
             } else if (PROJECT_NAME.equals(extId)) {
                 if (getProjects(sm) != null) {
                     for (SampleProjectViewDO p : getProjects(sm)) {

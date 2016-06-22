@@ -11,18 +11,6 @@
        so.organization_id = o.id and
        so.type_id = (select id from dictionary where system_name = 'org_report_to') and
        s.domain != 'W' and
-       s.id = $P{SAMPLE_ID}
-UNION
-SELECT o.name report_to_name
-  FROM sample s, sample_private_well spw, organization o
- WHERE spw.sample_id = s.id and
-       spw.organization_id = o.id and
-       s.id = $P{SAMPLE_ID}
-UNION
-SELECT spw.report_to_name
-  FROM sample s, sample_private_well spw
- WHERE spw.sample_id = s.id and
-       spw.organization_id is null and
        s.id = $P{SAMPLE_ID}]]>
 	</queryString>
 	<field name="report_to_name" class="java.lang.String"/>

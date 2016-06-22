@@ -73,7 +73,6 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestResultDO;
@@ -90,7 +89,6 @@ import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -168,7 +166,6 @@ public class WorksheetCompletionBean {
         SampleItemManager siManager;
         SampleManager sManager;
         SampleOrganizationViewDO soVDO;
-        SamplePrivateWellViewDO spwVDO;
         SimpleDateFormat dateTimeFormat;
         WorksheetAnalysisDO waDO, waLinkDO;
         WorksheetAnalysisManager waManager;
@@ -292,24 +289,6 @@ public class WorksheetCompletionBean {
                             if (description.length() > 0)
                                 description += " ";
                             description += "[rpt]" + soVDO.getOrganizationName();
-                        }
-                    } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample()
-                                                                             .getDomain())) {
-                        spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
-                        if (spwVDO.getLocation() != null &&
-                            spwVDO.getLocation().length() > 0)
-                            description = "[loc]" + spwVDO.getLocation();
-                        if (spwVDO.getOrganizationId() != null &&
-                            spwVDO.getOrganization().getName() != null &&
-                            spwVDO.getOrganization().getName().length() > 0) {
-                            if (description.length() > 0)
-                                description += " ";
-                            description += "[rpt]" + spwVDO.getOrganization().getName();
-                        } else if (spwVDO.getReportToName() != null &&
-                                   spwVDO.getReportToName().length() > 0) {
-                            if (description.length() > 0)
-                                description += " ";
-                            description += "[rpt]" + spwVDO.getReportToName();
                         }
                     }
 

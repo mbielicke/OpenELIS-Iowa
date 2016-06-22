@@ -184,17 +184,12 @@ public class TurnaroundWarningNotificationBean {
                     anaStatus = dictDO.getEntry();
 
                     orgName = "";
-                    if (Constants.domain().PRIVATEWELL.equals(sMan.getSample().getDomain())) {
-                        if (sMan.getSamplePrivateWell().getOrganization() != null)
-                            orgName = sMan.getSamplePrivateWell().getOrganization().getName();
-                    } else {
-                        sampleOrgs = SampleManager1Accessor.getOrganizations(sMan);
-                        if (sampleOrgs != null) {
-                            for (SampleOrganizationViewDO soVDO : sampleOrgs) {
-                                if (Constants.dictionary().ORG_REPORT_TO.equals(soVDO.getTypeId())) {
-                                    orgName = soVDO.getOrganizationName();
-                                    break;
-                                }
+                    sampleOrgs = SampleManager1Accessor.getOrganizations(sMan);
+                    if (sampleOrgs != null) {
+                        for (SampleOrganizationViewDO soVDO : sampleOrgs) {
+                            if (Constants.dictionary().ORG_REPORT_TO.equals(soVDO.getTypeId())) {
+                                orgName = soVDO.getOrganizationName();
+                                break;
                             }
                         }
                     }

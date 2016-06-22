@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -47,7 +46,6 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
-import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -69,49 +67,10 @@ public class SampleBean {
 
     private static final SampleMeta meta = new SampleMeta();
 
-    private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
-
-    static {
-        wellOrgFieldMap = new HashMap<String, String>();
-        wellOrgFieldMap.put(SampleMeta.getWellOrganizationName(),
-                            SampleMeta.getWellOrganizationName());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressMultipleUnit(),
-                            SampleMeta.getWellReportToAddressMultipleUnit());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressStreetAddress(),
-                            SampleMeta.getWellReportToAddressStreetAddress());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressCity(),
-                            SampleMeta.getWellReportToAddressCity());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressState(),
-                            SampleMeta.getWellReportToAddressState());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressZipCode(),
-                            SampleMeta.getWellReportToAddressZipCode());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressWorkPhone(),
-                            SampleMeta.getWellReportToAddressWorkPhone());
-        wellOrgFieldMap.put(SampleMeta.getWellReportToAddressFaxPhone(),
-                            SampleMeta.getWellReportToAddressFaxPhone());
-
-        reportToAddressFieldMap = new HashMap<String, String>();
-        reportToAddressFieldMap.put(SampleMeta.getWellReportToName(),
-                                    SampleMeta.getWellReportToName());
-        reportToAddressFieldMap.put(SampleMeta.getAddressMultipleUnit(),
-                                    SampleMeta.getAddressMultipleUnit());
-        reportToAddressFieldMap.put(SampleMeta.getAddressStreetAddress(),
-                                    SampleMeta.getAddressStreetAddress());
-        reportToAddressFieldMap.put(SampleMeta.getAddressCity(), SampleMeta.getAddressCity());
-        reportToAddressFieldMap.put(SampleMeta.getAddressState(), SampleMeta.getAddressState());
-        reportToAddressFieldMap.put(SampleMeta.getAddressZipCode(), SampleMeta.getAddressZipCode());
-        reportToAddressFieldMap.put(SampleMeta.getAddressWorkPhone(),
-                                    SampleMeta.getAddressWorkPhone());
-        reportToAddressFieldMap.put(SampleMeta.getAddressFaxPhone(),
-                                    SampleMeta.getAddressFaxPhone());
-    }
-
     public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        String queryString, whereForFrom, sampleWhere, privateWellWhere;
         Query query;
         QueryBuilderV2 builder;
         List list;
-        ArrayList<QueryData> wellFields;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -120,53 +79,25 @@ public class SampleBean {
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
-        whereForFrom = builder.getWhereClause();
-
-        // for the well screen we have to link to the org table and the address
-        // table
-        // with the same textboxes. So if they queried by these fields we need
-        // to add
-        // a link to the 2nd table
-        wellFields = new ArrayList<QueryData>();
-        privateWellWhere = createWhereFromWellFields(fields, wellFields);
-        builder.clearWhereClause();
-        builder.constructWhere(fields);
         /*
          * make sure that only the aux data and/or attachments linked to samples
          * is queried
          */
-        if (whereForFrom.indexOf("auxData.") > -1)
+        if (builder.getWhereClause().indexOf("auxData.") > -1)
             builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
                              Constants.table().SAMPLE);
         if (builder.getWhereClause().indexOf("attachmentItem.") > -1)
             builder.addWhere(SampleMeta.getAttachmentItemReferenceTableId() + " = " +
                              Constants.table().SAMPLE);
-        sampleWhere = builder.getWhereClause();
 
-        queryString = builder.getSelectClause() + builder.getFromClause(whereForFrom) +
-                      sampleWhere + privateWellWhere + builder.getOrderBy();
-
-        query = manager.createQuery(queryString);
-        if (max > 0)
-            query.setMaxResults(first + max);
-
-        // add the well fields we created
-        fields.addAll(wellFields);
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
 
-        try {
-            list = query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
+        list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-
-        if (max > 0)
-            list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
-
+        list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
@@ -542,8 +473,7 @@ public class SampleBean {
         if (d == null ||
             ( !Constants.domain().ANIMAL.equals(d) && !Constants.domain().ENVIRONMENTAL.equals(d) &&
              !Constants.domain().CLINICAL.equals(d) && !Constants.domain().NEONATAL.equals(d) &&
-             !Constants.domain().PRIVATEWELL.equals(d) && !Constants.domain().PT.equals(d) &&
-             !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
+             !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
             e.add(new FormErrorException(Messages.get().sample_noDomainException(accession)));
         // dates
         ent = data.getEnteredDate();
@@ -595,53 +525,4 @@ public class SampleBean {
         if (e.size() > 0)
             throw e;
     }
-
-    private String createWhereFromWellFields(ArrayList<QueryData> fields,
-                                             ArrayList<QueryData> wellFields) {
-        int i;
-        String whereClause;
-        QueryFieldUtil qField;
-        QueryData field;
-
-        whereClause = "";
-        //
-        // we extract the fields that belong only to sample private well
-        // and its related organization/report to; we need to remove these
-        // fields from the list sent to the bean because we don't want them to
-        // be included in the where clause created from those fields, because we
-        // would get repetitive and thus erroneous clauses
-        //
-        for (i = 0; i < fields.size(); i++ ) {
-            field = fields.get(i);
-            qField = new QueryFieldUtil();
-            qField.parse(field.getQuery());
-
-            if (wellOrgFieldMap.get(field.getKey()) != null) {
-                wellFields.add(fields.remove(i));
-                i-- ;
-            } else if (reportToAddressFieldMap.get(field.getKey()) != null) {
-                wellFields.add(fields.remove(i));
-                i-- ;
-            }
-        }
-
-        //
-        // we create a where clause from the fields obtained from the previous
-        // code
-        //
-        for (i = 0; i < wellFields.size(); i++ ) {
-            field = wellFields.get(i);
-            qField = new QueryFieldUtil();
-            qField.parse(field.getQuery());
-
-            if (i % 2 == 0) {
-                whereClause += " and ( " + QueryBuilderV2.getQueryNoOperand(qField, field.getKey());
-            } else {
-                whereClause += " or " + QueryBuilderV2.getQueryNoOperand(qField, field.getKey()) +
-                               " ) ";
-            }
-        }
-        return whereClause;
-    }
-
 }
