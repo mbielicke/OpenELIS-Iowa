@@ -494,7 +494,6 @@ public class SampleManagerProxy {
          * only validate order for domains that use send-out orders 
          */
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-            Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
             Constants.domain().SDWIS.equals(data.getDomain())) {
             order = EJBFactory.getIOrder().fetchById(data.getOrderId());
             if (order == null || !IOrderManager.TYPE_SEND_OUT.equals(order.getType()))

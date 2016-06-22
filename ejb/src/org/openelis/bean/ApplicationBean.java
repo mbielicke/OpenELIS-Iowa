@@ -90,7 +90,7 @@ public class ApplicationBean {
                         "patient_relation_guardian", "patient_relation_self", "pos_duplicate",
                         "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
                         "pos_last_of_run", "pos_last_of_subset_and_run", "pos_reagent_media",
-                        "private_well", "profile_order_in", "pt", "pt_sample", "qaevent_internal",
+                        "profile_order_in", "pt", "pt_sample", "qaevent_internal",
                         "qaevent_override", "qaevent_warning", "qc_blank", "qc_duplicate",
                         "qc_spike", "quick_entry", "receivable_reportto_email",
                         "released_reportto_email", "org_hold_sample", "profile_air_string",
@@ -213,7 +213,6 @@ public class ApplicationBean {
         Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map,
                                                                    "pos_last_of_subset_and_run");
         Constants.dictionary().POS_REAGENT_MEDIA = dictId(map, "pos_reagent_media");
-        Constants.dictionary().PRIVATE_WELL = dictId(map, "private_well");
         Constants.dictionary().PROFILE_ORDER_IN = dictId(map, "profile_order_in");
         Constants.dictionary().PT = dictId(map, "pt");
         Constants.dictionary().PROFILE_AIR_STRING = dictId(map, "profile_air_string");

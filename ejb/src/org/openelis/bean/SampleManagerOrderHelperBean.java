@@ -25,8 +25,23 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.IOrderManager1Accessor.*;
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.IOrderManager1Accessor.getAnalytes;
+import static org.openelis.manager.IOrderManager1Accessor.getAuxilliary;
+import static org.openelis.manager.IOrderManager1Accessor.getContainers;
+import static org.openelis.manager.IOrderManager1Accessor.getOrganizations;
+import static org.openelis.manager.IOrderManager1Accessor.getSampleNote;
+import static org.openelis.manager.IOrderManager1Accessor.getTests;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisInternalNote;
+import static org.openelis.manager.SampleManager1Accessor.addItem;
+import static org.openelis.manager.SampleManager1Accessor.addOrganization;
+import static org.openelis.manager.SampleManager1Accessor.addSampleInternalNote;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getItems;
+import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
+import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,13 +62,13 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.EOrderBodyDO;
 import org.openelis.domain.ExchangeExternalTermViewDO;
-import org.openelis.domain.IdFirstLastNameVO;
-import org.openelis.domain.IdVO;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.IOrderContainerDO;
 import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.domain.IOrderTestAnalyteViewDO;
 import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IdFirstLastNameVO;
+import org.openelis.domain.IdVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.PatientDO;
@@ -64,7 +79,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.exception.ParseException;
@@ -465,7 +479,6 @@ public class SampleManagerOrderHelperBean {
         OrganizationDO repOrg, billOrg, secOrg, shipOrg;
         IOrderOrganizationViewDO orepOrg, obillOrg;
         ArrayList<IOrderOrganizationViewDO> osecOrgs;
-        SamplePrivateWellViewDO well;
 
         /*
          * for display
@@ -517,22 +530,10 @@ public class SampleManagerOrderHelperBean {
         }
 
         if (repOrg != null) {
-            /*
-             * for private well domain, the report-to is set in the domain
-             * record itself and not linked through sample organization; for
-             * other domains, add a report-to organization to the sample
-             */
-            if (Constants.domain().PRIVATEWELL.equals(getSample(sm).getDomain())) {
-                well = getSamplePrivateWell(sm);
-                well.setOrganizationId(repOrg.getId());
-                well.setOrganization(repOrg);
-                well.setReportToAttention(attention);
-            } else {
-                addOrganization(sm, createSampleOrganization(repOrg,
-                                                             sm.getNextUID(),
-                                                             attention,
-                                                             Constants.dictionary().ORG_REPORT_TO));
-            }
+            addOrganization(sm, createSampleOrganization(repOrg,
+                                                         sm.getNextUID(),
+                                                         attention,
+                                                         Constants.dictionary().ORG_REPORT_TO));
             checkIsHoldRefuseSample(repOrg, e);
         }
 

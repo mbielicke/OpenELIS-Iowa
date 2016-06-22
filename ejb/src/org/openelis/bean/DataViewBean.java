@@ -59,7 +59,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -73,7 +72,6 @@ import org.openelis.domain.DataViewResultFetchVO;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
@@ -84,7 +82,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.TestAnalyteDataViewVO;
@@ -144,9 +141,6 @@ public class DataViewBean {
 
     @EJB
     private SampleEnvironmentalBean         sampleEnvironmental;
-
-    @EJB
-    private SamplePrivateWellBean           samplePrivateWell;
 
     @EJB
     private SampleSDWISBean                 sampleSDWIS;
@@ -450,18 +444,6 @@ public class DataViewBean {
                                                  tempList.size() +
                                                  " results, but the limit is 5000.");
             list.addAll(tempList);
-
-            builder.clearWhereClause();
-
-            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
-            builder.addWhere(SampleWebMeta.getItemId() + "=" +
-                             SampleWebMeta.getAnalysisSampleItemId());
-            tempList = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields);
-            if (tempList.size() > 5000)
-                throw new InconsistencyException("Query too big. Your search returned " +
-                                                 tempList.size() +
-                                                 " results, but the limit is 5000.");
-            list.addAll(tempList);
         } else {
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
@@ -574,7 +556,7 @@ public class DataViewBean {
 
     private ReportStatus runReport(DataViewVO data, String moduleName,
                                    boolean showReportableColumnsOnly) throws Exception {
-        boolean excludeResults, excludeAuxData, runForWeb, addSampleCells, addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells, addClinicalCells;
+        boolean excludeResults, excludeAuxData, runForWeb, addSampleCells, addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addSDWISCells, addClinicalCells;
         ArrayList<String> allCols, cols;
         ArrayList<Integer> unselAnalytes;
         OutputStream out;
@@ -616,7 +598,7 @@ public class DataViewBean {
             }
         }
 
-        addSampleCells = addOrgCells = addItemCells = addAnalysisCells = addEnvCells = addWellCells = addSDWISCells = addClinicalCells = false;
+        addSampleCells = addOrgCells = addItemCells = addAnalysisCells = addEnvCells = addSDWISCells = addClinicalCells = false;
         allCols = new ArrayList<String>();
         //
         // get the labels to be displayed in the headers for the various fields
@@ -651,12 +633,6 @@ public class DataViewBean {
             addEnvCells = true;
         }
 
-        cols = getPrivateWellHeaders(data);
-        if (cols.size() > 0) {
-            allCols.addAll(cols);
-            addWellCells = true;
-        }
-
         cols = getSDWISHeaders(data);
         if (cols.size() > 0) {
             allCols.addAll(cols);
@@ -679,7 +655,6 @@ public class DataViewBean {
         if (excludeResults && excludeAuxData) {
             noResAuxList = getResults(addEnvCells,
                                       addSDWISCells,
-                                      addWellCells,
                                       addClinicalCells,
                                       moduleName,
                                       builder,
@@ -732,7 +707,6 @@ public class DataViewBean {
 
                     resultList = getResults(addEnvCells,
                                             addSDWISCells,
-                                            addWellCells,
                                             addClinicalCells,
                                             moduleName,
                                             builder,
@@ -788,7 +762,6 @@ public class DataViewBean {
 
                     auxDataList = getAuxData(addEnvCells,
                                              addSDWISCells,
-                                             addWellCells,
                                              addClinicalCells,
                                              moduleName,
                                              builder,
@@ -820,7 +793,6 @@ public class DataViewBean {
                          addItemCells,
                          addAnalysisCells,
                          addEnvCells,
-                         addWellCells,
                          addSDWISCells,
                          addClinicalCells,
                          data);
@@ -999,7 +971,7 @@ public class DataViewBean {
                                      boolean showReportableColumnsOnly, boolean addSampleCells,
                                      boolean addOrgCells, boolean addItemCells,
                                      boolean addAnalysisCells, boolean addEnvCells,
-                                     boolean addWellCells, boolean addSDWISCells,
+                                     boolean addSDWISCells,
                                      boolean addClinicalCells, DataViewVO data) throws Exception {
         boolean excludeOverride, excludeResults, excludeAuxData, sampleOverriden, anaOverriden, addResultRow, addAuxDataRow, addNoResAuxRow;
         int rowIndex, resIndex, auxIndex, noResAuxIndex, numResults, numAuxVals, numNoResAuxVals, i, lastColumn;
@@ -1019,7 +991,6 @@ public class DataViewBean {
         SampleProjectViewDO proj;
         SampleOrganizationViewDO org;
         SampleEnvironmentalDO env;
-        SamplePrivateWellViewDO well;
         SampleSDWISViewDO sdwis;
         SampleClinicalViewDO clinical;
         PatientDO patientDO;
@@ -1076,7 +1047,6 @@ public class DataViewBean {
         sam = null;
         proj = null;
         org = null;
-        well = null;
         env = null;
         sdwis = null;
         clinical = null;
@@ -1207,7 +1177,6 @@ public class DataViewBean {
                 proj = null;
                 org = null;
                 env = null;
-                well = null;
                 sdwis = null;
                 clinical = null;
                 collDateTime = null;
@@ -1362,46 +1331,24 @@ public class DataViewBean {
 
             if (addOrgCells) {
                 /*
-                 * add cells for the selected fields belonging to sample
-                 * organization or the organization directly linked to a private
-                 * well sample
+                 * add cells for the selected fields
                  */
-                if ("W".equals(domain)) {
-                    if (well == null)
-                        well = samplePrivateWell.fetchBySampleId(sampleId);
-                    if (addResultRow)
-                        addPrivateWellOrganizationCells(resRow,
-                                                        resRow.getPhysicalNumberOfCells(),
-                                                        data,
-                                                        well);
-                    if (addAuxDataRow)
-                        addPrivateWellOrganizationCells(auxRow,
-                                                        auxRow.getPhysicalNumberOfCells(),
-                                                        data,
-                                                        well);
-                    if (addNoResAuxRow)
-                        addPrivateWellOrganizationCells(noResAuxRow,
-                                                        noResAuxRow.getPhysicalNumberOfCells(),
-                                                        data,
-                                                        well);
-                } else {
-                    if (org == null) {
-                        try {
-                            org = sampleOrganization.fetchReportToBySampleId(sampleId);
-                        } catch (NotFoundException e) {
-                            // ignore
-                        }
+                if (org == null) {
+                    try {
+                        org = sampleOrganization.fetchReportToBySampleId(sampleId);
+                    } catch (NotFoundException e) {
+                        // ignore
                     }
-                    if (addResultRow)
-                        addOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, org);
-                    if (addAuxDataRow)
-                        addOrganizationCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, org);
-                    if (addNoResAuxRow)
-                        addOrganizationCells(noResAuxRow,
-                                             noResAuxRow.getPhysicalNumberOfCells(),
-                                             data,
-                                             org);
                 }
+                if (addResultRow)
+                    addOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, org);
+                if (addAuxDataRow)
+                    addOrganizationCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, org);
+                if (addNoResAuxRow)
+                    addOrganizationCells(noResAuxRow,
+                                         noResAuxRow.getPhysicalNumberOfCells(),
+                                         data,
+                                         org);
             }
 
             if (addItemCells) {
@@ -1429,8 +1376,7 @@ public class DataViewBean {
             if (addAnalysisCells) {
                 /*
                  * add cells for the selected fields belonging to sample
-                 * organization or the organization directly linked to a private
-                 * well sample
+                 * organization
                  */
                 if (addResultRow || addNoResAuxRow) {
                     if ( !analysisId.equals(prevAnalysisId)) {
@@ -1575,20 +1521,6 @@ public class DataViewBean {
                                           noResAuxRow.getPhysicalNumberOfCells(),
                                           data,
                                           env);
-            }
-
-            if (addWellCells) {
-                if ("W".equals(domain) && well == null)
-                    well = samplePrivateWell.fetchBySampleId(sampleId);
-                if (addResultRow)
-                    addPrivateWellCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
-                if (addAuxDataRow)
-                    addPrivateWellCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, well);
-                if (addNoResAuxRow)
-                    addPrivateWellCells(noResAuxRow,
-                                        noResAuxRow.getPhysicalNumberOfCells(),
-                                        data,
-                                        well);
             }
 
             if (addSDWISCells) {
@@ -2106,36 +2038,6 @@ public class DataViewBean {
         return headers;
     }
 
-    private ArrayList<String> getPrivateWellHeaders(DataViewVO data) {
-        ArrayList<String> headers;
-
-        headers = new ArrayList<String>();
-        if ("Y".equals(data.getSamplePrivateWellOwner()))
-            headers.add(Messages.get().owner());
-        if ("Y".equals(data.getSamplePrivateWellCollector()))
-            headers.add(Messages.get().collector());
-        if ("Y".equals(data.getSamplePrivateWellWellNumber()))
-            headers.add(Messages.get().wellNum());
-        if ("Y".equals(data.getSamplePrivateWellReportToAddressWorkPhone()))
-            headers.add(Messages.get().phone());
-        if ("Y".equals(data.getSamplePrivateWellReportToAddressFaxPhone()))
-            headers.add(Messages.get().faxNumber());
-        if ("Y".equals(data.getSamplePrivateWellLocation()))
-            headers.add(Messages.get().location());
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressMultipleUnit()))
-            headers.add(Messages.get().locationAptSuite());
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressStreetAddress()))
-            headers.add(Messages.get().locationAddress());
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressCity()))
-            headers.add(Messages.get().locationCity());
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressState()))
-            headers.add(Messages.get().locationState());
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressZipCode()))
-            headers.add(Messages.get().locationZipCode());
-
-        return headers;
-    }
-
     private ArrayList<String> getSDWISHeaders(DataViewVO data) {
         ArrayList<String> headers;
 
@@ -2284,57 +2186,6 @@ public class DataViewBean {
             cell = row.createCell(startCol++ );
             if (org != null)
                 cell.setCellValue(org.getOrganizationZipCode());
-        }
-    }
-
-    private void addPrivateWellOrganizationCells(Row row, int startCol, DataViewVO data,
-                                                 SamplePrivateWellViewDO spw) {
-        Cell cell;
-        OrganizationDO org;
-        AddressDO addr;
-
-        org = spw.getOrganization();
-
-        if ("Y".equals(data.getOrganizationId())) {
-            cell = row.createCell(startCol++ );
-            if (org != null)
-                cell.setCellValue(org.getId());
-        }
-        if ("Y".equals(data.getOrganizationName())) {
-            cell = row.createCell(startCol++ );
-            cell.setCellValue(org != null ? org.getName() : spw.getReportToName());
-        }
-        if ("Y".equals(data.getOrganizationAttention())) {
-            cell = row.createCell(startCol++ );
-            cell.setCellValue(spw.getReportToAttention());
-        }
-
-        addr = (org != null ? org.getAddress() : spw.getReportToAddress());
-
-        if ("Y".equals(data.getOrganizationAddressMultipleUnit())) {
-            cell = row.createCell(startCol++ );
-            if (addr != null)
-                cell.setCellValue(addr.getMultipleUnit());
-        }
-        if ("Y".equals(data.getOrganizationAddressAddress())) {
-            cell = row.createCell(startCol++ );
-            if (addr != null)
-                cell.setCellValue(addr.getStreetAddress());
-        }
-        if ("Y".equals(data.getOrganizationAddressCity())) {
-            cell = row.createCell(startCol++ );
-            if (addr != null)
-                cell.setCellValue(addr.getCity());
-        }
-        if ("Y".equals(data.getOrganizationAddressState())) {
-            cell = row.createCell(startCol++ );
-            if (addr != null)
-                cell.setCellValue(addr.getState());
-        }
-        if ("Y".equals(data.getOrganizationAddressZipCode())) {
-            cell = row.createCell(startCol++ );
-            if (addr != null)
-                cell.setCellValue(addr.getZipCode());
         }
     }
 
@@ -2573,89 +2424,6 @@ public class DataViewBean {
             cell = row.createCell(startCol++ );
             if (env != null)
                 cell.setCellValue(env.getDescription());
-        }
-    }
-
-    private void addPrivateWellCells(Row row, int startCol, DataViewVO data,
-                                     SamplePrivateWellViewDO well) {
-        Integer wn;
-        Cell cell;
-        AddressDO repTo, loc;
-
-        /*
-         * the SamplePrivateWellViewDO can be null if a sample is not a private
-         * well sample but the user has requested to view private well fields
-         * and so we need to add empty cells in the columns for those fields,
-         * because otherwise the data in the cells to the right of those columns
-         * will be shifted to the left
-         */
-        if ("Y".equals(data.getSamplePrivateWellOwner())) {
-            cell = row.createCell(startCol++ );
-            if (well != null)
-                cell.setCellValue(well.getOwner());
-        }
-        if ("Y".equals(data.getSamplePrivateWellCollector())) {
-            cell = row.createCell(startCol++ );
-            if (well != null)
-                cell.setCellValue(well.getCollector());
-        }
-        if ("Y".equals(data.getSamplePrivateWellWellNumber())) {
-            cell = row.createCell(startCol++ );
-            if (well != null) {
-                wn = well.getWellNumber();
-                if (wn != null)
-                    cell.setCellValue(wn);
-            }
-        }
-
-        repTo = null;
-        if (well != null)
-            repTo = well.getReportToAddress();
-
-        if ("Y".equals(data.getSamplePrivateWellReportToAddressWorkPhone())) {
-            cell = row.createCell(startCol++ );
-            if (repTo != null)
-                cell.setCellValue(repTo.getWorkPhone());
-        }
-        if ("Y".equals(data.getSamplePrivateWellReportToAddressFaxPhone())) {
-            cell = row.createCell(startCol++ );
-            if (repTo != null)
-                cell.setCellValue(repTo.getFaxPhone());
-        }
-        if ("Y".equals(data.getSamplePrivateWellLocation())) {
-            cell = row.createCell(startCol++ );
-            if (well != null)
-                cell.setCellValue(well.getLocation());
-        }
-
-        loc = null;
-        if (well != null)
-            loc = well.getLocationAddress();
-
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressMultipleUnit())) {
-            cell = row.createCell(startCol++ );
-            if (loc != null)
-                cell.setCellValue(loc.getMultipleUnit());
-        }
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressStreetAddress())) {
-            cell = row.createCell(startCol++ );
-            if (loc != null)
-                cell.setCellValue(loc.getStreetAddress());
-        }
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressCity())) {
-            cell = row.createCell(startCol++ );
-            if (loc != null)
-                cell.setCellValue(loc.getCity());
-        }
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressState())) {
-            cell = row.createCell(startCol++ );
-            if (loc != null)
-                cell.setCellValue(loc.getState());
-        }
-        if ("Y".equals(data.getSamplePrivateWellLocationAddressZipCode())) {
-            cell = row.createCell(startCol++ );
-            if (loc != null)
-                cell.setCellValue(loc.getZipCode());
         }
     }
 
@@ -2926,7 +2694,6 @@ public class DataViewBean {
 
     private ArrayList<DataViewResultFetchVO> getResults(boolean addEnvCells,
                                                         boolean addSDWISCells,
-                                                        boolean addWellCells,
                                                         boolean addClinicalCells,
                                                         String moduleName,
                                                         QueryBuilderV2 builder,
@@ -2945,23 +2712,14 @@ public class DataViewBean {
             list = fetchResults(moduleName, builder, analyteResultMap, unselAnalytes, data);
         } else if (addEnvCells || addSDWISCells || addClinicalCells) {
             /*
-             * if the user chose to see data belonging to a domain other than
-             * private well then we only run the query to look for samples
+             * if the user chose to see data belonging to a domain then we 
+             * only run the query to look for samples
              * having a sample organization of type report to with a name
              * matching the query
              */
             reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
-            list = fetchResults(moduleName, builder, analyteResultMap, unselAnalytes, data);
-        } else if (addWellCells) {
-            /*
-             * if the user chose to see data belonging to the domain private
-             * well then we only run the query to look for private well samples
-             * having their report to as an organization with a name matching
-             * the query
-             */
-            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             list = fetchResults(moduleName, builder, analyteResultMap, unselAnalytes, data);
         } else {
             /*
@@ -2974,13 +2732,6 @@ public class DataViewBean {
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list.addAll(fetchResults(moduleName, builder, analyteResultMap, unselAnalytes, data));
-
-            builder.clearWhereClause();
-
-            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
-            list.addAll(fetchResults(moduleName, builder, analyteResultMap, unselAnalytes, data));
-
-            Collections.sort(list, comparator);
         }
 
         return DataBaseUtil.toArrayList(list);
@@ -2988,7 +2739,6 @@ public class DataViewBean {
 
     private ArrayList<DataViewAuxDataFetchVO> getAuxData(boolean addEnvCells,
                                                          boolean addSDWISCells,
-                                                         boolean addWellCells,
                                                          boolean addClinicalCells,
                                                          String moduleName,
                                                          QueryBuilderV2 builder,
@@ -3016,15 +2766,6 @@ public class DataViewBean {
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list = fetchAuxData(moduleName, builder, auxFieldValueMap, unselAnalytes, data);
-        } else if (addWellCells) {
-            /*
-             * if the user chose to see data belonging to the domain private
-             * well then we only run the query to look for private well samples
-             * having their report to as an organization with a name matching
-             * the query
-             */
-            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
-            list = fetchAuxData(moduleName, builder, auxFieldValueMap, unselAnalytes, data);
         } else {
             /*
              * if the user did not choose a domain then we run a query for each
@@ -3036,13 +2777,6 @@ public class DataViewBean {
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, unselAnalytes, data));
-
-            builder.clearWhereClause();
-
-            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
-            list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, unselAnalytes, data));
-
-            Collections.sort(list, comparator);
         }
 
         return DataBaseUtil.toArrayList(list);

@@ -44,7 +44,7 @@ FROM
       left join address ad on ad.id = o.address_id
       left join dictionary d on d.id = so.type_id and d.system_name = 'org_report_to'
 WHERE
-      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain != 'W'
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}
       $P!{TEST} $P!{SECTION}
 
 UNION
@@ -63,77 +63,7 @@ FROM
       left join address ad on ad.id = o.address_id
       left join dictionary d on d.id = so.type_id and d.system_name = 'org_report_to'
 WHERE
-      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain != 'W'
-      $P!{TEST} $P!{SECTION}
-
-UNION
-
-SELECT distinct
-      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
-FROM
-      sample s
-      join sample_private_well so on so.sample_id = s.id
-      join sample_item si on si.sample_id = s.id
-      join analysis a on a.sample_item_id = si.id
-      join analysis_qaevent aq on aq.analysis_id = a.id
-      join test t on t.id = a.test_id
-      join section se on se.id = a.section_id
-      join organization o on o.id = so.organization_id
-      join address ad on ad.id = o.address_id
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
-      $P!{TEST} $P!{SECTION}
-
-UNION
-
-SELECT distinct
-      o.name as o_name, o.id as o_id, ad.city, ad.state, s.accession_number, s.id as s_id
-FROM
-      sample s
-      join sample_private_well so on so.sample_id = s.id
-      join sample_item si on si.sample_id = s.id
-      join analysis a on a.sample_item_id = si.id
-      join sample_qaevent aq on aq.sample_id = s.id
-      join test t on t.id = a.test_id
-      join section se on se.id = a.section_id
-      join organization o on o.id = so.organization_id
-      join address ad on ad.id = o.address_id
-WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
-      $P!{TEST} $P!{SECTION}
-
-UNION
-
-SELECT distinct
-      'private' as o_name, so.organization_id as o_id, 'pvt_city' as city, 'pvt_state' as state,
-      s.accession_number, s.id as s_id
-FROM
-      sample s
-      join sample_private_well so on so.sample_id = s.id
-      join sample_item si on si.sample_id = s.id
-      join analysis a on a.sample_item_id = si.id
-      join analysis_qaevent aq on aq.analysis_id = a.id
-      join test t on t.id = a.test_id
-      join section se on se.id = a.section_id
-      join address ad on ad.id = so.report_to_address_id
-WHERE
-      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
-      $P!{TEST} $P!{SECTION}
-
-UNION
-
-SELECT distinct
-      'private' as o_name, so.organization_id as o_id, 'pvt_city' as city, 'pvt_state' as state,
-      s.accession_number, s.id as s_id
-FROM
-      sample s
-      join sample_private_well so on so.sample_id = s.id
-      join sample_item si on si.sample_id = s.id
-      join analysis a on a.sample_item_id = si.id
-      join sample_qaevent aq on aq.sample_id = s.id
-      join test t on t.id = a.test_id
-      join section se on se.id = a.section_id
-      join address ad on ad.id = so.report_to_address_id
-WHERE
-      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W'
+      s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}
       $P!{TEST} $P!{SECTION}
 
 ORDER BY o_id, accession_number]]>
@@ -198,7 +128,7 @@ ORDER BY o_id, accession_number]]>
 					<textElement>
 						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[(($F{o_name} != null)&&(!"private".equals($F{o_name}.trim()))) ? $F{o_name} : "UNKNOWN ORGANIZATION"]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
 					<reportElement key="cityState" positionType="Float" x="384" y="0" width="192" height="12" isRemoveLineWhenBlank="true">
@@ -207,7 +137,7 @@ ORDER BY o_id, accession_number]]>
 					<textElement>
 						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[(($F{city} != null)&&(!"pvt_city".equals($F{city}.trim())))? $F{city}.trim()+", "+$F{state}.trim() : null]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[($F{city} != null) ? $F{city}.trim()+", "+$F{state}.trim() : null]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>

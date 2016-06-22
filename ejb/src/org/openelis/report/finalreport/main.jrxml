@@ -41,22 +41,6 @@
 			<band height="12" splitType="Stretch">
 				<subreport>
 					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
-						<printWhenExpression><![CDATA["W".equals($F{domain})]]></printWhenExpression>
-					</reportElement>
-					<subreportParameter name="SUBREPORT_DIR">
-						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="SAMPLE_ID">
-						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="ORGANIZATION_ID">
-						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
-					</subreportParameter>
-					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWell.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport>
-					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA["E".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
@@ -320,9 +304,7 @@
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA["W".equals($F{domain}) == false]]></printWhenExpression>
-				</reportElement>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>

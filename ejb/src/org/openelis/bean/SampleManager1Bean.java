@@ -25,7 +25,64 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisExternalNote;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisInternalNote;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
+import static org.openelis.manager.SampleManager1Accessor.addAttachment;
+import static org.openelis.manager.SampleManager1Accessor.addAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.addItem;
+import static org.openelis.manager.SampleManager1Accessor.addOrganization;
+import static org.openelis.manager.SampleManager1Accessor.addProject;
+import static org.openelis.manager.SampleManager1Accessor.addResult;
+import static org.openelis.manager.SampleManager1Accessor.addSampleInternalNote;
+import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
+import static org.openelis.manager.SampleManager1Accessor.addStorage;
+import static org.openelis.manager.SampleManager1Accessor.addUser;
+import static org.openelis.manager.SampleManager1Accessor.addWorksheet;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisExternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisQAs;
+import static org.openelis.manager.SampleManager1Accessor.getAttachments;
+import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.getItems;
+import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.getPostProcessing;
+import static org.openelis.manager.SampleManager1Accessor.getProjects;
+import static org.openelis.manager.SampleManager1Accessor.getRemoved;
+import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
+import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
+import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
+import static org.openelis.manager.SampleManager1Accessor.getSamplePT;
+import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
+import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.getStorages;
+import static org.openelis.manager.SampleManager1Accessor.getUsers;
+import static org.openelis.manager.SampleManager1Accessor.setAnalysisInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.setAnalysisQAs;
+import static org.openelis.manager.SampleManager1Accessor.setAttachments;
+import static org.openelis.manager.SampleManager1Accessor.setAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.setOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.setPostProcessing;
+import static org.openelis.manager.SampleManager1Accessor.setProjects;
+import static org.openelis.manager.SampleManager1Accessor.setRemoved;
+import static org.openelis.manager.SampleManager1Accessor.setResults;
+import static org.openelis.manager.SampleManager1Accessor.setSample;
+import static org.openelis.manager.SampleManager1Accessor.setSampleClinical;
+import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.setSampleExternalNote;
+import static org.openelis.manager.SampleManager1Accessor.setSampleInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.setSampleNeonatal;
+import static org.openelis.manager.SampleManager1Accessor.setSamplePT;
+import static org.openelis.manager.SampleManager1Accessor.setSampleQAs;
+import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.setStorages;
+import static org.openelis.manager.SampleManager1Accessor.setUsers;
+import static org.openelis.manager.SampleManager1Accessor.setWorksheets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +123,6 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePTDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
@@ -111,9 +167,6 @@ public class SampleManager1Bean {
 
     @EJB
     private SampleSDWISBean              sampleSDWIS;
-
-    @EJB
-    private SamplePrivateWellBean        samplePrivate;
 
     @EJB
     private SampleNeonatalBean           sampleNeonatal;
@@ -335,12 +388,6 @@ public class SampleManager1Bean {
         for (SampleSDWISViewDO data : sampleSDWIS.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleSDWIS(sm, data);
-        }
-        updateStatus(status, 3);
-
-        for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
-            sm = map1.get(data.getSampleId());
-            setSamplePrivateWell(sm, data);
         }
         updateStatus(status, 3);
 
@@ -687,12 +734,6 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
-        for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
-            sm = map1.get(data.getSampleId());
-            setSamplePrivateWell(sm, data);
-        }
-        updateStatus(status, 3);
-
         for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
@@ -924,7 +965,7 @@ public class SampleManager1Bean {
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
-        sms = fetchByQuery(query.getFields(), 0, -1, elements);
+        sms = fetchByQuery(query.getFields(), 0, 1, elements);
         return sms.size() == 0 ? null : sms.get(0);
     }
 
@@ -1371,8 +1412,6 @@ public class SampleManager1Bean {
                         sampleEnvironmental.delete( ((SampleEnvironmentalDO)data));
                     else if (data instanceof SampleSDWISViewDO)
                         sampleSDWIS.delete( ((SampleSDWISViewDO)data));
-                    else if (data instanceof SamplePrivateWellViewDO)
-                        samplePrivate.delete( ((SamplePrivateWellViewDO)data));
                     else if (data instanceof SampleNeonatalViewDO)
                         sampleNeonatal.delete( ((SampleNeonatalViewDO)data));
                     else if (data instanceof SampleClinicalViewDO)
@@ -1430,13 +1469,6 @@ public class SampleManager1Bean {
                     sampleSDWIS.add(getSampleSDWIS(sm));
                 } else {
                     sampleSDWIS.update(getSampleSDWIS(sm));
-                }
-            } else if (getSamplePrivateWell(sm) != null) {
-                if (getSamplePrivateWell(sm).getId() == null) {
-                    getSamplePrivateWell(sm).setSampleId(getSample(sm).getId());
-                    samplePrivate.add(getSamplePrivateWell(sm));
-                } else {
-                    samplePrivate.update(getSamplePrivateWell(sm));
                 }
             } else if (getSampleNeonatal(sm) != null) {
                 if (getSampleNeonatal(sm).getId() == null) {
@@ -1868,7 +1900,6 @@ public class SampleManager1Bean {
         qsm = fetchForUpdate(qdata.getId());
         getSample(qsm).setDomain(data.getDomain());
         setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
-        setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
         setSampleSDWIS(qsm, getSampleSDWIS(sm));
         setSampleNeonatal(qsm, getSampleNeonatal(sm));
         setSampleClinical(qsm, getSampleClinical(sm));
@@ -1907,7 +1938,6 @@ public class SampleManager1Bean {
         e = new ValidationErrorsList();
 
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-            Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
             Constants.domain().SDWIS.equals(data.getDomain()) ||
             Constants.domain().PT.equals(data.getDomain()))
             return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
@@ -1996,13 +2026,6 @@ public class SampleManager1Bean {
             getSampleEnvironmental(sm).setSampleId(null);
             if (getSampleEnvironmental(sm).getLocationAddress() != null)
                 getSampleEnvironmental(sm).getLocationAddress().setId(null);
-        } else if (getSamplePrivateWell(sm) != null) {
-            getSamplePrivateWell(sm).setId(null);
-            getSamplePrivateWell(sm).setSampleId(null);
-            if (getSamplePrivateWell(sm).getLocationAddress() != null)
-                getSamplePrivateWell(sm).getLocationAddress().setId(null);
-            if (getSamplePrivateWell(sm).getReportToAddress() != null)
-                getSamplePrivateWell(sm).getReportToAddress().setId(null);
         } else if (getSampleSDWIS(sm) != null) {
             getSampleSDWIS(sm).setId(null);
             getSampleSDWIS(sm).setSampleId(null);
@@ -2411,11 +2434,6 @@ public class SampleManager1Bean {
                 getRemoved(sm).add(getSampleEnvironmental(sm));
             setSampleEnvironmental(sm, null);
             hasSendoutOrderId = getSample(sm).getOrderId() != null;
-        } else if (Constants.domain().PRIVATEWELL.equals(data.getDomain())) {
-            if (getSamplePrivateWell(sm).getId() != null)
-                getRemoved(sm).add(getSamplePrivateWell(sm));
-            setSamplePrivateWell(sm, null);
-            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         } else if (Constants.domain().SDWIS.equals(data.getDomain())) {
             if (getSampleSDWIS(sm).getId() != null)
                 getRemoved(sm).add(getSampleSDWIS(sm));
@@ -2455,7 +2473,6 @@ public class SampleManager1Bean {
          */
         if (hasEOrderId) {
             if ( (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-                  Constants.domain().PRIVATEWELL.equals(domain) ||
                   Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)))
                 getSample(sm).setOrderId(null);
             else if (Constants.domain().NEONATAL.equals(domain))
@@ -2928,13 +2945,6 @@ public class SampleManager1Bean {
             setSampleEnvironmental(sm, se);
 
             s.setDomain(domain);
-        } else if (Constants.domain().PRIVATEWELL.equals(domain)) {
-            SamplePrivateWellViewDO spw;
-
-            spw = new SamplePrivateWellViewDO();
-            setSamplePrivateWell(sm, spw);
-
-            s.setDomain(domain);
         } else if (Constants.domain().SDWIS.equals(domain)) {
             SampleSDWISViewDO ssd;
 
@@ -3054,16 +3064,9 @@ public class SampleManager1Bean {
         }
 
         /*
-         * private well report-to is part of the domain information
-         */
-        cnt = 0;
-        if (getSamplePrivateWell(sm) != null &&
-            (getSamplePrivateWell(sm).getOrganizationId() != null || getSamplePrivateWell(sm).getReportToAddress() != null))
-            cnt = 1;
-
-        /*
          * samples have to have one report to.
          */
+        cnt = 0;
         if (getOrganizations(sm) != null) {
             for (SampleOrganizationViewDO data : getOrganizations(sm))
                 if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))

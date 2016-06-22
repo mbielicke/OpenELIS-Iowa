@@ -167,25 +167,6 @@ public class WorksheetCreationBean {
                     } catch (Exception anyE) {
                         log.severe("Error looking up Sample SDWIS Report To: "+anyE.getMessage());
                     }
-                } else if (SampleManager.WELL_DOMAIN_FLAG.equals(vo.getDomain())) {
-                    if (vo.getPrivateWellLocation() != null && vo.getPrivateWellLocation().length() > 0)
-                        description = "[loc]"+vo.getPrivateWellLocation();
-                    if (vo.getPrivateWellOrgId() != null) {
-                        try {
-                            reportToName = organization.fetchById(vo.getPrivateWellOrgId()).getName();
-                        } catch (NotFoundException nfE) {
-                            log.fine("Sample Private Well Report To not found: "+nfE.getMessage());
-                        } catch (Exception anyE) {
-                            log.severe("Error looking up Sample Private Well Report To: "+anyE.getMessage());
-                        }
-                    } else {
-                        reportToName = vo.getPrivateWellReportToName();
-                    }
-                    if (reportToName != null && reportToName.length() > 0) {
-                        if (description.length() > 0)
-                            description += " ";
-                        description += "[rpt]"+reportToName;
-                    }
                 }
                 vo.setDescription(description);
                 //
