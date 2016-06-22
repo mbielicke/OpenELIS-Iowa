@@ -62,7 +62,6 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="org.openelis.modules.order1.Order1" />
 	<inherits name="org.openelis.modules.orderFill.OrderFill" />
 	<inherits name="org.openelis.modules.organization1.Organization1" />
-	<inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin" />
 	<inherits name="org.openelis.modules.project.Project" />
 <!-- 	<inherits name="org.openelis.modules.provider.Provider" /> -->
 	<inherits name="org.openelis.modules.provider1.Provider1" />
@@ -79,7 +78,6 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="org.openelis.modules.report.Report" />
 	<inherits name="org.openelis.modules.report.dataView1.DataView1" />
 	<inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint" />
-	<inherits name="org.openelis.modules.report.privateWellAttachment.PrivateWellAttachment" />
     <inherits name="org.openelis.modules.report.qcChart1.QcChart1" />
 	<inherits name="org.openelis.modules.report.secondaryLabel.SecondaryLabel" />
 	<inherits name="org.openelis.modules.report.turnaroundStatistic.TurnaroundStatistic" />

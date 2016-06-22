@@ -39,18 +39,14 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -60,12 +56,12 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.TestManager;
 import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleDuplicateUtil {
 
@@ -227,10 +223,6 @@ public class SampleDuplicateUtil {
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain)) {
             duplicateEnvironmental((SampleEnvironmentalManager)newMan.getDomainManager(),
                                    (SampleEnvironmentalManager)oldMan.getDomainManager());
-        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain)) {
-            duplicatePrivateWell((SamplePrivateWellManager)newMan.getDomainManager(),
-                                 (SamplePrivateWellManager)oldMan.getDomainManager(),
-                                 errors);
         } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain)) {
             duplicateSDWIS((SampleSDWISManager)newMan.getDomainManager(),
                            (SampleSDWISManager)oldMan.getDomainManager());
@@ -508,54 +500,6 @@ public class SampleDuplicateUtil {
         newData.setPriority(oldData.getPriority());
         newData.setSampleId(oldData.getSampleId());
         newData.setLocation(oldData.getLocation());
-    }
-
-    private static void duplicatePrivateWell(SamplePrivateWellManager newMan,
-                                             SamplePrivateWellManager oldMan,
-                                             ValidationErrorsList errors) {
-        Integer orgId;
-        String name, attn;
-        OrganizationDO org;
-        SamplePrivateWellViewDO newData, oldData;
-        AddressDO oldAddr;
-
-        newData = newMan.getPrivateWell();
-        oldData = oldMan.getPrivateWell();
-
-        oldAddr = oldData.getLocationAddress();
-        if (oldAddr.getId() != null)
-            duplicateAddress(newData.getLocationAddress(), oldAddr);
-
-        oldAddr = oldData.getReportToAddress();
-        if (oldAddr.getId() != null)
-            duplicateAddress(newData.getReportToAddress(), oldAddr);
-
-        orgId = oldData.getOrganizationId();
-        name = oldData.getReportToName();
-        attn = oldData.getReportToAttention();
-        org = oldData.getOrganization();
-        if (oldData.getOrganizationId() != null) {
-            if ("N".equals(org.getIsActive())) {
-                /*
-                 * don't duplicate the organization if it's inactive
-                 */
-                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(org.getName())));
-                orgId = null;
-                name = null;
-                attn = null;
-                org = null;
-            }
-        }
-
-        newData.setOrganizationId(orgId);
-        newData.setReportToName(name);
-        newData.setReportToAttention(attn);
-        newData.setLocation(oldData.getLocation());
-        newData.setOwner(oldData.getOwner());
-        newData.setCollector(oldData.getCollector());
-        newData.setWellNumber(oldData.getWellNumber());
-        newData.setOrganization(org);
-
     }
 
     private static void duplicateSDWIS(SampleSDWISManager newMan, SampleSDWISManager oldMan) {

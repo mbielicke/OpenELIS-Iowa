@@ -277,10 +277,6 @@ UIRF Software License are applicable instead of those above.
                 <tab text="{resource:getString($constants,'environmental')}" visible="false" tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
                   <AbsolutePanel key="envDomainPanel"/>
                 </tab>
-<!-- Private Well Deck -->
-                <tab text="{resource:getString($constants,'privateWell')}" visible="false" tab="{meta:getWellOrganizationName()},{meta:getBillTo()}">
-                  <AbsolutePanel key="privateWellDomainPanel"/>
-                </tab>
 <!--     SDWISS Tab -->
                 <tab text="{resource:getString($constants,'sdwis')}" visible="false" tab="{meta:getSDWISPwsNumber0()},{meta:getBillTo()}">
                   <AbsolutePanel key="sdwisDomainPanel"/>

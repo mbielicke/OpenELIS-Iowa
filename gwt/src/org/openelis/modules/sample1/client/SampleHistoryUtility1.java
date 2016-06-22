@@ -40,7 +40,6 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePTDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
@@ -79,20 +78,6 @@ public class SampleHistoryUtility1 {
         hist = new IdNameVO(data.getId(), data.getLocation());
         HistoryScreen.showHistory(Messages.get().history_sampleEnvironmental(),
                                   Constants.table().SAMPLE_ENVIRONMENTAL,
-                                  hist);
-    }
-
-    /**
-     * shows the history of sample private well
-     */
-    public static void privateWell(SampleManager1 manager) {
-        IdNameVO hist;
-        SamplePrivateWellViewDO data;
-
-        data = manager.getSamplePrivateWell();
-        hist = new IdNameVO(data.getId(), data.getLocation());
-        HistoryScreen.showHistory(Messages.get().history_samplePrivateWell(),
-                                  Constants.table().SAMPLE_PRIVATE_WELL,
                                   hist);
     }
 

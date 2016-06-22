@@ -17,23 +17,6 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.EntityLockedException;
-import org.openelis.ui.common.FieldErrorException;
-import org.openelis.ui.common.FieldErrorWarning;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.FormErrorWarning;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.TableFieldErrorException;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -69,8 +52,6 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleProjectManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -78,7 +59,6 @@ import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.EnvironmentalTab;
-import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.QuickEntryTab;
 import org.openelis.modules.sample.client.ResultTab;
@@ -90,7 +70,21 @@ import org.openelis.modules.sample.client.SampleItemsPopoutTreeLookup;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -115,7 +109,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTrackingScreen          trackingScreen;
     protected SampleItemsPopoutTreeLookup treePopout;
     private EnvironmentalTab              environmentalTab;
-    private PrivateWellTab                wellTab;
     private SDWISTab                      sdwisTab;
     private QuickEntryTab                 quickEntryTab;
     private SampleItemTab                 sampleItemTab;
@@ -401,8 +394,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 domain = manager.getSample().getDomain();
                 if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleEnvironmental();
-                else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-                    historyUtility.historySamplePrivateWell();
                 else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleSDWIS();
             }
@@ -844,36 +835,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 environmentalTab.setState(event.getState());
-            }
-        });
-
-        try {
-            wellTab = new PrivateWellTab(window);
-            AbsolutePanel wellTabPanel = (AbsolutePanel)def.getWidget("privateWellDomainPanel");
-            wellTabPanel.add(wellTab);
-
-        } catch (Exception e) {
-            Window.alert("well tab initialize: " + e.getMessage());
-        }
-
-        addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                TreeDataItem selectedRow;
-
-                selectedRow = trackingTree.getSelection();
-
-                if (selectedRow != null &&
-                    "sample".equals(selectedRow.leafType) &&
-                    SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-                    showTabs(Tabs.PRIVATE_WELL);
-                    addTestButton.enable(false);
-                    cancelTestButton.enable(false);
-                    wellTab.draw();
-                }
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                wellTab.setState(event.getState());
             }
         });
 
@@ -1323,7 +1284,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         // clear all the tabs
         environmentalTab.draw();
-        wellTab.draw();
         sdwisTab.draw();
         sampleItemTab.draw();
         analysisTab.draw();
@@ -1456,7 +1416,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     protected void commitWithWarnings() {
         clearErrors();
         environmentalTab.clearErrors();
-        wellTab.clearErrors();
         sdwisTab.clearErrors();
 
         manager.setStatusWithError(true);
@@ -1486,7 +1445,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         setFocus(null);
         clearErrors();
         environmentalTab.clearErrors();
-        wellTab.clearErrors();
         sdwisTab.clearErrors();
         window.setBusy(Messages.get().cancelChanges());
 
@@ -1552,25 +1510,15 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private void setDomainFields(ArrayList<QueryData> fields) throws Exception {
         String domain = null;
-        ArrayList<QueryData> envFields, wellFields, sdwisFields;
+        ArrayList<QueryData> envFields, sdwisFields;
         QueryData field;
 
         envFields = environmentalTab.getQueryFields();
-        wellFields = wellTab.getQueryFields();
         sdwisFields = sdwisTab.getQueryFields();
 
         if (envFields.size() > 0) {
             domain = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
             fields.addAll(envFields);
-        }
-        if (wellFields.size() > 0) {
-            if (domain == null) {
-                domain = SampleManager.WELL_DOMAIN_FLAG;
-                fields.addAll(wellFields);
-                addPrivateWellFields(fields);
-            } else {
-                throw new Exception();
-            }
         }
         if (sdwisFields.size() > 0) {
             if (domain == null) {
@@ -1694,9 +1642,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             case ENVIRONMENT:
                 environmentalTab.draw();
                 break;
-            case PRIVATE_WELL:
-                wellTab.draw();
-                break;
             case SDWIS:
                 sdwisTab.draw();
                 break;
@@ -1762,7 +1707,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     // clear all the tabs
                     environmentalTab.draw();
-                    wellTab.draw();
                     sdwisTab.draw();
                     sampleItemTab.draw();
                     analysisTab.draw();
@@ -2016,8 +1960,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
          */
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             environmentalTab.showErrors(errors);
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            wellTab.showErrors(errors);
         else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             sdwisTab.showErrors(errors);
     }
@@ -2039,8 +1981,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
          */
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             return valid && environmentalTab.validate();
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            return valid && wellTab.validate();
         else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             return valid && sdwisTab.validate();
         else if (SampleManager.QUICK_ENTRY.equals(domain))
@@ -2049,7 +1989,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             //
             // in the state Query, we show tabs for all domains
             //
-            return valid && environmentalTab.validate() && wellTab.validate() &&
+            return valid && environmentalTab.validate() &&
                    sdwisTab.validate();
         return false;
     }
@@ -2222,7 +2162,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     SampleDO sample;
                     SampleOrganizationManager som;
                     SampleEnvironmentalManager sem;
-                    SamplePrivateWellManager spm;
 
                     selectedRow = trackingTree.getSelection();
                     newDomain = (String)event.getData();
@@ -2243,16 +2182,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                 sem = (SampleEnvironmentalManager)manager.getDomainManager();
                                 sem.getEnvironmental().setIsHazardous("N");
 
-                                if (SampleManager.WELL_DOMAIN_FLAG.equals(oldDomain)) {
-                                    /*
-                                     * if the old domain was private well then
-                                     * find its "report to" and if it was an
-                                     * organization then set the new domain's
-                                     * "report to" as that
-                                     */
-                                    spm = (SamplePrivateWellManager)manager.getDeletedDomainManager();
-                                    setReportTo(sample, som, spm);
-                                }
                                 /*
                                  * reload the tab and refresh its data if the
                                  * sample's node is selected
@@ -2274,52 +2203,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                 if ("sample".equals(selectedRow.leafType))
                                     showTabs(Tabs.ENVIRONMENT);
                                 environmentalTab.draw();
-                            } else if (SampleManager.WELL_DOMAIN_FLAG.equals(newDomain)) {
-                                manager.changeDomain(SampleManager.WELL_DOMAIN_FLAG);
-                                /*
-                                 * If the previous domain had a "report to" then
-                                 * set it as the "organization" for this
-                                 * one.Mark the old "report to" for deletion
-                                 * because private well doesn't have sample
-                                 * organization of that type.
-                                 */
-                                spm = (SamplePrivateWellManager)manager.getDomainManager();
-                                setPrivateWellReportTo(sample, som, spm);
-                                som.removeReportTo();
-                                /*
-                                 * reload the tab and refresh its data if the
-                                 * sample's node is selected
-                                 */
-                                wellTab.setData(manager);
-                                /*
-                                 * StateChangeEvent is fired to enable all the
-                                 * editable widgets in the tab, because they
-                                 * could be disabled due to the tab being made
-                                 * visible for the first time since the main
-                                 * screen's state was changed.
-                                 * StateChangeEvent.fire() and not setState() is
-                                 * called here because we need to force the
-                                 * firing of the event which doesn't happen with
-                                 * setState() if the state doesn't change from
-                                 * its last value.
-                                 */
-                                StateChangeEvent.fire(wellTab, State.UPDATE);
-                                if ("sample".equals(selectedRow.leafType))
-                                    showTabs(Tabs.PRIVATE_WELL);
-                                wellTab.draw();
                             } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(newDomain)) {
                                 manager.changeDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-                                if (SampleManager.WELL_DOMAIN_FLAG.equals(oldDomain)) {
-                                    /*
-                                     * if the old domain was private well then
-                                     * find its "report to" and if it was an
-                                     * organization then set the new domain's
-                                     * "report to" as that
-                                     */
-                                    spm = (SamplePrivateWellManager)manager.getDeletedDomainManager();
-                                    setReportTo(sample, som, spm);
-                                }
-
                                 /*
                                  * reload the tab and refresh its data if the
                                  * sample's node is selected
@@ -2358,156 +2243,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     /**
-     * We need to add additional fields to the list of queried fields if it
-     * contains any field belonging to private well water's report
-     * to/organization. This is done in order to make sure that names and
-     * addresses belonging to organizations as well as the ones that don't are
-     * searched.
-     */
-    private void addPrivateWellFields(ArrayList<QueryData> fields) {
-        int size;
-        String dataKey, orgName, addressMult, addressStreet, addressCity, addressState, addressZip, addressWorkPhone, addressFaxPhone;
-        QueryData data;
-
-        orgName = null;
-        addressMult = null;
-        addressStreet = null;
-        addressCity = null;
-        addressState = null;
-        addressZip = null;
-        addressWorkPhone = null;
-        addressFaxPhone = null;
-
-        size = fields.size();
-        for (int i = size - 1; i >= 0; i-- ) {
-            data = fields.get(i);
-            dataKey = data.getKey();
-
-            if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
-                orgName = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getWellReportToName());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(orgName);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressMultipleUnit().equals(dataKey)) {
-                addressMult = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressMultipleUnit());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressMult);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressStreetAddress().equals(dataKey)) {
-                addressStreet = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressStreetAddress());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressStreet);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressCity().equals(dataKey)) {
-                addressCity = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressCity());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressCity);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressState().equals(dataKey)) {
-                addressState = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressState());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressState);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressZipCode().equals(dataKey)) {
-                addressZip = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressZipCode());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressZip);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressWorkPhone().equals(dataKey)) {
-                addressWorkPhone = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressWorkPhone());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressWorkPhone);
-                fields.add(data);
-            } else if (SampleMeta.getWellReportToAddressFaxPhone().equals(dataKey)) {
-                addressFaxPhone = data.getQuery();
-
-                data = new QueryData();
-                data.setKey(SampleMeta.getAddressFaxPhone());
-                data.setType(QueryData.Type.STRING);
-                data.setQuery(addressFaxPhone);
-                fields.add(data);
-            }
-        }
-    }
-
-    private void setReportTo(SampleDO sample, SampleOrganizationManager som,
-                             SamplePrivateWellManager spm) {
-        AddressDO addr;
-        OrganizationDO org;
-        SampleOrganizationViewDO sorg;
-
-        org = spm.getPrivateWell().getOrganization();
-        if (org != null) {
-            sorg = new SampleOrganizationViewDO();
-            addr = org.getAddress();
-
-            sorg.setSampleId(sample.getId());
-            sorg.setOrganizationCity(addr.getCity());
-            sorg.setOrganizationAttention(spm.getPrivateWell().getReportToAttention());
-            sorg.setOrganizationFaxPhone(addr.getFaxPhone());
-            sorg.setOrganizationId(org.getId());
-            sorg.setOrganizationMultipleUnit(addr.getMultipleUnit());
-            sorg.setOrganizationName(org.getName());
-            sorg.setOrganizationState(addr.getState());
-            sorg.setOrganizationStreetAddress(addr.getStreetAddress());
-            sorg.setOrganizationWorkPhone(addr.getWorkPhone());
-            sorg.setOrganizationZipCode(addr.getZipCode());
-            som.setReportTo(sorg);
-        }
-    }
-
-    private void setPrivateWellReportTo(SampleDO sample, SampleOrganizationManager som,
-                                        SamplePrivateWellManager spm) {
-        Integer id;
-        AddressDO addr;
-        OrganizationDO org;
-        SamplePrivateWellViewDO spw;
-        SampleOrganizationViewDO sorg;
-
-        sorg = som.getReportTo();
-        if (sorg != null) {
-            id = sorg.getOrganizationId();
-            spw = spm.getPrivateWell();
-            org = new OrganizationDO();
-            spw.setOrganization(org);
-            org.setId(id);
-            org.setName(sorg.getOrganizationName());
-            spw.setOrganizationId(id);
-            addr = org.getAddress();
-
-            spw.setReportToAttention(sorg.getOrganizationAttention());
-            addr.setCity(sorg.getOrganizationCity());
-            addr.setFaxPhone(sorg.getOrganizationFaxPhone());
-            addr.setMultipleUnit(sorg.getOrganizationMultipleUnit());
-            addr.setState(sorg.getOrganizationState());
-            addr.setStreetAddress(sorg.getOrganizationStreetAddress());
-            addr.setWorkPhone(sorg.getOrganizationWorkPhone());
-            addr.setZipCode(sorg.getOrganizationZipCode());
-        }
-    }
-
-    /**
      * If the status of the sample showing on the screen is changed from
      * Released to something else and on changing the state, the status stays
      * Released and the widgets in the tabs stay disabled. Also, if the status
@@ -2524,7 +2259,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         String domain;
 
         environmentalTab.setData(null);
-        wellTab.setData(null);
         sdwisTab.setData(null);
         quickEntryTab.setData(null);
         sampleItemTab.setData(null);
@@ -2546,8 +2280,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if ("sample".equals(selectedRow.leafType)) {
             if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
                 environmentalTab.setData(manager);
-            else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-                wellTab.setData(manager);
             else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
                 sdwisTab.setData(manager);
             else if (SampleManager.QUICK_ENTRY.equals(domain))

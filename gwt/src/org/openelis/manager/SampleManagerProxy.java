@@ -201,7 +201,6 @@ public class SampleManagerProxy {
              * only validate order for domains that use send-out orders
              */
             if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-                Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
                 Constants.domain().SDWIS.equals(data.getDomain())) {
                 man = IOrderManager.fetchById(data.getOrderId());
                 if ( !IOrderManager.TYPE_SEND_OUT.equals(man.getIorder().getType()))

@@ -668,8 +668,6 @@ public class QueryTabUI extends Screen {
             dom = null;
             if (Constants.dictionary().ENVIRONMENTAL.equals(d.getId()))
                 dom = Constants.domain().ENVIRONMENTAL;
-            else if (Constants.dictionary().PRIVATE_WELL.equals(d.getId()))
-                dom = Constants.domain().PRIVATEWELL;
             else if (Constants.dictionary().SDWIS.equals(d.getId()))
                 dom = Constants.domain().SDWIS;
             else if (Constants.dictionary().CLINICAL.equals(d.getId()))

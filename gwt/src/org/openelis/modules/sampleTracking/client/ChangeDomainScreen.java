@@ -117,8 +117,6 @@ public class ChangeDomainScreen extends Screen implements
             dom = null;
             if ("environmental".equals(sname)) {
                 dom = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
-            } else if ("private_well".equals(sname)) {
-                dom = SampleManager.WELL_DOMAIN_FLAG;
             } else if ("sdwis".equals(sname)) {
                 dom = SampleManager.SDWIS_DOMAIN_FLAG;
             }

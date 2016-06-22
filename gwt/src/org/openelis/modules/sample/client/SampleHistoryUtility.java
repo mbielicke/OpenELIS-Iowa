@@ -40,7 +40,6 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -49,13 +48,11 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
@@ -98,26 +95,6 @@ public class SampleHistoryUtility {
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historySampleEnvironmental: " + e.getMessage());
-        }
-
-        window.clearStatus();
-    }
-
-    public void historySamplePrivateWell() {
-        IdNameVO hist;
-        SamplePrivateWellManager wellMan;
-
-        window.setBusy();
-        try {
-            wellMan = (SamplePrivateWellManager)manager.getDomainManager();
-            hist = new IdNameVO(wellMan.getPrivateWell().getId(),
-                                wellMan.getPrivateWell().getLocation());
-            HistoryScreen.showHistory(Messages.get().historySamplePrivateWell(),
-                                      Constants.table().SAMPLE_PRIVATE_WELL,
-                                      hist);
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySamplePrivateWell: " + e.getMessage());
         }
 
         window.clearStatus();
