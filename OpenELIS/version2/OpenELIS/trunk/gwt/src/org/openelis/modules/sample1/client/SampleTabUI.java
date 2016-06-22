@@ -836,7 +836,6 @@ public class SampleTabUI extends Screen {
         domain = manager.getSample().getDomain();
 
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().PRIVATEWELL.equals(domain) ||
             Constants.domain().SDWIS.equals(domain)||
             Constants.domain().PT.equals(domain)) {
             try {
@@ -1003,7 +1002,6 @@ public class SampleTabUI extends Screen {
         domain = manager.getSample().getDomain();
         orderId = null;
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().PRIVATEWELL.equals(domain) ||
             Constants.domain().SDWIS.equals(domain) ||
             Constants.domain().PT.equals(domain)) {
             orderId = DataBaseUtil.toString(manager.getSample().getOrderId());

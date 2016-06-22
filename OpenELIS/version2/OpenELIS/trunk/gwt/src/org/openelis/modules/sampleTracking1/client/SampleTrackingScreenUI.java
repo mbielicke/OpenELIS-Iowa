@@ -1,9 +1,13 @@
 package org.openelis.modules.sampleTracking1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +74,6 @@ import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PatientPermission;
-import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
@@ -187,9 +190,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected EnvironmentalTabUI                         environmentalTab;
 
     @UiField(provided = true)
-    protected PrivateWellTabUI                           privateWellTab;
-
-    @UiField(provided = true)
     protected SDWISTabUI                                 sdwisTab;
 
     @UiField(provided = true)
@@ -293,7 +293,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT, BLANK
     };
@@ -353,7 +353,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         sampleTab = new SampleTabUI(this);
         environmentalTab = new EnvironmentalTabUI(this);
-        privateWellTab = new PrivateWellTabUI(this);
         sdwisTab = new SDWISTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
@@ -646,8 +645,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 domain = manager.getSample().getDomain();
                 if (Constants.domain().ENVIRONMENTAL.equals(domain))
                     SampleHistoryUtility1.environmental(manager);
-                else if (Constants.domain().PRIVATEWELL.equals(domain))
-                    SampleHistoryUtility1.privateWell(manager);
                 else if (Constants.domain().SDWIS.equals(domain))
                     SampleHistoryUtility1.sdwis(manager);
                 else if (Constants.domain().NEONATAL.equals(domain))
@@ -923,37 +920,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         environmentalTab.setCanQuery(true);
-
-        addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent<Object> event) {
-                privateWellTab.onDataChange();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                privateWellTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return privateWellTab.getQueryFields();
-            }
-
-            public void isValid(Validation validation) {
-                if (isState(QUERY) || (manager != null && manager.getSamplePrivateWell() != null))
-                    super.isValid(validation);
-            }
-        });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
-        privateWellTab.setCanQuery(true);
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -973,11 +940,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         sdwisTab.setCanQuery(true);
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
@@ -1020,11 +982,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         clinicalTab.setCanQuery(true);
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
@@ -1045,11 +1002,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         ptTab.setCanQuery(true);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
@@ -1081,11 +1033,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 return sampleItemTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
@@ -1207,11 +1154,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
@@ -1227,11 +1169,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 return attachmentTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         attachmentTab.setCanQuery(true);
 
         /*
@@ -1448,7 +1385,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         cache = new HashMap<String, Object>();
         showTabs(Tab.SAMPLE,
                  Tab.ENVIRONMENTAL,
-                 Tab.PRIVATE_WELL,
                  Tab.SDWIS,
                  Tab.CLINICAL,
                  Tab.PT,
@@ -1668,11 +1604,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             numDomains++ ;
         }
 
-        if (privateWellTab.getQueryFields().size() > 0) {
-            domain = Constants.domain().PRIVATEWELL;
-            numDomains++ ;
-        }
-
         if (sdwisTab.getQueryFields().size() > 0) {
             domain = Constants.domain().SDWIS;
             numDomains++ ;
@@ -1709,7 +1640,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 if (SampleMeta.getOrderId().equals(f.getKey())) {
                     domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
                                             Constants.domain().SDWIS,
-                                            Constants.domain().PRIVATEWELL,
                                             Constants.domain().PT);
                     break;
                 } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
@@ -2278,7 +2208,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     private void setData() {
         sampleTab.setData(manager);
         environmentalTab.setData(manager);
-        privateWellTab.setData(manager);
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
@@ -3688,8 +3617,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             domain = manager.getSample().getDomain();
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 tabs.add(Tab.ENVIRONMENTAL);
-            else if (Constants.domain().PRIVATEWELL.equals(domain))
-                tabs.add(Tab.PRIVATE_WELL);
             else if (Constants.domain().SDWIS.equals(domain))
                 tabs.add(Tab.SDWIS);
             else if (Constants.domain().NEONATAL.equals(domain))

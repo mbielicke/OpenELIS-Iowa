@@ -1,9 +1,13 @@
 package org.openelis.modules.completeRelease1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,7 +76,6 @@ import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PatientPermission;
-import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
@@ -198,9 +201,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected EnvironmentalTabUI               environmentalTab;
 
     @UiField(provided = true)
-    protected PrivateWellTabUI                 privateWellTab;
-
-    @UiField(provided = true)
     protected SDWISTabUI                       sdwisTab;
 
     @UiField(provided = true)
@@ -295,8 +295,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM, 
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT, BLANK
     };
 
@@ -347,7 +347,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         sampleTab = new SampleTabUI(this);
         environmentalTab = new EnvironmentalTabUI(this);
-        privateWellTab = new PrivateWellTabUI(this);
         sdwisTab = new SDWISTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
@@ -621,8 +620,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 domain = manager.getSample().getDomain();
                 if (Constants.domain().ENVIRONMENTAL.equals(domain))
                     SampleHistoryUtility1.environmental(manager);
-                else if (Constants.domain().PRIVATEWELL.equals(domain))
-                    SampleHistoryUtility1.privateWell(manager);
                 else if (Constants.domain().SDWIS.equals(domain))
                     SampleHistoryUtility1.sdwis(manager);
                 else if (Constants.domain().NEONATAL.equals(domain))
@@ -893,30 +890,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        environmentalTab.setCanQuery(false);
-
-        addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent<Object> event) {
-                privateWellTab.onDataChange();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                privateWellTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return null;
-            }
-        });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        privateWellTab.setCanQuery(false);
+        environmentalTab.setCanQuery(false);        // query not allowed on this screen
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -931,11 +905,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        sdwisTab.setCanQuery(false);
+        sdwisTab.setCanQuery(false);                // query not allowed on this screen
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -972,11 +942,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        clinicalTab.setCanQuery(false);
+        clinicalTab.setCanQuery(false);         // query not allowed on this screen
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -991,11 +957,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        ptTab.setCanQuery(false);
+        ptTab.setCanQuery(false);               // query not allowed on this screen
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1026,11 +988,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        sampleItemTab.setCanQuery(false);
+        sampleItemTab.setCanQuery(false);   // query not allowed on this screen
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1151,11 +1109,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        auxDataTab.setCanQuery(false);
+        auxDataTab.setCanQuery(false);          // query not allowed on this screen
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1170,11 +1124,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return attachmentTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is not allowed on this screen
-         */
-        attachmentTab.setCanQuery(false);
+        attachmentTab.setCanQuery(false);       // query not allowed on this screen
 
         /*
          * handlers for the events fired by the tabs
@@ -1658,7 +1608,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             if (SampleMeta.getOrderId().equals(f.getKey())) {
                 domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
                                         Constants.domain().SDWIS,
-                                        Constants.domain().PRIVATEWELL,
                                         Constants.domain().PT);
                 break;
             } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
@@ -2126,7 +2075,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void setData() {
         sampleTab.setData(manager);
         environmentalTab.setData(manager);
-        privateWellTab.setData(manager);
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
@@ -2777,8 +2725,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             domainTab = null;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 domainTab = Tabs.ENVIRONMENTAL;
-            else if (Constants.domain().PRIVATEWELL.equals(domain))
-                domainTab = Tabs.PRIVATE_WELL;
             else if (Constants.domain().SDWIS.equals(domain))
                 domainTab = Tabs.SDWIS;
             else if (Constants.domain().NEONATAL.equals(domain))

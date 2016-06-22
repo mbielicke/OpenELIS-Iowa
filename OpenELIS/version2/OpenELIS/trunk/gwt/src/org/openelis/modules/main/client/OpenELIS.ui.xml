@@ -53,8 +53,6 @@
                 </g:HTML>
                 <w:MenuItem description="{msg.sampleEnvironmental_loginDescription}" enabled="false"
                   icon="{res.icon.environmentalSampleLoginIcon}" ui:field="environmentalSampleLogin" display="{msg.sampleEnvironmental_login}" />
-                <w:MenuItem description="{msg.privateWellWaterSampleLoginDescription}" enabled="false"
-                  icon="{res.icon.privateWellWaterSampleLoginIcon}" ui:field="privateWellWaterSampleLogin" display="{msg.privateWellWaterSampleLogin}" />
                 <w:MenuItem description="{msg.sampleSDWIS_loginDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"
                   ui:field="sdwisSampleLogin" display="{msg.sampleSDWIS_login}" />
                 <w:MenuItem description="{msg.sampleClinical_loginDescription}" enabled="false" ui:field="clinicalSampleLogin"
@@ -154,7 +152,6 @@
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
-                  <w:MenuItem enabled="false" ui:field="privateWellAttachment" display="{msg.report_privateWellAttachment}" />
                 </w:Menu>
                 <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="airQualityExport" display="{msg.airQuality_airQualityExport}" />

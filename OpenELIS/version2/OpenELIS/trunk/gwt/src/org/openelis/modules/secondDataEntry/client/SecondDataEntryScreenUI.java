@@ -25,9 +25,12 @@
  */
 package org.openelis.modules.secondDataEntry.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -887,8 +890,6 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             dom = null;
             if (Constants.dictionary().ENVIRONMENTAL.equals(d.getId()))
                 dom = Constants.domain().ENVIRONMENTAL;
-            else if (Constants.dictionary().PRIVATE_WELL.equals(d.getId()))
-                dom = Constants.domain().PRIVATEWELL;
             else if (Constants.dictionary().SDWIS.equals(d.getId()))
                 dom = Constants.domain().SDWIS;
             else if (Constants.dictionary().CLINICAL.equals(d.getId()))

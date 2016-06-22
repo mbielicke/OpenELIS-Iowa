@@ -130,16 +130,6 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_privateWell}" tabVisible="false" />
-          </w:customHeader>
-          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
-            <g:layer>
-              <s:PrivateWellTabUI ui:field="privateWellTab" />
-            </g:layer>
-          </g:LayoutPanel>
-        </w:tab>
-        <w:tab>
-          <w:customHeader>
             <w:TabWidget text="{msg.sample_sdwis}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">

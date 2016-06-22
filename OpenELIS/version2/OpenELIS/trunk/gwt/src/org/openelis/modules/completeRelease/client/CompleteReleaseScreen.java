@@ -9,22 +9,11 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.EntityLockedException;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -66,7 +55,6 @@ import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.EnvironmentalTab;
-import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SDWISTab;
@@ -75,7 +63,17 @@ import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -120,7 +118,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     private SampleTab                sampleTab;
     private CompleteReleaseScreen    screen;
     private EnvironmentalTab         environmentalTab;
-    private PrivateWellTab           wellTab;
     private SDWISTab                 sdwisTab;
     private SampleItemTab            sampleItemTab;
     private AnalysisTab              analysisTab;
@@ -348,8 +345,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 domain = manager.getSample().getDomain();
                 if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleEnvironmental();
-                else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-                    historyUtility.historySamplePrivateWell();
                 else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleSDWIS();
             }
@@ -551,26 +546,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
             public void onStateChange(StateChangeEvent<State> event) {
                 environmentalTab.setState(event.getState());
-            }
-        });
-
-        try {
-            wellTab = new PrivateWellTab(window);
-            AbsolutePanel wellTabPanel = (AbsolutePanel)def.getWidget("privateWellDomainPanel");
-            wellTabPanel.add(wellTab);
-
-        } catch (Exception e) {
-            Window.alert("well tab initialize: " + e.getMessage());
-        }
-
-        addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (tab == Tabs.PRIVATE_WELL)
-                    wellTab.draw();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                wellTab.setState(event.getState());
             }
         });
 
@@ -815,8 +790,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
          */
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             environmentalTab.showErrors(errors);
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            wellTab.showErrors(errors);
         else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             sdwisTab.showErrors(errors);
     }
@@ -845,8 +818,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     && storageTab.validate() && auxDataTab.validate();
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             return screenValid && tabsValid && environmentalTab.validate();
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            return screenValid && tabsValid && wellTab.validate();
         else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             return screenValid && tabsValid && sdwisTab.validate();
 
@@ -866,7 +837,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // clear all the tabs
         sampleTab.draw();
         environmentalTab.draw();
-        wellTab.draw();
         sdwisTab.draw();
         sampleItemTab.draw();
         analysisTab.draw();
@@ -1269,7 +1239,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     protected void commitWithWarnings() {
         clearErrors();
         environmentalTab.clearErrors();
-        wellTab.clearErrors();
         sdwisTab.clearErrors();
         
         manager.setStatusWithError(true);
@@ -1298,7 +1267,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         setFocus(null);
         clearErrors();
         environmentalTab.clearErrors();
-        wellTab.clearErrors();
         sdwisTab.clearErrors();
         window.setBusy(Messages.get().cancelChanges());
 
@@ -1405,9 +1373,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         switch (tab) {
             case ENVIRONMENT:
                 environmentalTab.draw();
-                break;
-            case PRIVATE_WELL:
-                wellTab.draw();
                 break;
             case SDWIS:
                 sdwisTab.draw();
@@ -1714,20 +1679,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                      Tabs.STORAGE,
                      Tabs.QA_EVENTS,
                      Tabs.AUX_DATA);
-        } else if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG)) {
-            if (showingDomainTab)
-                tab = Tabs.PRIVATE_WELL;
-            showTabs(Tabs.SAMPLE,
-                     Tabs.PRIVATE_WELL,
-                     Tabs.SAMPLE_ITEM,
-                     Tabs.ANALYSIS,
-                     Tabs.TEST_RESULT,
-                     Tabs.ANALYSIS_NOTES,
-                     Tabs.SAMPLE_NOTES,
-                     Tabs.STORAGE,
-                     Tabs.QA_EVENTS,
-                     Tabs.AUX_DATA);
-
         } else if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG)) {
             if (showingDomainTab)
                 tab = Tabs.SDWIS;
@@ -1836,12 +1787,9 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         
         sampleTab.setData(manager);
         environmentalTab.setData(null);
-        wellTab.setData(null);
         sdwisTab.setData(null);
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             environmentalTab.setData(manager);
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            wellTab.setData(manager);
         else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             sdwisTab.setData(manager);
         sampleItemTab.setData(dataBundle);

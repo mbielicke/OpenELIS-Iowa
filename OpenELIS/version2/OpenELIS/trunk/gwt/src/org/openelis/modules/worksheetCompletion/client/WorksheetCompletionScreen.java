@@ -30,16 +30,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TabPanel;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
@@ -53,7 +43,6 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -89,7 +78,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
@@ -116,6 +104,16 @@ import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TabPanel;
 
 public class WorksheetCompletionScreen extends Screen {
 
@@ -927,7 +925,6 @@ public class WorksheetCompletionScreen extends Screen {
         SampleDomainInt sDomain;
         SampleManager sManager;
         SampleOrganizationViewDO soVDO;
-        SamplePrivateWellViewDO spwVDO;
         String headerLabels[], description, location;
         TableDataRow row;
         WorksheetAnalysisDO waDO;
@@ -1010,25 +1007,6 @@ public class WorksheetCompletionScreen extends Screen {
                                 if (description.length() > 0)
                                     description += " ";
                                 description += "[rpt]" + soVDO.getOrganizationName();
-                            }
-                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample()
-                                                                                 .getDomain())) {
-                            spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
-                            if (spwVDO.getLocation() != null &&
-                                spwVDO.getLocation().length() > 0)
-                                description = "[loc]" + spwVDO.getLocation();
-                            if (spwVDO.getOrganizationId() != null &&
-                                spwVDO.getOrganization().getName() != null &&
-                                spwVDO.getOrganization().getName().length() > 0) {
-                                if (description.length() > 0)
-                                    description += " ";
-                                description += "[rpt]" +
-                                               spwVDO.getOrganization().getName();
-                            } else if (spwVDO.getReportToName() != null &&
-                                       spwVDO.getReportToName().length() > 0) {
-                                if (description.length() > 0)
-                                    description += " ";
-                                description += "[rpt]" + spwVDO.getReportToName();
                             }
                         }
                         row.cells.get(2).value = description;

@@ -30,7 +30,6 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
-import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -38,13 +37,6 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.OptionListItem;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -61,10 +53,14 @@ import org.openelis.manager.OrganizationManager1;
 import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.modules.sample1.client.PatientPermission;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -573,11 +569,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         ArrayList<Integer> orgIds;
         TableDataRow row;
         ArrayList<TableDataRow> model;
-        SampleDO sample;
-        SamplePrivateWellViewDO well;
-        OrganizationDO org;
         SampleOrganizationViewDO samOrg;
-        SamplePrivateWellManager wellMan;
         SampleOrganizationManager orgs;
 
         model = new ArrayList<TableDataRow>();
@@ -587,27 +579,8 @@ public class FinalReportSingleReprintScreen extends Screen {
         if (manager == null)
             return model;
 
-        sample = manager.getSample();
         orgIds = new ArrayList<Integer>();
         try {
-            if (SampleManager.WELL_DOMAIN_FLAG.equals(sample.getDomain())) {
-                wellMan = (SamplePrivateWellManager)manager.getDomainManager();
-                well = wellMan.getPrivateWell();
-                org = well.getOrganization();
-                /*
-                 * if this sample is that of domain private well and if its
-                 * report-to is an organization that it's added to the list
-                 * shown in the dropdown
-                 */
-                if (org != null) {
-                    orgId = org.getId();
-                    orgIds.add(orgId);
-
-                    row = new TableDataRow(orgId, org.getName());
-                    model.add(row);
-                }
-            }
-
             orgs = manager.getOrganizations();
             /*
              * all unique organizations associated with the sample except the
@@ -637,13 +610,9 @@ public class FinalReportSingleReprintScreen extends Screen {
         ArrayList<Integer> orgIds;
         TableDataRow row;
         ArrayList<TableDataRow> model;
-        SampleDO sample;
-        SamplePrivateWellViewDO well;
-        OrganizationDO org;
         OrganizationParameterDO param;
         FaxVO faxVO;
         SampleOrganizationViewDO samOrg;
-        SamplePrivateWellManager wellMan;
         SampleOrganizationManager orgs;
 
         model = new ArrayList<TableDataRow>();
@@ -651,36 +620,8 @@ public class FinalReportSingleReprintScreen extends Screen {
         if (manager == null)
             return model;
 
-        sample = manager.getSample();
         orgIds = new ArrayList<Integer>();
         try {
-            if (SampleManager.WELL_DOMAIN_FLAG.equals(sample.getDomain())) {
-                wellMan = (SamplePrivateWellManager)manager.getDomainManager();
-                well = wellMan.getPrivateWell();
-                org = well.getOrganization();
-                /*
-                 * if this sample is that of domain private well and if its
-                 * report-to is an organization that it's added to the list
-                 * shown in the dropdown
-                 */
-                if (org != null) {
-                    orgId = org.getId();
-                    orgIds.add(orgId);
-
-                    faxVO = new FaxVO();
-                    faxVO.setToName(well.getReportToAttention());
-                    faxVO.setToCompany(org.getName());
-
-                    param = getOrganizationFax(orgId);
-                    if (param != null)
-                        faxVO.setFaxNumber(param.getValue());
-
-                    row = new TableDataRow(orgId, org.getName());
-                    row.data = faxVO;
-                    model.add(row);
-                }
-            }
-
             orgs = manager.getOrganizations();
             /*
              * all unique organizations associated with the sample are added to

@@ -964,10 +964,6 @@ public class ExchangeDataSelectionScreen extends Screen {
                 row = new TableDataRow(SampleManager.PT_DOMAIN_FLAG, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("private_well".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.WELL_DOMAIN_FLAG, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
             } else if ("quick_entry".equals(d.getSystemName())) {
                 row = new TableDataRow(SampleManager.QUICK_ENTRY, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));

@@ -66,7 +66,7 @@ public class OpenELIS extends Screen {
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
-                    environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
+                    environmentalSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, secondDataEntry, project, provider, organization, worksheetBuilder,
                     worksheetCompletion, addOrCancel, reviewAndRelease, toDo, secondaryLabelReport,
@@ -81,7 +81,7 @@ public class OpenELIS extends Screen {
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport,
+                    instrumentBarcodeReport, attachment, tubeLabelReport,
                     chlGcToCDCExport, abnormalsReport, abnormalsCallListReport, patientMerge;
 
     @UiField
@@ -195,12 +195,6 @@ public class OpenELIS extends Screen {
         addCommand(sdwisSampleLogin, "samplesdwis", new Command() {
             public void execute() {
                 showScreen(SAMPLE_SDWIS);
-            }
-        });
-
-        addCommand(privateWellWaterSampleLogin, "sampleprivatewell", new Command() {
-            public void execute() {
-                showScreen(SAMPLE_PRIVATE_WELL);
             }
         });
 
@@ -608,11 +602,6 @@ public class OpenELIS extends Screen {
         loginName = UserCache.getPermission().getLoginName();
         if ("mbielick".equals(loginName) || "dshirazi".equals(loginName) ||
             "akampoow".equals(loginName)) {
-            addCommand(privateWellAttachment, "sampletracking", new Command() {
-                public void execute() {
-                    showScreen(PRIVATE_WELL_ATTACHMENT);
-                }
-            });
             addCommand(chlGcToCDCExport, "sampletracking", new Command() {
                 public void execute() {
                     showScreen(CHL_GC_TO_CDC_EXPORT);
