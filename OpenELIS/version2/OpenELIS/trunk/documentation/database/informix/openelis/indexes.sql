@@ -246,10 +246,6 @@ create unique index sample_organization_1_idx on sample_organization(id);
 create        index sample_organization_2_idx on sample_organization(sample_id);
 create        index sample_organization_3_idx on sample_organization(organization_id);
 
-create unique index sample_private_well_1_idx on sample_private_well(id);
-create unique index sample_private_well_2_idx on sample_private_well(sample_id);
-create        index sample_private_well_3_idx on sample_private_well(organization_id);
-
 create unique index sample_project_1_idx on sample_project(id);
 create        index sample_project_2_idx on sample_project(sample_id);
 create        index sample_project_3_idx on sample_project(project_id);
@@ -434,7 +430,6 @@ alter table sample_environmental add constraint primary key(id) constraint sampl
 alter table sample_item add constraint primary key(id) constraint sample_item_pk;
 alter table sample_neonatal add constraint primary key(id) constraint sample_neonatal_pk;
 alter table sample_organization add constraint primary key(id) constraint sample_organization_pk;
-alter table sample_private_well add constraint primary key(id) constraint sample_private_well_pk;
 alter table sample_project add constraint primary key(id) constraint sample_project_pk;
 alter table sample_pt add constraint primary key(id) constraint sample_pt_pk;
 alter table sample_qaevent add constraint primary key(id) constraint sample_qaevent_pk;
@@ -681,10 +676,6 @@ alter table sample_neonatal add constraint foreign key(provider_id) references p
 alter table sample_organization add constraint foreign key(sample_id) references sample(id) constraint sample_organization_1_fk;
 alter table sample_organization add constraint foreign key(organization_id) references organization(id) constraint sample_organization_2_fk;
 alter table sample_organization add constraint foreign key(type_id) references dictionary(id) constraint sample_organization_3_fk;
-
-alter table sample_private_well add constraint foreign key(sample_id) references sample(id) constraint sample_private_well_1_fk;
-alter table sample_private_well add constraint foreign key(report_to_address_id) references address(id) constraint sample_private_well_2_fk;
-alter table sample_private_well add constraint foreign key(location_address_id) references address(id) constraint sample_private_well_3_fk;
 
 alter table sample_project add constraint foreign key(sample_id) references sample(id) constraint sample_project_1_fk;
 alter table sample_project add constraint foreign key(project_id) references project(id) constraint sample_project_2_fk;
