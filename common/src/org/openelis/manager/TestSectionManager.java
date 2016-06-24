@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
 
 public class TestSectionManager implements Serializable {
 
@@ -121,13 +122,13 @@ public class TestSectionManager implements Serializable {
     public TestSectionViewDO getDefaultSection() throws Exception {
         DictionaryDO locationDict;
         Integer locationId;
-        Preferences prefs;
+        Preferences1 prefs;
         String locationName, locationSuffix, sectionName;
         TestSectionViewDO data;
 
         data = null;
 
-        prefs = Preferences.userRoot();
+        prefs = PreferencesService1Impl.INSTANCE.userRoot();
         locationSuffix = "NONE";
         locationId = prefs.getInt("location", -1);
         if (locationId != -1) {
