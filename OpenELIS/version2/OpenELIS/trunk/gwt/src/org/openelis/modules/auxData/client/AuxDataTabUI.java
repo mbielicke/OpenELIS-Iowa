@@ -25,8 +25,10 @@
  */
 package org.openelis.modules.auxData.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +41,8 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
-import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.AuxFieldManager;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.manager.AuxFieldGroupManager1;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.sample1.client.ResultCell;
 import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.sample1.client.RunScriptletEvent;
@@ -231,8 +232,7 @@ public abstract class AuxDataTabUI extends Screen {
                 Value value;
                 AuxDataViewDO data;
                 AuxFieldViewDO af;
-                AuxFieldGroupManager agm;
-                AuxFieldManager afm;
+                AuxFieldGroupManager1 agm;
                 ResultFormatter rf;
 
                 if (isState(QUERY))
@@ -262,9 +262,8 @@ public abstract class AuxDataTabUI extends Screen {
                              * find the aux field and execute any scriptlet
                              * specified for it
                              */
-                            afm = agm.getFields();
-                            for (i = 0; i < afm.count(); i++ ) {
-                                af = afm.getAuxFieldAt(i);
+                            for (i = 0; i < agm.field.count(); i++ ) {
+                                af = agm.field.get(i);
                                 if (data.getAuxFieldId().equals(af.getId()) &&
                                     af.getScriptletId() != null)
                                     parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
@@ -311,7 +310,7 @@ public abstract class AuxDataTabUI extends Screen {
 
                 parentScreen.setBusy();
                 try {
-                    afs = AuxiliaryService.get()
+                    afs = AuxiliaryService1Impl.INSTANCE
                                           .fetchByAnalyteName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
 
@@ -659,7 +658,7 @@ public abstract class AuxDataTabUI extends Screen {
         Integer groupId, dictId;
         Row row;
         AuxDataViewDO data;
-        AuxFieldGroupManager afgm;
+        AuxFieldGroupManager1 afgm;
         ResultFormatter rf;
         ResultCell.Value value;
         ArrayList<Row> model;
@@ -749,7 +748,7 @@ public abstract class AuxDataTabUI extends Screen {
         Item<Integer> item;
         ArrayList<Item<Integer>> model;
         ArrayList<FormattedValue> values;
-        AuxFieldGroupManager agm;
+        AuxFieldGroupManager1 agm;
 
         if (dictionaryModel == null)
             dictionaryModel = new HashMap<String, ArrayList<Item<Integer>>>();
@@ -799,11 +798,11 @@ public abstract class AuxDataTabUI extends Screen {
         }
     }
 
-    private AuxFieldGroupManager getAuxFieldGroupManager(Integer groupId) throws Exception {
+    private AuxFieldGroupManager1 getAuxFieldGroupManager(Integer groupId) throws Exception {
         if ( ! (parentScreen instanceof CacheProvider))
             throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
 
-        return ((CacheProvider)parentScreen).get(groupId, AuxFieldGroupManager.class);
+        return ((CacheProvider)parentScreen).get(groupId, AuxFieldGroupManager1.class);
     }
 
     /**
@@ -813,8 +812,7 @@ public abstract class AuxDataTabUI extends Screen {
     private void setAuxFieldWidgets(AuxDataViewDO data) {
         String desc, method, unit;
         AuxFieldViewDO af;
-        AuxFieldGroupManager afgm;
-        AuxFieldManager afm;
+        AuxFieldGroupManager1 afgm;
 
         desc = null;
         method = null;
@@ -826,9 +824,8 @@ public abstract class AuxDataTabUI extends Screen {
              */
             try {
                 afgm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
-                afm = afgm.getFields();
-                for (int i = 0; i < afm.count(); i++ ) {
-                    af = afm.getAuxFieldAt(i);
+                for (int i = 0; i < afgm.field.count(); i++ ) {
+                    af = afgm.field.get(i);
                     if (af.getId().equals(data.getAuxFieldId())) {
                         desc = af.getDescription();
                         method = af.getMethodName();

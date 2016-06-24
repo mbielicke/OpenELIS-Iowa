@@ -22,7 +22,7 @@ import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
 import org.openelis.manager.PanelManager1;
 import org.openelis.meta.PanelMeta;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -803,7 +803,7 @@ public class PanelScreenUI extends Screen {
             allTestTable.setModel(getAllTestModel());
 
             model = new ArrayList<Row>();
-            auxList = AuxiliaryService.get().fetchActive();
+            auxList = AuxiliaryService1Impl.INSTANCE.fetchActive();
             for (AuxFieldGroupDO data : auxList) {
                 row = new Row(1);
                 row.setCell(0, data.getName());

@@ -76,8 +76,9 @@ import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
 import org.openelis.meta.TestAnalyteViewMeta;
-import org.openelis.modules.analyte.client.AnalyteService;
-import org.openelis.modules.dictionary.client.DictionaryService;
+import org.openelis.modules.analyte1.client.AnalyteService1;
+import org.openelis.modules.analyte1.client.AnalyteService1Impl;
+import org.openelis.modules.dictionary1.client.DictionaryService1Impl;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
@@ -1042,7 +1043,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = AnalyteService.get().fetchByName(search);
+            list = AnalyteService1Impl.INSTANCE.fetchByName(search);
             model = new ArrayList<TableDataRow>();
             for (AnalyteDO data : list) {
                 row = new TableDataRow(data.getId(), data.getName());
@@ -1080,7 +1081,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = DictionaryService.get().fetchByEntry(query);
+            list = DictionaryService1Impl.INSTANCE.fetchByEntry(query);
             for (IdNameVO data : list) {
                 row = new TableDataRow(1);
                 row.key = data.getId();

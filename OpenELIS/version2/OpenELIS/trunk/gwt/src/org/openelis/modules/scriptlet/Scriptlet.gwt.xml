@@ -26,6 +26,4 @@ UIRF Software License are applicable instead of those above.
 -->
 <module>
   <inherits name="org.openelis.modules.history.History"/>
-  
-  <entry-point class="org.openelis.modules.scriptlet.client.ScriptletEntry"/>
 </module>

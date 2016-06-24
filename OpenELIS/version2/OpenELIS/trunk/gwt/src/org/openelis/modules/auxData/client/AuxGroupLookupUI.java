@@ -28,7 +28,7 @@ package org.openelis.modules.auxData.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -208,7 +208,7 @@ public abstract class AuxGroupLookupUI extends Screen {
 
         groupsModel = new ArrayList<Row>();
         try {
-            groups = AuxiliaryService.get().fetchActive();
+            groups = AuxiliaryService1Impl.INSTANCE.fetchActive();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return groupsModel;

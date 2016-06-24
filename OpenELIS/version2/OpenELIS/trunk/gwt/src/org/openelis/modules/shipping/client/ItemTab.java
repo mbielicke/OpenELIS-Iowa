@@ -25,12 +25,14 @@
  */
 package org.openelis.modules.shipping.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -39,7 +41,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -56,9 +57,12 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.modules.order.client.OrderService;
-import org.openelis.modules.order.client.SendoutOrderScreen;
+import org.openelis.modules.order1.client.OrderEntry;
+import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.ui.widget.WindowInt;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -67,12 +71,12 @@ import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class ItemTab extends Screen {
 
-    private ShippingManager    manager;
-    private TableWidget        itemTable, trackingTable;
-    private AppButton          addItemButton, removeItemButton, addTrackingButton,
-                               removeTrackingButton, lookupItemButton;
-    private SendoutOrderScreen sendoutOrderScreen;
-    private boolean            loaded;
+    private ShippingManager      manager;
+    private TableWidget          itemTable, trackingTable;
+    private AppButton            addItemButton, removeItemButton, addTrackingButton,
+                                 removeTrackingButton, lookupItemButton;
+    private SendoutOrderScreenUI sendoutOrderScreen;
+    private boolean              loaded;
 
     public ItemTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -394,22 +398,25 @@ public class ItemTab extends Screen {
         try {
             window.setBusy(Messages.get().fetching());
             OrderService.get().fetchByIorderItemId(data.getReferenceId(), new SyncCallback<IOrderManager>() {
-                public void onSuccess(IOrderManager result) {                    
-                    ScreenWindow modal;
+                public void onSuccess(final IOrderManager result) {
+                    final SendoutOrderScreenUI orderScreen;
+                    ScheduledCommand cmd;
+                    OrderEntry entry;
+
                     try {
-                        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                        modal.setName(Messages.get().sendoutOrder());
-                        if (sendoutOrderScreen == null)
-                            sendoutOrderScreen = new SendoutOrderScreen(modal);
-                        
-                        modal.setContent(sendoutOrderScreen);
-                        sendoutOrderScreen.setManager(result);
-                        window.clearStatus();
+                        entry = new OrderEntry();
+                        orderScreen = entry.addSendoutOrderScreen();           
+                        cmd = new ScheduledCommand() {
+                            @Override
+                            public void execute() {
+                                orderScreen.query(result.getIorder().getId());
+                            }
+                        };
+                        Scheduler.get().scheduleDeferred(cmd);
                     } catch (Throwable e) {
-                        e.printStackTrace();
                         Window.alert(e.getMessage());
-                        window.clearStatus();
-                    }                                        
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
                 
                 public void onFailure(Throwable error) {    

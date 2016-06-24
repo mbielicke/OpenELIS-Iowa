@@ -30,7 +30,6 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
   <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceiptService"/>
   <inherits name="org.openelis.modules.storage.StorageService"/>
-  <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   <inherits name="org.openelis.modules.note.NoteService"/>
   
   <entry-point class="org.openelis.modules.buildKits.client.BuildKitsEntry"/>

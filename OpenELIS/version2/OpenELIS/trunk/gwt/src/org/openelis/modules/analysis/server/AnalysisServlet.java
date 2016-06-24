@@ -31,12 +31,8 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.AnalysisBean;
-import org.openelis.bean.AnalysisManagerBean;
-import org.openelis.bean.AnalysisQAEventManagerBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleAnalysisVO;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.modules.analysis.client.AnalysisServiceInt;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -45,23 +41,8 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
     
     private static final long serialVersionUID = 1L;
     
-    @EJB 
-    AnalysisManagerBean        analysisManager;
-    
     @EJB
     AnalysisBean               analysis;
-    
-    @EJB
-    AnalysisQAEventManagerBean analysisQAEventManager;
-    
-
-    public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        try {        
-            return analysisManager.fetchBySampleItemId(sampleItemId);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
     
     public AnalysisViewDO fetchById(Integer analysisId) throws Exception {
         try {        
@@ -74,15 +55,6 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
     public ArrayList<SampleAnalysisVO> fetchByPatientId(Integer patientId) throws Exception {
         try {
             return analysis.fetchByPatientId(patientId);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    // qa method
-    public AnalysisQaEventManager fetchQaByAnalysisId(Integer analysisId) throws Exception {
-        try {        
-            return analysisQAEventManager.fetchByAnalysisId(analysisId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

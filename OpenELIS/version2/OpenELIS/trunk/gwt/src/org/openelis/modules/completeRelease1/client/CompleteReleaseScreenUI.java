@@ -46,7 +46,7 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.TestManager;
@@ -57,7 +57,7 @@ import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.patient.client.PatientService;
@@ -96,7 +96,7 @@ import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.scriptlet.SampleSO;
@@ -2044,7 +2044,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
+        else if (c == AuxFieldGroupManager1.class)
             cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
 
         obj = cache.get(cacheKey);
@@ -2058,8 +2058,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         try {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager1.class)
+                obj = AuxiliaryService1Impl.INSTANCE.fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -2100,7 +2100,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         AnalysisViewDO ana;
         AuxDataViewDO aux;
         ArrayList<TestManager> tms;
-        ArrayList<AuxFieldGroupManager> afgms;
+        ArrayList<AuxFieldGroupManager1> afgms;
 
         cache = new HashMap<String, Object>();
 
@@ -2134,8 +2134,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
 
             if (ids.size() > 0) {
-                afgms = AuxiliaryService.get().fetchByIds(ids);
-                for (AuxFieldGroupManager afgm : afgms)
+                afgms = AuxiliaryService1Impl.INSTANCE.fetchByIds(ids);
+                for (AuxFieldGroupManager1 afgm : afgms)
                     cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
             }
         } catch (Exception e) {
@@ -2366,7 +2366,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
             if (hasEnvScriptlet) {
                 try {
-                    data = SystemVariableService.get()
+                    data = SystemVariableService1Impl.INSTANCE
                                                 .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
@@ -2395,7 +2395,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
             if (hasSDWISScriptlet) {
                 try {
-                    data = SystemVariableService.get()
+                    data = SystemVariableService1Impl.INSTANCE
                                                 .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
@@ -2424,7 +2424,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
             if (hasNeonatalScriptlet) {
                 try {
-                    data = SystemVariableService.get()
+                    data = SystemVariableService1Impl.INSTANCE
                                                 .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
@@ -2521,7 +2521,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         int i;
         AuxFieldViewDO auxf;
         AuxDataViewDO aux;
-        AuxFieldGroupManager auxfgm;
+        AuxFieldGroupManager1 auxfgm;
         HashSet<Integer> auxfgids;
         HashMap<Integer, Integer> auxfids;
 
@@ -2543,9 +2543,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * belonging to the groups found above
          */
         for (Integer id : auxfgids) {
-            auxfgm = get(id, AuxFieldGroupManager.class);
-            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
-                auxf = auxfgm.getFields().getAuxFieldAt(i);
+            auxfgm = get(id, AuxFieldGroupManager1.class);
+            for (i = 0; i < auxfgm.field.count(); i++ ) {
+                auxf = auxfgm.field.get(i);
                 if (auxf.getScriptletId() != null)
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }

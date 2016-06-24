@@ -33,7 +33,8 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.manager.Preferences;
+import org.openelis.manager.Preferences1;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -113,9 +114,9 @@ public class FavoritesScreen extends Screen {
     protected void getFavorites() throws Throwable {
         String favs;
         MenuItem mi;
-        Preferences pref;
+        Preferences1 pref;
 
-        pref = Preferences.userRoot();
+        pref = PreferencesService1Impl.INSTANCE.userRoot();
         favs = pref.get("favorites", "");
         for (String key : favs.split(",")) {
             mi = (MenuItem)def.getWidget(key);
@@ -229,8 +230,8 @@ public class FavoritesScreen extends Screen {
 
         // save the preferences and redraw
         try {
-            Preferences.userRoot().put("favorites", sb.toString());
-            Preferences.userRoot().flush();
+            PreferencesService1Impl.INSTANCE.userRoot().put("favorites", sb.toString());
+            PreferencesService1Impl.INSTANCE.flush(PreferencesService1Impl.INSTANCE.userRoot());
 
             list = tmpList;
             showFavorites();

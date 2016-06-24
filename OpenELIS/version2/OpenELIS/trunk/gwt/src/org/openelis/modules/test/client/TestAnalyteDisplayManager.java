@@ -30,8 +30,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestResultDO;
-import org.openelis.manager.AnalysisResultManager;
 
 
 public class TestAnalyteDisplayManager<T> {
@@ -146,17 +144,6 @@ public class TestAnalyteDisplayManager<T> {
     public int rowCount() {
         refreshIndexes();
         return indexes.size();
-    }
-    
-    public TestResultDO validateResultValue(AnalysisResultManager man, Integer resultGroup, 
-                                            String value, Integer unitOfMeasureId) throws Exception {
-        Integer testResultId;
-        TestResultDO testResultDo;
-                
-        testResultId = man.validateResultValue(resultGroup, unitOfMeasureId, value);        
-        testResultDo = man.getTestResultList().get(testResultId);
-        
-        return testResultDo;
     }
     
     private void refreshIndexes() {

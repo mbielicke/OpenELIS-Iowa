@@ -26,10 +26,8 @@ UIRF Software License are applicable instead of those above.
 -->
 <module>
   <inherits name="org.openelis.modules.test.TestService"/>
-  <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   <inherits name="org.openelis.modules.organization1.OrganizationService1"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
-  <inherits name="org.openelis.modules.note.NoteService"/>
   
   <entry-point class="org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticEntry"/>
 </module>

@@ -25,17 +25,18 @@
  */
 package org.openelis.modules.report.finalReportSingleReprint.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -48,14 +49,14 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.OrganizationManager1;
-import org.openelis.manager.Preferences;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.Preferences1;
+import org.openelis.manager.SampleManager1;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
-import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
+import org.openelis.modules.preferences1.client.PrinterService1Impl;
 import org.openelis.modules.sample1.client.PatientPermission;
+import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.OptionListItem;
@@ -71,7 +72,7 @@ import com.google.gwt.user.client.Window;
 public class FinalReportSingleReprintScreen extends Screen {
 
     private FormVO                               data;
-    private SampleManager                        manager;
+    private SampleManager1                       manager;
     private FinalReportSingleReprintScreen       screen;
     private TextBox                              faxNumber, from, toName, toCompany;
     private TextBox<Integer>                     accessionNumber;
@@ -131,7 +132,8 @@ public class FinalReportSingleReprintScreen extends Screen {
                 try {
                     if (accNum != null) {
                         window.setBusy(Messages.get().fetching());
-                        manager = SampleManager.fetchWithAllDataByAccessionNumber(accNum);
+                        manager = SampleService1.get().fetchByAccession(accNum, SampleManager1.Load.AUXDATA,
+                                                                        SampleManager1.Load.ORGANIZATION);
                         clearErrors();
                         /*
                          * don't show samples containing patient info if the user
@@ -401,7 +403,7 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            options = PrinterService.get().getPrinters("pdf");
+            options = PrinterService1Impl.INSTANCE.getPrinters("pdf");
             model.add(new TableDataRow(VIEW_PDF_KEY, Messages.get().viewInPDF()));
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
@@ -503,13 +505,13 @@ public class FinalReportSingleReprintScreen extends Screen {
 
             finalReportScreen.runReport(query);
         } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private void reset() {
-        Preferences prefs;
+        Preferences1 prefs;
 
         data = new FormVO();
         data.setIsPrint("Y");
@@ -517,11 +519,11 @@ public class FinalReportSingleReprintScreen extends Screen {
         data.setFrom(Messages.get().fromCompany());
         data.setNote("");
         try {
-            prefs = Preferences.userRoot();
+            prefs = PreferencesService1Impl.INSTANCE.userRoot();
             data.setPrinter(prefs.get("default_printer", VIEW_PDF_KEY));
         } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
-            e.printStackTrace();
         }
         manager = null;
     }
@@ -570,7 +572,6 @@ public class FinalReportSingleReprintScreen extends Screen {
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SampleOrganizationViewDO samOrg;
-        SampleOrganizationManager orgs;
 
         model = new ArrayList<TableDataRow>();
         row = new TableDataRow(null, "");
@@ -581,13 +582,12 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         orgIds = new ArrayList<Integer>();
         try {
-            orgs = manager.getOrganizations();
             /*
              * all unique organizations associated with the sample except the
              * one for bill-to are added to the dropdown
              */
-            for (i = 0; i < orgs.count(); i++ ) {
-                samOrg = orgs.getOrganizationAt(i);
+            for (i = 0; i < manager.organization.count(); i++ ) {
+                samOrg = manager.organization.get(i);
                 orgId = samOrg.getOrganizationId();
                 if ( !orgIds.contains(orgId) &&
                     !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
@@ -597,7 +597,6 @@ public class FinalReportSingleReprintScreen extends Screen {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
         }
 
@@ -613,7 +612,6 @@ public class FinalReportSingleReprintScreen extends Screen {
         OrganizationParameterDO param;
         FaxVO faxVO;
         SampleOrganizationViewDO samOrg;
-        SampleOrganizationManager orgs;
 
         model = new ArrayList<TableDataRow>();
 
@@ -622,13 +620,12 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         orgIds = new ArrayList<Integer>();
         try {
-            orgs = manager.getOrganizations();
             /*
              * all unique organizations associated with the sample are added to
              * the dropdown
              */
-            for (i = 0; i < orgs.count(); i++ ) {
-                samOrg = orgs.getOrganizationAt(i);
+            for (i = 0; i < manager.organization.count(); i++ ) {
+                samOrg = manager.organization.get(i);
                 orgId = samOrg.getOrganizationId();
                 if ( !orgIds.contains(orgId) &&
                     !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
@@ -656,7 +653,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             row.data = getAuxDataFax();
             model.add(0, row);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
         }
 
@@ -666,7 +663,6 @@ public class FinalReportSingleReprintScreen extends Screen {
     private FaxVO getAuxDataFax() {
         FaxVO faxVO;
         AuxDataViewDO aux;
-        AuxDataManager auxm;
 
         faxVO = new FaxVO();
         /*
@@ -674,16 +670,15 @@ public class FinalReportSingleReprintScreen extends Screen {
          * number if the corresponding analytes are found
          */
         try {
-            auxm = manager.getAuxData();
-            for (int i = 0; i < auxm.count(); i++ ) {
-                aux = auxm.getAuxDataAt(i);
+            for (int i = 0; i < manager.auxData.count(); i++ ) {
+                aux = manager.auxData.get(i);
                 if ("fax_to_attention".equals(aux.getAnalyteExternalId()))
                     faxVO.setToName(aux.getValue());
                 else if ("final_report_fax_num".equals(aux.getAnalyteExternalId()))
                     faxVO.setFaxNumber(aux.getValue());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
         }
 
@@ -714,7 +709,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         } catch (NotFoundException ignE) {
             // ignore
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
         }
 

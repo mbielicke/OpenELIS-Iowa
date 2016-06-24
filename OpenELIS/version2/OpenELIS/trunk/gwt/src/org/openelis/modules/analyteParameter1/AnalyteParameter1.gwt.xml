@@ -27,7 +27,6 @@ UIRF Software License are applicable instead of those above.
 <module>
    <inherits name="org.openelis.modules.test.TestService"/>
    <inherits name="org.openelis.modules.qc.QCService"/>
-   <inherits name="org.openelis.modules.preferences.PreferencesService"/>
    
    <entry-point class="org.openelis.modules.analyteParameter1.client.AnalyteParameterEntry"/>
 </module>

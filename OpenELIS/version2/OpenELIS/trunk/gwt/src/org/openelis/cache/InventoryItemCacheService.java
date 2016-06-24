@@ -10,21 +10,21 @@ import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class InventoryItemCacheService implements InventoryItemCacheServiceInt,
                                       InventoryItemCacheServiceIntAsync {
-    
-    static InventoryItemCacheService instance;
-    
-    InventoryItemCacheServiceIntAsync service;
-    
-    public static InventoryItemCacheService get() {
-        if(instance == null)
-            instance = new InventoryItemCacheService();
-        
-        return instance;
-    }
-    
+
+    private static InventoryItemCacheService  instance;
+
+    private InventoryItemCacheServiceIntAsync service;
+
     private InventoryItemCacheService() {
         service = (InventoryItemCacheServiceIntAsync)GWT.create(InventoryItemCacheServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
+    }
+
+    static InventoryItemCacheService get() {
+        if (instance == null)
+            instance = new InventoryItemCacheService();
+
+        return instance;
     }
 
     @Override
@@ -35,10 +35,9 @@ public class InventoryItemCacheService implements InventoryItemCacheServiceInt,
     @Override
     public InventoryItemDO getById(Integer id) throws Exception {
         Callback<InventoryItemDO> callback;
-        
+
         callback = new Callback<InventoryItemDO>();
         service.getById(id, callback);
         return callback.getResult();
     }
-
 }

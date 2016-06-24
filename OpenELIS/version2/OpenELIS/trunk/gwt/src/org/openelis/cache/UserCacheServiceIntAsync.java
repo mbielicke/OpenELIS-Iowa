@@ -15,8 +15,6 @@ public interface UserCacheServiceIntAsync {
 
     void getSystemUser(Integer id, AsyncCallback<SystemUserVO> callback);
 
-    void getSystemUsers(String name, AsyncCallback<ArrayList<SystemUserVO>> callback);
-
-    void validateSystemUsers(ArrayList<String> names, AsyncCallback<ArrayList<SystemUserVO>> callback);
-
+    void validateSystemUsers(ArrayList<String> names,
+                             AsyncCallback<ArrayList<SystemUserVO>> callback);
 }

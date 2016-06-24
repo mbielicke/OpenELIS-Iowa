@@ -212,7 +212,6 @@
                 <g:HTML>
                   <hr />
                 </g:HTML>
-                <w:MenuItem description="{msg.scriptletDescription}" enabled="false" ui:field="scriptlet" display="{msg.scriptlet}" />
                 <w:MenuItem description="{msg.systemVariableDescription}" enabled="false" icon="{res.icon.systemVariableIcon}"
                   ui:field="systemVariable" display="{msg.systemVariable}" />
                 <w:MenuItem description="{msg.pwsInformationDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"

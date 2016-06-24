@@ -41,12 +41,6 @@ import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
 import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
 import org.openelis.domain.TurnAroundReportViewVO.Value;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.OptionListItem;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -70,8 +64,14 @@ import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
-import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.modules.preferences1.client.PrinterService1Impl;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -501,7 +501,7 @@ public class TurnaroundStatisticScreen extends Screen {
 
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow("-view-", "View in PDF"));
-            options = PrinterService.get().getPrinters("pdf");
+            options = PrinterService1Impl.INSTANCE.getPrinters("pdf");
 
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));

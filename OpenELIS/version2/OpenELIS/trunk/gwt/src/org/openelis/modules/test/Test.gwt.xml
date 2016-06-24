@@ -30,8 +30,6 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.testTrailer.TestTrailerService"/>
   <inherits name="org.openelis.modules.scriptlet.ScriptletService"/>
   <inherits name="org.openelis.modules.history.History"/>
-  <inherits name="org.openelis.modules.dictionary.DictionaryService"/>
-  <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   <inherits name="org.openelis.modules.qc.QCService"/>
   
   <entry-point class="org.openelis.modules.test.client.TestEntry"/>

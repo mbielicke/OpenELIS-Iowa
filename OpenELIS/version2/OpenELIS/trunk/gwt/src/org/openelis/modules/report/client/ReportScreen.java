@@ -28,14 +28,6 @@ package org.openelis.modules.report.client;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.OptionListItem;
-import org.openelis.ui.common.Prompt;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenEventHandler;
@@ -55,7 +47,15 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.Preferences;
+import org.openelis.manager.Preferences1;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -87,7 +87,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 
     protected String            name, attachmentName;
 
-    protected Preferences       preferences;
+    protected Preferences1      preferences;
     
     protected boolean           isScreenInitialized;
     
@@ -429,7 +429,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 		defaultBarcodePrinter = null;
 		location = null;
 		
-		preferences =  Preferences.userRoot();
+		preferences =  PreferencesService1Impl.INSTANCE.userRoot();
 		if (preferences != null) {
 		    defaultPrinter = preferences.get("default_printer", null);
 		    defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);

@@ -80,7 +80,7 @@ public class OpenELIS extends Screen {
                     finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection,
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
-                    storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
+                    storageLocation, instrument, systemVariable, pws, cron, logs,
                     instrumentBarcodeReport, attachment, tubeLabelReport,
                     chlGcToCDCExport, abnormalsReport, abnormalsCallListReport, patientMerge;
 
@@ -423,12 +423,6 @@ public class OpenELIS extends Screen {
         addCommand(storageUnit, "storageunit", new Command() {
             public void execute() {
                 showScreen(STORAGE_UNIT);
-            }
-        });
-
-        addCommand(scriptlet, "scriptlet", new Command() {
-            public void execute() {
-                showScreen(SCRIPTLET);
             }
         });
 

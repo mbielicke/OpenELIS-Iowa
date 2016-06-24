@@ -78,9 +78,9 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.TestMeta;
-import org.openelis.modules.analyte.client.AnalyteService;
-import org.openelis.modules.dictionary.client.DictionaryService;
+import org.openelis.modules.analyte1.client.AnalyteService1Impl;
 import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
+import org.openelis.modules.dictionary1.client.DictionaryService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.GridFieldErrorException;
 import org.openelis.ui.common.NotFoundException;
@@ -1320,7 +1320,7 @@ public class AnalyteAndResultTab extends Screen
             auto = ((AutoComplete)event.getSource());
 
             if (isAnalyteQuery()) {
-                list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                list = AnalyteService1Impl.INSTANCE.fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 model = new ArrayList<TableDataRow>();
                 for (AnalyteDO data : list)
                     model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1544,7 +1544,7 @@ public class AnalyteAndResultTab extends Screen
         query.setFields(fields);
 
         try {
-            list = DictionaryService.get().fetchByEntry(query);
+            list = DictionaryService1Impl.INSTANCE.fetchByEntry(query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)

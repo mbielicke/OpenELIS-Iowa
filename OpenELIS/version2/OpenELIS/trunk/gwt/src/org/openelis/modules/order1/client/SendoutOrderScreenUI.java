@@ -25,9 +25,13 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +56,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
@@ -62,7 +66,7 @@ import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
@@ -1868,7 +1872,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = "tm:" + key;
-        else if (c == AuxFieldGroupManager.class)
+        else if (c == AuxFieldGroupManager1.class)
             cacheKey = "am:" + key;
 
         obj = cache.get(cacheKey);
@@ -1882,8 +1886,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         try {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager1.class)
+                obj = AuxiliaryService1Impl.INSTANCE.fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -2267,7 +2271,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         AuxDataViewDO aux;
         IOrderTestViewDO test;
         ArrayList<TestManager> tms;
-        ArrayList<AuxFieldGroupManager> afgms;
+        ArrayList<AuxFieldGroupManager1> afgms;
 
         cache = new HashMap<String, Object>();
 
@@ -2300,8 +2304,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         if (ids.size() > 0) {
-            afgms = AuxiliaryService.get().fetchByIds(ids);
-            for (AuxFieldGroupManager afgm : afgms)
+            afgms = AuxiliaryService1Impl.INSTANCE.fetchByIds(ids);
+            for (AuxFieldGroupManager1 afgm : afgms)
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
     }
