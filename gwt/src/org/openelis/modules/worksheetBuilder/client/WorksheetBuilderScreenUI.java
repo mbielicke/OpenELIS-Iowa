@@ -50,6 +50,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
@@ -62,7 +63,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.AnalysisResultManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.meta.WorksheetMeta;
@@ -73,7 +74,7 @@ import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.report.client.WorksheetLabelReportScreen;
 import org.openelis.modules.report.client.WorksheetPrintReportScreen;
-import org.openelis.modules.result.client.ResultService;
+import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
@@ -174,10 +175,10 @@ public class WorksheetBuilderScreenUI extends Screen {
 
     protected boolean                                     updateWarningShown;
     protected ArrayList<Integer>                          formatIds;
-    protected AsyncCallbackUI<AnalysisResultManager>      fetchAnalytesForDisplayCall;
     protected AsyncCallbackUI<ArrayList<IdNameVO>>        queryCall;
     protected AsyncCallbackUI<ArrayList<QcAnalyteViewDO>> fetchQcAnalytesCall;
     protected AsyncCallbackUI<ArrayList<ResultViewDO>>    fetchAnalytesCall;
+    protected AsyncCallbackUI<ArrayList<SampleManager1>>  fetchAnalytesForDisplayCall;
     protected AsyncCallbackUI<WorksheetManager1>          addCall, fetchByIdCall,
                                                           fetchForUpdateCall, fetchRelatedByIdCall,
                                                           unlockCall, updateCall;
@@ -1286,6 +1287,8 @@ public class WorksheetBuilderScreenUI extends Screen {
     @SuppressWarnings("unchecked")
     private void showAnalytes(String uid) {
         ArrayList<Object> analyteList;
+        ArrayList<Integer> anaIds;
+        SampleManager1.Load elem[] = {SampleManager1.Load.SINGLEANALYSIS, SampleManager1.Load.SINGLERESULT};
         SectionPermission perm;
         WorksheetAnalysisViewDO data;
         
@@ -1350,29 +1353,36 @@ public class WorksheetBuilderScreenUI extends Screen {
                                                                         fetchAnalytesCall);
                     } else {
                         if (fetchAnalytesForDisplayCall == null) {
-                            fetchAnalytesForDisplayCall = new AsyncCallbackUI<AnalysisResultManager>() {
-                                public void success(AnalysisResultManager arMan) {
+                            fetchAnalytesForDisplayCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
+                                public void success(ArrayList<SampleManager1> sms) {
                                     int i;
+                                    AnalysisViewDO aVDO;
                                     ArrayList<Object> analyteList;
                                     ArrayList<Row> model;
                                     ResultViewDO result;
                                     Row row;
+                                    SampleManager1 sm;
         
-                                    analyteList = new ArrayList<Object>();
-                                    model = new ArrayList<Row>();
-                                    for (i = 0; i < arMan.rowCount(); i++) {
-                                        result = arMan.getResultAt(i, 0);
-                                        row = new Row(2);
-                                        row.setCell(0, result.getIsReportable());
-                                        row.setCell(1, result.getAnalyte());
-                                        row.setData(result);
-                                        model.add(row);
+                                    analyteTable.setModel(null);
+                                    sm = sms.get(0);
+                                    if (sm.analysis.count() == 1) {
+                                        aVDO = sm.analysis.get(0);
+                                        analyteList = new ArrayList<Object>();
+                                        model = new ArrayList<Row>();
+                                        for (i = 0; i < sm.result.count(aVDO); i++) {
+                                            result = sm.result.get(aVDO, i, 0);
+                                            row = new Row(2);
+                                            row.setCell(0, result.getIsReportable());
+                                            row.setCell(1, result.getAnalyte());
+                                            row.setData(result);
+                                            model.add(row);
+                                        }
+                                        analyteTable.setModel(model);
+                                        analyteList.add(Boolean.FALSE);
+                                        analyteList.add(model);
+                                        analytesMap.put(selectedUid, analyteList);
+                                        clearStatus();
                                     }
-                                    analyteTable.setModel(model);
-                                    analyteList.add(Boolean.FALSE);
-                                    analyteList.add(model);
-                                    analytesMap.put(selectedUid, analyteList);
-                                    clearStatus();
                                 }
                                 
                                 public void notFound() {
@@ -1388,8 +1398,9 @@ public class WorksheetBuilderScreenUI extends Screen {
                             };
                         }
                         
-                        ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(),
-                                                                        fetchAnalytesForDisplayCall);
+                        anaIds = new ArrayList<Integer>();
+                        anaIds.add(data.getAnalysisId());
+                        SampleService1.get().fetchByAnalyses(anaIds, elem, fetchAnalytesForDisplayCall);
                     }
                 } else if (data.getQcLotId() != null) {
                     if (fetchQcAnalytesCall == null) {
