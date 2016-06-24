@@ -292,8 +292,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         
         analysesTable.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
-                if (analysesTable.getSelectedRows().length == 0)
+                if (analysesTable.getSelectedRows().length == 0) {
                     addRow.setEnabled(false);
+                    showAnalytes();
+                }
             }
         });
         
@@ -524,6 +526,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         }
 
         analysesTable.setModel(model);
+        showAnalytes();
     }
     
     /**
