@@ -26,24 +26,12 @@
 package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
@@ -63,14 +51,13 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.modules.analyte.client.AnalyteService;
+import org.openelis.modules.analyte1.client.AnalyteService1Impl;
 import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell.Value;
 import org.openelis.scriptlet.WorksheetSO;
 import org.openelis.scriptlet.WorksheetSO.Action_Before;
@@ -105,6 +92,18 @@ import org.openelis.ui.widget.table.event.CellEditedEvent;
 import org.openelis.ui.widget.table.event.CellEditedHandler;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultFormatter.FormattedValue;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetItemTabUI extends Screen {
 
@@ -563,7 +562,7 @@ public class WorksheetItemTabUI extends Screen {
                                                 } else {
                                                     aDO = analytes.get(taVDO.getAnalyteId());
                                                     if (aDO == null) {
-                                                        aDO = AnalyteService.get().fetchById(taVDO.getAnalyteId());
+                                                        aDO = AnalyteService1Impl.INSTANCE.fetchById(taVDO.getAnalyteId());
                                                         analytes.put(taVDO.getAnalyteId(), aDO);
                                                     }
                                                     if (colMap.get(aDO.getExternalId()) != null)

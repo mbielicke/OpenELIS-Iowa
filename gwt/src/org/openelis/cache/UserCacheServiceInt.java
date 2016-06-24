@@ -13,12 +13,9 @@ public interface UserCacheServiceInt extends XsrfProtectedService {
 
     SystemUserVO getSystemUser(Integer id) throws Exception;
 
-    ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception;
-
     ArrayList<SystemUserVO> getEmployees(String name) throws Exception;
 
     SystemUserPermission getPermission() throws Exception;
 
     ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> names) throws Exception;
-
 }

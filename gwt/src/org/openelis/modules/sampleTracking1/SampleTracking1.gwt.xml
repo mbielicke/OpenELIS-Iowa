@@ -8,7 +8,6 @@
   <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1Service"/>
   <inherits name="org.openelis.modules.shipping.ShippingService"/>
   <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
-  <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
   <inherits name="org.openelis.modules.storageLocation.StorageLocationService"/>
   <inherits name="org.openelis.modules.scriptlet.ScriptletService"/>

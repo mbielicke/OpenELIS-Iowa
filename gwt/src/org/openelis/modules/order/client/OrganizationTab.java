@@ -58,7 +58,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.IOrderManager;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
-import org.openelis.modules.sample.client.SampleOrganizationUtility;
+import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -209,7 +209,7 @@ public class OrganizationTab extends Screen {
                         }
                         
                         try {
-                            if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
+                            if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
                                 Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                         } catch (Exception e) {
                             Window.alert(e.getMessage());

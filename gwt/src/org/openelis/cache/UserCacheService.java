@@ -11,22 +11,22 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
-public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIntAsync{
-    
-    static UserCacheService instance;
-    
-    UserCacheServiceIntAsync service;
-    
-    public static UserCacheService get() {
-        if(instance == null)
-            instance = new UserCacheService();
-        
-        return instance;
-    }
-    
+public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIntAsync {
+
+    private static UserCacheService  instance;
+
+    private UserCacheServiceIntAsync service;
+
     private UserCacheService() {
         service = (UserCacheServiceIntAsync)GWT.create(UserCacheServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
+    }
+
+    public static UserCacheService get() {
+        if (instance == null)
+            instance = new UserCacheService();
+
+        return instance;
     }
 
     @Override
@@ -45,32 +45,18 @@ public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIn
     }
 
     @Override
-    public void getSystemUsers(String name, AsyncCallback<ArrayList<SystemUserVO>> callback) {
-        service.getSystemUsers(name, callback);
-    }
-
-    @Override
     public SystemUserVO getSystemUser(Integer id) throws Exception {
         Callback<SystemUserVO> callback;
-        
+
         callback = new Callback<SystemUserVO>();
         service.getSystemUser(id, callback);
         return callback.getResult();
     }
 
     @Override
-    public ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
-        Callback<ArrayList<SystemUserVO>> callback;
-        
-        callback = new Callback<ArrayList<SystemUserVO>>();
-        service.getSystemUsers(name, callback);
-        return callback.getResult();
-    }
-
-    @Override
     public ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
         Callback<ArrayList<SystemUserVO>> callback;
-        
+
         callback = new Callback<ArrayList<SystemUserVO>>();
         service.getEmployees(name, callback);
         return callback.getResult();
@@ -79,21 +65,22 @@ public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIn
     @Override
     public SystemUserPermission getPermission() throws Exception {
         Callback<SystemUserPermission> callback;
-        
+
         callback = new Callback<SystemUserPermission>();
         service.getPermission(callback);
         return callback.getResult();
     }
 
     @Override
-    public void validateSystemUsers(ArrayList<String> names, AsyncCallback<ArrayList<SystemUserVO>> callback) {
+    public void validateSystemUsers(ArrayList<String> names,
+                                    AsyncCallback<ArrayList<SystemUserVO>> callback) {
         service.validateSystemUsers(names, callback);
     }
 
     @Override
     public ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> names) throws Exception {
         Callback<ArrayList<SystemUserVO>> callback;
-        
+
         callback = new Callback<ArrayList<SystemUserVO>>();
         service.validateSystemUsers(names, callback);
         return callback.getResult();

@@ -26,21 +26,17 @@ UIRF Software License are applicable instead of those above.
 -->
 <module>
 	<inherits name="org.openelis.modules.main.Main" />
-	<inherits name="org.openelis.modules.analyte.Analyte" />
 	<inherits name="org.openelis.modules.analyte1.Analyte1" />
 	<inherits name="org.openelis.modules.analysis.Analysis" />
-	<inherits name="org.openelis.modules.analysisUser.AnalysisUser" />
 	<inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin" />
 	<inherits name="org.openelis.modules.attachment.Attachment" />
 	<inherits name="org.openelis.modules.auxData.AuxData" />
-	<inherits name="org.openelis.modules.auxiliary.Auxiliary" />
 	<inherits name="org.openelis.modules.auxiliary1.Auxiliary1" />
     <inherits name="org.openelis.modules.analyteParameter1.AnalyteParameter1"/>
 	<inherits name="org.openelis.modules.buildKits.BuildKits" />
 	<inherits name="org.openelis.modules.clinicalSampleLogin1.ClinicalSampleLogin1" />
 	<inherits name="org.openelis.modules.completeRelease1.CompleteRelease1" />
 	<inherits name="org.openelis.modules.cron.Cron" />
-	<inherits name="org.openelis.modules.dictionary.Dictionary" />
 	<inherits name="org.openelis.modules.dictionary1.Dictionary1" />
 	<inherits name="org.openelis.modules.eventLog.EventLog" />
 	<inherits name="org.openelis.modules.exchangeVocabularyMap.ExchangeVocabularyMap" />
@@ -58,17 +54,13 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="org.openelis.modules.method.Method" />
 	<inherits name="org.openelis.modules.neonatalScreeningSampleLogin.NeonatalScreeningSampleLogin" />
 	<inherits name="org.openelis.modules.note.Note" />
-	<inherits name="org.openelis.modules.order.Order" />
 	<inherits name="org.openelis.modules.order1.Order1" />
 	<inherits name="org.openelis.modules.orderFill.OrderFill" />
 	<inherits name="org.openelis.modules.organization1.Organization1" />
 	<inherits name="org.openelis.modules.project.Project" />
-<!-- 	<inherits name="org.openelis.modules.provider.Provider" /> -->
 	<inherits name="org.openelis.modules.provider1.Provider1" />
-	<inherits name="org.openelis.modules.panel.Panel" />
 	<inherits name="org.openelis.modules.panel1.Panel1" />
 	<inherits name="org.openelis.modules.patient.Patient" />
-	<inherits name="org.openelis.modules.preferences.Preferences" />
 	<inherits name="org.openelis.modules.preferences1.Preferences1" />
     <inherits name="org.openelis.modules.PTSampleLogin1.PTSampleLogin1"/>
 	<inherits name="org.openelis.modules.pws.PWS" />
@@ -81,8 +73,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.report.qcChart1.QcChart1" />
 	<inherits name="org.openelis.modules.report.secondaryLabel.SecondaryLabel" />
 	<inherits name="org.openelis.modules.report.turnaroundStatistic.TurnaroundStatistic" />
-	<inherits name="org.openelis.modules.result.Result" />
-	<inherits name="org.openelis.modules.sample.Sample" />
 	<inherits name="org.openelis.modules.sample1.Sample1" />
 	<inherits name="org.openelis.modules.sampleQc.SampleQc" />
 	<inherits name="org.openelis.modules.sampleTracking1.SampleTracking1" />
@@ -94,15 +84,12 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="org.openelis.modules.storage.Storage" />
 	<inherits name="org.openelis.modules.storageLocation.StorageLocation" />
 	<inherits name="org.openelis.modules.storageunit.StorageUnit" />
-	<inherits name="org.openelis.modules.systemvariable.SystemVariable" />
 	<inherits name="org.openelis.modules.systemvariable1.SystemVariable1" />
 	<inherits name="org.openelis.modules.testTrailer.TestTrailer" />
 	<inherits name="org.openelis.modules.test.Test" />
-	<!-- <inherits name="org.openelis.modules.todo.ToDo" /> -->
 	<inherits name="org.openelis.modules.todo1.ToDo1" />
     <inherits name="org.openelis.modules.verification1.Verification1" />
 	<inherits name="org.openelis.modules.secondDataEntry.SecondDataEntry" />
-	<inherits name="org.openelis.modules.worksheet.Worksheet" />
 	<inherits name="org.openelis.modules.worksheet1.Worksheet1" />
 	<inherits name="org.openelis.modules.worksheetBuilder.WorksheetBuilder" />
 	<inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1" />

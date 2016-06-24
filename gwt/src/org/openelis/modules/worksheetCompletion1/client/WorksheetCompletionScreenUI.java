@@ -27,25 +27,15 @@ package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
@@ -70,7 +60,7 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
@@ -79,7 +69,7 @@ import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.meta.WorksheetMeta;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
@@ -91,7 +81,7 @@ import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.TestReflexUtility1;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetManagerModifiedEvent;
@@ -138,6 +128,20 @@ import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
@@ -206,7 +210,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                                                           unlockTransferCall, updateCall;
     protected AsyncCallbackUI<WorksheetResultsTransferVO> fetchForTransferCall, transferCall;
     protected EditNoteLookupUI                            failedNoteLookup;
-    protected HashMap<Integer, AuxFieldGroupManager>      auxManagers;
+    protected HashMap<Integer, AuxFieldGroupManager1>     auxManagers;
     protected HashMap<Integer, TestManager>               testManagers;
     protected SampleManager1.Load                         sampleElements[] = {SampleManager1.Load.ORGANIZATION,
                                                                               SampleManager1.Load.QA,
@@ -232,7 +236,7 @@ public class WorksheetCompletionScreenUI extends Screen {
             throw new PermissionException(Messages.get().screenPermException("Worksheet Completion Screen"));
 
         try {
-            sysVarDO = SystemVariableService.get().fetchByExactName("worksheet_display_directory");
+            sysVarDO = SystemVariableService1Impl.INSTANCE.fetchByExactName("worksheet_display_directory");
             displayExcelDirectory = sysVarDO.getValue();
         } catch (Exception anyE) {
             throw new Exception(Messages.get().worksheet_displayDirectoryLookupException());
@@ -294,7 +298,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         
         manager = null;
         updateTransferMode = false;
-        auxManagers = new HashMap<Integer, AuxFieldGroupManager>();
+        auxManagers = new HashMap<Integer, AuxFieldGroupManager1>();
         testManagers = new HashMap<Integer, TestManager>();
         sMansById = new HashMap<Integer, SampleManager1>();
     }
@@ -1811,12 +1815,12 @@ public class WorksheetCompletionScreenUI extends Screen {
         return tMan;
     }
 
-    private AuxFieldGroupManager getAuxManager(Integer auxId) throws Exception {
-        AuxFieldGroupManager afgMan;
+    private AuxFieldGroupManager1 getAuxManager(Integer auxId) throws Exception {
+        AuxFieldGroupManager1 afgMan;
 
         afgMan = auxManagers.get(auxId);
         if (afgMan == null) {
-            afgMan = AuxiliaryService.get().fetchById(auxId);
+            afgMan = AuxiliaryService1Impl.INSTANCE.fetchById(auxId);
             auxManagers.put(auxId, afgMan);
         }
         return afgMan;
@@ -1826,7 +1830,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         int i, j, k, l;
         AnalysisViewDO aVDO;
         AuxDataViewDO adVDO;
-        AuxFieldGroupManager afgMan;
+        AuxFieldGroupManager1 afgMan;
         Integer groupId;
         ResultFormatter rf;
         ResultViewDO rVDO;

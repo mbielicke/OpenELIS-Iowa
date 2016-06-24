@@ -32,11 +32,9 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.auxData.AuxData"/>
   <inherits name="org.openelis.modules.shipping.ShippingService"/>
   <inherits name="org.openelis.modules.report.ReportService"/>
-  <inherits name="org.openelis.modules.auxiliary.AuxiliaryService"/>
   <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
   <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
   <inherits name="org.openelis.modules.order.OrderService"/>
-  <inherits name="org.openelis.modules.sample.Sample"/>
   
   <entry-point class="org.openelis.modules.order1.client.OrderEntry"/>
 </module>

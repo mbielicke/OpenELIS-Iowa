@@ -29,8 +29,7 @@ UIRF Software License are applicable instead of those above.
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget'
              xmlns:t='urn:import:org.openelis.ui.widget.table' 
-             xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-             xmlns:o="urn:import:org.openelis.modules.worksheet.client">
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />

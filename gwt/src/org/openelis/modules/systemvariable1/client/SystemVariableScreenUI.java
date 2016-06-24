@@ -44,7 +44,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.meta.SystemVariableMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
@@ -506,7 +505,7 @@ public class SystemVariableScreenUI extends Screen {
         setBusy(Messages.get().lockForUpdate());
 
         try {
-            data = SystemVariableService.get().fetchForUpdate(data.getId());
+            data = SystemVariableService1Impl.INSTANCE.fetchForUpdate(data.getId());
 
             setState(DELETE);
             fireDataChange();

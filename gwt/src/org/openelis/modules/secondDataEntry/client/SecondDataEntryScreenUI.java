@@ -51,18 +51,18 @@ import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentUtil;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.EntityLockedException;
@@ -586,7 +586,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                      */
                     if ( !scanTrfFetched) {
                         try {
-                            data = SystemVariableService.get()
+                            data = SystemVariableService1Impl.INSTANCE
                                                         .fetchByExactName("ver_with_scanned_trf");
                             allowScanTrf = new Boolean(data.getValue());
                         } catch (NotFoundException e) {
@@ -927,7 +927,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             return null;
 
         cacheKey = null;
-        if (c == AuxFieldGroupManager.class)
+        if (c == AuxFieldGroupManager1.class)
             cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
 
         obj = cache.get(cacheKey);
@@ -939,8 +939,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
          * in the cache
          */
         try {
-            if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
+            if (c == AuxFieldGroupManager1.class)
+                obj = AuxiliaryService1Impl.INSTANCE.fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -1172,7 +1172,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         Integer prevId;
         ArrayList<Integer> ids;
         AuxDataViewDO aux;
-        ArrayList<AuxFieldGroupManager> afgms;
+        ArrayList<AuxFieldGroupManager1> afgms;
 
         cache = new HashMap<String, Object>();
 
@@ -1191,8 +1191,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             }
 
             if (ids.size() > 0) {
-                afgms = AuxiliaryService.get().fetchByIds(ids);
-                for (AuxFieldGroupManager afgm : afgms)
+                afgms = AuxiliaryService1Impl.INSTANCE.fetchByIds(ids);
+                for (AuxFieldGroupManager1 afgm : afgms)
                     cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
             }
         } catch (Exception e) {

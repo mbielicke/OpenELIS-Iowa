@@ -26,8 +26,8 @@ import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.analyte1.client.AnalyteService1Impl;
-import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
+import org.openelis.modules.dictionary1.client.DictionaryService1Impl;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -1489,7 +1489,7 @@ public class AuxiliaryScreenUI extends Screen {
         query.setFields(field);
 
         try {
-            list = DictionaryService.get().fetchByEntry(query);
+            list = DictionaryService1Impl.INSTANCE.fetchByEntry(query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)

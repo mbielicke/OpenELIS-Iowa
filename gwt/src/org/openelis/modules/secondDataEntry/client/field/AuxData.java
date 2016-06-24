@@ -25,8 +25,8 @@
  */
 package org.openelis.modules.secondDataEntry.client.field;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.modules.sample1.client.ResultCell;
@@ -210,7 +210,7 @@ public class AuxData extends MultiField<Table> {
     public void copyToSample() {
         int r;
         AuxDataViewDO data;
-        AuxFieldGroupManager agm;
+        AuxFieldGroupManager1 agm;
         ResultFormatter rf;
         Value userVal, manVal;
         VerificationData vd;
@@ -234,7 +234,7 @@ public class AuxData extends MultiField<Table> {
         if (vd.numEdit > 1 && DataBaseUtil.isDifferent(userVal, manVal)) {
             try {
                 agm = parentScreen.getCacheProvider().get(data.getAuxFieldGroupId(),
-                                                          AuxFieldGroupManager.class);
+                                                          AuxFieldGroupManager1.class);
                 rf = agm.getFormatter();
                 ResultHelper.formatValue(data, userVal.getDisplay(), rf);
             } catch (ParseException e) {
@@ -368,7 +368,7 @@ public class AuxData extends MultiField<Table> {
         Item<Integer> item;
         ArrayList<Item<Integer>> model;
         ArrayList<FormattedValue> values;
-        AuxFieldGroupManager agm;
+        AuxFieldGroupManager1 agm;
 
         if (dictionaryModel == null)
             dictionaryModel = new HashMap<String, ArrayList<Item<Integer>>>();
@@ -377,7 +377,7 @@ public class AuxData extends MultiField<Table> {
         key = groupId + ":" + fieldId;
         model = dictionaryModel.get(key);
         if (model == null) {
-            agm = parentScreen.getCacheProvider().get(groupId, AuxFieldGroupManager.class);
+            agm = parentScreen.getCacheProvider().get(groupId, AuxFieldGroupManager1.class);
             rf = agm.getFormatter();
             /*
              * if all the values for this aux field are dictionary values, then

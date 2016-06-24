@@ -25,9 +25,9 @@
  */
 package org.openelis.modules.quickEntry.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,15 +50,15 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
@@ -558,7 +558,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = "tm:" + key;
-        else if (c == AuxFieldGroupManager.class)
+        else if (c == AuxFieldGroupManager1.class)
             cacheKey = "am:" + key;
 
         obj = cache.get(cacheKey);
@@ -572,8 +572,8 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         try {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager1.class)
+                obj = AuxiliaryService1Impl.INSTANCE.fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -821,7 +821,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                                                                                    .getId(),
                                                                           (SampleManager1.Load[])null);
                             } catch (NotFoundException nfE) {
-                                sysVarDO = SystemVariableService.get()
+                                sysVarDO = SystemVariableService1Impl.INSTANCE
                                                                 .fetchByExactName("last_accession_number");
                                 if (accessionNum.compareTo(Integer.valueOf(sysVarDO.getValue())) > 0)
                                     throw new InconsistencyException(Messages.get()
@@ -1123,7 +1123,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         int i, j, k, l;
         AnalysisViewDO aVDO;
         AuxDataViewDO adVDO;
-        AuxFieldGroupManager afgMan;
+        AuxFieldGroupManager1 afgMan;
         Integer groupId;
         ResultFormatter rf;
         ResultViewDO rVDO;
@@ -1137,7 +1137,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             if (adVDO.getValue() != null && adVDO.getTypeId() == null) {
                 try {
                     if ( !adVDO.getAuxFieldGroupId().equals(groupId)) {
-                        afgMan = get(adVDO.getAuxFieldGroupId(), AuxFieldGroupManager.class);
+                        afgMan = get(adVDO.getAuxFieldGroupId(), AuxFieldGroupManager1.class);
                         rf = afgMan.getFormatter();
                         groupId = adVDO.getAuxFieldGroupId();
                     }

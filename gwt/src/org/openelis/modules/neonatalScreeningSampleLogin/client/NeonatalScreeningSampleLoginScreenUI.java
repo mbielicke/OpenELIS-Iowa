@@ -73,7 +73,7 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AttachmentManager;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -85,7 +85,7 @@ import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.main.client.OpenELIS;
@@ -124,7 +124,7 @@ import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
-import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
 import org.openelis.scriptlet.SampleSO.Action_After;
@@ -3722,7 +3722,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * this domain's TRFs
              */
             if (attachmentPatternVariable == null)
-                attachmentPatternVariable = SystemVariableService.get()
+                attachmentPatternVariable = SystemVariableService1Impl.INSTANCE
                                                                  .fetchByExactName("attachment_pattern_neonatal");
             /*
              * the user checked the checkbox for showing attachment screen, so
@@ -3897,7 +3897,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
+        else if (c == AuxFieldGroupManager1.class)
             cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
 
         obj = cache.get(cacheKey);
@@ -3911,8 +3911,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         try {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager1.class)
+                obj = AuxiliaryService1Impl.INSTANCE.fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -4238,7 +4238,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         AnalysisViewDO ana;
         AuxDataViewDO aux;
         ArrayList<TestManager> tms;
-        ArrayList<AuxFieldGroupManager> afgms;
+        ArrayList<AuxFieldGroupManager1> afgms;
 
         cache = new HashMap<String, Object>();
 
@@ -4272,8 +4272,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             if (ids.size() > 0) {
-                afgms = AuxiliaryService.get().fetchByIds(ids);
-                for (AuxFieldGroupManager afgm : afgms)
+                afgms = AuxiliaryService1Impl.INSTANCE.fetchByIds(ids);
+                for (AuxFieldGroupManager1 afgm : afgms)
                     cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
             }
         } catch (Exception e) {
@@ -4329,7 +4329,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          */
         if (hasDomainScriptlet) {
             try {
-                domainScriptletVariable = SystemVariableService.get()
+                domainScriptletVariable = SystemVariableService1Impl.INSTANCE
                                                                .fetchByExactName("neonatal_scriptlet");
             } catch (NotFoundException e) {
                 // ignore
@@ -4577,7 +4577,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         int i;
         AuxFieldViewDO auxf;
         AuxDataViewDO aux;
-        AuxFieldGroupManager auxfgm;
+        AuxFieldGroupManager1 auxfgm;
         HashSet<Integer> auxfgids;
         HashMap<Integer, Integer> auxfids;
 
@@ -4599,9 +4599,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * belonging to the groups found above
          */
         for (Integer id : auxfgids) {
-            auxfgm = get(id, AuxFieldGroupManager.class);
-            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
-                auxf = auxfgm.getFields().getAuxFieldAt(i);
+            auxfgm = get(id, AuxFieldGroupManager1.class);
+            for (i = 0; i < auxfgm.field.count(); i++ ) {
+                auxf = auxfgm.field.get(i);
                 if (auxf.getScriptletId() != null)
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }
@@ -6332,7 +6332,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * for TRFs and can be used in java code for pattern matching
                  */
                 if (genTRFPatternVariable == null)
-                    genTRFPatternVariable = SystemVariableService.get()
+                    genTRFPatternVariable = SystemVariableService1Impl.INSTANCE
                                                                  .fetchByExactName("attachment_pattern_gen_java");
             } catch (Throwable e) {
                 Window.alert(e.getMessage());

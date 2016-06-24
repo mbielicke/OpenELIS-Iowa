@@ -74,13 +74,14 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.IOrderFillManager;
 import org.openelis.manager.IOrderItemManager;
 import org.openelis.manager.IOrderManager;
-import org.openelis.manager.Preferences;
+import org.openelis.manager.Preferences1;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.ShipNoteTab;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
 import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingScreen.Action;
@@ -1247,10 +1248,10 @@ public class OrderFillScreen extends Screen {
 
     private void showShippingScreen(ShippingManager manager, State state) throws Exception {
         ScreenWindow modal;
-        Preferences preferences;
+        Preferences1 preferences;
 
         if (manager != null) {
-            preferences = Preferences.userRoot();
+            preferences = PreferencesService1Impl.INSTANCE.userRoot();
             if (preferences != null) {
                 defaultPrinter = preferences.get("default_printer", null);
                 defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);

@@ -25,9 +25,9 @@
  */
 package org.openelis.modules.report.secondaryLabel.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.DEFAULT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +39,9 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SecondaryLabelVO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager1;
-import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.modules.preferences1.client.PreferencesService1Impl;
+import org.openelis.modules.preferences1.client.PrinterService1Impl;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -356,25 +356,23 @@ public class SecondaryLabelScreenUI extends Screen {
                     model.add(row);
                 }
             }
-
             testName.setModel(model);
 
-            defaultPrinter = Preferences.userRoot().get("default_bar_code_printer", null);
+            defaultPrinter = PreferencesService1Impl.INSTANCE.userRoot().get("default_bar_code_printer", null);
+
+            /*
+             * show barcode printers
+             */
+            smodel = new ArrayList<Item<String>>();
+            for (OptionListItem i : PrinterService1Impl.INSTANCE.getPrinters("zpl")) {
+                srow = new Item<String>(i.getKey(), i.getLabel());
+                smodel.add(srow);
+            }
+            printer.setModel(smodel);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             Window.alert(e.getMessage());
         }
-
-        smodel = new ArrayList<Item<String>>();
-        /*
-         * show barcode printers
-         */
-        for (OptionListItem i : PrinterService.get().getPrinters("zpl")) {
-            srow = new Item<String>(i.getKey(), i.getLabel());
-            smodel.add(srow);
-        }
-
-        printer.setModel(smodel);
     }
 
     @UiHandler("removeRowButton")

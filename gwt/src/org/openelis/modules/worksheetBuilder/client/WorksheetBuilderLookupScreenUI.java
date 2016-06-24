@@ -51,15 +51,16 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.manager.AnalysisResultManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.meta.AnalysisViewMeta;
-import org.openelis.modules.result.client.ResultService;
+import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.Datetime;
@@ -92,6 +93,20 @@ import org.openelis.ui.widget.table.event.UnselectionEvent;
 import org.openelis.ui.widget.table.event.UnselectionHandler;
 import org.openelis.utilcommon.TurnaroundUtil;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+
 public class WorksheetBuilderLookupScreenUI extends Screen {
 
     @UiTemplate("WorksheetBuilderLookup.ui.xml")
@@ -112,7 +127,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
     protected Dropdown<Integer>                       sectionId, analysisStatusId,
                                                       typeOfSampleId, tableSection,
                                                       tableUnit, tableStatus;
-    protected HashMap<Integer, AnalysisResultManager> analyteMap;
+    protected HashMap<Integer, SampleManager1>        analyteMap;
     @UiField
     protected Table                                   analysesTable, analyteTable;
     @UiField
@@ -130,7 +145,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         
         initWidget(uiBinder.createAndBindUi(this));
         
-        analyteMap = new HashMap<Integer, AnalysisResultManager>();
+        analyteMap = new HashMap<Integer, SampleManager1>();
     }
     
     /**
@@ -571,51 +586,55 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
     
     private void showAnalytes() {
         Integer selectedRows[];
-        AnalysisResultManager arMan;
+        ArrayList<Integer> ids;
+        SampleManager1 sm;
+        ArrayList<SampleManager1> sms;
+        AnalysisViewVO data;
         
         clearStatus();
+        sm = null;
+
         if (analyteTable.isVisible()) {
             selectedRows = analysesTable.getSelectedRows();
             if (selectedRows.length == 1) {
-                final AnalysisViewVO data = (AnalysisViewVO) analysesTable.getRowAt(selectedRows[0]).getData();
-                arMan = analyteMap.get(data.getAnalysisId());
-                if (arMan != null) {
-                    loadAnalyteTable(arMan);
-                } else {
-                    ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(), new AsyncCallback<AnalysisResultManager>() {
-                        public void onSuccess(AnalysisResultManager arMan) {
-                            loadAnalyteTable(arMan);
-                            analyteMap.put(data.getAnalysisId(), arMan);
+                data = (AnalysisViewVO) analysesTable.getRowAt(selectedRows[0]).getData();
+                sm = analyteMap.get(data.getAnalysisId());
+                if (sm == null) {
+                    ids = new ArrayList<Integer>();
+                    ids.add(data.getAnalysisId());
+                    try {
+                        sms = SampleService1.get().fetchByAnalyses(ids, SampleManager1.Load.SINGLEANALYSIS,
+                                                                   SampleManager1.Load.SINGLERESULT);
+                        if (sms.size() > 0) {
+                            sm = sms.get(0);
+                            analyteMap.put(data.getAnalysisId(), sm);
+                        } else {
+                            setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                         }
-            
-                        public void onFailure(Throwable error) {
-                            analyteTable.setModel(null);
-                            if (error instanceof NotFoundException) {
-                                setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                            } else {
-                                Window.alert("Error: WorksheetCreationLookup call showAnalytes failed; "+error.getMessage());
-                            }
-                        }
-                    });
+                    } catch (Exception e) {
+                        sm = null;
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        Window.alert(e.getMessage());
+                    }
                 }
-            } else {
-                analyteTable.setModel(null);
-            }            
-        } else {
-            analyteTable.setModel(null);
+            }
         }
+        loadAnalyteTable(sm);
     }
 
-    public void loadAnalyteTable(AnalysisResultManager arMan) {
+    public void loadAnalyteTable(SampleManager1 sm) {
+        int i;
         ArrayList<Item<Integer>> model;
         ResultViewDO result;
+        AnalysisViewDO a;
         Item<Integer> row;
 
         model = null;
-        if (arMan != null) {
+        if (sm != null && sm.analysis.count() == 1) {
             model = new ArrayList<Item<Integer>>();
-            for (ArrayList<ResultViewDO> resultRow : arMan.getResults()) {
-                result = (ResultViewDO)resultRow.get(0);
+            a = sm.analysis.get(0);
+            for (i = 0; i < sm.result.count(a); i++) {
+                result = (ResultViewDO)sm.result.get(a, i, 0);
                 if ("Y".equals(result.getIsReportable())) {
                     row = new Item<Integer>(1);
                     row.setKey(result.getId());

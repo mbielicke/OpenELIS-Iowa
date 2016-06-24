@@ -77,7 +77,6 @@ import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
-import org.openelis.manager.SampleManager;
 import org.openelis.meta.EventLogMeta;
 import org.openelis.meta.ExchangeCriteriaMeta;
 import org.openelis.meta.OrganizationMeta;
@@ -945,31 +944,31 @@ public class ExchangeDataSelectionScreen extends Screen {
         entries =  CategoryCache.getBySystemName("sample_domain");
         for (DictionaryDO d : entries) {
             if ("animal".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.ANIMAL_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().ANIMAL, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("environmental".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().ENVIRONMENTAL, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("newborn".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.NEWBORN_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().NEONATAL, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("clinical".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.CLINICAL_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().CLINICAL, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("pt".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.PT_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().PT, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("quick_entry".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.QUICK_ENTRY, d.getEntry());
+                row = new TableDataRow(Constants.domain().QUICKENTRY, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("sdwis".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.SDWIS_DOMAIN_FLAG, d.getEntry());
+                row = new TableDataRow(Constants.domain().SDWIS, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             }

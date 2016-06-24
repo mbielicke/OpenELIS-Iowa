@@ -57,7 +57,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
-import org.openelis.modules.analyte.client.AnalyteService;
+import org.openelis.modules.analyte1.client.AnalyteService1Impl;
 import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
 import org.openelis.ui.event.ActionEvent;
 import org.openelis.ui.event.ActionHandler;
@@ -179,7 +179,7 @@ public class AnalyteTab extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = AnalyteService1Impl.INSTANCE.fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
