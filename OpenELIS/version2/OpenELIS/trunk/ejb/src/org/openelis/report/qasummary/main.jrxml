@@ -121,7 +121,7 @@ ORDER BY o_id, accession_number]]>
 						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
+				<textField pattern="" isBlankWhenNull="true">
 					<reportElement key="facilityName" positionType="Float" x="0" y="0" width="192" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
 					</reportElement>

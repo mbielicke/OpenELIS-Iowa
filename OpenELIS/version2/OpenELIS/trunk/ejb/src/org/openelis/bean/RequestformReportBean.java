@@ -146,7 +146,7 @@ public class RequestformReportBean {
             svDO = systemVariable.fetchByName("sdwis_aux_group_ids");
         } catch (Exception e) {
             log.log(Level.SEVERE, "System Variable 'sdwis_aux_group_ids' is not available", e);
-            throw e;
+            throw new InconsistencyException("System Variable 'sdwis_aux_group_ids' is not available");
         }
 
         /*

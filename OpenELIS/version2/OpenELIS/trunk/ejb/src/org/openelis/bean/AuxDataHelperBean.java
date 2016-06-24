@@ -25,6 +25,7 @@
  */
 package org.openelis.bean;
 
+import static org.openelis.manager.AuxFieldGroupManager1Accessor.getFields;
 import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
 import static org.openelis.manager.SampleManager1Accessor.getProjects;
 import static org.openelis.manager.SampleManager1Accessor.getSample;
@@ -57,8 +58,7 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorWarning;
@@ -77,29 +77,29 @@ import org.openelis.utils.ReportUtil;
 public class AuxDataHelperBean {
 
     @EJB
-    private DictionaryCacheBean      dictionaryCache;
+    private DictionaryCacheBean       dictionaryCache;
 
     @EJB
-    private CategoryCacheBean        categoryCache;
+    private CategoryCacheBean         categoryCache;
 
     @EJB
-    private AuxFieldGroupManagerBean auxFieldGroupManager;
+    private AuxFieldGroupManager1Bean auxFieldGroupManager;
 
     @EJB
-    private ProjectBean              project;
+    private ProjectBean               project;
 
     @EJB
-    private PWSBean                  pws;
+    private PWSBean                   pws;
 
     @EJB
-    private SystemVariableBean       systemVariable;
+    private SystemVariableBean        systemVariable;
 
     @EJB
-    private AuxFieldGroupBean        auxFieldGroup;
+    private AuxFieldGroupBean         auxFieldGroup;
 
-    private static final Logger      log = Logger.getLogger("openelis");
+    private static final Logger       log = Logger.getLogger("openelis");
 
-    public static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
+    public static final String        SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
                     SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
                     SMPL_COLLECTED_DATE = "smpl_collected_date",
                     SMPL_COLLECTED_TIME = "smpl_collected_time",
@@ -143,14 +143,14 @@ public class AuxDataHelperBean {
     public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> groupIds,
                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
                              ValidationErrorsList e) throws Exception {
-        AuxFieldViewDO af;
-        AuxFieldManager afm;
-        AuxFieldGroupDO afg;
-        AuxFieldGroupManager afgm;
-        AuxDataViewDO aux1, aux2;
-        ResultFormatter rf;
+        ArrayList<AuxFieldViewDO> afs;
         ArrayList<Integer> addIds;
+        AuxFieldViewDO af;
+        AuxFieldGroupDO afg;
+        AuxFieldGroupManager1 afgm;
+        AuxDataViewDO aux1, aux2;
         HashMap<Integer, AuxDataViewDO> auxMap;
+        ResultFormatter rf;
 
         /*
          * make sure that only the groups not already in the list of aux data
@@ -167,7 +167,7 @@ public class AuxDataHelperBean {
              * fields for the aux group are fetched and aux data for them is
              * added
              */
-            afgm = auxFieldGroupManager.fetchByIdWithFields(id);
+            afgm = auxFieldGroupManager.fetchById(id);
             afg = afgm.getGroup();
 
             /*
@@ -178,37 +178,39 @@ public class AuxDataHelperBean {
                 continue;
             }
 
-            afm = afgm.getFields();
+            afs = getFields(afgm);
             rf = afgm.getFormatter();
-            for (int i = 0; i < afm.count(); i++ ) {
-                af = afm.getAuxFieldAt(i);
-                if ("N".equals(af.getIsActive()))
-                    continue;
-                aux1 = new AuxDataViewDO();
-                aux1.setAuxFieldId(af.getId());
-                aux1.setAuxFieldGroupId(id);
-                aux1.setAuxFieldGroupName(afg.getName());
-                aux1.setAnalyteId(af.getAnalyteId());
-                aux1.setAnalyteName(af.getAnalyteName());
-                aux1.setIsReportable(af.getIsReportable());
-                if (auxMap == null) {
-                    /*
-                     * set the value as the default for the aux data's field
-                     */
-                    aux1.setValue(rf.getDefault(af.getId(), null));
-                } else {
-                    /*
-                     * set the value from the map if the aux data's analyte can
-                     * be found in the map
-                     */
-                    aux2 = auxMap.get(af.getAnalyteId());
-                    if (aux2 != null) {
-                        aux1.setIsReportable(aux2.getIsReportable());
-                        aux1.setTypeId(aux2.getTypeId());
-                        aux1.setValue(aux2.getValue());
+            if (afs != null) {
+                for (int i = 0; i < afs.size(); i++ ) {
+                    af = afs.get(i);
+                    if ("N".equals(af.getIsActive()))
+                        continue;
+                    aux1 = new AuxDataViewDO();
+                    aux1.setAuxFieldId(af.getId());
+                    aux1.setAuxFieldGroupId(id);
+                    aux1.setAuxFieldGroupName(afg.getName());
+                    aux1.setAnalyteId(af.getAnalyteId());
+                    aux1.setAnalyteName(af.getAnalyteName());
+                    aux1.setIsReportable(af.getIsReportable());
+                    if (auxMap == null) {
+                        /*
+                         * set the value as the default for the aux data's field
+                         */
+                        aux1.setValue(rf.getDefault(af.getId(), null));
+                    } else {
+                        /*
+                         * set the value from the map if the aux data's analyte can
+                         * be found in the map
+                         */
+                        aux2 = auxMap.get(af.getAnalyteId());
+                        if (aux2 != null) {
+                            aux1.setIsReportable(aux2.getIsReportable());
+                            aux1.setTypeId(aux2.getTypeId());
+                            aux1.setValue(aux2.getValue());
+                        }
                     }
+                    auxiliary.add(aux1);
                 }
-                auxiliary.add(aux1);
             }
         }
     }

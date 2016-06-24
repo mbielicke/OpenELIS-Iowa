@@ -282,10 +282,6 @@ public class EJBFactory {
         return lookup("SampleBean");
     }
 
-    public static SampleManagerBean getSampleManager() {
-        return lookup("SampleManagerBean");
-    }
-    
     public static SampleManager1Bean getSampleManager1() {
         return lookup("SampleManager1Bean");
     }
