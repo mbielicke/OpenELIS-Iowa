@@ -156,13 +156,12 @@ public class QcChartReport1Bean {
                 resultList = fetchByDate(startDate, endDate, qcName, location);
             else if (number != null)
                 resultList = fetchByInstances(number, qcName, location);
-
-            if (resultList.size() == 0)
-                throw new NotFoundException("No data found for the query. Please change your query parameters.");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not fetch worksheet analyses", e);
             throw e;
         }
+        if (resultList == null || resultList.size() == 0)
+            throw new NotFoundException("No data found for the query. Please change your query parameters.");
 
         try {
             qcTypeDO = dictionaryCache.getById(qc);

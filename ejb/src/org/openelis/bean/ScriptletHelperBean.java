@@ -25,7 +25,11 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.AuxFieldGroupManager1Accessor.getFields;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +48,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.scriptlet.SampleSO;
@@ -65,22 +69,22 @@ import org.openelis.ui.scriptlet.ScriptletRunner;
 public class ScriptletHelperBean {
 
     @EJB
-    private TestManagerBean          testManager;
+    private TestManagerBean           testManager;
 
     @EJB
-    private SystemVariableBean       systemVariable;
+    private SystemVariableBean        systemVariable;
 
     @EJB
-    private AuxFieldGroupManagerBean auxFieldGroupManager;
+    private AuxFieldGroupManager1Bean auxFieldGroupManager;
 
     @EJB
-    private DictionaryCacheBean      dictionaryCache;
+    private DictionaryCacheBean       dictionaryCache;
 
-    private static final String      NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
+    private static final String       NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
                     ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_scriptlet",
                     SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_scriptlet";
 
-    private static final Logger      log                           = Logger.getLogger("openelis");
+    private static final Logger       log                           = Logger.getLogger("openelis");
 
     /**
      * creates and returns the cache of objects like TestManager that are used
@@ -90,7 +94,7 @@ public class ScriptletHelperBean {
         Integer prevId;
         ArrayList<Integer> ids;
         ArrayList<TestManager> tms;
-        ArrayList<AuxFieldGroupManager> afgms;
+        ArrayList<AuxFieldGroupManager1> afgms;
         HashMap<String, Object> cache;
 
         cache = new HashMap<String, Object>();
@@ -123,7 +127,7 @@ public class ScriptletHelperBean {
 
         if (ids.size() > 0) {
             afgms = auxFieldGroupManager.fetchByIds(ids);
-            for (AuxFieldGroupManager afgm : afgms)
+            for (AuxFieldGroupManager1 afgm : afgms)
                 cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
         }
 
@@ -233,7 +237,7 @@ public class ScriptletHelperBean {
                                  HashMap<String, Object> cache) throws Exception {
         int i;
         AuxFieldViewDO auxf;
-        AuxFieldGroupManager auxfgm;
+        AuxFieldGroupManager1 auxfgm;
         HashSet<Integer> auxfgids;
         HashMap<Integer, Integer> auxfids;
 
@@ -257,11 +261,13 @@ public class ScriptletHelperBean {
          * belonging to the groups found above
          */
         for (Integer id : auxfgids) {
-            auxfgm = get(id, AuxFieldGroupManager.class, cache);
-            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
-                auxf = auxfgm.getFields().getAuxFieldAt(i);
-                if (auxf.getScriptletId() != null)
-                    addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()), sr);
+            auxfgm = get(id, AuxFieldGroupManager1.class, cache);
+            if (getFields(auxfgm) != null) {
+                for (i = 0; i < getFields(auxfgm).size(); i++ ) {
+                    auxf = getFields(auxfgm).get(i);
+                    if (auxf.getScriptletId() != null)
+                        addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()), sr);
+                }
             }
         }
     }
@@ -316,7 +322,7 @@ public class ScriptletHelperBean {
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
+        else if (c == AuxFieldGroupManager1.class)
             cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
 
         return (T)cache.get(cacheKey);

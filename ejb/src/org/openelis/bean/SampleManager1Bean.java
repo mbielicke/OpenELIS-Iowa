@@ -132,7 +132,7 @@ import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldGroupManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.SampleManager1Accessor;
@@ -229,7 +229,7 @@ public class SampleManager1Bean {
     private AuxDataHelperBean            auxDataHelper;
 
     @EJB
-    private AuxFieldGroupManagerBean     auxFieldGroupManager;
+    private AuxFieldGroupManager1Bean    auxFieldGroupManager;
 
     @EJB
     private AuxDataBean                  auxData;
@@ -1207,7 +1207,7 @@ public class SampleManager1Bean {
         HashSet<Integer> ids, ids1, ids2;
         ArrayList<Integer> locks;
         HashMap<Integer, TestManager> tms;
-        HashMap<Integer, AuxFieldGroupManager> ams;
+        HashMap<Integer, AuxFieldGroupManager1> ams;
         HashMap<Integer, QaEventDO> qas;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
         AnalysisReportFlagsDO defaultARF;
@@ -1252,8 +1252,8 @@ public class SampleManager1Bean {
 
         ams = null;
         if (ids1.size() > 0) {
-            ams = new HashMap<Integer, AuxFieldGroupManager>();
-            for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1))) {
+            ams = new HashMap<Integer, AuxFieldGroupManager1>();
+            for (AuxFieldGroupManager1 am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1))) {
                 ams.put(am.getGroup().getId(), am);
                 cache.put(Constants.uid().getAuxFieldGroup(am.getGroup().getId()), am);
             }
@@ -2989,7 +2989,7 @@ public class SampleManager1Bean {
      */
     private void validate(SampleManager1 sm, SystemUserPermission permission, Integer maxAccession,
                           String trfPattern, HashMap<Integer, TestManager> tms,
-                          HashMap<Integer, AuxFieldGroupManager> ams,
+                          HashMap<Integer, AuxFieldGroupManager1> ams,
                           HashMap<Integer, QaEventDO> qas) throws Exception {
         int cnt;
         String prefix;

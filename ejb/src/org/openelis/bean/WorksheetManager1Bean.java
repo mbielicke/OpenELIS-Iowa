@@ -75,7 +75,7 @@ import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.manager.Preferences;
+import org.openelis.manager.Preferences1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
@@ -125,6 +125,8 @@ public class WorksheetManager1Bean {
     private LockBean                     lock;
     @EJB
     private NoteBean                     note;
+    @EJB
+    private PreferencesManager1Bean      prefsManager;
     @EJB
     private QcAnalyteBean                qcAnalyte;
     @EJB
@@ -1431,7 +1433,7 @@ public class WorksheetManager1Bean {
         HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> waVDOsByItemId;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrVDOsByAnalysisId;
         HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> wqrVDOsByAnalysisId;
-        Preferences prefs;
+        Preferences1 prefs;
         QcLotViewDO qclVDO;
         ScriptletRunner<WorksheetSO> sRunner;
         TestWorksheetDO twDO;
@@ -1480,7 +1482,7 @@ public class WorksheetManager1Bean {
         }
         
         try {
-            prefs = Preferences.userRoot();
+            prefs = prefsManager.userRoot();
         } catch (Exception anyE) {
             errors.add(anyE);
         }
@@ -2530,7 +2532,7 @@ public class WorksheetManager1Bean {
     }
     
     private void loadQcForAnalysis(WorksheetManager1 wm, TestWorksheetItemDO twiDO,
-                                   int index, WorksheetAnalysisViewDO waVDO, Preferences prefs,
+                                   int index, WorksheetAnalysisViewDO waVDO, Preferences1 prefs,
                                    WorksheetQcChoiceVO wqcVO, HashMap<String, ArrayList<QcLotViewDO>> qcMap) throws Exception {
         int i;
         ArrayList<String> uids;
