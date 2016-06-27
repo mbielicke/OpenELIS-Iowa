@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="result" pageWidth="184" pageHeight="12" columnWidth="184" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.scriptlethandling" value="2"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="DICTIONARY_ID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT entry
+FROM   dictionary
+WHERE  id::char(10) = $P{DICTIONARY_ID}]]>
+	</queryString>
+	<field name="entry" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="entry" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="184" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{entry}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
