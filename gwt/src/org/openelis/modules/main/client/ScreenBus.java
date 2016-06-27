@@ -79,7 +79,6 @@ public class ScreenBus extends SimpleEventBus {
                     VOLUME_REPORT = new ShowScreenType("Volume Report"),
                     TURNAROUND_REPORT = new ShowScreenType("Turnaround Report"),
                     QA_SUMMARY_REPORT = new ShowScreenType("QA Summary Report"),
-                    SDWIS_UNLOAD_REPORT = new ShowScreenType("SDWIS Unload Report"),
                     QC_CHART_REPORT = new ShowScreenType("QC Chart Report"),
                     TO_DO_ANALYTE_REPORT = new ShowScreenType("To Do Analyte Report"),
                     TURNAROUND_STATISTIC_REPORT = new ShowScreenType("Turnaround Statistic Report"),

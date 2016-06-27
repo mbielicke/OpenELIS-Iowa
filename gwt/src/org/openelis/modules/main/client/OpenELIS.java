@@ -522,12 +522,6 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(sdwisUnloadReport, "samplesdwis", new Command() {
-            public void execute() {
-                showScreen(SDWIS_UNLOAD_REPORT);
-            }
-        });
-
         addCommand(qcChart, "sampletracking", new Command() {
             public void execute() {
                 showScreen(QC_CHART_REPORT);
