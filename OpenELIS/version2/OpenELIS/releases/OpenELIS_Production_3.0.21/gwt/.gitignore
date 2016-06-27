@@ -1,0 +1,5 @@
+/.apt_generated/
+war/WEB-INF/deploy/
+war/openelis/
+/gwt-unitCache/
+war/WEB-INF/classes/
