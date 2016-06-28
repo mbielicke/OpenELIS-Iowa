@@ -437,6 +437,10 @@ public class EJBFactory {
     public static PreferencesBean getPreferences() {
         return lookup("PreferencesBean");
     }
+    
+    public static PreferencesManager1Bean getPreferencesManager1() {
+        return lookup("PreferencesManager1Bean");
+    }
 
     public static PrinterCacheBean getPrinterCache() {
         return lookup("PrinterCacheBean");

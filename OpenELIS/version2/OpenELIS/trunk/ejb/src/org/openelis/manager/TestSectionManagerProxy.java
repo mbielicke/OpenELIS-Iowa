@@ -185,4 +185,8 @@ public class TestSectionManagerProxy {
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return EJBFactory.getDictionaryCache().getById(id);
     }
+    
+    public Preferences1 userRoot() throws Exception {
+        return EJBFactory.getPreferencesManager1().userRoot();
+    }
 }
