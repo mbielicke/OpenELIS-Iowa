@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.modules.preferences1.client.PreferencesService1Impl;
 
 public class TestSectionManager implements Serializable {
 
@@ -128,7 +127,7 @@ public class TestSectionManager implements Serializable {
 
         data = null;
 
-        prefs = PreferencesService1Impl.INSTANCE.userRoot();
+        prefs = proxy().userRoot();
         locationSuffix = "NONE";
         locationId = prefs.getInt("location", -1);
         if (locationId != -1) {
