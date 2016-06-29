@@ -27,13 +27,23 @@ package org.openelis.scriptlet.ms.conf;
 
 import org.openelis.scriptlet.ms.conf.Constants.Sample_Type;
 import org.openelis.scriptlet.ms.quad.NTD;
+import org.openelis.scriptlet.ms.quad.Test;
 
 /**
  * The class for computing various risks and MoMs for the ms conf (Amniotic
  * Fluid AFP) test
  */
-public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
+public class Compute extends org.openelis.scriptlet.ms.quad.Compute {    
     private Sample_Type sampleType;
+    
+    public Compute() {
+        /*
+         * instantiate tests and risks
+         */
+        tests = new Test[1];
+        tests[0] = new AFP();
+        ntd = new NTD();
+    }
 
     public void setSampleType(Sample_Type sampleType) {
         this.sampleType = sampleType;
@@ -45,13 +55,6 @@ public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
     public void compute() {
         cmpGestationalAges();
         cmpMotherDueAge();
-        /*
-         * this object is created here because the scriptlet gets MoMs, risks
-         * etc. from this compute engine even if results are overridden; the
-         * engine gets those values from this object, so it can't be null in any
-         * case; objects for tests e.g. AFP are set by the scriptlet
-         */
-        ntd = new NTD();
         if ( !isOverridden) {
             cmpMoMs();
             cmpNTD();
@@ -64,7 +67,7 @@ public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
     public Double getLimitNTD() {
         double limit;
 
-        if ( !ntd.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
 
         limit = 0.0d;
@@ -80,20 +83,6 @@ public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
             else
                 limit = 2.0d;
         }
-        return new Double(limit);
-    }
-
-    /**
-     * Computes Multiple of Medians for AFP
-     */
-    protected void cmpMoMs() {
-        if ( !didCmpGa)
-            return;
-
-        try {
-            afp.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
-        } catch (Exception indE) {
-            lastException = indE;
-        }
+        return limit;
     }
 }

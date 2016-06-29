@@ -35,9 +35,6 @@ import org.openelis.ui.common.InconsistencyException;
  * than the default AFP computations
  */
 public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
-    public AFP(Double p1, Double p2, Double p3, Double result, String analyteName) {
-        super(p1, p2, p3, result, analyteName);
-    }
 
     @Override
     public void computeMoms(int gestAgeInit, int gestAgeCurr, Datetime entered, Double weight,
@@ -46,13 +43,11 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
 
         if (getResult() != null) {
             try {
-                setMomInit(0.0);
+                setMomInit(null);
                 mom = getMoM(gestAgeCurr, entered, weight, isRaceBlack, isDiabetic);
                 setMomCurr(Util.trunc(mom + 0.005, 2));
-                setDidCmpMoM(true);
             } catch (Exception indE) {
-                setMomInit(0.0);
-                setMomCurr(0.0);
+                setMomCurr(null);
                 throw indE;
             }
         }

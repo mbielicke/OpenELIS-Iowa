@@ -418,7 +418,7 @@ public class WorksheetItemTabUI extends Screen {
                                 if (tm != null && tm.getTest().getScriptletId() != null) {
                                     scriptletData = new WorksheetSO();
                                     scriptletData.addActionBefore(Action_Before.RESULT);
-                                    scriptletData.setChanged(String.valueOf(c));
+                                    scriptletData.setChange(String.valueOf(c));
                                     scriptletData.setUid(manager.getUid(wrVDO));
                                     scriptletData.setManager(manager);
                                     scriptletData = scriptletRunner.run(scriptletData);

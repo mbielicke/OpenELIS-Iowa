@@ -48,6 +48,5 @@ public class DownsLMP extends Risk {
         ordinalUA = getOrdinal(mom, 4, 0.000000531883, getMeanUA(), getConstUA());
         ordinalDS = getOrdinal(mom, 4, 0.000000996054, getMeanDS(), getConstDS());
         setRisk((int) (apr / (ordinalDS / ordinalUA)));
-        setDidCmpRisk(true);
     }
 }

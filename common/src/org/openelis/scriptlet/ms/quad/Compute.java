@@ -42,48 +42,64 @@ import org.openelis.ui.common.InconsistencyException;
 public class Compute {
 
     protected Datetime        birthDate, // date of birth
-                    collected, // date sample collected
-                    enteredDate, // date sample record was entered
-                    lmpDate, // date of last menstrual period
-                    usDate;               // date of ultrasound
+                               collected, // date sample collected
+                               enteredDate, // date sample record was entered
+                               lmpDate, // date of last menstrual period
+                               usDate;  // date of ultrasound
 
-    protected boolean       hasNTDHistory, // patient NTD history, default false
-                    isRaceBlack, // patient is black, default false
-                    isDiabetic, // patient is diabetic, default false
-                    beenReleased, // test previously released, default false
-                    isOverridden;         // test been rejected by QA, default
-                                           // false
+    protected boolean         hasNTDHistory, // patient NTD history, default
+                                             // false
+                                isRaceBlack, // patient is black, default false
+                                isDiabetic, // patient is diabetic, default false
+                                beenReleased, // test previously released, default false
+                                isOverridden, // test been rejected by QA,
+                                             // default
+                                             // false
+                                didCmpRisks; //  did compute  all the risks
 
-    protected Integer       numFetus, // number of Fetuses 1, 2 or many
-                             crl, // child's length crown rump length
-                             bpd;                  // biparietal diameter
+    protected Integer         numFetus, // number of Fetuses 1, 2 or many
+                               crl, // child's length crown rump length
+                               bpd, // biparietal diameter
+                               gestAgeInit, // gest age (days) for initial comp
+                               gestAgeCurr; // gest age (days) for current comp
 
-    protected Double        weight, // patient's weight
-                             weeksDays; // Gest Age in weeks.days format
+    protected Double          weight, // patient's weight
+                               weeksDays, // Gest Age in weeks.days format
+                               dueAgeInit, // mother's due age using gestAgeInit
+                               dueAgeCurr;  // "         " "    " gestAgeCurr
 
-    protected Test          afp, est, hcg, inh; // data specific to the tests
-    
-    protected Risk          ntd, downsUS, downsLMP, t18, slos;  // data specific to the risks
+    protected Test[]          tests;
+
+    protected Risk            ntd, downsUS, downsLMP, t18, slos; // data
+                                                                 // specific to
+                                                                 // the risks
 
     protected Gest_Age_Method gestAgeInitBy, // init gest age computed by method
-                    gestAgeCurrBy;        // current gest age computed by
-                                           // method
-    /*
-     * internal
-     */
-    protected boolean       didCmpGa, // did compute gest-age
-                    didCmpDueAge;         // "     " mothers due age
+                    gestAgeCurrBy;                              // current gest
+                                                                 // age computed
+                                                                 // by
+                                                                 // method
+    protected Exception       lastException;   // last error if any
 
-    protected int           gestAgeInit, // gest age (days) for initial comp
-                    gestAgeCurr;          // gest age (days) for current comp
+    public Compute() {
+        /*
+         * instantiate tests and risks
+         */
+        tests = new Test[4];
+        tests[0] = new AFP();
+        tests[1] = new EST();
+        tests[2] = new HCG();
+        tests[3] = new INH();
 
-    protected double        dueAgeInit, // mother's due age using gestAgeInit
-                    dueAgeCurr;           // "         " "    " gestAgeCurr
-
-    protected Exception     lastException; // last error if any
+        ntd = new NTD();
+        downsLMP = new DownsLMP();
+        downsUS = new DownsUS();
+        t18 = new Trisomy18();
+        slos = new SLOS();
+    }
 
     /**
-     * Sets whether the patient's race is black 
+     * Sets whether the patient's race is black
      */
     public void setIsRaceBlack(boolean isRaceBlack) {
         this.isRaceBlack = isRaceBlack;
@@ -118,7 +134,7 @@ public class Compute {
     }
 
     /**
-     * Sets the patient's birth date 
+     * Sets the patient's birth date
      */
     public void setBirthDate(Datetime birthDate) {
         this.birthDate = birthDate;
@@ -146,7 +162,7 @@ public class Compute {
     }
 
     /**
-     * Sets the ultrasound date 
+     * Sets the ultrasound date
      */
     public void setUltrasoundDate(Datetime usDate) {
         this.usDate = usDate;
@@ -160,7 +176,7 @@ public class Compute {
     }
 
     /**
-     * Sets the patient's weight 
+     * Sets the patient's weight
      */
     public void setWeight(Double weight) {
         this.weight = weight;
@@ -181,7 +197,7 @@ public class Compute {
     }
 
     /**
-     * Sets gestational age in weeks and days 
+     * Sets gestational age in weeks and days
      */
     public void setWeeksDays(Double weeksDays) {
         this.weeksDays = weeksDays;
@@ -195,50 +211,11 @@ public class Compute {
     }
 
     /**
-     * Sets p-values and intrument result for AFP
-     */
-    public void setResultAFP(Test afp) {
-        this.afp = afp;
-    }
-
-    /**
-     * Sets p-values and intrument result for estriol
-     */
-    public void setResultEST(Test est) {
-        this.est = est;
-    }
-
-    /**
-     * Sets p-values and intrument result for HCG
-     */
-    public void setResultHCG(Test hcg) {
-        this.hcg = hcg;
-    }
-
-    /**
-     * Sets p-values and intrument result for Inhibin
-     */
-    public void setResultInhibin(Test inh) {
-        this.inh = inh;
-    }
-    
-    /**
      * Computes various values such as gestational and due ages, MoMs and risks
      */
     public void compute() {
         cmpGestationalAges();
         cmpMotherDueAge();
-        /*
-         * these objects are created here because the scriptlet gets MoMs, risks
-         * etc. from this compute engine even if results are overridden; the
-         * engine gets those values from these objects, so they can't be null in
-         * any case; objects for tests e.g. AFP are set by the scriptlet
-         */
-        ntd = new NTD();
-        downsLMP = new DownsLMP();
-        downsUS = new DownsUS();
-        t18 = new Trisomy18();
-        slos = new SLOS();
         if ( !isOverridden) {
             cmpMoMs();
             cmpNTD();
@@ -248,7 +225,6 @@ public class Compute {
         }
     }
 
-
     /**
      * Returns the most recent exception thrown while computing various values
      */
@@ -257,56 +233,48 @@ public class Compute {
     }
 
     /**
-     * Returns the MoM for AFP
+     * Sets p-values and intrument result for AFP
      */
-    public Double getMoMAFP() {
-        if ( !afp.getDidCmpMoM())
-            return null;
-        return new Double(afp.getMomCurr());
+    public Test getAFP() {
+        return tests[0];
     }
 
     /**
-     * Returns the MoM for Estriol
+     * Sets p-values and intrument result for estriol
      */
-    public Double getMoMEST() {
-        if ( !est.getDidCmpMoM())
-            return null;
-        return new Double(est.getMomCurr());
+    public Test getEST() {
+        return tests[1];
     }
 
     /**
-     * Returns the MoM for HCG
+     * Sets p-values and intrument result for HCG
      */
-    public Double getMoMHCG() {
-        if ( !hcg.getDidCmpMoM())
-            return null;
-        return new Double(hcg.getMomCurr());
+    public Test getHCG() {
+        return tests[2];
     }
 
     /**
-     * Returns the MoM for Inhibin
+     * Sets p-values and intrument result for Inhibin
      */
-    public Double getMoMINH() {
-        if ( !inh.getDidCmpMoM())
-            return null;
-        return new Double(inh.getMomCurr());
+    public Test getInhibin() {
+        return tests[3];
     }
 
     /**
      * Returns initial gestational age
      */
     public Integer getGestAgeInit() {
-        if ( !didCmpGa)
+        if (gestAgeInit == null || gestAgeCurr == null)
             return null;
 
-        return new Integer(gestAgeInit);
+        return gestAgeInit;
     }
 
     /**
      * Returns the method by which initial gestational age was determined
      */
     public Gest_Age_Method getGestAgeInitMethod() {
-        if ( !didCmpGa)
+        if (gestAgeInit == null || gestAgeCurr == null)
             return null;
 
         return gestAgeInitBy;
@@ -316,17 +284,17 @@ public class Compute {
      * Returns the current gestational age
      */
     public Integer getGestAgeCurr() {
-        if ( !didCmpGa)
+        if (gestAgeInit == null || gestAgeCurr == null)
             return null;
 
-        return new Integer(gestAgeCurr);
+        return gestAgeCurr;
     }
 
     /**
      * Returns the method by which current gestational age was determined
      */
     public Gest_Age_Method getGestAgeCurrMethod() {
-        if ( !didCmpGa)
+        if (gestAgeInit == null || gestAgeCurr == null)
             return null;
 
         return gestAgeCurrBy;
@@ -336,10 +304,10 @@ public class Compute {
      * Returns the mother's due age
      */
     public Double getMothersDueAge() {
-        if ( !didCmpDueAge)
+        if (dueAgeInit == null || dueAgeCurr == null )
             return null;
 
-        return new Double(dueAgeCurr);
+        return dueAgeCurr;
     }
 
     /**
@@ -348,7 +316,7 @@ public class Compute {
     public Double getLimitNTD() {
         double limit;
 
-        if ( !ntd.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
 
         limit = 0.0d;
@@ -357,7 +325,7 @@ public class Compute {
         if (numFetus.intValue() == 2)
             limit = (hasNTDHistory) ? 4.0d : 4.4d;
 
-        return new Double(limit);
+        return limit;
     }
 
     /**
@@ -373,11 +341,11 @@ public class Compute {
     public Interpretation getInterpretationNTD() {
         double limit;
 
-        if ( !ntd.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
 
         limit = getLimitNTD().doubleValue();
-        if (afp.getMomCurr() < limit) {
+        if (tests[0].getMomCurr() < limit) {
             return Interpretation.NORMAL;
         } else {
             if (usDate == null)
@@ -391,10 +359,10 @@ public class Compute {
      * Returns the limit (cutoff) for Downs
      */
     public Integer getLimitDowns() {
-        if ( !downsLMP.getDidCmpRisk() && !downsUS.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
 
-        return new Integer(150);
+        return 150;
     }
 
     /**
@@ -403,12 +371,12 @@ public class Compute {
     public Integer getRiskDowns() {
         int risk;
 
-        if ( ( !downsLMP.getDidCmpRisk() || !downsUS.getDidCmpRisk()) || dueAgeCurr < 15.0 ||
+        if ( !didCmpRisks || dueAgeCurr < 15.0 ||
             (numFetus != null && numFetus.intValue() > 1))
             return null;
         risk = (Gest_Age_Method.LMP.equals(gestAgeCurrBy)) ? downsLMP.getRisk() : downsUS.getRisk();
         risk = (int)setPrecision(Math.max(10.0, Math.min(99000.0, (double)risk)), 2);
-        return new Integer(risk);
+        return risk;
     }
 
     /**
@@ -417,7 +385,7 @@ public class Compute {
     public String getRiskSignDowns() {
         int risk;
 
-        if ( ( !downsLMP.getDidCmpRisk() && !downsUS.getDidCmpRisk()) || dueAgeCurr < 15.0 ||
+        if ( !didCmpRisks || dueAgeCurr < 15.0 ||
             (numFetus != null && numFetus.intValue() > 1))
             return null;
 
@@ -435,7 +403,7 @@ public class Compute {
     public Interpretation getInterpretationDowns() {
         int risk, limit;
 
-        if ( !downsLMP.getDidCmpRisk() && !downsUS.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
         else if (dueAgeCurr < 15.0 || (numFetus != null && numFetus.intValue() > 1))
             return Interpretation.UNKNOWN;
@@ -457,10 +425,10 @@ public class Compute {
      * Returns the limit (cutoff) for Trisomy 18
      */
     public Integer getLimitTrisomy18() {
-        if ( !t18.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
 
-        return new Integer(100);
+        return 100;
     }
 
     /**
@@ -469,7 +437,7 @@ public class Compute {
     public Integer getRiskTrisomy18() {
         int risk0, risk1, limit0, limit1;
 
-        if ( !t18.getDidCmpRisk() || !slos.getDidCmpRisk() || dueAgeInit < 15.0 ||
+        if ( !didCmpRisks || dueAgeInit < 15.0 ||
             (numFetus != null && numFetus.intValue() > 1))
             return null;
 
@@ -488,14 +456,14 @@ public class Compute {
             t18.setRisk(limit1);
             risk1 = limit1;
         }
-        return new Integer(risk1);
+        return risk1;
     }
 
     /**
      * Returns the risk sign for Trisomy 18
      */
     public String getRiskSignTrisomy18() {
-        if ( !t18.getDidCmpRisk() || dueAgeInit < 15.0 ||
+        if ( !didCmpRisks || dueAgeInit < 15.0 ||
             (numFetus != null && numFetus.intValue() > 1))
             return null;
 
@@ -512,7 +480,7 @@ public class Compute {
     public Interpretation getInterpretationTrisomy18() {
         int limit;
 
-        if ( !t18.getDidCmpRisk())
+        if ( !didCmpRisks)
             return null;
         else if (dueAgeInit < 15.0 || (numFetus != null && numFetus.intValue() > 1))
             return Interpretation.UNKNOWN;
@@ -530,12 +498,12 @@ public class Compute {
     public Integer getRiskDownsByAge() {
         double risk;
 
-        if ( !didCmpDueAge)
+        if (dueAgeInit == null || dueAgeCurr == null )
             return null;
 
         risk = getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
         risk = (int)setPrecision(risk, 2);
-        return new Integer((int)risk);
+        return (int)risk;
     }
 
     /**
@@ -631,8 +599,6 @@ public class Compute {
 
         gestAgeInit = Gest_Age_Method.LMP.equals(gestAgeInitBy) ? lmpGA : usGA;
         gestAgeCurr = Gest_Age_Method.LMP.equals(gestAgeCurrBy) ? lmpGA : usGA;
-
-        didCmpGa = true;
     }
 
     /**
@@ -640,33 +606,32 @@ public class Compute {
      */
     protected void cmpMotherDueAge() {
         dueAgeInit = cmpMotherDueAge(gestAgeInit);
-        if (dueAgeInit != 0.0) {
+        if (dueAgeInit != null)
             dueAgeCurr = cmpMotherDueAge(gestAgeCurr);
-            if (dueAgeCurr != 0.0)
-                didCmpDueAge = true;
-        }
     }
 
     /**
      * Computes mother's due age based on the passed gestational age, patient's
      * birth date and sample's collected date
      */
-    protected double cmpMotherDueAge(int gestAge) {
-        double dueAge;
+    protected Double cmpMotherDueAge(Integer gestAge) {
+        Double dueAge;
         Datetime due;
 
-        dueAge = 0.0;
+        dueAge = null;
         /*
          * check for required vars
          */
-        if ( !didCmpGa)
+        if (gestAge == null)
             return dueAge;
         if (birthDate == null) {
-            lastException = new InconsistencyException(Messages.get().result_missingBirthDateException());
+            lastException = new InconsistencyException(Messages.get()
+                                                               .result_missingBirthDateException());
             return dueAge;
         }
         if (collected == null) {
-            lastException = new InconsistencyException(Messages.get().result_missingCollectedDateException());
+            lastException = new InconsistencyException(Messages.get()
+                                                               .result_missingCollectedDateException());
             return dueAge;
         }
 
@@ -683,14 +648,18 @@ public class Compute {
      * Computes Multiple of Medians for each result
      */
     protected void cmpMoMs() {
-        if ( !didCmpGa)
+        if (gestAgeInit == null || gestAgeCurr == null)
             return;
 
         try {
-            afp.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
-            est.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
-            hcg.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
-            inh.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
+            for (Test t : tests) {
+                t.computeMoms(gestAgeInit,
+                              gestAgeCurr,
+                              enteredDate,
+                              weight,
+                              isRaceBlack,
+                              isDiabetic);
+            }
         } catch (Exception indE) {
             lastException = indE;
         }
@@ -700,46 +669,53 @@ public class Compute {
      * Computes NTD -- NA
      */
     protected void cmpNTD() {
-        if ( !afp.getDidCmpMoM())
+        if (tests[0].getMomCurr() == null || tests[0].getMomInit() == null)
             return;
         if (numFetus == null || numFetus.intValue() < 1 || numFetus.intValue() > 2) {
-            lastException = new InconsistencyException(Messages.get().result_invalidNumFetusException());
+            lastException = new InconsistencyException(Messages.get()
+                                                               .result_invalidNumFetusException());
             return;
         }
         ntd.computeRisk(null, 0.0);
+        didCmpRisks = true;
     }
 
     /**
      * Computes quad marker for lmp and us downs risk
      */
     protected void cmpDowns() {
+        int i;
+        Test t;
         double tmpMoM[], apr;
 
-        if ( !afp.getDidCmpMoM() || !est.getDidCmpMoM() || !hcg.getDidCmpMoM() ||
-            !inh.getDidCmpMoM())
+        if (!didCmpMoMs())
             return;
-
+        
         apr = getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
         /*
          * truncate all the test moms for DOWNS
          */
         tmpMoM = new double[4];
-        tmpMoM[0] = Math.max(afp.getDowns()[0], Math.min(afp.getDowns()[1], afp.getMomCurr()));
-        tmpMoM[1] = Math.max(est.getDowns()[0], Math.min(est.getDowns()[1], est.getMomCurr()));
-        tmpMoM[2] = Math.max(hcg.getDowns()[0], Math.min(hcg.getDowns()[1], hcg.getMomCurr()));
-        tmpMoM[3] = Math.max(inh.getDowns()[0], Math.min(inh.getDowns()[1], inh.getMomCurr()));
+        for (i = 0; i < tests.length; i++ ) {
+            t = tests[i];
+            tmpMoM[i] = Math.max(t.getDowns()[0], Math.min(t.getDowns()[1], t.getMomCurr()));
+        }
         downsLMP.computeRisk(tmpMoM, apr);
         downsUS.computeRisk(tmpMoM, apr);
+        didCmpRisks = true;
     }
-
+    
     /**
      * Computes trisomy 18 risk
      */
     protected void cmpTrisomy18() {
+        int i;
+        Test t;
         double tmpMoM[], apr;
 
-        if ( !afp.getDidCmpMoM() || !est.getDidCmpMoM() || !hcg.getDidCmpMoM())
+        if (!didCmpMoMs())
             return;
+        
         /*
          * apr risk for t18 is 10 less than apr risk for downs. So 1 in 200
          * changes to 1 in 2000
@@ -749,30 +725,47 @@ public class Compute {
          * truncate all the test moms for T18
          */
         tmpMoM = new double[4];
-        tmpMoM[0] = Math.max(afp.getT18()[0], Math.min(afp.getT18()[1], afp.getMomInit()));
-        tmpMoM[1] = Math.max(est.getT18()[0], Math.min(est.getT18()[1], est.getMomInit()));
-        tmpMoM[2] = Math.max(hcg.getT18()[0], Math.min(hcg.getT18()[1], hcg.getMomInit()));
-        tmpMoM[3] = Math.max(inh.getT18()[0], Math.min(inh.getT18()[1], inh.getMomInit()));
+        for (i = 0; i < tests.length; i++ ) {
+            t = tests[i];
+            tmpMoM[i] = Math.max(t.getT18()[0], Math.min(t.getT18()[1], t.getMomInit()));
+        }
         t18.computeRisk(tmpMoM, apr);
+        didCmpRisks = true;
     }
-    
+
     /**
      * Computes SLOS risk
      */
     protected void cmpSLOS() {
+        int i;
+        Test t;
         double tmpMoM[];
 
-        if ( !afp.getDidCmpMoM() || !est.getDidCmpMoM() || !hcg.getDidCmpMoM())
+        if (!didCmpMoMs())
             return;
         /*
          * truncate all the test moms for SLOS
          */
         tmpMoM = new double[4];
-        tmpMoM[0] = Math.max(afp.getSLOS()[0], Math.min(afp.getSLOS()[1], afp.getMomInit()));
-        tmpMoM[1] = Math.max(est.getSLOS()[0], Math.min(est.getSLOS()[1], est.getMomInit()));
-        tmpMoM[2] = Math.max(hcg.getSLOS()[0], Math.min(hcg.getSLOS()[1], hcg.getMomInit()));
-        tmpMoM[3] = Math.max(inh.getSLOS()[0], Math.min(inh.getSLOS()[1], inh.getMomInit()));
+        for (i = 0; i < tests.length; i++ ) {
+            t = tests[i];
+            tmpMoM[i] = Math.max(t.getSLOS()[0], Math.min(t.getSLOS()[1], t.getMomInit()));
+        }
         slos.computeRisk(tmpMoM, 0.0);
+        didCmpRisks = true;
+    }
+
+    /**
+     * Returns true if MoMs for all tests have been computed; returns false
+     * otherwise
+     */
+    private boolean didCmpMoMs() {
+        for (Test t : tests) {
+            if (t.getMomCurr() == null || t.getMomInit() == null)
+                return false;
+        }
+
+        return true;
     }
 
     /**
@@ -827,7 +820,7 @@ public class Compute {
      */
     private int getAgeforBPD() {
         double x;
-        
+
         if (bpd == null)
             return 0;
         /*
@@ -842,7 +835,7 @@ public class Compute {
      */
     private int getAgeforCRL() {
         double x;
-        
+
         if (crl == null)
             return 0;
         /*
@@ -850,6 +843,6 @@ public class Compute {
          */
         x = crl.intValue() / 10.0;
         return (int) (Math.exp(1.684969 + 0.315646 * x - 0.049306 * x * x + 0.004057 * x * x * x -
-                              0.000120456 * x * x * x * x) * 7.0);
+                               0.000120456 * x * x * x * x) * 7.0);
     }
 }

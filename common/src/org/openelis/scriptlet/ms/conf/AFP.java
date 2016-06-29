@@ -38,12 +38,20 @@ import org.openelis.ui.common.InconsistencyException;
 public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
     private Sample_Type sampleType;
 
-    public AFP(Double p1, Double p2, Double p3, Double result, String analyteName,
-               Sample_Type sampleType) {
-        super(p1, p2, p3, result, analyteName);
+    /**
+     * Returns the sample type
+     */
+    public Sample_Type getSampleType() {
+        return sampleType;
+    }
+    
+    /**
+     * Sets the sample type
+     */
+    public void setSampleType(Sample_Type sampleType) {
         this.sampleType = sampleType;
     }
-
+    
     /**
      * Overriden because for this test, min gestational age depends on sample
      * type
@@ -64,10 +72,6 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
             return 168;
         else
             return super.getMaxDay();
-    }
-
-    public Sample_Type getSampleType() {
-        return sampleType;
     }
 
     /**

@@ -33,7 +33,6 @@ public abstract class Risk {
 
     private double  meanUA[], meanDS[], constUA[], constDS[];
     private int risk;
-    private boolean didCmpRisk;
 
     protected Risk() {
     }
@@ -85,20 +84,6 @@ public abstract class Risk {
      */
     public void setRisk(int risk) {
         this.risk = risk;
-    }
-
-    /**
-     * Returns true if the risk was computed; otherwise returns false
-     */
-    public boolean getDidCmpRisk() {
-        return didCmpRisk;
-    }
-
-    /**
-     * Sets whether the risk was computed or not
-     */
-    public void setDidCmpRisk(boolean didCmpRisk) {
-        this.didCmpRisk = didCmpRisk;
     }
 
     /**

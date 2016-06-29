@@ -2394,7 +2394,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          */
         data = new SampleSO();
         data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

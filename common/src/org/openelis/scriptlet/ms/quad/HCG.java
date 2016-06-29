@@ -25,6 +25,7 @@
  */
 package org.openelis.scriptlet.ms.quad;
 
+import org.openelis.constants.Messages;
 import org.openelis.ui.common.InconsistencyException;
 
 /**
@@ -32,9 +33,9 @@ import org.openelis.ui.common.InconsistencyException;
  * factor for MoM and median based on gestational age
  */
 public class HCG extends Test {
-    public HCG(Double p1, Double p2, Double p3, Double result, String analyteName) {
-        super(1.12, 0.93, new double[]{0, 0}, new double[]{.4, 5}, new double[]{.2, 2.5},
-              new double[]{.3, 1.5}, 105, 146, p1, p2, p3, result, analyteName);
+    public HCG() {
+        super(1.12, 0.93, new Double[]{0.0, 0.0}, new Double[]{.4, 5.0}, new Double[]{.2, 2.5},
+              new Double[]{.3, 1.5}, 105, 146, Messages.get().scriptlet_hcg());
     }
 
     @Override

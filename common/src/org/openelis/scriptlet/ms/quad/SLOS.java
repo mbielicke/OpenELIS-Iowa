@@ -47,6 +47,5 @@ public class SLOS extends Risk {
         ordinalDS = getOrdinal(mom, 3, 0.0001886,
                                getMeanDS(), getConstDS());
         setRisk((int) Math.round(20000/(ordinalDS / ordinalUA)));
-        setDidCmpRisk(true);
     }
 }

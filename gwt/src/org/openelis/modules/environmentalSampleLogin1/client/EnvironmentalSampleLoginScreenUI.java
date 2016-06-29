@@ -272,7 +272,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
-                    isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
+                    isAttachmentScreenOpen, fetchDomainScriptlet, isFullLogin;
 
     protected ModulePermission                          samplePermission;
 
@@ -305,8 +305,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          domainScriptletVariable,
-                    attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
 
     protected Integer                                   domainScriptletId;
 
@@ -449,7 +448,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         initWidget(uiBinder.createAndBindUi(this));
 
         manager = null;
-        hasDomainScriptlet = true;
+        fetchDomainScriptlet = true;
 
         initialize();
         evaluateEdit();
@@ -758,7 +757,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                          });
 
         addScreenHandler(orderId, SampleMeta.getOrderId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 orderId.setValue(getOrderId());
             }
 
@@ -809,7 +808,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
@@ -847,7 +846,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -882,7 +881,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
             }
 
@@ -917,7 +916,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -938,7 +937,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -976,7 +975,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(envIsHazardous,
                          SampleMeta.getEnvIsHazardous(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  envIsHazardous.setValue(getIsHazardous());
                              }
 
@@ -1013,7 +1012,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(envPriority, SampleMeta.getEnvPriority(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 envPriority.setValue(getPriority());
             }
 
@@ -1049,7 +1048,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(envCollector, SampleMeta.getEnvCollector(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 envCollector.setValue(getCollector());
             }
 
@@ -1087,7 +1086,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(envCollectorPhone,
                          SampleMeta.getEnvCollectorPhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  envCollectorPhone.setValue(getCollectorPhone());
                              }
 
@@ -1126,7 +1125,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(envDescription,
                          SampleMeta.getEnvDescription(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  envDescription.setValue(getDescription());
                              }
 
@@ -1163,7 +1162,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(envLocation, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 envLocation.setValue(getLocation());
             }
 
@@ -1201,7 +1200,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressMultipleUnit,
                          SampleMeta.getLocationAddrMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressMultipleUnit.setValue(getLocationAddressMultipleUnit());
                              }
 
@@ -1243,7 +1242,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressStreetAddress,
                          SampleMeta.getLocationAddrStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressStreetAddress.setValue(getLocationAddressStreetAddress());
                              }
 
@@ -1287,7 +1286,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressCity,
                          SampleMeta.getLocationAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressCity.setValue(getLocationAddressCity());
                              }
 
@@ -1327,7 +1326,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressState,
                          SampleMeta.getLocationAddrState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressState.setValue(getLocationAddressState());
                              }
 
@@ -1366,7 +1365,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressZipCode,
                          SampleMeta.getLocationAddrZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressZipCode.setValue(getLocationAddressZipCode());
                              }
 
@@ -1407,7 +1406,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(locationAddressCountry,
                          SampleMeta.getLocationAddrCountry(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  locationAddressCountry.setValue(getLocationAddressCountry());
                              }
 
@@ -1444,7 +1443,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
             }
 
@@ -1521,7 +1520,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(billToName, BILL_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setBillTo(getSampleOrganization(manager, Constants.dictionary().ORG_BILL_TO));
             }
 
@@ -1600,7 +1599,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setProject(getFirstProject(manager));
                              }
 
@@ -1683,7 +1682,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  sampleItemAnalysisTreeTab.onDataChange();
                              }
 
@@ -1697,7 +1696,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1719,7 +1718,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1741,7 +1740,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1763,7 +1762,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1779,7 +1778,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1793,7 +1792,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1809,7 +1808,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1825,7 +1824,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1845,7 +1844,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -3148,6 +3147,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      * manager, to the scriptlet runner
      */
     private void addScriptlets() throws Exception {
+        SystemVariableDO sv;
+        
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
@@ -3156,10 +3157,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
          * variable; don't try to look up the system variable again if it's not
          * found the first time because the scriptlet is optional
          */
-        if (hasDomainScriptlet) {
+        if (fetchDomainScriptlet) {
+            sv = null;
             try {
-                domainScriptletVariable = SystemVariableService1Impl.INSTANCE
-                                                               .fetchByExactName("environmental_scriptlet");
+                sv = SystemVariableService1Impl.INSTANCE.fetchByExactName("environmental_scriptlet");
             } catch (NotFoundException e) {
                 // ignore
             } catch (Exception e) {
@@ -3173,15 +3174,15 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * to look up the dictionary, the user must be informed of it even
              * if it's a NotFoundException
              */
-            if (domainScriptletVariable != null) {
+            if (sv != null) {
                 try {
-                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                    domainScriptletId = DictionaryCache.getIdBySystemName(sv.getValue());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-            hasDomainScriptlet = false;
+            fetchDomainScriptlet = false;
         }
         if (domainScriptletId != null)
             addScriptlet(domainScriptletId, null);
@@ -3255,7 +3256,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

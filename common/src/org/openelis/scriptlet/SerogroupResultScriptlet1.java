@@ -157,7 +157,7 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
             if (ResultHelper.formatValue(res, dict.getEntry(), ana.getUnitOfMeasureId(), rf)) {
                 proxy.log(Level.FINE, "Setting the value of result as: " +
                                       dict.getEntry(), null);
-                data.addRerun(res.getAnalyteExternalId());
+                data.setChanges(res.getAnalyteExternalId());
                 data.addChangedUid(Constants.uid().getResult(res.getId()));
             }
         } catch (Exception e) {
@@ -174,6 +174,7 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
         ArrayList<IdNameVO> worksheetColumns;
         DictionaryDO dict;
         WorksheetManager1 wm;
+        ArrayList<String> changes;
 
         wm = data.getManager();
         try {
@@ -183,11 +184,12 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
             data.addException(new Exception("Error loading column names for format; " + anyE.getMessage()));
             return;
         }
-
-        if (data.getChanged() == null || data.getChanged().length() <= 0)
+        
+        changes = data.getChanges();
+        if (changes.size() == 0)
             return;
         
-        changedCol = Integer.parseInt(data.getChanged());
+        changedCol = Integer.parseInt(changes.get(0));
         resultCol = -1;
         seroCol = -1;
         for (IdNameVO col : worksheetColumns) {
@@ -224,7 +226,7 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<ScriptletObject> 
              */
             res.setValueAt(resultCol, dict.getEntry());
             proxy.log(Level.FINE, "Setting the value of result as: " + dict.getEntry(), null);
-            data.addRerun(String.valueOf(resultCol + 12));
+            data.setChanges(String.valueOf(resultCol + 12));
             data.addChangedUid(Constants.uid().getResult(res.getId()));
         } catch (Exception e) {
             data.setStatus(Status.FAILED);

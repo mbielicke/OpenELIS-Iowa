@@ -25,6 +25,7 @@
  */
 package org.openelis.scriptlet.nbs.tsh;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -85,11 +86,15 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
     public SampleSO run(SampleSO data) {
         AnalysisViewDO ana;
         ResultViewDO res;
+        ArrayList<String> changes;
 
         proxy.log(Level.FINE, "In NbsTshScriptlet1.run", null);
+        
+        changes = data.getChanges();
         ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
-            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
+            changes.size() == 0)
             return data;
 
         /*
@@ -101,7 +106,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             if ( !analysisId.equals(res.getAnalysisId()))
                 return data;
         } else if ( !data.getActionBefore().contains(Action_Before.QA) &&
-                   !SampleMeta.getNeonatalCollectionAge().equals(data.getChanged())) {
+                   !changes.contains(SampleMeta.getNeonatalCollectionAge())) {
             return data;
         }
 
@@ -290,7 +295,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                                              dict.getEntry(),
                                              ana.getUnitOfMeasureId(),
                                              rf);
-                    data.addRerun(resInter.getAnalyteExternalId());
+                    data.setChanges(resInter.getAnalyteExternalId());
                 }
             }
         } catch (Exception e) {

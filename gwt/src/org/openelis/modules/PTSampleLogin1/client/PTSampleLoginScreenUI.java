@@ -727,7 +727,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
                              }
 
@@ -747,7 +747,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(orderId, SampleMeta.getOrderId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 orderId.setValue(getOrderId());
             }
 
@@ -798,7 +798,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
@@ -836,7 +836,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -871,7 +871,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
             }
 
@@ -906,7 +906,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -927,7 +927,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -965,7 +965,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(ptPTProvider,
                          SampleMeta.getPTPTProviderId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  ptPTProvider.setValue(getPTProviderId());
                              }
 
@@ -985,7 +985,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(ptSeries, SampleMeta.getPTSeries(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 ptSeries.setValue(getSeries());
             }
 
@@ -1004,7 +1004,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(ptDueDate, SampleMeta.getPTDueDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 ptDueDate.setValue(getDueDate());
             }
 
@@ -1025,7 +1025,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(ptAdditionalDomain,
                          SampleMeta.getPTAdditionalDomain(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  ptAdditionalDomain.setValue(getAdditionalDomain());
                              }
 
@@ -1046,7 +1046,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(receivedByName,
                          SampleMeta.getReceivedById(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  try {
                                      receivedByName.setValue(getReceivedById(), getReceivedByName());
                                  } catch (Exception e) {
@@ -1100,7 +1100,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
             }
 
@@ -1177,7 +1177,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(billToName, BILL_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setBillTo(getSampleOrganization(manager, Constants.dictionary().ORG_BILL_TO));
             }
 
@@ -1256,7 +1256,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setProject(getFirstProject(manager));
                              }
 
@@ -1339,7 +1339,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  sampleItemAnalysisTreeTab.onDataChange();
                              }
 
@@ -1353,7 +1353,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1375,7 +1375,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1397,7 +1397,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1419,7 +1419,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1435,7 +1435,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1449,7 +1449,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1465,7 +1465,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1481,7 +1481,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1501,7 +1501,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -2881,7 +2881,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

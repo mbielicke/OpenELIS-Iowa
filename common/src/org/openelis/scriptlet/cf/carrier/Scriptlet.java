@@ -58,11 +58,11 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     private ScriptletProxy proxy;
 
-    private Integer           analysisId, pregnancyId;
+    private Integer        analysisId, pregnancyId;
 
     private static final String PREG_TEST_NAME = "cf-pregnancy", METHOD_NAME = "pcr";
 
-    private Risk             risk1;
+    private Risk                risk1;
 
     public Scriptlet(ScriptletProxy proxy, Integer analysisId) {
         this.proxy = proxy;
@@ -87,7 +87,8 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
         sm = data.getManager();
         ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(analysisId));
-        if (ana == null || Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+        if (ana == null || Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
+            data.getChanges().size() == 0)
             return data;
 
         /*
@@ -239,8 +240,8 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                                                            getIntegerResult(carrier.relation));
                 setValue(carrier.initialRisk, risk1.format(initRisk), rf, false, ana, data);
                 finalRisk = risk1.computeCarrierFinalRisk(ethnicityId,
-                                                         getIntegerResult(carrier.cftrGene),
-                                                         initRisk);
+                                                          getIntegerResult(carrier.cftrGene),
+                                                          initRisk);
                 if (finalRisk == 0.0) {
                     isDict = true;
                     value = risk1.UNKNOWN.toString();
@@ -308,7 +309,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             val = value;
 
         if (ResultHelper.formatValue(result, val, ana.getUnitOfMeasureId(), rf)) {
-            data.addRerun(result.getAnalyteExternalId());
+            data.setChanges(result.getAnalyteExternalId());
             data.addChangedUid(Constants.uid().getResult(result.getId()));
             proxy.log(Level.FINE,
                       "Setting the value of " + result.getAnalyte() + " as: " + value,

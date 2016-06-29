@@ -52,6 +52,5 @@ public class DownsUS extends Risk {
         ordinalDS = getOrdinal(mom, 4, 0.000000793465,
                                getMeanDS(), getConstDS());
         setRisk((int) (apr / (ordinalDS / ordinalUA)));
-        setDidCmpRisk(true);
     }
 }

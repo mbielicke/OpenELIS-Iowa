@@ -330,8 +330,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          domainScriptletVariable,
-                    attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
 
     protected Integer                                   domainScriptletId;
 
@@ -800,7 +799,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
                              }
 
@@ -822,7 +821,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(orderId,
                          SampleMeta.getEorderPaperOrderValidator(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  orderId.setValue(getOrderId());
                              }
 
@@ -876,7 +875,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
@@ -914,7 +913,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -949,7 +948,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
                 if (receivedDate.isEnabled() && revalidate)
                     revalidate(receivedDate);
@@ -986,7 +985,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -1007,7 +1006,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -1045,7 +1044,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientId,
                          SampleMeta.getNeonatalPatientId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientId.setValue(getPatientId());
                              }
 
@@ -1094,7 +1093,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientLastName,
                          SampleMeta.getNeonatalPatientLastName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientLastName.setValue(getPatientLastName());
                                  if (revalidate)
                                      revalidate(patientLastName);
@@ -1122,7 +1121,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientFirstName,
                          SampleMeta.getNeonatalPatientFirstName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientFirstName.setValue(getPatientFirstName());
                              }
 
@@ -1148,7 +1147,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientBirthDate,
                          SampleMeta.getNeonatalPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  patientBirthDate.setValue(getPatientBirthDate());
                                  if (revalidate)
                                      revalidate(patientBirthDate);
@@ -1174,7 +1173,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientBirthTime,
                          SampleMeta.getNeonatalPatientBirthTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  patientBirthTime.setValue(getPatientBirthTime());
                              }
 
@@ -1198,7 +1197,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientAddrMultipleUnit,
                          SampleMeta.getNeonatalPatientAddrMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
                              }
 
@@ -1225,7 +1224,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientAddrStreetAddress,
                          SampleMeta.getNeonatalPatientAddrStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
                              }
 
@@ -1252,7 +1251,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientAddrCity,
                          SampleMeta.getNeonatalPatientAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrCity.setValue(getPatientAddressCity());
                              }
 
@@ -1276,7 +1275,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientAddrState,
                          SampleMeta.getNeonatalPatientAddrState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrState.setValue(getPatientAddressState());
                              }
 
@@ -1300,7 +1299,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientAddrZipCode,
                          SampleMeta.getNeonatalPatientAddrZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrZipCode.setValue(getPatientAddressZipCode());
                              }
 
@@ -1326,7 +1325,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientGender,
                          SampleMeta.getNeonatalPatientGenderId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientGender.setValue(getPatientGenderId());
                              }
 
@@ -1350,7 +1349,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientRace,
                          SampleMeta.getNeonatalPatientRaceId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientRace.setValue(getPatientRaceId());
                              }
 
@@ -1374,7 +1373,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(patientEthnicity,
                          SampleMeta.getNeonatalPatientEthnicityId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientEthnicity.setValue(getPatientEthnicityId());
                              }
 
@@ -1419,7 +1418,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(isNicu, SampleMeta.getNeonatalIsNicu(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 isNicu.setValue(getIsNicu());
             }
 
@@ -1441,7 +1440,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(birthOrder,
                          SampleMeta.getNeonatalBirthOrder(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  birthOrder.setValue(getBirthOrder());
                              }
 
@@ -1464,7 +1463,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(gestationalAge,
                          SampleMeta.getNeonatalGestationalAge(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  gestationalAge.setValue(getGestationalAge());
                              }
 
@@ -1487,7 +1486,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(feedingId,
                          SampleMeta.getNeonatalFeedingId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  feedingId.setValue(getFeedingId());
                              }
 
@@ -1508,7 +1507,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(weight, SampleMeta.getNeonatalWeight(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 weight.setValue(getWeight());
             }
 
@@ -1530,7 +1529,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(isTransfused,
                          SampleMeta.getNeonatalIsTransfused(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  isTransfused.setValue(getIsTransfused());
                              }
 
@@ -1553,7 +1552,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(transfusionDate,
                          SampleMeta.getNeonatalTransfusionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  transfusionDate.setValue(getTransfusionDate());
                              }
 
@@ -1574,7 +1573,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(transfusionAge, "transfusionAge", new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 transfusionAge.setValue(getTransfusionAge());
             }
 
@@ -1589,7 +1588,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(isRepeat, SampleMeta.getNeonatalIsRepeat(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 isRepeat.setValue(getIsRepeat());
             }
 
@@ -1610,7 +1609,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(collectionAge,
                          SampleMeta.getNeonatalCollectionAge(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  collectionAge.setValue(getNeonatalCollectionAge());
                              }
 
@@ -1627,7 +1626,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(isCollectionValid,
                          SampleMeta.getNeonatalIsCollectionValid(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  isCollectionValid.setValue(getIsCollectionValid());
                              }
 
@@ -1650,7 +1649,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinId,
                          SampleMeta.getNeonatalNextOfKinId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  nextOfKinId.setValue(getNextOfKinId());
                              }
 
@@ -1702,7 +1701,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinLastName,
                          SampleMeta.getNeonatalNextOfKinLastName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinLastName.setValue(getNextOfKinLastName());
                                  if (revalidate)
                                      revalidate(nextOfKinLastName);
@@ -1733,7 +1732,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinMiddleName,
                          SampleMeta.getNeonatalNextOfKinMiddleName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinMiddleName.setValue(getNextOfKinMiddleName());
                              }
 
@@ -1759,7 +1758,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinFirstName,
                          SampleMeta.getNeonatalNextOfKinFirstName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinFirstName.setValue(getNextOfKinFirstName());
                                  if (revalidate)
                                      revalidate(nextOfKinFirstName);
@@ -1790,7 +1789,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinRelation,
                          SampleMeta.getNeonatalNextOfKinRelationId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  nextOfKinRelation.setValue(getNeonatalNextOfKinRelationId());
                                  if (revalidate)
                                      revalidate(nextOfKinRelation);
@@ -1817,7 +1816,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinBirthDate,
                          SampleMeta.getNeonatalNextOfKinBirthDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  nextOfKinBirthDate.setValue(getNextOfKinBirthDate());
                                  if (revalidate)
                                      revalidate(nextOfKinBirthDate);
@@ -1845,7 +1844,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinNationalId,
                          SampleMeta.getNeonatalNextOfKinNationalId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinNationalId.setValue(getNextOfKinNationalId());
                              }
 
@@ -1874,7 +1873,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrMultipleUnit,
                          SampleMeta.getNeonatalNextOfKinAddrMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrMultipleUnit.setValue(getNextOfKinAddressMultipleUnit());
                              }
 
@@ -1901,7 +1900,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrStreetAddress,
                          SampleMeta.getNeonatalNextOfKinAddrStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrStreetAddress.setValue(getNextOfKinAddressStreetAddress());
                              }
 
@@ -1928,7 +1927,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrCity,
                          SampleMeta.getNeonatalNextOfKinAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrCity.setValue(getNextOfKinAddressCity());
                              }
 
@@ -1954,7 +1953,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrState,
                          SampleMeta.getNeonatalNextOfKinAddrState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrState.setValue(getNextOfKinAddressState());
                              }
 
@@ -1980,7 +1979,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrZipCode,
                          SampleMeta.getNeonatalNextOfKinAddrZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrZipCode.setValue(getNextOfKinAddressZipCode());
                              }
 
@@ -2006,7 +2005,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinAddrHomePhone,
                          SampleMeta.getNeonatalNextOfKinAddrHomePhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
                              }
 
@@ -2033,7 +2032,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinGender,
                          SampleMeta.getNeonatalNextOfKinGenderId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  nextOfKinGender.setValue(getNextOfKinGenderId());
                              }
 
@@ -2059,7 +2058,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinRace,
                          SampleMeta.getNeonatalNextOfKinRaceId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  nextOfKinRace.setValue(getNextOfKinRaceId());
                              }
 
@@ -2083,7 +2082,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(nextOfKinEthnicity,
                          SampleMeta.getNeonatalNextOfKinEthnicityId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  nextOfKinEthnicity.setValue(getNextOfKinEthnicityId());
                              }
 
@@ -2132,7 +2131,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(providerLastName,
                          SampleMeta.getNeonatalProviderLastName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  providerLastName.setValue(getProviderId(), getProviderLastName());
                              }
 
@@ -2206,7 +2205,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(providerFirstName,
                          SampleMeta.getNeonatalProviderFirstName(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  providerFirstName.setValue(getProviderFirstName());
                              }
 
@@ -2221,7 +2220,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
             }
 
@@ -2301,7 +2300,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(birthHospitalName,
                          BIRTH_HOSPITAL_KEY,
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setBirthHospital(getSampleOrganization(manager,
                                                                         Constants.dictionary().ORG_BIRTH_HOSPITAL));
                              }
@@ -2383,7 +2382,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(formNumber,
                          SampleMeta.getNeonatalFormNumber(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  formNumber.setValue(getFormNumber());
                              }
 
@@ -2406,7 +2405,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setProject(getFirstProject(manager));
                              }
 
@@ -2487,7 +2486,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  sampleItemAnalysisTreeTab.onDataChange();
                              }
 
@@ -2501,7 +2500,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2523,7 +2522,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2545,7 +2544,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2567,7 +2566,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2583,7 +2582,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -2597,7 +2596,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2613,7 +2612,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -2629,7 +2628,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -2649,7 +2648,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -4319,6 +4318,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * to the scriptlet runner
      */
     private void addScriptlets() throws Exception {
+        SystemVariableDO sv;
+        
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
@@ -4328,9 +4329,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * found the first time because the scriptlet is optional
          */
         if (hasDomainScriptlet) {
+            sv = null;
             try {
-                domainScriptletVariable = SystemVariableService1Impl.INSTANCE
-                                                               .fetchByExactName("neonatal_scriptlet");
+                sv = SystemVariableService1Impl.INSTANCE.fetchByExactName("neonatal_scriptlet");
             } catch (NotFoundException e) {
                 // ignore
             } catch (Exception e) {
@@ -4344,9 +4345,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * to look up the dictionary, the user must be informed of it even
              * if it's a NotFoundException
              */
-            if (domainScriptletVariable != null) {
+            if (sv != null) {
                 try {
-                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                    domainScriptletId = DictionaryCache.getIdBySystemName(sv.getValue());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -4426,7 +4427,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

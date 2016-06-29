@@ -72,6 +72,8 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     private Integer                              patientId;
 
+    private ArrayList<String>                    changes;
+
     private static HashMap<Integer, TestManager> testManagers;
 
     private static HashSet<Integer>              normalTestResults;
@@ -122,19 +124,19 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
          * if the sample doesn't have any items then add an item with the most
          * common sample type for neonatal samples
          */
+        changes = data.getChanges();
         sm = data.getManager();
         if (sm.item.count() == 0)
             addDefaultSampleItem(data);
 
-        changed = data.getChanged();
         /*
          * if either the collection date/time or patient birth date/time has
          * changed then reset the collection age
          */
-        if (SampleMeta.getCollectionDate().equals(changed) ||
-            SampleMeta.getCollectionTime().equals(changed) ||
-            SampleMeta.getNeonatalPatientBirthDate().equals(changed) ||
-            SampleMeta.getNeonatalPatientBirthTime().equals(changed))
+        if (changes.contains(SampleMeta.getCollectionDate()) ||
+            changes.contains(SampleMeta.getCollectionTime()) ||
+            changes.contains(SampleMeta.getNeonatalPatientBirthDate()) ||
+            changes.contains(SampleMeta.getNeonatalPatientBirthTime()))
             resetCollectionAge(data);
 
         sn = sm.getSampleNeonatal();
@@ -151,8 +153,9 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         if ( !data.getActionBefore().contains(NEW_DOMAIN) || sn.getPatientId() == null)
             return data;
 
+        //TODO fix before going live
         try {
-            if (changed != null)
+            if ( changes.size() > 0)
                 /*
                  * set this sample as repeat if there's another sample entered
                  * previously for its patient
@@ -248,7 +251,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         }
 
         sn.setCollectionAge(age);
-        data.addRerun(SampleMeta.getNeonatalCollectionAge());
+        data.setChanges(SampleMeta.getNeonatalCollectionAge());
     }
 
     /**
@@ -318,16 +321,16 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
          * neonatal domain has changed, the sample is not marked as repeat and
          * the patient is an existing one
          */
-        changed = data.getChanged();
+      //TODO fix before going live
         if (previousManager != null &&
-            (changed.startsWith("_sampleNeonatal") || changed.startsWith("_neonatal")) &&
+            (changes.get(0).startsWith("_sampleNeonatal") || changes.get(0).startsWith("_neonatal")) &&
             "N".equals(sn.getIsRepeat())) {
             proxy.log(Level.FINE, "Setting the sample as repeat", null);
             sn.setIsRepeat("Y");
             /*
              * notify the scriptlet runner that a field was changed
              */
-            data.addRerun(SampleMeta.getNeonatalIsRepeat());
+            data.setChanges(SampleMeta.getNeonatalIsRepeat());
         }
     }
 
