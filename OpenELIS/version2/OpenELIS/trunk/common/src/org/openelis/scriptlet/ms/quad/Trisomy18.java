@@ -46,6 +46,5 @@ public class Trisomy18 extends Risk {
         ordinalUA = getOrdinal(mom, 3, 0.0000279099, getMeanUA(), getConstUA());
         ordinalDS = getOrdinal(mom, 3, 0.000447477, getMeanDS(), getConstDS());
         setRisk((int)Math.round(apr / (ordinalDS / ordinalUA)));
-        setDidCmpRisk(true);
     }
 }

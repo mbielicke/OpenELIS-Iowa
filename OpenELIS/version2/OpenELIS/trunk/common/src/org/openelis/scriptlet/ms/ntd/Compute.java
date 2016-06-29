@@ -26,42 +26,32 @@
 package org.openelis.scriptlet.ms.ntd;
 
 import org.openelis.scriptlet.ms.quad.NTD;
+import org.openelis.scriptlet.ms.quad.Test;
 
 /**
  * The class for computing various risks and moms for the ms ntd (Maternal NTD
  * Screen) test
  */
 public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
+    
+    public Compute() {
+        /*
+         * instantiate tests and risks
+         */
+        tests = new Test[1];
+        tests[0] = new AFP();
+        ntd = new NTD();
+    }
+    
     /**
      * Computes various values such as gestational and due ages, MoMs and risks
      */
     public void compute() {
         cmpGestationalAges();
         cmpMotherDueAge();
-        /*
-         * this object is created here because the scriptlet gets MoMs, risks
-         * etc. from this compute engine even if results are overridden; the
-         * engine gets those values from this object, so it can't be null in any
-         * case; objects for tests e.g. AFP are set by the scriptlet
-         */
-        ntd = new NTD();
         if ( !isOverridden) {
             cmpMoMs();
             cmpNTD();
-        }
-    }
-    
-    /**
-     * Computes Multiple of Medians for AFP
-     */
-    protected void cmpMoMs() {
-        if ( !didCmpGa)
-            return;
-
-        try {
-            afp.computeMoms(gestAgeInit, gestAgeCurr, enteredDate, weight, isRaceBlack, isDiabetic);
-        } catch (Exception indE) {
-            lastException = indE;
         }
     }
 }

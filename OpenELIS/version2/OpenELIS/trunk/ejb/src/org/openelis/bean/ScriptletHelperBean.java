@@ -291,7 +291,7 @@ public class ScriptletHelperBean {
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(sm);
         data.setCache(cache);

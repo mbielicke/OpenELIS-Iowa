@@ -275,7 +275,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
-                    isAttachmentScreenOpen, hasDomainScriptlet, isFullLogin;
+                    isAttachmentScreenOpen, fetchDomainScriptlet, isFullLogin;
 
     protected ModulePermission                          samplePermission;
 
@@ -308,8 +308,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          domainScriptletVariable,
-                    attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
 
     protected Integer                                   domainScriptletId;
 
@@ -454,7 +453,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         initWidget(uiBinder.createAndBindUi(this));
 
         manager = null;
-        hasDomainScriptlet = true;
+        fetchDomainScriptlet = true;
 
         initialize();
         evaluateEdit();
@@ -743,7 +742,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(accessionNumber,
                          SampleMeta.getAccessionNumber(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  accessionNumber.setValue(getAccessionNumber());
                              }
 
@@ -763,7 +762,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(orderId, SampleMeta.getOrderId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 orderId.setValue(getOrderId());
             }
 
@@ -814,7 +813,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(collectionDate,
                          SampleMeta.getCollectionDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionDate.setValue(getCollectionDate());
                              }
 
@@ -852,7 +851,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  collectionTime.setValue(getCollectionTime());
                              }
 
@@ -887,7 +886,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 receivedDate.setValue(getReceivedDate());
             }
 
@@ -922,7 +921,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(status, SampleMeta.getStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -943,7 +942,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(clientReference,
                          SampleMeta.getClientReference(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  clientReference.setValue(getClientReference());
                              }
 
@@ -981,7 +980,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisPwsNumber0,
                          SampleMeta.getSDWISPwsNumber0(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  sdwisPwsNumber0.setValue(getPwsNumber0());
                              }
 
@@ -1027,7 +1026,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(pwsName, "pwsName", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 pwsName.setValue(getPwsName());
             }
 
@@ -1040,7 +1039,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisStateLabId,
                          SampleMeta.getSDWISStateLabId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  sdwisStateLabId.setValue(getStateLabId());
                              }
 
@@ -1079,7 +1078,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisFacilityId,
                          SampleMeta.getSDWISFacilityId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  sdwisFacilityId.setValue(getFacilityId());
                              }
 
@@ -1118,7 +1117,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisSampleTypeId,
                          SampleMeta.getSDWISSampleTypeId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  sdwisSampleTypeId.setValue(getSampleTypeId());
                              }
 
@@ -1157,7 +1156,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisSampleCategoryId,
                          SampleMeta.getSDWISSampleCategoryId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  sdwisSampleCategoryId.setValue(getSampleCategoryId());
                              }
 
@@ -1196,7 +1195,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisSamplePointId,
                          SampleMeta.getSDWISSamplePointId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  sdwisSamplePointId.setValue(getSamplePointId());
                              }
 
@@ -1233,7 +1232,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sdwisLocation, SampleMeta.getSDWISLocation(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 sdwisLocation.setValue(getLocation());
             }
 
@@ -1271,7 +1270,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisPriority,
                          SampleMeta.getSDWISPriority(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  sdwisPriority.setValue(getPriority());
                              }
 
@@ -1310,7 +1309,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sdwisCollector,
                          SampleMeta.getSDWISCollector(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  sdwisCollector.setValue(getCollector());
                              }
 
@@ -1347,7 +1346,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
             }
 
@@ -1424,7 +1423,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(billToName, BILL_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                 setBillTo(getSampleOrganization(manager, Constants.dictionary().ORG_BILL_TO));
             }
 
@@ -1503,7 +1502,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  setProject(getFirstProject(manager));
                              }
 
@@ -1586,7 +1585,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Object> event) {
                                  sampleItemAnalysisTreeTab.onDataChange();
                              }
 
@@ -1600,7 +1599,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1622,7 +1621,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1644,7 +1643,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1666,7 +1665,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1682,7 +1681,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 sampleNotesTab.onDataChange();
             }
 
@@ -1696,7 +1695,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1712,7 +1711,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 /*
                  * the tab is refreshed when a node in the tree is selected
                  */
@@ -1728,7 +1727,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 auxDataTab.onDataChange();
             }
 
@@ -1748,7 +1747,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 attachmentTab.onDataChange();
             }
 
@@ -3104,6 +3103,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
      * to the scriptlet runner
      */
     private void addScriptlets() throws Exception {
+        SystemVariableDO sv;
+        
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
@@ -3112,10 +3113,10 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
          * variable; don't try to look up the system variable again if it's not
          * found the first time because the scriptlet is optional
          */
-        if (hasDomainScriptlet) {
+        if (fetchDomainScriptlet) {
+            sv = null;
             try {
-                domainScriptletVariable = SystemVariableService1Impl.INSTANCE
-                                                               .fetchByExactName("sdwis_scriptlet");
+                sv = SystemVariableService1Impl.INSTANCE.fetchByExactName("sdwis_scriptlet");
             } catch (NotFoundException e) {
                 // ignore
             } catch (Exception e) {
@@ -3129,15 +3130,15 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              * to look up the dictionary, the user must be informed of it even
              * if it's a NotFoundException
              */
-            if (domainScriptletVariable != null) {
+            if (sv != null) {
                 try {
-                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                    domainScriptletId = DictionaryCache.getIdBySystemName(sv.getValue());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-            hasDomainScriptlet = false;
+            fetchDomainScriptlet = false;
         }
         if (domainScriptletId != null)
             addScriptlet(domainScriptletId, null);
@@ -3212,7 +3213,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         if (action != null)
             data.addActionBefore(action);
         actionAfter = EnumSet.noneOf(Action_After.class);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

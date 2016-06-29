@@ -3520,7 +3520,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        data.setChanged(changed);
+        data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);

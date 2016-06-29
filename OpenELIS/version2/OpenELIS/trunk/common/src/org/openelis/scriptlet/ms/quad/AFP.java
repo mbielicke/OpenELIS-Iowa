@@ -25,6 +25,7 @@
  */
 package org.openelis.scriptlet.ms.quad;
 
+import org.openelis.constants.Messages;
 import org.openelis.ui.common.InconsistencyException;
 
 /**
@@ -32,9 +33,9 @@ import org.openelis.ui.common.InconsistencyException;
  * factor for MoM and median based on gestational age
  */
 public class AFP extends Test {
-    public AFP(Double p1, Double p2, Double p3, Double result, String analyteName) {
-        super(1.19, 0.89, new double[]{0, 0}, new double[]{.4, 3}, new double[]{.33, 2},
-              new double[]{.4, 2}, 105, 146, p1, p2, p3, result, analyteName);
+    public AFP() {
+        super(1.19, 0.89, new Double[]{0.0, 0.0}, new Double[]{.4, 3.0}, new Double[]{.33, 2.0},
+              new Double[]{.4, 2.0}, 105, 146, Messages.get().scriptlet_afp());
     }
 
     @Override

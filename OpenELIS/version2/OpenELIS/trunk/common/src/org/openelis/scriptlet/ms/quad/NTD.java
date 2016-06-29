@@ -36,6 +36,5 @@ public class NTD extends Risk {
 
     @Override
     public void computeRisk(double[] mom, double apr) {
-        setDidCmpRisk(true);
     }
 }

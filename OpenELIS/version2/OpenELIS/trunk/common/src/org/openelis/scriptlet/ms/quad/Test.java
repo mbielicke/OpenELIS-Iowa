@@ -13,15 +13,12 @@ import org.openelis.ui.common.InconsistencyException;
  * p-values etc.; it also computes the initial and current MoMs
  */
 public abstract class Test {
-    private double  race, insuline, ntd[], downs[], t18[], slos[], momInit, momCurr;
+    private Double  race, insuline, ntd[], downs[], t18[], slos[], momInit, momCurr, p1, p2, p3, result;
     private int     minDay, maxDay;
-    private Double  result, p1, p2, p3;
-    private boolean didCmpMoM;
     private String analyteName;
 
-    protected Test(double race, double insuline, double ntd[], double downs[], double t18[],
-                   double slos[], int minDay, int maxDay, Double p1, Double p2, Double p3,
-                   Double result, String analyteName) {
+    protected Test(Double race, Double insuline, Double ntd[], Double downs[], Double t18[],
+                   Double slos[], int minDay, int maxDay, String analyteName) {
         this.race = race;
         this.insuline = insuline;
         this.ntd = ntd;
@@ -30,52 +27,48 @@ public abstract class Test {
         this.slos = slos;
         this.minDay = minDay;
         this.maxDay = maxDay;
-        this.p1 = p1;
-        this.p2 = p2;
-        this.p3 = p3;
-        this.result = result;
         this.analyteName = analyteName;
     }
 
     /**
      * Returns race correction factor for MoM
      */
-    public double getRace() {
+    public Double getRace() {
         return race;
     }
 
     /**
      * Returns insulin correction factor for MoM
      */
-    public double getInsuline() {
+    public Double getInsuline() {
         return insuline;
     }
 
     /**
      * Returns truncation limits for NTD
      */
-    public double[] getNTD() {
+    public Double[] getNTD() {
         return ntd;
     }
 
     /**
      * Returns truncation limits for Downs
      */
-    public double[] getDowns() {
+    public Double[] getDowns() {
         return downs;
     }
 
     /**
      * Returns truncation limits for T18
      */
-    public double[] getT18() {
+    public Double[] getT18() {
         return t18;
     }
 
     /**
      * Returns truncation limits for SLOS
      */
-    public double[] getSLOS() {
+    public Double[] getSLOS() {
         return slos;
     }
 
@@ -99,12 +92,26 @@ public abstract class Test {
     public Double getResult() {
         return result;
     }
+    
+    /**
+     * Sets the value from the intrument for this test
+     */
+    public void setResult(Double result) {
+        this.result = result;
+    }
 
     /**
      * Returns p1
      */
     public Double getP1() {
         return p1;
+    }
+    
+    /**
+     * Sets p1
+     */
+    public void setP1(Double p1) {
+        this.p1 = p1;
     }
 
     /**
@@ -115,6 +122,13 @@ public abstract class Test {
     }
 
     /**
+     * Sets p2
+     */
+    public void setP2(Double p2) {
+        this.p2 = p2;
+    }
+
+    /**
      * Returns p3
      */
     public Double getP3() {
@@ -122,45 +136,47 @@ public abstract class Test {
     }
 
     /**
+     * Sets p3
+     */
+    public void setP3(Double p3) {
+        this.p3 = p3;
+    }
+
+    /**
      * Returns MoM computed using initial gestational age
      */
-    public double getMomInit() {
+    public Double getMomInit() {
         return momInit;
     }
 
     /**
      * Sets MoM computed using initial gestational age
      */
-    public void setMomInit(double momInit) {
+    public void setMomInit(Double momInit) {
         this.momInit = momInit;
     }
 
     /**
      * Returns MoM computed using current gestational age
      */
-    public double getMomCurr() {
+    public Double getMomCurr() {
         return momCurr;
     }
 
     /**
      * Sets MoM computed using current gestational age
      */
-    public void setMomCurr(double momCurr) {
+    public void setMomCurr(Double momCurr) {
         this.momCurr = momCurr;
     }
-
+    
     /**
-     * Returns true if MoMs were computed; returns false otherwise
+     * Returns the final computed MoM to be shown to the user
      */
-    public boolean getDidCmpMoM() {
-        return didCmpMoM;
-    }
-
-    /**
-     * Sets true if MoMs were computed; sets false otherwise
-     */
-    public void setDidCmpMoM(boolean didCmpMoM) {
-        this.didCmpMoM = didCmpMoM;
+    public Double getMomFinal() {
+        if (momCurr == null || momInit == null)
+            return null;
+        return momCurr;
     }
    
     /**
@@ -176,10 +192,9 @@ public abstract class Test {
                 setMomInit(Util.trunc(mom + 0.005, 2));
                 mom = getMoM(gestAgeCurr, entered, weight, isRaceBlack, isDiabetic);
                 setMomCurr(Util.trunc(mom + 0.005, 2));
-                setDidCmpMoM(true);
             } catch (Exception indE) {
-                setMomInit(0.0);
-                setMomCurr(0.0);
+                setMomInit(null);
+                setMomCurr(null);
                 throw indE;
             }
         }

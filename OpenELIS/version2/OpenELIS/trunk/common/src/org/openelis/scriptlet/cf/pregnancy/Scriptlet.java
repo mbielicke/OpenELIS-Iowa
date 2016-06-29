@@ -64,12 +64,12 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     private ScriptletProxy proxy;
 
-    private Integer           analysisId, carrierId;
+    private Integer        analysisId, carrierId;
 
     private static final String CARR_TEST_NAME = "cf-carrier", METHOD_NAME = "pcr",
                     PART_ACCESSION = "cf_part_accession";
 
-    private Risk             cfRisk1;
+    private Risk                cfRisk1;
 
     public Scriptlet(ScriptletProxy proxy, Integer analysisId) {
         proxy.log(Level.FINE, "Initializing CFPregnancyScriptlet1", null);
@@ -90,10 +90,12 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         ResultViewDO res;
 
         proxy.log(Level.FINE, "In CFPregnancyScriptlet1.run", null);
+        
         sm = data.getManager();
         ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
-            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
+            data.getChanges().size() == 0)
             return data;
 
         /*
@@ -555,7 +557,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             val = value;
 
         if (ResultHelper.formatValue(result, val, ana.getUnitOfMeasureId(), rf)) {
-            data.addRerun(result.getAnalyteExternalId());
+            data.setChanges(result.getAnalyteExternalId());
             data.addChangedUid(Constants.uid().getResult(result.getId()));
             proxy.log(Level.FINE,
                       "Setting the value of " + result.getAnalyte() + " as: " + value,
