@@ -14893,6 +14893,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String provider();
 
   /**
+   * Translated "History - Provider Analyte".
+   * 
+   * @return translated "History - Provider Analyte"
+   */
+  @DefaultMessage("History - Provider Analyte")
+  @Key("provider.analyteHistory")
+  String provider_analyteHistory();
+
+  /**
    * Translated "External Id".
    * 
    * @return translated "External Id"
@@ -18968,6 +18977,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Scriptlet")
   @Key("scriptlet")
   String scriptlet();
+
+  /**
+   * Translated "AFP".
+   * 
+   * @return translated "AFP"
+   */
+  @DefaultMessage("AFP")
+  @Key("scriptlet.afp")
+  String scriptlet_afp();
+
+  /**
+   * Translated "Estriol (uE3)".
+   * 
+   * @return translated "Estriol (uE3)"
+   */
+  @DefaultMessage("Estriol (uE3)")
+  @Key("scriptlet.estriol")
+  String scriptlet_estriol();
+
+  /**
+   * Translated "HCG".
+   * 
+   * @return translated "HCG"
+   */
+  @DefaultMessage("HCG")
+  @Key("scriptlet.hcg")
+  String scriptlet_hcg();
+
+  /**
+   * Translated "Inhibin".
+   * 
+   * @return translated "Inhibin"
+   */
+  @DefaultMessage("Inhibin")
+  @Key("scriptlet.inhibin")
+  String scriptlet_inhibin();
 
   /**
    * Translated "Define action scripts that can be assigned to different processes.".
