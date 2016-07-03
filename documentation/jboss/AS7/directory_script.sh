@@ -32,6 +32,7 @@ fi
 mkdir upload
 mkdir worksheets
 mkdir wstemplate
+mkdir qctemplate
 mkdir inventory
 mkdir billing
 mkdir SDWIS

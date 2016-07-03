@@ -59,13 +59,16 @@
 64|eorder_file_directory|/OpenELIS/eorders/
 65|-sdwis_scriptlet|dictionary-system-name for scriptlet
 66|-billing_test_ids|special-billing-test-id,...
-72|last_tube_number|AAA000
-73|-sdwis_export_printer|printer-name for sdwis export report
-74|-chlgc_cdc_directory|/OpenELIS/
-75|data_view_max_samples|10000
+71|last_tube_number|AAA000
+72|-sdwis_export_printer|printer-name for sdwis export report
+73|-chlgc_cdc_directory|/OpenELIS/
+74|data_view_max_samples|10000
+75|qc_template_directory|/OpenELIS/qctemplate/
 76|attachment_pattern_gen_java|TRF(.*)
 77|attachment_pattern_gen_sql|TRF*
 78|attachment_pattern_pt|TRF*PT-?.pdf
 79|internal_section|internal
 80|system_section|system
-81|ver_with_scanned_trf|false
+81|public_section|public
+82|ver_with_scanned_trf|false
+83|sdwis_aux_group_ids|id of aux group for sdwis data
