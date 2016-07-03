@@ -1,8 +1,18 @@
 1. install JBOSS verion jboss-as-7.1.1.Final
 
-2. use standalone.xml.POSTGRES as the basis for your JBOSS
-   standalone/configuration/standalone.xml file. Here are couple of
-   things you need to consider:
+2. setup user jboss configuration for authentication and database.
+
+   for active directory, use standalone-AD.xml.POSTGRES as the basis
+   for your JBOSS standalone/configuration/standalone.xml file. 
+
+   alternatively, you can use a simple flat file for user authentication;
+   use standalone-PROP.xml.POSTGRES as the basis for your JBOSS 
+   standalone/configuration/standalone.xml file. The two flat files are 
+   called application-users.properties and application-roles.properties.
+   OpenELIS does not use the content of application-roles.properties. Use
+   add-user.sh to add "demo" user to application-users.properties.
+
+   Here are couple of things you need to consider for either config:
 
    a. the file is set for active directory authentication (or ldap with some
       minor modifications). You will need to change this to your environment -
@@ -30,6 +40,8 @@
 
       Note that you are setting the security for two different applications: Security 
       and OpenELIS.
+
+      HERE IS THE CONFIGURATION FOR AD:
 
         <subsystem xmlns="urn:jboss:domain:security:1.1">
             <security-domains>
@@ -91,6 +103,68 @@
                             <module-option name="loginLockoutTime" value="600000"/>
                             <module-option name="loginIPRetryCount" value="7"/>
                             <module-option name="loginNameRetryCount" value="4"/>
+                        </login-module>
+                        <login-module code="org.openelis.login.OpenELISRolesModule" flag="required">
+                            <module-option name="dsJndiName" value="java:/SecurityDS"/>
+                            <module-option name="rolesQuery" value="select * from ejb_roles(?,'openelis')"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="jboss-web-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+                <security-domain name="jboss-ejb-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+            </security-domains>
+        </subsystem>
+
+      HERE IS THE CONFIURATION USING PROPERTIES FILE
+
+        <subsystem xmlns="urn:jboss:domain:security:1.1">
+            <security-domains>
+                <security-domain name="client-login" cache-type="default">
+                    <authentication>
+                        <login-module code="org.jboss.security.ClientLoginModule" flag="required">
+                            <module-option name="restore-login-identity" value="true"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="security" cache-type="default">
+                    <authentication>
+                        <login-module code="org.openelis.login.OpenELISUserPropertiesModule" flag="required">
+                            <module-option name="usersProperties" value="${jboss.server.config.dir}/application-users.properties"/>
+                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/application-roles.properties"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                            <module-option name="loginLockoutTime" value="600000"/>
+                            <module-option name="loginIPRetryCount" value="100"/>
+                            <module-option name="loginNameRetryCount" value="100"/>
+                        </login-module>
+                        <login-module code="org.openelis.login.OpenELISRolesModule" flag="required">
+                            <module-option name="dsJndiName" value="java:/SecurityDS"/>
+                            <module-option name="rolesQuery" value="select * from ejb_roles(?,'security')"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="openelis" cache-type="default">
+                    <authentication>
+                        <login-module code="org.openelis.login.OpenELISUserPropertiesModule" flag="required">
+                            <module-option name="usersProperties" value="${jboss.server.config.dir}/application-users.properties"/>
+                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/application-roles.properties"/>
+                            <module-option name="unauthenticatedIdentity" value="system"/>
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                            <module-option name="loginLockoutTime" value="600000"/>
+                            <module-option name="loginIPRetryCount" value="100"/>
+                            <module-option name="loginNameRetryCount" value="100"/>
                         </login-module>
                         <login-module code="org.openelis.login.OpenELISRolesModule" flag="required">
                             <module-option name="dsJndiName" value="java:/SecurityDS"/>
@@ -177,7 +251,7 @@
       from current directory, cd service-loader-resources/META-INF/services
       copy print-service/javax.print.PrintServiceLookup to this directory.
 
-4. copy security.ear and openelis.ear from deployments to your JBOSS
+4. copy security.ear and openelis.ear from deployment to your JBOSS
    standalone/deployments directory.
 
 5. start the JBOSS server (or restart if already up)
