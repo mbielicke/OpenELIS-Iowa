@@ -144,6 +144,28 @@
 
 		</xsl:copy>
 	</xsl:template>
+  
+    <xsl:template match="sample_animal">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+            
+            <xsl:apply-templates select="//dictionary[@id = current()/@animal_common_name_id]">
+                <xsl:with-param name="tagname">animal_common_name</xsl:with-param>
+            </xsl:apply-templates>
+            
+            <xsl:apply-templates select="//dictionary[@id = current()/@animal_scientific_name_id]">
+                <xsl:with-param name="tagname">animal_scientific_name</xsl:with-param>
+            </xsl:apply-templates>
+            
+            <xsl:apply-templates
+                select="//address[@id = current()/@location_address_id]">
+                <xsl:with-param name="tagname">location_address</xsl:with-param>
+            </xsl:apply-templates>
+            
+            <xsl:apply-templates select="//provider[@id = current()/@provider_id]" />
+
+        </xsl:copy>
+    </xsl:template>
 
 	<xsl:template match="sample_project">
 		<xsl:copy>

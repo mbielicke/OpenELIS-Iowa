@@ -60,6 +60,7 @@
 				<xs:element name="sample_sdwis" type="sampleSDWIS" />
 				<xs:element name="sample_neonatal" type="sampleNeonatal" />
 				<xs:element name="sample_clinical" type="sampleClinical" />
+                <xs:element name="sample_animal" type="sampleAnimal" />
 			</xs:choice>
 			<xs:element name="sample_project" type="sampleProject"
 				minOccurs="0" maxOccurs="unbounded" />
@@ -220,6 +221,23 @@
 		<xs:attribute name="patient_id" type="xs:integer" use="required" />
 		<xs:attribute name="provider_id" type="xs:integer" />
 	</xs:complexType>
+  
+    <xs:complexType name="sampleAnimal">
+        <xs:sequence>
+            <xs:element name="location" minOccurs="0" type="xs:string" />
+            <xs:element name="provider_phone" minOccurs="0" type="xs:string" />
+            <xs:element name="animal_common_name" minOccurs="1" type="dictionary" />
+            <xs:element name="animal_scientific_name" minOccurs="0" type="dictionary" />
+            <xs:element name="location_address" minOccurs="0" type="address" />
+            <xs:element name="provider" minOccurs="0" type="provider" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="sample_id" type="xs:integer" use="required" />
+        <xs:attribute name="animal_common_name_id" type="xs:integer" use="required" />
+        <xs:attribute name="animal_scientific_name_id" type="xs:integer" />
+        <xs:attribute name="location_address_id" type="xs:integer" />
+        <xs:attribute name="provider_id" type="xs:integer" />
+    </xs:complexType>
 
 	<xs:complexType name="patient">
 		<xs:sequence>
