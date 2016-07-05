@@ -215,7 +215,6 @@ public class DictionaryLookupScreenUI extends Screen
         }
 
         ActionEvent.fire(this, Action.OK, list);
-        table.clear();
         window.close();
     }
 
