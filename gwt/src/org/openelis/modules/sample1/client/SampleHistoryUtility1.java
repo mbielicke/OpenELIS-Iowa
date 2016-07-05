@@ -34,6 +34,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleAnimalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -134,6 +135,20 @@ public class SampleHistoryUtility1 {
         hist = new IdNameVO(data.getId(), "");
         HistoryScreen.showHistory(Messages.get().history_samplePT(),
                                   Constants.table().SAMPLE_PT,
+                                  hist);
+    }
+    
+    /**
+     * shows the history of sample animal
+     */
+    public static void animal(SampleManager1 manager) {
+        IdNameVO hist;
+        SampleAnimalDO data;
+
+        data = manager.getSampleAnimal();
+        hist = new IdNameVO(data.getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_sampleAnimal(),
+                                  Constants.table().SAMPLE_ANIMAL,
                                   hist);
     }
 

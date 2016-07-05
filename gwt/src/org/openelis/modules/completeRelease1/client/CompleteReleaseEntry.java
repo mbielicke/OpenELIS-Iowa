@@ -26,11 +26,7 @@ public class CompleteReleaseEntry implements EntryPoint, ShowScreenHandler {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().reviewAndRelease());
-                    window.setSize("750px", "618px");
-                    window.setContent(new CompleteReleaseScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "reviewAndRelease");
+                    addScreen();
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -42,6 +38,19 @@ public class CompleteReleaseEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
+    }
+
+    protected CompleteReleaseScreenUI addScreen() throws Exception {
+        org.openelis.ui.widget.Window window;
+        CompleteReleaseScreenUI screen;
         
+        window = new org.openelis.ui.widget.Window();
+        screen = new CompleteReleaseScreenUI(window);
+        window.setName(Messages.get().completeRelease_completeAndRelease());
+        window.setSize("750px", "618px");
+        window.setContent(screen);
+        OpenELIS.getBrowser().addWindow(window, "reviewAndRelease");
+        
+        return screen;
     }
 }

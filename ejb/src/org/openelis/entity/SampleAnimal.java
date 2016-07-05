@@ -32,9 +32,14 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -43,6 +48,13 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({
+    @NamedQuery( name = "SampleAnimal.FetchBySampleIds",
+                query = "select distinct new org.openelis.domain.SampleAnimalDO(s.id, s.sampleId, s.animalCommonNameId, s.animalScientificNameId,"
+                      + "s.location, s.locationAddressId, s.providerId, s.providerPhone, a.multipleUnit, a.streetAddress, a.city, a.state,"
+                      + "a.zipCode, a.workPhone, a.homePhone, a.cellPhone, a.faxPhone, a.email, a.country)"
+                      + " from SampleAnimal s LEFT JOIN s.locationAddress a where s.sampleId in (:ids)")})
 
 @Entity
 @Table(name = "sample_animal")
@@ -62,18 +74,30 @@ public class SampleAnimal implements Auditable, Cloneable {
 
     @Column(name = "animal_scientific_name_id")
     private Integer      animalScientificNameId;
+    
+    @Column(name = "location")
+    private String              location;
 
-    @Column(name = "collector")
-    private String       collector;
+    @Column(name = "location_address_id")
+    private Integer             locationAddressId;
+    
+    @Column(name = "provider_id")
+    private Integer        providerId;
 
-    @Column(name = "collector_phone")
-    private String       collectorPhone;
+    @Column(name = "provider_phone")
+    private String         providerPhone;
 
-    @Column(name = "sampling_location")
-    private String       samplingLocation;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+    private Sample              sample;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_address_id", insertable = false, updatable = false)
+    private Address             locationAddress;
 
-    @Column(name = "address_id")
-    private Integer      addressId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id", insertable = false, updatable = false)
+    private Provider       provider;
 
     @Transient
     private SampleAnimal original;
@@ -113,42 +137,67 @@ public class SampleAnimal implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(animalScientificNameId, this.animalScientificNameId))
             this.animalScientificNameId = animalScientificNameId;
     }
-
-    public String getCollector() {
-        return collector;
+    
+    public String getLocation() {
+        return location;
     }
 
-    public void setCollector(String collector) {
-        if (DataBaseUtil.isDifferent(collector, this.collector))
-            this.collector = collector;
+    public void setLocation(String location) {
+        if (DataBaseUtil.isDifferent(location, this.location))
+            this.location = location;
     }
 
-    public String getCollectorPhone() {
-        return collectorPhone;
+    public Integer getLocationAddressId() {
+        return locationAddressId;
     }
 
-    public void setCollectorPhone(String collectorPhone) {
-        if (DataBaseUtil.isDifferent(collectorPhone, this.collectorPhone))
-            this.collectorPhone = collectorPhone;
+    public void setLocationAddressId(Integer locationAddressId) {
+        if (DataBaseUtil.isDifferent(locationAddressId, this.locationAddressId))
+            this.locationAddressId = locationAddressId;
     }
 
-    public String getSamplingLocation() {
-        return samplingLocation;
+    public Integer getProviderId() {
+        return providerId;
     }
 
-    public void setSamplingLocation(String samplingLocation) {
-        if (DataBaseUtil.isDifferent(samplingLocation, this.samplingLocation))
-            this.samplingLocation = samplingLocation;
+    public void setProviderId(Integer providerId) {
+        if (DataBaseUtil.isDifferent(providerId, this.providerId))
+            this.providerId = providerId;
     }
 
-    public Integer getAddressId() {
-        return addressId;
+    public String getProviderPhone() {
+        return providerPhone;
     }
 
-    public void setAddressId(Integer addressId) {
-        if (DataBaseUtil.isDifferent(addressId, this.addressId))
-            this.addressId = addressId;
+    public void setProviderPhone(String providerPhone) {
+        if (DataBaseUtil.isDifferent(providerPhone, this.providerPhone))
+            this.providerPhone = providerPhone;
     }
+    
+    public Sample getSample() {
+        return sample;
+    }
+
+    public void setSample(Sample sample) {
+        this.sample = sample;
+    }
+
+    public Address getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(Address locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
     public void setClone() {
         try {
             original = (SampleAnimal)this.clone();
@@ -168,10 +217,10 @@ public class SampleAnimal implements Auditable, Cloneable {
                  .setField("sample_id", sampleId, original.sampleId, Constants.table().SAMPLE)
                  .setField("animal_common_name_id", animalCommonNameId, original.animalCommonNameId, Constants.table().DICTIONARY)
                  .setField("animal_scientific_name_id", animalScientificNameId, original.animalScientificNameId, Constants.table().DICTIONARY)
-                 .setField("collector", collector, original.collector)
-                 .setField("collector_phone", collectorPhone, original.collectorPhone)
-                 .setField("sampling_location", samplingLocation, original.samplingLocation)
-                 .setField("address_id", addressId, original.addressId, Constants.table().ADDRESS);
+                 .setField("location", location, original.location)
+                 .setField("location_address_id", locationAddressId, original.locationAddressId, Constants.table().ADDRESS)
+                 .setField("provider_id", providerId, original.providerId, Constants.table().PROVIDER)
+                 .setField("provider_phone", providerPhone, original.providerPhone);
 
         return audit;
     }

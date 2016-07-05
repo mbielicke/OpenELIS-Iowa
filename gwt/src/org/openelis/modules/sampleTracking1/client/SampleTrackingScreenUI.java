@@ -57,7 +57,6 @@ import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary1.client.AuxiliaryService1Impl;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample1.client.AccessionChangeEvent;
@@ -66,6 +65,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AnimalTabUI;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
@@ -199,6 +199,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected ClinicalTabUI                              clinicalTab;
 
     @UiField(provided = true)
+    protected AnimalTabUI                                animalTab;
+
+    @UiField(provided = true)
     protected PTTabUI                                    ptTab;
 
     @UiField(provided = true)
@@ -242,7 +245,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     changeDomainPermission;
 
     protected PatientPermission                          patientPermission;
-
+    
     protected SampleTrackingScreenUI                     screen;
 
     protected TestSelectionLookupUI                      testSelectionLookup;
@@ -251,8 +254,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected Confirm                                    cancelAnalysisConfirm,
                     unreleaseSampleConfirm;
-
-    protected EditNoteLookupUI                           editNoteLookup;
 
     protected AddTestLookupUI                            addTestLookup;
 
@@ -293,7 +294,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY,
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY,
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT, BLANK
     };
@@ -329,6 +330,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         try {
             CategoryCache.getBySystemNames("sample_status",
                                            "sample_domain",
+                                           "animal_common_name",
+                                           "animal_scientific_name",
                                            "gender",
                                            "race",
                                            "ethnicity",
@@ -357,6 +360,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
         ptTab = new PTTabUI(this);
+        animalTab = new AnimalTabUI(this);
         quickEntryTab = new QuickEntryTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
@@ -653,6 +657,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.clinical(manager);
                 else if (Constants.domain().PT.equals(domain))
                     SampleHistoryUtility1.pt(manager);
+                else if (Constants.domain().ANIMAL.equals(domain))
+                    SampleHistoryUtility1.animal(manager);
             }
         });
 
@@ -1003,6 +1009,29 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             }
         });
         ptTab.setCanQuery(true);
+
+        addScreenHandler(animalTab, "animalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                animalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                animalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return animalTab.getQueryFields();
+            }
+
+            public void isValid(Validation validation) {
+                if (isState(QUERY) || (manager != null && manager.getSampleAnimal() != null)) {
+                    super.isValid(validation);
+                    if (animalTab.getIsBusy())
+                        validation.setStatus(FLAGGED);
+                }
+            }
+        });
+        animalTab.setCanQuery(true);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1388,6 +1417,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                  Tab.SDWIS,
                  Tab.CLINICAL,
                  Tab.PT,
+                 Tab.ANIMAL,
                  Tab.SAMPLE_ITEM,
                  Tab.ANALYSIS,
                  Tab.AUX_DATA,
@@ -1619,6 +1649,11 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             numDomains++ ;
         }
 
+        if (animalTab.getQueryFields().size() > 0) {
+            domain = Constants.domain().ANIMAL;
+            numDomains++ ;
+        }
+
         /*
          * querying by more than one domain is not allowed
          */
@@ -1640,7 +1675,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 if (SampleMeta.getOrderId().equals(f.getKey())) {
                     domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
                                             Constants.domain().SDWIS,
-                                            Constants.domain().PT);
+                                            Constants.domain().PT,
+                                            Constants.domain().ANIMAL);
                     break;
                 } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
                     domain = getDomainQuery(Constants.domain().CLINICAL,
@@ -2211,6 +2247,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
+        animalTab.setData(manager);
         ptTab.setData(manager);
         quickEntryTab.setData(manager);
         sampleItemTab.setData(manager);
@@ -3625,6 +3662,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 tabs.add(Tab.CLINICAL);
             else if (Constants.domain().PT.equals(domain))
                 tabs.add(Tab.PT);
+            else if (Constants.domain().ANIMAL.equals(domain))
+                tabs.add(Tab.ANIMAL);
             else if (Constants.domain().QUICKENTRY.equals(domain))
                 tabs.add(Tab.QUICK_ENTRY);
         } else if (SAMPLE_ITEM_LEAF.equals(selection.getType())) {

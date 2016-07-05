@@ -40,6 +40,7 @@ import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
 import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
 import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.getSampleAnimal;
 import static org.openelis.manager.SampleManager1Accessor.getUsers;
 
 import java.text.SimpleDateFormat;
@@ -84,6 +85,7 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleAnimalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -310,6 +312,14 @@ public class DataExchangeXMLMapperBean {
 
                 if (getSampleClinical(sm).getProviderId() != null)
                     root.appendChild(toXML(doc, getSampleClinical(sm).getProvider()));
+            } else if (getSampleAnimal(sm) != null) {
+                root.appendChild(toXML(doc, getSampleAnimal(sm)));
+                
+                if (getSampleAnimal(sm).getLocationAddress().getId() != null)
+                    root.appendChild(toXML(doc, getSampleAnimal(sm).getLocationAddress()));
+
+                if (getSampleAnimal(sm).getProviderId() != null)
+                    root.appendChild(toXML(doc, getSampleAnimal(sm).getProvider()));
             }
 
             sampleOverridden = false;
@@ -807,6 +817,25 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "patient_id", clinical.getPatientId());
         setAttribute(elm, "provider_id", clinical.getProviderId());
         setText(doc, elm, "provider_phone", clinical.getProviderPhone());
+
+        return elm;
+    }
+    
+    public Element toXML(Document doc, SampleAnimalDO animal) {
+        Element elm;
+
+        elm = doc.createElement("sample_animal");
+        setAttribute(elm, "id", animal.getId());
+        setAttribute(elm, "sample_id", animal.getSampleId());
+        setAttribute(elm, "animal_common_name_id", animal.getAnimalCommonNameId());
+        setAttribute(elm, "animal_scientific_name_id", animal.getAnimalScientificNameId());
+        setText(doc, elm, "location", animal.getLocation());
+        setAttribute(elm, "location_address_id", animal.getLocationAddress().getId());
+        setAttribute(elm, "provider_id", animal.getProviderId());
+        setText(doc, elm, "provider_phone", animal.getProviderPhone());
+        
+        addDictionary(animal.getAnimalCommonNameId());
+        addDictionary(animal.getAnimalScientificNameId());
 
         return elm;
     }

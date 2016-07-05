@@ -1,0 +1,131 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="25px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Heading}" colspan="5">
+              <ui:text from="{msg.dataView_selectAnimalField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="55px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniAnimalCommonNameId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_commonName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniAnimalScientificNameId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_scientificName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniLocation" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_location}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="55px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniLocationAddrMultipleUnit" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_locationAptSuite}" />
+            </td>
+                        <td>
+              <w:CheckBox ui:field="aniLocationAddrStreetAddress" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_locationAddress}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniLocationAddrCity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_locationCity}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="55px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniLocationAddrState" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_locationState}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniLocationAddrZipCode" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.dataView_locationZipCode}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectProviderField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="55px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniProviderLastName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_lastName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniProviderFirstName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_firstName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="aniProviderPhone" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_phone}" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer bottom="15px" height="40px" left="0px" right="0px">
+      <g:HTMLPanel>
+        <w:Label ui:field="fieldsDisabledLabel" styleName="{res.style.WarningLabel}" />
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

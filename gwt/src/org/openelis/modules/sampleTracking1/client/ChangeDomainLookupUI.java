@@ -129,6 +129,8 @@ public abstract class ChangeDomainLookupUI extends Screen {
                 dom = Constants.domain().CLINICAL;
             else if (Constants.dictionary().PT.equals(d.getId()))
                 dom = Constants.domain().PT;
+            else if (Constants.dictionary().ANIMAL.equals(d.getId()))
+                dom = Constants.domain().ANIMAL;
 
             if (dom != null) {
                 row = new Item<String>(dom, d.getEntry());

@@ -481,6 +481,31 @@ public class ColumnOrderTabUI extends Screen {
                 return Messages.get().gen_due();
             case SampleWebMeta.RECEIVED_BY_ID:
                 return Messages.get().gen_receivedBy();
+                /*
+                 * animal fields
+                 */
+            case SampleWebMeta.ANI_ANIMAL_COMMON_NAME_ID:
+                return Messages.get().dataView_commonName();
+            case SampleWebMeta.ANI_ANIMAL_SCIENTIFIC_NAME_ID:
+                return Messages.get().dataView_scientificName();
+            case SampleWebMeta.ANI_LOCATION:
+                return Messages.get().dataView_animalLocation();
+            case SampleWebMeta.ANI_LOCATION_ADDR_MULTIPLE_UNIT:
+                return Messages.get().dataView_locationAptSuite();
+            case SampleWebMeta.ANI_LOCATION_ADDR_STREET_ADDRESS:
+                return Messages.get().dataView_locationAddress();
+            case SampleWebMeta.ANI_LOCATION_ADDR_CITY:
+                return Messages.get().dataView_locationCity();
+            case SampleWebMeta.ANI_LOCATION_ADDR_STATE:
+                return Messages.get().dataView_locationState();
+            case SampleWebMeta.ANI_LOCATION_ADDR_ZIP_CODE:
+                return Messages.get().dataView_locationZipCode();
+            case SampleWebMeta.ANI_PROVIDER_LAST_NAME:
+                return Messages.get().provider_lastName();
+            case SampleWebMeta.ANI_PROVIDER_FIRST_NAME:
+                return Messages.get().provider_firstName();
+            case SampleWebMeta.ANI_PROVIDER_PHONE:
+                return Messages.get().dataView_providerPhone();
             default:
                 return null;
         }

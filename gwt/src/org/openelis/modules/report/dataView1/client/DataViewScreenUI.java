@@ -105,6 +105,9 @@ public class DataViewScreenUI extends Screen {
 
     @UiField(provided = true)
     protected PTTabUI                      ptTab;
+    
+    @UiField(provided = true)
+    protected AnimalTabUI                 animalTab;
 
     @UiField(provided = true)
     protected ColumnOrderTabUI             columnOrderTab;
@@ -133,6 +136,7 @@ public class DataViewScreenUI extends Screen {
         clinicalTab = new ClinicalTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         ptTab = new PTTabUI(this);
+        animalTab = new AnimalTabUI(this);
         columnOrderTab = new ColumnOrderTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
@@ -293,6 +297,20 @@ public class DataViewScreenUI extends Screen {
             }
         });
 
+        addScreenHandler(animalTab, "animalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                animalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                animalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
         addScreenHandler(columnOrderTab, "columnOrderTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
                 columnOrderTab.onDataChange();
@@ -339,6 +357,7 @@ public class DataViewScreenUI extends Screen {
         clinicalTab.setData(data);
         neonatalTab.setData(data);
         ptTab.setData(data);
+        animalTab.setData(data);
         columnOrderTab.setData(data);
     }
 

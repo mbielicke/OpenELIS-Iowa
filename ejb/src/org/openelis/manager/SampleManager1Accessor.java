@@ -36,6 +36,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleAnimalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -102,6 +103,14 @@ public class SampleManager1Accessor {
     
     public static void setSamplePT(SampleManager1 sm, SamplePTDO samplePT) {
         sm.samplePT = samplePT;
+    }
+    
+    public static SampleAnimalDO getSampleAnimal(SampleManager1 sm) {
+        return sm.sampleAnimal;
+    }
+    
+    public static void setSampleAnimal(SampleManager1 sm, SampleAnimalDO sampleAnimal) {
+        sm.sampleAnimal = sampleAnimal;
     }
     
     public static ArrayList<SampleOrganizationViewDO> getOrganizations(SampleManager1 sm) {

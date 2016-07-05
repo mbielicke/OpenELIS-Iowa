@@ -159,6 +159,9 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
     protected PTTabUI                                       ptTab;
 
     @UiField(provided = true)
+    protected AnimalTabUI                                   animalTab;
+
+    @UiField(provided = true)
     protected NoDomainTabUI                                 noDomainTab;
 
     @UiField(provided = true)
@@ -187,7 +190,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
     protected Query                                         query;
 
-    protected static int                                    ROWS_PER_PAGE = 100;
+    protected static int                                    ROWS_PER_PAGE = 500;
 
     protected boolean                                       allowScanTrf, scanTrfFetched;
 
@@ -199,7 +202,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.EORDER, SampleManager1.Load.PROVIDER};
 
     protected enum Tab {
-        ENVIRONMENTAL, SDWIS, CLINICAL, NEONATAL, PT, NO_DOMAIN, SAMPLE_NOTES
+        ENVIRONMENTAL, SDWIS, CLINICAL, NEONATAL, PT, ANIMAL, NO_DOMAIN, SAMPLE_NOTES
     };
 
     public SecondDataEntryScreenUI(WindowInt window) throws Exception {
@@ -220,6 +223,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         clinicalTab = new ClinicalTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         ptTab = new PTTabUI(this);
+        animalTab = new AnimalTabUI(this);
         noDomainTab = new NoDomainTabUI(this);
         sampleNotesTab = new SampleNotesTabUI(this);
 
@@ -519,6 +523,23 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
             public void isValid(Validation validation) {
                 if (Constants.domain().PT.equals(getDomain()))
+                    super.isValid(validation);
+            }
+        });
+
+        addScreenHandler(animalTab, "animalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                if (Constants.domain().ANIMAL.equals(getDomain()))
+                    animalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                if (Constants.domain().ANIMAL.equals(getDomain()))
+                    animalTab.setState(event.getState());
+            }
+
+            public void isValid(Validation validation) {
+                if (Constants.domain().ANIMAL.equals(getDomain()))
                     super.isValid(validation);
             }
         });
@@ -898,6 +919,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 dom = Constants.domain().NEONATAL;
             else if (Constants.dictionary().PT.equals(d.getId()))
                 dom = Constants.domain().PT;
+            else if (Constants.dictionary().ANIMAL.equals(d.getId()))
+                dom = Constants.domain().ANIMAL;
 
             if (dom != null) {
                 srow = new Item<String>(dom, d.getEntry());
@@ -1153,6 +1176,7 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
         clinicalTab.setData(manager);
         neonatalTab.setData(manager);
         ptTab.setData(manager);
+        animalTab.setData(manager);
         sampleNotesTab.setData(manager);
     }
 
@@ -1228,6 +1252,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
                 tabs.add(Tab.NEONATAL);
             else if (Constants.domain().PT.equals(domain))
                 tabs.add(Tab.PT);
+            else if (Constants.domain().ANIMAL.equals(domain))
+                tabs.add(Tab.ANIMAL);
             else
                 tabs.add(Tab.NO_DOMAIN);
             /*
@@ -1336,6 +1362,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
             return neonatalTab.getLogText();
         else if (Constants.domain().PT.equals(domain))
             return ptTab.getLogText();
+        else if (Constants.domain().ANIMAL.equals(domain))
+            return animalTab.getLogText();
         return null;
     }
 
@@ -1390,7 +1418,8 @@ public class SecondDataEntryScreenUI extends Screen implements CacheProvider {
 
         domain = manager.getSample().getDomain();
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain))
+            Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain) ||
+            Constants.domain().ANIMAL.equals(domain))
             return Messages.get().secondDataEntry_loadedWithSendoutOrder();
         else if (Constants.domain().CLINICAL.equals(domain) ||
                  Constants.domain().NEONATAL.equals(domain))

@@ -28,10 +28,9 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.bean.TestSectionBean;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.bean.DictionaryBean;
-import org.openelis.bean.TestSectionBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.meta.TestMeta;

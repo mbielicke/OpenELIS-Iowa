@@ -59,8 +59,8 @@
                   display="{msg.sampleClinical_login}" />
                 <w:MenuItem description="{msg.sampleNeonatal_loginDescription}" enabled="false" ui:field="neonatalScreeningSampleLogin"
                   display="{msg.sampleNeonatal_login}" />
-                <w:MenuItem description="{msg.animalSampleLoginDescription}" enabled="false" ui:field="animalSampleLogin"
-                  display="{msg.animalSampleLogin}" />
+                <w:MenuItem description="{msg.sampleAnimal_loginDescription}" enabled="false" ui:field="animalSampleLogin"
+                  display="{msg.sampleAnimal_login}" />
                 <w:MenuItem description="{msg.ptSampleLoginDescription}" enabled="false" ui:field="ptSampleLogin" display="{msg.ptSampleLogin}" />
                 <w:MenuItem description="{msg.verification_description}" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
                   display="{msg.verification_verification}" />
