@@ -58,6 +58,7 @@ import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
 import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
 import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
 import static org.openelis.manager.SampleManager1Accessor.getSamplePT;
+import static org.openelis.manager.SampleManager1Accessor.getSampleAnimal;
 import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
 import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 import static org.openelis.manager.SampleManager1Accessor.getStorages;
@@ -78,6 +79,7 @@ import static org.openelis.manager.SampleManager1Accessor.setSampleExternalNote;
 import static org.openelis.manager.SampleManager1Accessor.setSampleInternalNotes;
 import static org.openelis.manager.SampleManager1Accessor.setSampleNeonatal;
 import static org.openelis.manager.SampleManager1Accessor.setSamplePT;
+import static org.openelis.manager.SampleManager1Accessor.setSampleAnimal;
 import static org.openelis.manager.SampleManager1Accessor.setSampleQAs;
 import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
 import static org.openelis.manager.SampleManager1Accessor.setStorages;
@@ -116,6 +118,7 @@ import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleAnimalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -262,6 +265,9 @@ public class SampleManager1Bean {
     private SamplePTBean                 samplePT;
 
     @EJB
+    private SampleAnimalBean             sampleAnimal;
+
+    @EJB
     private EOrderBean                   eorder;
 
     @EJB
@@ -329,6 +335,7 @@ public class SampleManager1Bean {
         SampleDO s;
         SampleNeonatalViewDO sn;
         SampleClinicalViewDO sc;
+        SampleAnimalDO sa;
         SampleManager1 sm;
         ArrayList<Integer> ids1, ids2, ids3, ids4, ids5;
         ArrayList<SampleManager1> sms;
@@ -369,7 +376,8 @@ public class SampleManager1Bean {
 
             ids1.add(data.getId()); // for fetch
             map1.put(data.getId(), sm); // for linking
-            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) ||
+                  Constants.domain().NEONATAL.equals(data.getDomain())) &&
                 data.getOrderId() != null)
                 ids3.add(data.getOrderId());
         }
@@ -416,6 +424,14 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
+        for (SampleAnimalDO data : sampleAnimal.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleAnimal(sm, data);
+            if (data.getProviderId() != null)
+                ids5.add(data.getProviderId());
+        }
+        updateStatus(status, 3);
+
         log.finer("Fetching eorders, patients and providers");
         /*
          * fetch e-orders, patients and providers and set them for clinical and
@@ -443,6 +459,7 @@ public class SampleManager1Bean {
             s = getSample(sm1);
             sn = getSampleNeonatal(sm1);
             sc = getSampleClinical(sm1);
+            sa = getSampleAnimal(sm1);
             if (sn != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
                     sn.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
@@ -456,6 +473,9 @@ public class SampleManager1Bean {
                 sc.setPatient(map4.get(sc.getPatientId()));
                 if (sc.getProviderId() != null)
                     sc.setProvider(map5.get(sc.getProviderId()));
+            } else if (sa != null) {
+                if (sa.getProviderId() != null)
+                    sa.setProvider(map5.get(sa.getProviderId()));
             }
         }
 
@@ -649,6 +669,7 @@ public class SampleManager1Bean {
         SampleDO s;
         SampleNeonatalViewDO sn;
         SampleClinicalViewDO sc;
+        SampleAnimalDO sa;
         SampleManager1 sm;
         ArrayList<Integer> ids, ids1, ids2, ids3, ids4, ids5;
         ArrayList<SampleManager1> sms;
@@ -713,7 +734,8 @@ public class SampleManager1Bean {
         for (SampleDO data : sample.fetchByIds(ids1)) {
             sm = map1.get(data.getId());
             setSample(sm, data);
-            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) ||
+                  Constants.domain().NEONATAL.equals(data.getDomain())) &&
                 data.getOrderId() != null)
                 ids3.add(data.getOrderId());
         }
@@ -759,6 +781,14 @@ public class SampleManager1Bean {
         }
         updateStatus(status, 3);
 
+        for (SampleAnimalDO data : sampleAnimal.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleAnimal(sm, data);
+            if (data.getProviderId() != null)
+                ids5.add(data.getProviderId());
+        }
+        updateStatus(status, 3);
+
         /*
          * fetch e-orders, patients and providers and set them for clinical and
          * neonatal samples
@@ -787,6 +817,7 @@ public class SampleManager1Bean {
             s = getSample(sm1);
             sn = getSampleNeonatal(sm1);
             sc = getSampleClinical(sm1);
+            sa = getSampleAnimal(sm1);
             if (sn != null) {
                 if (el.contains(SampleManager1.Load.EORDER) && s.getOrderId() != null)
                     sn.setPaperOrderValidator(map3.get(s.getOrderId()).getPaperOrderValidator());
@@ -800,6 +831,9 @@ public class SampleManager1Bean {
                 sc.setPatient(map4.get(sc.getPatientId()));
                 if (sc.getProviderId() != null)
                     sc.setProvider(map5.get(sc.getProviderId()));
+            } else if (sa != null) {
+                if (sa.getProviderId() != null)
+                    sa.setProvider(map5.get(sa.getProviderId()));
             }
         }
 
@@ -1389,10 +1423,10 @@ public class SampleManager1Bean {
              */
             if (getRemoved(sm) != null) {         
                 /*
-                 * we need to remove objects in the correct order so that referential
-                 * integrity is maintained
+                 * we need to remove objects in the correct order so that
+                 * referential integrity is maintained
                  */
-                for (DataObject data : getRemoved(sm)) {                    
+                for (DataObject data : getRemoved(sm)) {
                     if (data instanceof AuxDataViewDO)
                         auxdata.delete( ((AuxDataViewDO)data));
                     else if (data instanceof NoteViewDO)
@@ -1406,7 +1440,7 @@ public class SampleManager1Bean {
                     else if (data instanceof ResultViewDO)
                         result.delete( ((ResultViewDO)data));
                 }
-                
+
                 for (DataObject data : getRemoved(sm)) {
                     if (data instanceof SampleEnvironmentalDO)
                         sampleEnvironmental.delete( ((SampleEnvironmentalDO)data));
@@ -1418,6 +1452,8 @@ public class SampleManager1Bean {
                         sampleClinical.delete( ((SampleClinicalViewDO)data));
                     else if (data instanceof SamplePTDO)
                         samplePT.delete( ((SamplePTDO)data));
+                    else if (data instanceof SampleAnimalDO)
+                        sampleAnimal.delete( ((SampleAnimalDO)data));
                     else if (data instanceof SampleOrganizationViewDO)
                         sampleOrganization.delete( ((SampleOrganizationViewDO)data));
                     else if (data instanceof SampleProjectViewDO)
@@ -1490,6 +1526,13 @@ public class SampleManager1Bean {
                     samplePT.add(getSamplePT(sm));
                 } else {
                     samplePT.update(getSamplePT(sm));
+                }
+            } else if (getSampleAnimal(sm) != null) {
+                if (getSampleAnimal(sm).getId() == null) {
+                    getSampleAnimal(sm).setSampleId(getSample(sm).getId());
+                    sampleAnimal.add(getSampleAnimal(sm));
+                } else {
+                    sampleAnimal.update(getSampleAnimal(sm));
                 }
             }
 
@@ -1904,6 +1947,7 @@ public class SampleManager1Bean {
         setSampleNeonatal(qsm, getSampleNeonatal(sm));
         setSampleClinical(qsm, getSampleClinical(sm));
         setSamplePT(qsm, getSamplePT(sm));
+        setSampleAnimal(qsm, getSampleAnimal(sm));
 
         /*
          * copy the attachments added on the screen to the quick-entered sample
@@ -1939,7 +1983,8 @@ public class SampleManager1Bean {
 
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
             Constants.domain().SDWIS.equals(data.getDomain()) ||
-            Constants.domain().PT.equals(data.getDomain()))
+            Constants.domain().PT.equals(data.getDomain()) ||
+            Constants.domain().ANIMAL.equals(data.getDomain()))
             return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
         else if (Constants.domain().CLINICAL.equals(data.getDomain()) ||
                  Constants.domain().NEONATAL.equals(data.getDomain()))
@@ -1994,7 +2039,9 @@ public class SampleManager1Bean {
                        SampleManager1.Load.AUXDATA,
                        SampleManager1.Load.NOTE,
                        SampleManager1.Load.ATTACHMENT,
-                       SampleManager1.Load.RESULT);
+                       SampleManager1.Load.RESULT,
+                       SampleManager1.Load.EORDER,
+                       SampleManager1.Load.PROVIDER);
 
         accession = getSample(sm).getAccessionNumber();
         /*
@@ -2038,6 +2085,11 @@ public class SampleManager1Bean {
         } else if (getSamplePT(sm) != null) {
             getSamplePT(sm).setId(null);
             getSamplePT(sm).setSampleId(null);
+        } else if (getSampleAnimal(sm) != null) {
+            getSampleAnimal(sm).setId(null);
+            getSampleAnimal(sm).setSampleId(null);
+            if (getSampleAnimal(sm).getLocationAddress() != null)
+                getSampleAnimal(sm).getLocationAddress().setId(null);
         }
 
         /*
@@ -2397,6 +2449,7 @@ public class SampleManager1Bean {
         SampleDO data;
         SampleNeonatalViewDO sn;
         SampleClinicalViewDO sc;
+        SampleAnimalDO sa;
 
         data = getSample(sm);
         if (data.getDomain().equals(domain))
@@ -2458,6 +2511,12 @@ public class SampleManager1Bean {
                 getRemoved(sm).add(getSamplePT(sm));
             setSamplePT(sm, null);
             hasSendoutOrderId = getSample(sm).getOrderId() != null;
+        } else if (Constants.domain().ANIMAL.equals(data.getDomain())) {
+            sa = getSampleAnimal(sm);
+            if (sa.getId() != null)
+                getRemoved(sm).add(sa);
+            setSampleAnimal(sm, null);
+            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         }
 
         /*
@@ -2473,7 +2532,8 @@ public class SampleManager1Bean {
          */
         if (hasEOrderId) {
             if ( (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-                  Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)))
+                  Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)) ||
+                Constants.domain().ANIMAL.equals(domain))
                 getSample(sm).setOrderId(null);
             else if (Constants.domain().NEONATAL.equals(domain))
                 getSampleNeonatal(sm).setPaperOrderValidator(pov);
@@ -2977,6 +3037,12 @@ public class SampleManager1Bean {
             sp = new SamplePTDO();
             setSamplePT(sm, sp);
             s.setDomain(domain);
+        } else if (Constants.domain().ANIMAL.equals(domain)) {
+            SampleAnimalDO sa;
+
+            sa = new SampleAnimalDO();
+            setSampleAnimal(sm, sa);
+            s.setDomain(domain);
         } else {
             throw new InconsistencyException(Messages.get()
                                                      .sample_domainNotValid(s.getAccessionNumber()));
@@ -3063,6 +3129,15 @@ public class SampleManager1Bean {
             }
         }
 
+        if (getSampleAnimal(sm) != null &&
+            (getSampleAnimal(sm).getId() == null || getSampleAnimal(sm).isChanged())) {
+            try {
+                sampleAnimal.validate(getSampleAnimal(sm), accession);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
         /*
          * samples have to have one report to.
          */
@@ -3137,7 +3212,7 @@ public class SampleManager1Bean {
                                     e.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
                                                                                                   " ",
                                                                                                   ex.getMessage())));
-                                    
+
                                 }
                             }
                         } else {

@@ -89,7 +89,9 @@
                       <ui:text from="{msg.gen_username}:" />
                     </td>
                     <td colspan="5">
-                      <w:AutoComplete ui:field="historySystemUserLoginNames" width="140px" case="LOWER">
+                      <w:AutoComplete ui:field="historySystemUserLoginNames" width="140px"
+                        case="LOWER"
+                      >
                         <w:popup>
                           <t:Table visibleRows="10" header="false">
                             <t:Column width="110">
@@ -171,6 +173,16 @@
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <d:PTTabUI ui:field="ptTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.secondDataEntry_verification}" tabVisible="false" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <d:AnimalTabUI ui:field="animalTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>

@@ -193,6 +193,29 @@ public class SampleMeta implements Meta, MetaMap {
                     PT_SERIES = "_samplePT.series",
                     PT_DUE_DATE = "_samplePT.dueDate",
                     PT_ADDITIONAL_DOMAIN = "_samplePT.additionalDomain",
+                    
+                    // sample animal
+                    ANI_ID = "_sampleAnimal.id",
+                    ANI_SAMPLE_ID = "_sampleAnimal.sampleId",
+                    ANI_ANIMAL_COMMON_NAME_ID = "_sampleAnimal.animalCommonNameId",
+                    ANI_ANIMAL_SCIENTIFIC_NAME_ID = "_sampleAnimal.animalScientificNameId",
+                    ANI_LOCATION = "_sampleAnimal.location",
+                    ANI_LOCATION_ADDRESS_ID = "_sampleAnimal.locationAddressId",
+                    ANI_PATIENT_ID = "_sampleAnimal.patientId",
+                    ANI_PROVIDER_ID = "_sampleAnimal.providerId",
+                    ANI_PROVIDER_PHONE = "_sampleAnimal.providerPhone",
+
+                    ANI_LOCATION_ADDR_MULTIPLE_UNIT = "_animalLocationAddress.multipleUnit",
+                    ANI_LOCATION_ADDR_STREET_ADDRESS = "_animalLocationAddress.streetAddress",
+                    ANI_LOCATION_ADDR_CITY = "_animalLocationAddress.city",
+                    ANI_LOCATION_ADDR_STATE = "_animalLocationAddress.state",
+                    ANI_LOCATION_ADDR_ZIP_CODE = "_animalLocationAddress.zipCode",
+                    ANI_LOCATION_ADDR_WORK_PHONE = "_animalLocationAddress.workPhone",
+                    ANI_LOCATION_ADDR_HOME_PHONE = "_animalLocationAddress.homePhone",
+                    ANI_LOCATION_ADDR_CELL_PHONE = "_animalLocationAddress.cellPhone",
+                    ANI_LOCATION_ADDR_FAX_PHONE = "_animalLocationAddress.faxPhone",
+                    ANI_LOCATION_ADDR_EMAIL = "_animalLocationAddress.email",
+                    ANI_LOCATION_ADDR_COUNTRY = "_animalLocationAddress.country",                                    
 
                     ITEM_ID = "_sampleItem.id",
                     ITEM_SAMPLE_ID = "_sampleItem.sampleId",
@@ -339,6 +362,9 @@ public class SampleMeta implements Meta, MetaMap {
 
                     CLIN_PROVIDER_LAST_NAME = "_clinicalProvider.lastName",
                     CLIN_PROVIDER_FIRST_NAME = "_clinicalProvider.firstName",
+                    
+                    ANI_PROVIDER_LAST_NAME = "_animalProvider.lastName",
+                    ANI_PROVIDER_FIRST_NAME = "_animalProvider.firstName",
 
                     ANALYSIS_TEST_NAME = "_test.name", ANALYSIS_TEST_METHOD_ID = "_test.methodId",
                     ANALYSIS_METHOD_NAME = "_method.name", ANALYSIS_METHOD_ID = "_method.id",
@@ -497,6 +523,26 @@ public class SampleMeta implements Meta, MetaMap {
                                                   PT_SERIES,
                                                   PT_DUE_DATE,
                                                   PT_ADDITIONAL_DOMAIN,
+                                                  ANI_ID,
+                                                  ANI_SAMPLE_ID,
+                                                  ANI_ANIMAL_COMMON_NAME_ID,
+                                                  ANI_ANIMAL_SCIENTIFIC_NAME_ID,
+                                                  ANI_LOCATION,
+                                                  ANI_LOCATION_ADDRESS_ID,
+                                                  ANI_PATIENT_ID,
+                                                  ANI_PROVIDER_ID,
+                                                  ANI_PROVIDER_PHONE,
+                                                  ANI_LOCATION_ADDR_MULTIPLE_UNIT,
+                                                  ANI_LOCATION_ADDR_STREET_ADDRESS,
+                                                  ANI_LOCATION_ADDR_CITY,
+                                                  ANI_LOCATION_ADDR_STATE,
+                                                  ANI_LOCATION_ADDR_ZIP_CODE,
+                                                  ANI_LOCATION_ADDR_WORK_PHONE,
+                                                  ANI_LOCATION_ADDR_HOME_PHONE,
+                                                  ANI_LOCATION_ADDR_CELL_PHONE,
+                                                  ANI_LOCATION_ADDR_FAX_PHONE,
+                                                  ANI_LOCATION_ADDR_EMAIL,
+                                                  ANI_LOCATION_ADDR_COUNTRY,                                                  
                                                   ITEM_ID,
                                                   ITEM_SAMPLE_ID,
                                                   ITEM_SAMPLE_ITEM_ID,
@@ -617,6 +663,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   NEO_PROVIDER_FIRST_NAME,
                                                   CLIN_PROVIDER_LAST_NAME,
                                                   CLIN_PROVIDER_FIRST_NAME,
+                                                  ANI_PROVIDER_LAST_NAME,
+                                                  ANI_PROVIDER_FIRST_NAME,
                                                   ANALYSIS_TEST_NAME,
                                                   ANALYSIS_TEST_METHOD_ID,
                                                   ANALYSIS_METHOD_NAME,
@@ -1181,6 +1229,87 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getPTAdditionalDomain() {
         return PT_ADDITIONAL_DOMAIN;
     }
+    
+    public static String getAnimalId() {
+        return ANI_ID;
+    }
+    
+    public static String getAnimalSampleId() {
+        return ANI_SAMPLE_ID;
+    }
+    
+    public static String getAnimalAnimalCommonNameId() {
+        return ANI_ANIMAL_COMMON_NAME_ID;
+    }
+    
+    public static String getAnimalAnimalScientificNameId() {
+        return ANI_ANIMAL_SCIENTIFIC_NAME_ID;
+    }
+    
+    public static String getAnimalLocation() {
+        return ANI_LOCATION;
+    }
+    
+    public static String getAnimalLocationAddrId() {
+        return ANI_LOCATION_ADDRESS_ID;
+    }
+    
+    public static String getAnimalPatientId() {
+        return ANI_PATIENT_ID;
+    }
+    
+    public static String getAnimalProviderId() {
+        return ANI_PROVIDER_ID;
+    }
+    
+    public static String getAnimalProviderPhone() {
+        return ANI_PROVIDER_PHONE;
+    }
+    
+    public static String getAnimalLocationAddrMultipleUnit() {
+        return ANI_LOCATION_ADDR_MULTIPLE_UNIT;
+        }
+    
+    public static String getAnimalLocationAddrStreetAddress() {
+        return ANI_LOCATION_ADDR_STREET_ADDRESS;
+        }
+    
+    public static String getAnimalLocationAddrCity() {
+        return ANI_LOCATION_ADDR_CITY;
+    }
+    
+    public static String getAnimalLocationAddrState() {
+        return ANI_LOCATION_ADDR_STATE;
+    }
+    
+    public static String getAnimalLocationAddrZipCode() {
+        return ANI_LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getAnimalLocationAddrWorkPhone() {
+        return ANI_LOCATION_ADDR_WORK_PHONE;
+    }
+    
+    public static String getAnimalLocationAddrHomePhone() {
+        return ANI_LOCATION_ADDR_HOME_PHONE;
+    }
+    
+    public static String getAnimalLocationAddrCellPhone() {
+        return ANI_LOCATION_ADDR_CELL_PHONE;
+    }
+    
+    public static String getAnimalLocationAddrFaxPhone() {
+        return ANI_LOCATION_ADDR_FAX_PHONE;
+    }
+    
+    public static String getAnimalLocationAddrEmail() {
+        return ANI_LOCATION_ADDR_EMAIL;
+    }
+    
+    public static String getAnimalLocationAddrCountry() {
+        return ANI_LOCATION_ADDR_COUNTRY;
+    }
+    
     public static String getItemId() {
         return ITEM_ID;
     }
@@ -1668,6 +1797,14 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getClinicalProviderFirstName() {
         return CLIN_PROVIDER_FIRST_NAME;
     }
+    
+    public static String getAnimalProviderLastName() {
+        return ANI_PROVIDER_LAST_NAME;
+    }
+
+    public static String getAnimalProviderFirstName() {
+        return ANI_PROVIDER_FIRST_NAME;
+    }
 
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
@@ -1789,7 +1926,25 @@ public class SampleMeta implements Meta, MetaMap {
         // sample pt
         if (where.indexOf("samplePT.") > -1)
             from += ", IN (_sample.samplePT) _samplePT ";
+        
+        if (where.indexOf("sampleAnimal.") > -1 || where.indexOf("animalLocationAddress.") > -1 ||
+            where.indexOf("animalPatient.") > -1 ||
+            where.indexOf("animalPatientAddress.") > -1 ||
+            where.indexOf("animalProvider.") > -1)
+            from += ", IN (_sample.sampleAnimal) _sampleAnimal ";
 
+        if (where.indexOf("animalLocationAddress.") > -1)
+            from += ", IN (_sampleAnimal.locationAddress) _animalLocationAddress ";
+        
+        if (where.indexOf("animalPatient.") > -1 || where.indexOf("animalPatientAddress.") > -1)
+            from += " LEFT JOIN _sampleAnimal.patient _animalPatient ";
+
+        if (where.indexOf("animalPatientAddress.") > -1)
+            from += " LEFT JOIN _animalPatient.address _animalPatientAddress ";
+
+        if (where.indexOf("animalProvider.") > -1)
+            from += " LEFT JOIN _sampleAnimal.provider _animalProvider ";
+        
         if (where.indexOf("eorder.") > -1)
             from += ", IN (_sample.eorder) _eorder ";
 

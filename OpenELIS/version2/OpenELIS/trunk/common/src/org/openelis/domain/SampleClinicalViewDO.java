@@ -28,7 +28,10 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * Class represents the fields in database table sample_clinical.
+ * The class extends sample_clinical DO and carries several commonly used fields
+ * such as paperOrderValidator. The additional fields are for read/display only
+ * and do not get committed to the database. Note: isChanged will reflect any
+ * changes to read/display fields.
  */
 
 public class SampleClinicalViewDO extends SampleClinicalDO {

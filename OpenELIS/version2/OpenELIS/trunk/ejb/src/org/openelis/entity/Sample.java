@@ -521,6 +521,11 @@ public class Sample implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SamplePT>            samplePT;
+    
+    // sample pt
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+    private Collection<SampleAnimal>            sampleAnimal;
 
     // eorder
     @OneToOne(fetch = FetchType.LAZY)
@@ -788,6 +793,14 @@ public class Sample implements Auditable, Cloneable {
 
     public void setSamplePT(Collection<SamplePT> samplePT) {
         this.samplePT = samplePT;
+    }
+
+    public Collection<SampleAnimal> getSampleAnimal() {
+        return sampleAnimal;
+    }
+
+    public void setSampleAnimal(Collection<SampleAnimal> sampleAnimal) {
+        this.sampleAnimal = sampleAnimal;
     }
 
     public Collection<AuxData> getAuxData() {

@@ -676,6 +676,8 @@ public class QueryTabUI extends Screen {
                 dom = Constants.domain().NEONATAL;
             else if (Constants.dictionary().PT.equals(d.getId()))
                 dom = Constants.domain().PT;
+            else if (Constants.dictionary().ANIMAL.equals(d.getId()))
+                dom = Constants.domain().ANIMAL;
 
             if (dom != null)
                 stmodel.add(new Item<String>(dom, d.getEntry()));

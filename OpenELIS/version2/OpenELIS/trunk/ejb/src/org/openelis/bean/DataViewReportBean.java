@@ -77,6 +77,7 @@ import org.openelis.domain.DataViewValueVO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleAnimalDO;
 import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -2308,6 +2309,44 @@ public class DataViewReportBean {
                 case SampleWebMeta.RECEIVED_BY_ID:
                     headers.add(Messages.get().gen_receivedBy());
                     break;
+                /*
+                 * animal fields
+                 */
+                case SampleWebMeta.ANI_ANIMAL_COMMON_NAME_ID:
+                    headers.add(Messages.get().dataView_animalCommonName());
+                    break;
+                case SampleWebMeta.ANI_ANIMAL_SCIENTIFIC_NAME_ID:
+                    headers.add(Messages.get().dataView_animalScientificName());
+                    break;
+                case SampleWebMeta.ANI_LOCATION:
+                    headers.add(Messages.get().dataView_animalLocation());
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_MULTIPLE_UNIT:
+                    headers.add(Messages.get().dataView_locationAptSuite());
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_STREET_ADDRESS:
+                    headers.add(Messages.get().dataView_locationAddress());
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_CITY:
+                    headers.add(Messages.get().dataView_locationCity());
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_STATE:
+                    headers.add(Messages.get().dataView_locationState());
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_ZIP_CODE:
+                    headers.add(Messages.get().dataView_locationZipCode());
+                    break;
+                case SampleWebMeta.ANI_PROVIDER_LAST_NAME:
+                    headers.add(Messages.get().provider_lastName());
+                    fetchProv = true;
+                    break;
+                case SampleWebMeta.ANI_PROVIDER_FIRST_NAME:
+                    headers.add(Messages.get().provider_firstName());
+                    fetchProv = true;
+                    break;
+                case SampleWebMeta.ANI_PROVIDER_PHONE:
+                    headers.add(Messages.get().dataView_providerPhone());
+                    break;
                 default:
                     throw new InconsistencyException("Unknown column " + column);
             }
@@ -2466,6 +2505,7 @@ public class DataViewReportBean {
         SampleClinicalViewDO sc;
         SampleNeonatalViewDO sn;
         SamplePTDO sp;
+        SampleAnimalDO sa;
         Cell cell;
         CellStyle style;
         ArrayList<String> labels;
@@ -2480,6 +2520,7 @@ public class DataViewReportBean {
         sc = getSampleClinical(sm);
         sn = getSampleNeonatal(sm);
         sp = getSamplePT(sm);
+        sa = getSampleAnimal(sm);
 
         labels = new ArrayList<String>();
 
@@ -3103,6 +3144,43 @@ public class DataViewReportBean {
                     value = s.getReceivedById() != null ? userCache.getSystemUser(s.getReceivedById())
                                                                    .getLoginName()
                                                        : null;
+                /*
+                 * animal fields
+                 */
+                case SampleWebMeta.ANI_ANIMAL_COMMON_NAME_ID:
+                    value = getDictionaryLabel(sa != null ? sa.getAnimalCommonNameId() : null);
+                    break;
+                case SampleWebMeta.ANI_ANIMAL_SCIENTIFIC_NAME_ID:
+                    value = getDictionaryLabel(sa != null ? sa.getAnimalScientificNameId() : null);
+                    break;
+                case SampleWebMeta.ANI_LOCATION:
+                    value = sa != null ? sa.getLocation() : null;
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_MULTIPLE_UNIT:
+                    value = sa != null ? sa.getLocationAddress().getMultipleUnit() : null;
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_STREET_ADDRESS:
+                    value = sa != null ? sa.getLocationAddress().getStreetAddress() : null;
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_CITY:
+                    value = sa != null ? sa.getLocationAddress().getCity() : null;
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_STATE:
+                    value = sa != null ? sa.getLocationAddress().getState() : null;
+                    break;
+                case SampleWebMeta.ANI_LOCATION_ADDR_ZIP_CODE:
+                    value = sa != null ? sa.getLocationAddress().getZipCode() : null;
+                    break;
+                case SampleWebMeta.ANI_PROVIDER_LAST_NAME:
+                    if (sa != null)
+                        value = sa.getProvider() != null ? sa.getProvider().getLastName() : null;
+                    break;
+                case SampleWebMeta.ANI_PROVIDER_FIRST_NAME:
+                    if (sa != null)
+                        value = sa.getProvider() != null ? sa.getProvider().getFirstName() : null;
+                     break;    
+                case SampleWebMeta.ANI_PROVIDER_PHONE:
+                    value = sa != null ? sa.getProviderPhone() : null;
                     break;
                 default:
                     throw new InconsistencyException("Unknown column " + column);

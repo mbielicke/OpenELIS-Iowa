@@ -104,6 +104,16 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
+            <w:TabWidget text="{msg.sample_animal}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:AnimalTabUI ui:field="animalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
             <w:TabWidget text="{msg.dataView_columnOrder}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">

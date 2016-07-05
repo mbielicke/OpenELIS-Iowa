@@ -68,6 +68,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AnimalTabUI;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
@@ -211,6 +212,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected PTTabUI                          ptTab;
+    
+    @UiField(provided = true)
+    protected AnimalTabUI                      animalTab;
 
     @UiField(provided = true)
     protected QuickEntryTabUI                  quickEntryTab;
@@ -295,8 +299,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM, 
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY,
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT, BLANK
     };
 
@@ -323,6 +327,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         try {
             CategoryCache.getBySystemNames("sample_status",
                                            "sample_domain",
+                                           "animal_common_name",
+                                           "animal_scientific_name",
                                            "gender",
                                            "race",
                                            "ethnicity",
@@ -351,6 +357,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
         ptTab = new PTTabUI(this);
+        animalTab = new AnimalTabUI(this);
         quickEntryTab = new QuickEntryTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
@@ -628,6 +635,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.clinical(manager);
                 else if (Constants.domain().PT.equals(domain))
                     SampleHistoryUtility1.pt(manager);
+                else if (Constants.domain().ANIMAL.equals(domain))
+                    SampleHistoryUtility1.animal(manager);
             }
         });
 
@@ -958,6 +967,29 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
         ptTab.setCanQuery(false);               // query not allowed on this screen
+
+        addScreenHandler(animalTab, "animalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                animalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                animalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return animalTab.getQueryFields();
+            }
+
+            public void isValid(Validation validation) {
+                if (isState(QUERY) || (manager != null && manager.getSampleAnimal() != null)) {
+                    super.isValid(validation);
+                    if (animalTab.getIsBusy())
+                        validation.setStatus(FLAGGED);
+                }
+            }
+        });
+        animalTab.setCanQuery(false);   // query not allowed on this screen
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -2079,6 +2111,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
         ptTab.setData(manager);
+        animalTab.setData(manager);
         quickEntryTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
@@ -2733,6 +2766,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 domainTab = Tabs.CLINICAL;
             else if (Constants.domain().PT.equals(domain))
                 domainTab = Tabs.PT;
+            else if (Constants.domain().ANIMAL.equals(domain))
+                domainTab = Tabs.ANIMAL;
             else if (Constants.domain().QUICKENTRY.equals(domain))
                 domainTab = Tabs.QUICK_ENTRY;
 

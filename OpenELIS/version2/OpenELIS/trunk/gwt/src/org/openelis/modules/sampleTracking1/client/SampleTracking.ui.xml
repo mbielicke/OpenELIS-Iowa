@@ -227,6 +227,16 @@
                 </w:tab>
                 <w:tab>
                   <w:customHeader>
+                    <w:TabWidget text="{msg.sample_animal}" tabVisible="false" />
+                  </w:customHeader>
+                  <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                    <g:layer>
+                      <s:AnimalTabUI ui:field="animalTab" />
+                    </g:layer>
+                  </g:LayoutPanel>
+                </w:tab>
+                <w:tab>
+                  <w:customHeader>
                     <w:TabWidget text="{msg.sampleQuickEntry_quickEntry}" tabVisible="false" />
                   </w:customHeader>
                   <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
