@@ -212,6 +212,9 @@ public class OrganizationBean {
 
         if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
             list.add(new FormErrorException(Messages.get().organization_cityRequiredException(oid)));
+        
+        if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
+            list.add(new FormErrorException(Messages.get().organization_zipCodeRequiredException(oid)));
 
         if (list.size() > 0)
             throw list;

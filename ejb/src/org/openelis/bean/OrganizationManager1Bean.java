@@ -403,7 +403,7 @@ public class OrganizationManager1Bean {
              * organization level
              */
             if (getOrganization(om) != null) {
-                if (getOrganization(om).isChanged()) {
+                if (getOrganization(om).isChanged() || getOrganization(om).getAddress().isChanged()) {
                     try {
                         organization.validate(getOrganization(om));
                     } catch (Exception err) {
