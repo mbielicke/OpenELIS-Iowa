@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -13597,6 +13597,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization_workNumber();
 
   /**
+   * Translated "ID {0,number,#0}: Zip Code is required.".
+   * 
+   * @return translated "ID {0,number,#0}: Zip Code is required."
+   */
+  @DefaultMessage("ID {0,number,#0}: Zip Code is required.")
+  @Key("organization.zipCodeRequiredException")
+  String organization_zipCodeRequiredException(Integer arg0);
+
+  /**
    * Translated "Manage submitter and partner information.".
    * 
    * @return translated "Manage submitter and partner information."
@@ -16603,6 +16612,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_invalidAdjWeightOfZeroException();
 
   /**
+   * Translated "{0} >= 3, change test to 1st Tri Only".
+   * 
+   * @return translated "{0} >= 3, change test to 1st Tri Only"
+   */
+  @DefaultMessage("{0} >= 3, change test to 1st Tri Only")
+  @Key("result.invalidIntegNTResultException")
+  String result_invalidIntegNTResultException(String arg0);
+
+  /**
    * Translated "Invalid number of fetus".
    * 
    * @return translated "Invalid number of fetus"
@@ -16657,13 +16675,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_missingUSLMPGAException();
 
   /**
-   * Translated "No median for gestational age: {0,number,#0}   ".
+   * Translated "No median for measurement: {0,number,#0}".
    * 
-   * @return translated "No median for gestational age: {0,number,#0}   "
+   * @return translated "No median for measurement: {0,number,#0}"
    */
-  @DefaultMessage("No median for gestational age: {0,number,#0}   ")
-  @Key("result.noMedianForGestAgeException")
-  String result_noMedianForGestAgeException(Integer arg0);
+  @DefaultMessage("No median for measurement: {0,number,#0}")
+  @Key("result.noMedianForMeasurementException")
+  String result_noMedianForMeasurementException(Integer arg0);
 
   /**
    * Translated "Result(s) Overridden".
@@ -19013,6 +19031,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Inhibin")
   @Key("scriptlet.inhibin")
   String scriptlet_inhibin();
+
+  /**
+   * Translated "NT".
+   * 
+   * @return translated "NT"
+   */
+  @DefaultMessage("NT")
+  @Key("scriptlet.nt")
+  String scriptlet_nt();
+
+  /**
+   * Translated "PAPP-A".
+   * 
+   * @return translated "PAPP-A"
+   */
+  @DefaultMessage("PAPP-A")
+  @Key("scriptlet.pappa")
+  String scriptlet_pappa();
 
   /**
    * Translated "Define action scripts that can be assigned to different processes.".
