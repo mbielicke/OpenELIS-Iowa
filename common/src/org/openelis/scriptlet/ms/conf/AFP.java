@@ -111,7 +111,7 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
             throw new InconsistencyException(Messages.get()
                                                      .result_invalidAdjWeightOfZeroException());
         if (median == 0.0)
-            throw new InconsistencyException(Messages.get().result_noMedianForGestAgeException(ga));
+            throw new InconsistencyException(Messages.get().result_noMedianForMeasurementException(ga));
 
         mom = getResult() / median / adjWeight;
         if (isRaceBlack && Sample_Type.SERUM.equals(sampleType))
