@@ -103,6 +103,22 @@
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePT.jasper"]]></subreportExpression>
 				</subreport>
+				<subreport>
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA["A".equals($F{domain})]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SAMPLE_ID">
+						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="ORGANIZATION_ID">
+						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleAnimal.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupHeader>
 	</group>
@@ -246,7 +262,7 @@
 			</staticText>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[!"C".equals($F{domain}) && !"P".equals($F{domain})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[!"C".equals($F{domain}) && !"A".equals($F{domain}) && !"P".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
@@ -265,7 +281,7 @@
 			</subreport>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA["C".equals($F{domain})]]></printWhenExpression>
+					<printWhenExpression><![CDATA["C".equals($F{domain}) || "A".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>

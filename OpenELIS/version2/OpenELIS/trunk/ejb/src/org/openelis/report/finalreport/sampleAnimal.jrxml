@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleClinical" pageWidth="576" pageHeight="572" orientation="Landscape" columnWidth="576" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     s.received_date as s_received_date, s.collection_date as s_collection_date,
+     s.collection_time as s_collection_time, s.client_reference as s_client_reference,
+     s.released_date as s_released_date, d1.entry as animal_common_name, d2.entry as animal_scientific_name,
+     sa.location, la.multiple_unit as loc_multiple_unit, la.street_address as loc_street_address, la.city as loc_city,
+     la.state as loc_state, la.zip_code as loc_zip_code, pr.last_name as pro_last, pr.first_name as pro_first
+FROM
+     sample s
+     join sample_animal sa on s.id = sa.sample_id
+     left join address la on sa.location_address_id = la.id
+     left join dictionary d1 on sa.animal_common_name_id = d1.id
+     left join dictionary d2 on sa.animal_scientific_name_id = d2.id
+     left join provider pr on sa.provider_id = pr.id
+WHERE
+     s.id = $P{SAMPLE_ID} and s.domain = 'A']]>
+	</queryString>
+	<field name="s_received_date" class="java.sql.Timestamp"/>
+	<field name="s_collection_date" class="java.sql.Timestamp"/>
+	<field name="s_collection_time" class="java.sql.Time"/>
+	<field name="s_client_reference" class="java.lang.String"/>
+	<field name="s_released_date" class="java.sql.Timestamp"/>
+	<field name="animal_common_name" class="java.lang.String"/>
+	<field name="animal_scientific_name" class="java.lang.String"/>
+	<field name="location" class="java.lang.String"/>
+	<field name="loc_multiple_unit" class="java.lang.String"/>
+	<field name="loc_street_address" class="java.lang.String"/>
+	<field name="loc_city" class="java.lang.String"/>
+	<field name="loc_state" class="java.lang.String"/>
+	<field name="loc_zip_code" class="java.lang.String"/>
+	<field name="pro_last" class="java.lang.String"/>
+	<field name="pro_first" class="java.lang.String"/>
+	<detail>
+		<band height="132" splitType="Stretch">
+			<staticText>
+				<reportElement x="284" y="0" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Date Collected]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="434" y="0" width="80" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_collection_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="483" y="0" width="49" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Time"><![CDATA[$F{s_collection_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="12" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Date Received]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="434" y="12" width="142" height="12">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_received_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="24" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Animal Common Name]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="24" width="142" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{animal_common_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="36" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Animal Scientific Name]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="434" y="36" width="80" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{animal_scientific_name}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="72" y="48" width="250" height="60">
+					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="284" y="48" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Location]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="48" width="80" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="60" width="142" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{loc_multiple_unit}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="72" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Address]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="72" width="142" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{loc_street_address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="84" width="142" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{loc_city}, ", ", DataBaseUtil.concatWithSeparator($F{loc_state}, " ", $F{loc_zip_code}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="96" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Project]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="434" y="96" width="180" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleProject.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="284" y="108" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Client Reference]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="108" width="180" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_client_reference}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="120" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Provider]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="120" width="142" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{pro_last}, ", ", $F{pro_first})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement mode="Opaque" x="429" y="0" width="1" height="128"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>
