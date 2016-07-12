@@ -132,7 +132,7 @@ import org.openelis.utils.Auditable;
                            + " order by o_name, o_id, s_id",
           resultSetMapping = "Sample.FetchForFinalReportBatchReprintMapping"),
     @NamedNativeQuery(name = "Sample.FetchForFinalReportSingle",
-                     query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
+                     query = "select distinct s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
                            + " from sample s, sample_item si, analysis a, sample_organization so, organization o"
                            + " where s.accession_number = :accessionNumber and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and"
                            + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
@@ -140,7 +140,7 @@ import org.openelis.utils.Auditable;
                            + " order by o_name, o_id, s_id",
           resultSetMapping = "Sample.FetchForFinalReportSingleMapping"),
     @NamedNativeQuery(name = "Sample.FetchForFinalReportPreview",
-                     query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id"
+                     query = "select distinct s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id"
                            + " from sample s, sample_item si, analysis a, sample_organization so"
                            + " where s.accession_number = :accessionNumber and si.sample_id = s.id and a.sample_item_id = si.id and"
                            + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y' and"
