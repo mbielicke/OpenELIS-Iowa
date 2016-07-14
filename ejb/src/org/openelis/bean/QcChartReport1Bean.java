@@ -562,10 +562,10 @@ public class QcChartReport1Bean {
             tempQcColumns = new ArrayList<DictionaryDO>();
             tempQcColumns.addAll(qcColumns);
             for (i = tempQcColumns.size() - 1; i > -1; i--) {
-                if (emptyColumns.contains(i + 4)) {
+                if (emptyColumns.contains(i + 5)) {
                     tempQcColumns.remove(i);
-                    removeColumn(sheet, i + 4);
-                    maxChars.remove(i + 4);
+                    removeColumn(sheet, i + 5);
+                    maxChars.remove(i + 5);
                 }
             }
             
@@ -573,7 +573,7 @@ public class QcChartReport1Bean {
              * Create named ranges for the graph to be able to locate the appropriate
              * data
              */
-            columnIndex = 4;
+            columnIndex = 5;
             for (i = 0; i < tempQcColumns.size(); i++) {
                 dict = tempQcColumns.get(i);
                 if (!DataBaseUtil.isEmpty(dict.getCode())) {
@@ -601,7 +601,7 @@ public class QcChartReport1Bean {
              * that column multiplied by 256; this is because the default width of
              * one character is 1/256 units in Excel
              */
-            for (i = 4; i < maxChars.size(); i++)
+            for (i = 5; i < maxChars.size(); i++)
                 sheet.setColumnWidth(i, maxChars.get(i) * 256);
         } else if (worksheetHeaders != null && worksheetHeaders.size() > 0) {
             /*
@@ -690,34 +690,39 @@ public class QcChartReport1Bean {
 
         cell = row.createCell(0);
         cell.setCellStyle(headerStyle);
-        setCellValue(cell, "Accession # / Worksheet #");
+        setCellValue(cell, "Row Number");
         setMaxChars(cell, maxChars);
         
         cell = row.createCell(1);
         cell.setCellStyle(headerStyle);
-        setCellValue(cell, "Lot #");
+        setCellValue(cell, "Accession # / Worksheet #");
         setMaxChars(cell, maxChars);
         
         cell = row.createCell(2);
         cell.setCellStyle(headerStyle);
+        setCellValue(cell, "Lot #");
+        setMaxChars(cell, maxChars);
+        
+        cell = row.createCell(3);
+        cell.setCellStyle(headerStyle);
         setCellValue(cell, "Created Date");
         setMaxChars(cell, maxChars);
 
-        cell = row.createCell(3);
+        cell = row.createCell(4);
         cell.setCellStyle(headerStyle);
         setCellValue(cell, "QC Link");
         setMaxChars(cell, maxChars);
 
         if (qcColumns != null && !qcColumns.isEmpty()) {
             for (i = 0; i < qcColumns.size(); i++) {
-                cell = row.createCell(i + 4);
+                cell = row.createCell(i + 5);
                 cell.setCellStyle(headerStyle);
                 setCellValue(cell, qcColumns.get(i).getEntry());
                 setMaxChars(cell, maxChars);
             }
         } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
             for (i = 0; i < worksheetHeaders.size(); i++) {
-                cell = row.createCell(i + 4);
+                cell = row.createCell(i + 5);
                 cell.setCellStyle(headerStyle);
                 setCellValue(cell, worksheetHeaders.get(i));
                 setMaxChars(cell, maxChars);
@@ -742,20 +747,28 @@ public class QcChartReport1Bean {
         
         cell = row.createCell(0);
         cell.setCellStyle(baseStyle);
-        setCellValue(cell, value.getAccessionNumber() + " / " + value.getWId());
+        if (qcColumns != null && qcColumns.size() > 0)
+            setCellValue(cell, String.valueOf(row.getRowNum() - 31));
+        else
+            setCellValue(cell, String.valueOf(row.getRowNum() + 1));
         setMaxChars(cell, maxChars);
         
         cell = row.createCell(1);
         cell.setCellStyle(baseStyle);
+        setCellValue(cell, value.getAccessionNumber() + " / " + value.getWId());
+        setMaxChars(cell, maxChars);
+        
+        cell = row.createCell(2);
+        cell.setCellStyle(baseStyle);
         setCellValue(cell, value.getLotNumber());
         setMaxChars(cell, maxChars);
 
-        cell = row.createCell(2);
+        cell = row.createCell(3);
         cell.setCellStyle(baseStyle);
         setCellValue(cell, getDateTimeLabel(value.getWorksheetCreatedDate(), Messages.get().gen_dateTimePattern()));
         setMaxChars(cell, maxChars);
 
-        cell = row.createCell(3);
+        cell = row.createCell(4);
         cell.setCellStyle(baseStyle);
         setCellValue(cell, value.getQcLink());
         setMaxChars(cell, maxChars);
@@ -770,14 +783,14 @@ public class QcChartReport1Bean {
             j = qcFormat.length() + 1;
             for (i = 0; i < qcColumns.size(); i++) {
                 column = qcColumns.get(i);
-                cell = row.createCell(i + 4);
+                cell = row.createCell(i + 5);
                 cell.setCellStyle(baseStyle);
                 setCellValue(cell, getValue(worksheetFormat, column.getSystemName().substring(j), value));
                 setMaxChars(cell, maxChars);
             }
         } else if (worksheetHeaders != null && !worksheetHeaders.isEmpty()) {
             for (i = 0; i < worksheetHeaders.size(); i++) {
-                cell = row.createCell(i + 4);
+                cell = row.createCell(i + 5);
                 cell.setCellStyle(baseStyle);
                 setCellValue(cell, getValue(worksheetFormat, worksheetHeaderNames.get(i), value));
                 setMaxChars(cell, maxChars);
