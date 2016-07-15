@@ -356,7 +356,7 @@ public class AuxFieldGroupManager1Bean {
                         typeId = v.getTypeId();
                         value = v.getValue();
                         try {
-                            auxFieldValue.validate(v);
+                            auxFieldValue.validate(v, data.getAnalyteName());
                         } catch (Exception err) {
                             DataBaseUtil.mergeException(e, err);
                         }
