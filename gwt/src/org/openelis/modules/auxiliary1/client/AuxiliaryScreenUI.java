@@ -270,7 +270,7 @@ public class AuxiliaryScreenUI extends Screen {
         // screen fields
         //
         addScreenHandler(name, AuxFieldGroupMeta.getName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 name.setValue(getName());
             }
 
@@ -291,7 +291,7 @@ public class AuxiliaryScreenUI extends Screen {
         addScreenHandler(description,
                          AuxFieldGroupMeta.getDescription(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  description.setValue(getDescription());
                              }
 
@@ -310,7 +310,7 @@ public class AuxiliaryScreenUI extends Screen {
                          });
 
         addScreenHandler(isActive, AuxFieldGroupMeta.getIsActive(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 isActive.setValue(getIsActive());
             }
 
@@ -331,7 +331,7 @@ public class AuxiliaryScreenUI extends Screen {
         addScreenHandler(activeBegin,
                          AuxFieldGroupMeta.getActiveBegin(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  activeBegin.setValue(getActiveBegin());
                              }
 
@@ -352,7 +352,7 @@ public class AuxiliaryScreenUI extends Screen {
         addScreenHandler(activeEnd,
                          AuxFieldGroupMeta.getActiveEnd(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  activeEnd.setValue(getActiveEnd());
                              }
 
@@ -371,7 +371,7 @@ public class AuxiliaryScreenUI extends Screen {
                          });
 
         addScreenHandler(fieldTable, "fieldTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 if ( !isState(QUERY)) {
                     fieldTable.setModel(getAuxFieldModel());
                 }
@@ -427,8 +427,10 @@ public class AuxiliaryScreenUI extends Screen {
         fieldTable.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
+                valueTable.clearExceptions();
                 valueTable.setModel(getAuxFieldValueModel(manager.field.get(event.getSelectedItem())));
                 addValueButton.setEnabled(isState(ADD, UPDATE));
+                removeValueButton.setEnabled(false);
             }
         });
 
@@ -463,18 +465,19 @@ public class AuxiliaryScreenUI extends Screen {
 
                 switch (c) {
                     case 0:
-                        analyte = (AnalyteDO) ( ((AutoCompleteValue)val).getData());
-                        if (analyte != null) {
+                        if (val != null) {
+                            analyte = (AnalyteDO) ( ((AutoCompleteValue)val).getData());
                             data.setAnalyteId(analyte.getId());
                             data.setAnalyteName(analyte.getName());
                         } else {
                             data.setAnalyteId(null);
                             data.setAnalyteName(null);
                         }
+
                         break;
                     case 1:
-                        method = (MethodDO) ( ((AutoCompleteValue)val).getData());
-                        if (method != null) {
+                        if (val != null) {
+                            method = (MethodDO) ( ((AutoCompleteValue)val).getData());
                             data.setMethodId(method.getId());
                             data.setMethodName(method.getName());
                         } else {
@@ -507,14 +510,10 @@ public class AuxiliaryScreenUI extends Screen {
         fieldTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 AuxFieldViewDO data;
-                ArrayList<AuxFieldValueViewDO> values;
                 int r;
 
                 r = event.getIndex();
                 try {
-
-                    values = new ArrayList<AuxFieldValueViewDO>();
-                    values.add(new AuxFieldValueViewDO());
                     data = manager.field.add();
                     data.setIsActive("Y");
                     data.setIsReportable("N");
@@ -542,7 +541,7 @@ public class AuxiliaryScreenUI extends Screen {
         addScreenHandler(analyte,
                          AuxFieldGroupMeta.getFieldAnalyteName(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  if (fieldTable.getSelectedRow() != -1)
                                      analyte.setValue(new AutoCompleteValue(manager.field.get(fieldTable.getSelectedRow())
                                                                                          .getAnalyteId(),
@@ -585,7 +584,7 @@ public class AuxiliaryScreenUI extends Screen {
         });
 
         addScreenHandler(valueTable, "valueTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 if ( !isState(QUERY) && fieldTable.getSelectedRow() != -1) {
                     valueTable.setModel(getAuxFieldValueModel(manager.field.get(fieldTable.getSelectedRow())));
                 } else {

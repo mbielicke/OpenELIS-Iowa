@@ -244,8 +244,7 @@ public class AuxFieldValueBean {
             manager.remove(entity);
     }
 
-    // TODO
-    public void validate(AuxFieldValueDO data) throws Exception {
+    public void validate(AuxFieldValueDO data, String analyteName) throws Exception {
         ValidationErrorsList list;
         Integer typeId;
         String value;
@@ -255,7 +254,8 @@ public class AuxFieldValueBean {
         typeId = data.getTypeId();
 
         if (typeId == null)
-            list.add(new FormErrorException(Messages.get().aux_typeRequiredException()));
+            list.add(new FormErrorException(Messages.get()
+                                                    .aux_typeRequiredException(DataBaseUtil.toString(analyteName))));
 
         if (value == null &&
             (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY,
@@ -268,7 +268,9 @@ public class AuxFieldValueBean {
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_LOWER, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_UPPER, typeId) || DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_MIXED,
                                                                                                                typeId))) {
-            list.add(new FormErrorException(Messages.get().aux_valuePresentForTypeException(value)));
+            list.add(new FormErrorException(Messages.get()
+                                                    .aux_valuePresentForTypeException(DataBaseUtil.toString(analyteName),
+                                                                                      value)));
         }
 
         if (list.size() > 0)

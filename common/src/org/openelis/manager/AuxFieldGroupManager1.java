@@ -146,18 +146,21 @@ public class AuxFieldGroupManager1 implements Serializable {
         /**
          * Removes an item from the list
          */
-        public void remove(int i) {
+        public AuxFieldViewDO remove(int i) {
             AuxFieldViewDO data;
 
             data = fields.get(i);
 
             fields.remove(data);
+            value.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(Constants.uid().get(data));
+            return data;
         }
 
         public void remove(AuxFieldViewDO data) {
             fields.remove(data);
+            value.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(Constants.uid().get(data));
         }
@@ -229,14 +232,21 @@ public class AuxFieldGroupManager1 implements Serializable {
             data = value.get(field, i);
 
             values.remove(data);
+            localmap.get(field.getId()).remove(i);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(Constants.uid().get(data));
         }
 
+        /**
+         * removes all values for a field
+         */
         public void remove(AuxFieldViewDO data) {
-            values.remove(data);
-            dataObjectRemove(data.getId(), data);
-            uidMapRemove(Constants.uid().get(data));
+            for (AuxFieldValueViewDO v : value.get(data)) {
+                values.remove(v);
+                dataObjectRemove(v.getId(), v);
+                uidMapRemove(Constants.uid().get(v));
+            }
+            localmap.remove(data.getId());
         }
 
         /**
@@ -258,10 +268,12 @@ public class AuxFieldGroupManager1 implements Serializable {
          * create a hash map from value list
          */
         private void localmapBuild() {
-            if (localmap == null && values != null) {
+            if (localmap == null) {
                 localmap = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
-                for (AuxFieldValueViewDO data : values)
-                    localmapAdd(data);
+                if (values != null) {
+                    for (AuxFieldValueViewDO data : values)
+                        localmapAdd(data);
+                }
             }
         }
 
