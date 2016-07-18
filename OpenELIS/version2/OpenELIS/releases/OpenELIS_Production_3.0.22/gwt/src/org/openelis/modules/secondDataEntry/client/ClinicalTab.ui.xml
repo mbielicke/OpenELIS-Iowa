@@ -1,0 +1,684 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:s="urn:import:org.openelis.modules.sample1.client"
+  xmlns:d='urn:import:org.openelis.modules.secondDataEntry.client'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="25px" left="12%" width="100%">
+      <g:HorizontalPanel horizontalAlignment="CENTER">
+        <w:Label text="{msg.secondDataEntry_secondDataEntryHeading}" styleName="{res.style.Heading}" />
+        <g:HorizontalPanel width="175px" />
+        <w:Label text="{msg.secondDataEntry_firstDataEntryHeading}" styleName="{res.style.Heading}" />
+      </g:HorizontalPanel>
+    </g:layer>
+    <g:layer top="25px" bottom="0px">
+      <g:ScrollPanel width="100%" height="100%">
+        <g:HTMLPanel>
+          <table class="{res.style.Form}">
+            <tr ui:field="verClinAccessionNumber" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_accessionNum}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
+                  <g:Image ui:field="accessionNumberIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="accessionNumberIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="accessionNumber1" width="75px" field="Integer" />
+              </td>
+            </tr>
+            <tr ui:field="verClinEOrderPOV" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.order_orderNum}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="eorderPOV" width="103px" case="UPPER" field="String" />
+                  <g:Image ui:field="eorderPOVIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="eorderPOVIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="eorderPOV1" width="103px" case="UPPER" field="String" />
+              </td>
+            </tr>
+            <tr ui:field="verClinCollectionDate" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_collected}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="collectionDate" width="90px" begin="0" end="2" />
+                  <g:Image ui:field="collectionDateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="collectionDateIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="collectionDate1" width="90px" begin="0" end="2" />
+              </td>
+            </tr>
+            <tr ui:field="verClinCollectionTime" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_time}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="collectionTime" width="60px" begin="3" end="4" />
+                  <g:Image ui:field="collectionTimeIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="collectionTimeIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="collectionTime1" width="60px" begin="3" end="4" />
+              </td>
+            </tr>
+            <tr ui:field="verClinReceivedDate" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_received}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
+                  <g:Image ui:field="receivedDateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="receivedDateIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="receivedDate1" width="125px" begin="0" end="4" />
+              </td>
+            </tr>
+            <tr ui:field="verClinClientReference" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_clntRef}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clientReference" width="196px" case="LOWER" field="String"
+                    maxLength="20" />
+                  <g:Image ui:field="clientReferenceIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clientReferenceIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clientReference1" width="196px" case="LOWER" field="String"
+                  maxLength="20" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatLastName" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_last}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:TextBox ui:field="clinPatientLastName" width="225px" field="String"
+                          maxLength="30" case="UPPER" />
+                        <w:Button ui:field="patientSearchButton" leftIcon="{res.icon.QueryButtonImage}"
+                          text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}" />
+                        <g:Image ui:field="clinPatientLastNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientLastNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:TextBox ui:field="clinPatientLastName1" width="225px" field="String"
+                        maxLength="30" case="UPPER" />
+                    </td>
+                    <td>
+                      <w:TextArea ui:field="clinPatientId" height="18px" width="50px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verClinPatFirstName" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.gen_first}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientFirstName" width="225px" field="String"
+                    maxLength="20" case="UPPER" />
+                  <g:Image ui:field="clinPatientFirstNameIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientFirstNameIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientFirstName1" width="225px" field="String"
+                  maxLength="20" case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatBirthDate" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.patient_birth}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <c:Calendar ui:field="clinPatientBirthDate" width="90px" begin="0" end="2" />
+                  <g:Image ui:field="clinPatientBirthDateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientBirthDateIC" />
+              </td>
+              <td>
+                <c:Calendar ui:field="clinPatientBirthDate1" width="90px" begin="0" end="2" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatNationalId" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.patient_nationalId}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientNationalId" width="75px" field="String"
+                    maxLength="11" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+                  <g:Image ui:field="clinPatientNationalIdIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientNationalIdIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientNationalId1" width="75px" field="String"
+                  maxLength="11" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatMultipleUnit" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_aptSuite}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientAddrMultipleUnit" field="String" width="222px"
+                    case="UPPER" />
+                  <g:Image ui:field="clinPatientAddrMultipleUnitIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrMultipleUnitIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientAddrMultipleUnit1" field="String" width="222px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatStreetAddress" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_address}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientAddrStreetAddress" field="String" width="233px"
+                    case="UPPER" />
+                  <g:Image ui:field="clinPatientAddrStreetAddressIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrStreetAddressIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientAddrStreetAddress1" field="String" width="233px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatCity" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_city}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientAddrCity" field="String" width="100px"
+                    case="UPPER" />
+                  <g:Image ui:field="clinPatientAddrCityIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrCityIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientAddrCity1" field="String" width="100px"
+                  case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatState" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_state}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="clinPatientAddrState" field="String" width="42px" />
+                  <g:Image ui:field="clinPatientAddrStateIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrStateIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="clinPatientAddrState1" field="String" width="42px" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatZipCode" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_zipcode}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientAddrZipCode" field="String" width="75px"
+                    mask="{msg.gen_zipcodePattern}" case="UPPER" />
+                  <g:Image ui:field="clinPatientAddrZipCodeIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrZipCodeIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientAddrZipCode1" field="String" width="75px"
+                  mask="{msg.gen_zipcodePattern}" case="UPPER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatHomePhone" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_phone}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinPatientAddrHomePhone" field="String" width="80px"
+                    maxLength="12" mask="{msg.gen_phonePattern}" />
+                  <g:Image ui:field="clinPatientAddrHomePhoneIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientAddrHomePhoneIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinPatientAddrHomePhone1" field="String" width="80px"
+                  maxLength="12" mask="{msg.gen_phonePattern}" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatGenderId" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.patient_gender}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="clinPatientGenderId" width="75px" dropHeight="100px"
+                    field="Integer" />
+                  <g:Image ui:field="clinPatientGenderIdIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientGenderIdIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="clinPatientGenderId1" width="75px" dropHeight="100px"
+                  field="Integer" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatRaceId" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.patient_race}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="clinPatientRaceId" width="233px" dropWidth="235px"
+                    field="Integer" />
+                  <g:Image ui:field="clinPatientRaceIdIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientRaceIdIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="clinPatientRaceId1" width="233px" dropWidth="235px"
+                  field="Integer" />
+              </td>
+            </tr>
+            <tr ui:field="verClinPatEthnicityId" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.patient_ethnicity}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:Dropdown ui:field="clinPatientEthnicityId" width="100px" field="Integer"
+                    dropHeight="120px" />
+                  <g:Image ui:field="clinPatientEthnicityIdIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinPatientEthnicityIdIC" />
+              </td>
+              <td>
+                <w:Dropdown ui:field="clinPatientEthnicityId1" width="100px" field="Integer"
+                  dropHeight="120px" />
+              </td>
+            </tr>
+            <tr ui:field="verClinProvLastName" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.provider_lf}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="clinProviderLastName" width="95px"
+                        dropWidth="520px" dropHeight="400px" case="UPPER"
+                      >
+                        <w:popup>
+                          <t:Table visibleRows="10" header="true">
+                            <t:Column width="150" label="{msg.gen_lastName}">
+                              <t:LabelCell />
+                            </t:Column>
+                            <t:Column width="150" label="{msg.gen_firstName}">
+                              <t:LabelCell />
+                            </t:Column>
+                            <t:Column width="100" label="{msg.gen_middleName}">
+                              <t:LabelCell />
+                            </t:Column>
+                            <t:Column width="100" label="{msg.provider_npi}">
+                              <t:LabelCell />
+                            </t:Column>
+                          </t:Table>
+                        </w:popup>
+                      </w:AutoComplete>
+                    </td>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:TextArea ui:field="clinProviderFirstName" height="18px" width="95px" />
+                        <g:Image ui:field="clinProviderLastNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="clinProviderLastNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="clinProviderLastName1" width="95px"
+                        case="UPPER" />
+                    </td>
+                    <td>
+                      <w:TextArea ui:field="clinProviderFirstName1" height="18px" width="95px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verClinProvPhone" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.address_phone}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="clinProviderPhone" width="115px" field="String"
+                    maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
+                  <g:Image ui:field="clinProviderPhoneIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="clinProviderPhoneIC" />
+              </td>
+              <td>
+                <w:TextBox ui:field="clinProviderPhone1" width="115px" field="String"
+                  maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
+              </td>
+            </tr>
+            <tr ui:field="verClinReportTo" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sampleOrganization_reportTo}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:AutoComplete ui:field="reportToName" width="180px"
+                          dropWidth="565px" case="UPPER"
+                        >
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="250" label="{msg.gen_name}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="70" label="{msg.address_aptSuite}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="110" label="{msg.address_street}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="100" label="{msg.address_city}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="20" label="{msg.address_st}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                        <g:Image ui:field="reportToNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="reportToDetails" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="reportToNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="reportToName1" width="180px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="reportToDetails1" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verClinBillTo" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sampleOrganization_billTo}:" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <g:HorizontalPanel>
+                        <w:AutoComplete ui:field="billToName" width="180px"
+                          dropWidth="565px" case="UPPER"
+                        >
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="250" label="{msg.gen_name}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="70" label="{msg.address_aptSuite}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="110" label="{msg.address_street}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="100" label="{msg.address_city}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="20" label="{msg.address_st}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                        <g:Image ui:field="billToNameIM" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="billToDetails" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <g:Image ui:field="billToNameIC" />
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <w:AutoComplete ui:field="billToName1" width="180px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <w:TextArea ui:field="billToDetails1" width="190px" height="80px" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr ui:field="verClinProject" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.project_project}:" />
+              </td>
+              <td>
+                <g:HorizontalPanel>
+                  <w:AutoComplete ui:field="projectName" width="180px" case="LOWER"
+                    dropWidth="440px"
+                  >
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="150" label="{msg.gen_name}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="275" label="{msg.gen_description}">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                  <g:Image ui:field="projectNameIM" />
+                </g:HorizontalPanel>
+              </td>
+              <td>
+                <g:Image ui:field="projectNameIC" />
+              </td>
+              <td>
+                <w:AutoComplete ui:field="projectName1" width="190px" case="LOWER" />
+              </td>
+            </tr>
+            <tr ui:field="verClinSampleQAEvents" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.sample_qaEvents}:" />
+              </td>
+              <td colspan="5">
+                <g:LayoutPanel height="100px" width="430px">
+                  <g:layer top="0px" bottom="0px">
+                    <t:Table ui:field="sampleQATable" header="true"
+                      styleName="{res.table.ScreenTableWithSides}"
+                    >
+                      <t:Column width="51" label="{msg.secondDataEntry_verified}">
+                        <t:CheckBoxCell />
+                      </t:Column>
+                      <t:Column width="215" label="{msg.gen_name}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="110" label="{msg.gen_type}">
+                        <t:DropdownCell>
+                          <w:Dropdown field="Integer" dropWidth="110" />
+                        </t:DropdownCell>
+                      </t:Column>
+                      <t:Column width="51" label="{msg.gen_billable}">
+                        <t:CheckBoxCell />
+                      </t:Column>
+                    </t:Table>
+                  </g:layer>
+                </g:LayoutPanel>
+              </td>
+            </tr>
+            <tr ui:field="verClinAuxData" style="display:none">
+              <td class="{res.style.Prompt}">
+                <ui:text from="{msg.aux_data}:" />
+              </td>
+              <td colspan="5">
+                <g:LayoutPanel height="250px" width="560px">
+                  <g:layer top="0px" bottom="0px">
+                    <t:Table ui:field="auxDataTable" header="true"
+                      styleName="{res.table.ScreenTableWithSides}"
+                    >
+                      <t:Column width="160" label="{msg.gen_analyte}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="160" label="{msg.secondDataEntry_secondDataEntryHeading}">
+                        <s:ResultCell />
+                      </t:Column>
+                      <t:Column width="20" label="">
+                        <t:ImageCell />
+                      </t:Column>
+                      <t:Column width="20" label="">
+                        <t:ImageCell />
+                      </t:Column>
+                      <t:Column width="160" label="{msg.secondDataEntry_firstDataEntryHeading}">
+                        <s:ResultCell />
+                      </t:Column>
+                    </t:Table>
+                  </g:layer>
+                </g:LayoutPanel>
+              </td>
+            </tr>
+          </table>
+        </g:HTMLPanel>
+      </g:ScrollPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

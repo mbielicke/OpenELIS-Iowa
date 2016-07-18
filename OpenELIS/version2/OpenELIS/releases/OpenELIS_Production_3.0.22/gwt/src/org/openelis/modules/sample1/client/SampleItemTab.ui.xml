@@ -1,0 +1,77 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0" bottom="25">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sample_type}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="typeOfSample" width="150px" field="Integer" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sampleItem_source}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="sourceOfSample" width="150px" field="Integer" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sampleItem_sourceOther}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="sourceOther" width="215px" maxLength="40" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_container}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="container" width="225px" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sampleItem_containerReference}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="containerReference" width="268px" maxLength="40" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_qty}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_unit}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="unitOfMeasure" width="150px" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
