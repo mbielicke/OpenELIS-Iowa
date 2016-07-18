@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orgPhone" pageWidth="227" pageHeight="12" columnWidth="227" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.scriptlethandling" value="2"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT a.work_phone AS phone_number
+FROM   organization_contact oc
+       join address a on a.id = oc.address_id
+WHERE  oc.organization_id = $P{ORGANIZATION_ID} and
+       oc.contact_type_id = (select dictionary.id
+                               from dictionary
+                              where dictionary.system_name = 'org_contact_general')]]>
+	</queryString>
+	<field name="phone_number" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="phoneNumber" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="227" height="12" isRemoveLineWhenBlank="true" forecolor="#FFFFFF" backcolor="#000000">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{phone_number}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

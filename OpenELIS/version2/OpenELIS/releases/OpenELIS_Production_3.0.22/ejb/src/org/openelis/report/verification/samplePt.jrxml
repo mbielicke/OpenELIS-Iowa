@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="samplePt" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+     d.entry as pt_provider, sp.series, sp.due_date, so.organization_id, so.organization_attention
+FROM
+     sample_pt sp
+     join dictionary d on sp.pt_provider_id = d.id
+     left join sample_organization so on so.sample_id = sp.sample_id and
+               so.type_id in (select id from dictionary where system_name = 'org_report_to')
+WHERE
+     sp.sample_id = $P{SAMPLE_ID}]]>
+	</queryString>
+	<field name="pt_provider" class="java.lang.String"/>
+	<field name="series" class="java.lang.String"/>
+	<field name="due_date" class="java.sql.Timestamp"/>
+	<field name="organization_id" class="java.lang.Integer"/>
+	<field name="organization_attention" class="java.lang.String"/>
+	<detail>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement key="ptProvider.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[PT Provider:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="ptProvider" x="105" y="12" width="250" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pt_provider}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="dueDate.label" x="397" y="12" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Due Date:]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement key="dueDate" x="502" y="12" width="75" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{due_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="series.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Series:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="series" x="105" y="24" width="250" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{series}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="project.label" x="397" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Project:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement key="project" positionType="Float" x="502" y="24" width="250" height="12"/>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"project.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="24">
+			<staticText>
+				<reportElement key="reportToAttention.label" x="0" y="0" width="100" height="12" forecolor="#404040">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Attention:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="reportToAttention" x="105" y="0" width="250" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_attention}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"reportToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="billToOrganization" x="397" y="12" width="355" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"billToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
