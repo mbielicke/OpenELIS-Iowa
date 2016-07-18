@@ -1,0 +1,194 @@
+@external  .gwt-TabLayoutPanel, .gwt-TabLayoutPanelTabs, .gwt-TabLayoutPanelContentContainer, .gwt-TabLayoutPanelContent, .gwt-TabLayoutPanelTab, .gwt-TabLayoutPanelTab-selected, .helpHeader, helpText, pageHeader;
+a,a:visited {
+	color: #0066cc;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #0066cc;
+	text-decoration: underline;
+}
+
+.Link {
+	padding: 3px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.WhiteContentPanel {
+	background: white;
+}
+
+.PopupPanelWithBorder {
+	background: #F0F0F0;
+	border-style: groove;
+	border-width: 5px;
+	border-color: green
+}
+
+.Form {
+	margin: 4px 8px;
+}
+
+.FormTitle {
+	-moz-user-select: none;
+	color: #486095;
+	text-align: center;
+	height: 18px;
+	background: transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0
+		0;
+}
+
+.Prompt {
+	-moz-user-select: none;
+	color: #333333;
+	font-size: 12px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding: 2px 0 2px 2px;
+	text-align: right;
+	test-justify: trim;
+	white-space: nowrap;
+}
+
+.WarningLabel {
+	-moz-user-select: none;
+	color: #FF0000;
+	padding: 5px 0 0 12px;
+	font-weight: bold;
+}
+
+.ScreenLabelLink {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.Title {
+	-moz-user-select: none;
+	color: gray;
+	padding: 2px;
+	padding-left: 4px;
+}
+
+.gwt-TabLayoutPanel {
+	
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
+	background: #ffffff;
+	padding-top: 6px;
+	padding-left: 5px;
+	border-bottom: 1px solid #d5d5d5;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContentContainer {
+	border-color: #d5d5d5;
+	border-style: solid;
+	border-width: 0px 1px 1px 1px;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+	overflow: hidden;
+	padding: 6px;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+	padding: 2px 8px 2px 8px;
+	cursor: pointer;
+	cursor: hand;
+	color: #404040;
+	font-weight: normal;
+	text-align: center;
+	background: #ffffff;
+	font-size: 14px;
+	border-bottom: 1px solid #d5d5d5;
+	top: 1px;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab:hover {
+	color: #c64a1a;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+	cursor: default;
+	color: #c64a1a;
+	border-left: 1px solid #d5d5d5;
+	border-right: 1px solid #d5d5d5;
+	border-top: 1px solid #d5d5d5;
+	border-bottom: 1px solid #ffffff;
+}
+
+@sprite .header_logo {
+	gwt-image: 'headerLogo';
+	height: 134px;
+	margin: 0px;
+	width: 230px;
+	cursor: pointer;
+}
+
+.Legend {
+	float: left;
+	width: 100px;
+}
+
+.Legend>div {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: pre;
+	border-color: #FFFFFF #EDEDED #EDEDED;
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	padding: 0px 2px 2px 2px;
+	background-color: #f1f2f4;
+	color: inherit;
+	font-size: 12px;
+	font-family: inherit;
+}
+
+.Column {
+	float: left;
+	width: 200px;
+}
+
+.Column>div {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: pre;
+	border-color: #FFFFFF #EDEDED #EDEDED;
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	padding: 0px 2px 2px 2px;
+	color: inherit;
+	font-family: inherit;
+	font-size: 12px;
+	text-indent: 10px;
+}
+
+.AppBackground {
+	background: #343434;
+}
+
+.ScreenPanel {
+	background: white;
+	margin-top: 4px;
+}
+
+.helpHeader {
+	-moz-user-select: none;
+	color: #c74a1e;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background: none;
+	text-align: left;
+}
+
+.helpText {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: gray;
+}
+
+.pageHeader {
+	float: left;
+	font-weight: bold font-size:      13pt;
+}
