@@ -569,6 +569,17 @@ public class QcChartReport1Bean {
                 }
             }
             
+            rangeName = getName(wb, sheet, "RowNumber");
+            if (rangeName == null) {
+                rangeName = wb.createName();
+                rangeName.setSheetIndex(wb.getSheetIndex(sheet));
+                rangeName.setNameName("RowNumber");
+            }
+            rangeFormula = sheet.getSheetName()+"!$" + CellReference.convertNumToColString(0) +
+                           "$33:" + "$" + CellReference.convertNumToColString(0) +
+                           "$" + (sheet.getLastRowNum() + 1);
+            rangeName.setRefersToFormula(rangeFormula);
+            
             /*
              * Create named ranges for the graph to be able to locate the appropriate
              * data
