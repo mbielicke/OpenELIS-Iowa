@@ -112,7 +112,7 @@ public class SDWISViolationScannerBean {
         String val, series, temp[], sTemp[];
         SampleSDWISViewDO sdwis;
         TestResultViewDO tr;
-        Date startTime, endTime;
+        Date startTime, endTime, now;
         SystemVariableDO lastRun;
         Calendar cal;
         SimpleDateFormat dateTimeFormat;
@@ -127,7 +127,9 @@ public class SDWISViolationScannerBean {
         HashMap<Integer, PWSManager> pwsms;
 
         cal = Calendar.getInstance();
+        now = cal.getTime();
         cal.add(Calendar.MINUTE, -1);
+        cal.set(Calendar.SECOND, 59);
         endTime = cal.getTime();
 
         /*
@@ -294,7 +296,7 @@ public class SDWISViolationScannerBean {
             }
         }
 
-        lastRun.setValue(dateTimeFormat.format(endTime));
+        lastRun.setValue(dateTimeFormat.format(now));
         systemVariable.update(lastRun);
     }
 
