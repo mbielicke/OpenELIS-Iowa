@@ -116,7 +116,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="clientReference" width="180px"
-										field="String" enabled="true" />
+										field="String" enabled="true" case="LOWER" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.sampleStatus_help_clientReference}"
@@ -165,7 +165,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="envCollector" width="180px"
-										field="String" enabled="true" />
+										field="String" enabled="true" case="LOWER" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.sampleStatus_help_envCollector}"
@@ -188,7 +188,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="sdwisCollector" width="180px"
-										field="String" enabled="true" />
+										field="String" enabled="true" case="LOWER" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.sampleStatus_help_sdwisCollector}"
@@ -203,7 +203,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="pwsId" width="180px" field="String"
-										enabled="true" />
+										enabled="true" case="UPPER" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.sampleStatus_help_pws}"
