@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -69,6 +70,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetReagentViewDO;
@@ -131,6 +133,9 @@ public class WorksheetPrintReportBean {
     @EJB
     private SystemVariableBean    systemVariable;
 
+    @EJB
+    private WorksheetAnalysisBean worksheetAnalysis;
+    
     @EJB
     private WorksheetManager1Bean worksheetManager;
 
@@ -274,15 +279,6 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
 
-//                case "8x4Arbo":
-//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide8x4Arbo.jasper");
-//                    dir = ReportUtil.getResourcePath(url);
-//                    jparam.put("WORKSHEET_ID", worksheetId);
-//                    status.setMessage("Outputing report").setPercentComplete(20);
-//                    jreport = (JasperReport)JRLoader.loadObject(url);
-//                    jprint = JasperFillManager.fillReport(jreport, jparam, con);
-//                    break;
-
                 case "96H":
                     dDS = DiagramDataSource.getInstance(worksheetId, 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Horizontal.jasper");
@@ -321,26 +317,8 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
 
-//                case "QFTG":
-//                    dDS = DiagramDataSource.getInstance(worksheetId, 36);
-//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
-//                    dir = ReportUtil.getResourcePath(url);
-//                    status.setMessage("Outputing report").setPercentComplete(20);
-//                    jreport = (JasperReport)JRLoader.loadObject(url);
-//                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
-//                    break;
-
-//                case "WNV":
-//                    dDS = DiagramDataSource.getInstance(worksheetId, 15);
-//                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
-//                    dir = ReportUtil.getResourcePath(url);
-//                    status.setMessage("Outputing report").setPercentComplete(20);
-//                    jreport = (JasperReport)JRLoader.loadObject(url);
-//                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
-//                    break;
-
                 default:
-                    path = fillPDFWorksheet(worksheetId, format);
+                    path = fillPDFWorksheet(worksheetId, format, userName);
             }
 
             if (path == null) {
@@ -402,7 +380,7 @@ public class WorksheetPrintReportBean {
         return path;
     }
     
-    private Path fillPDFWorksheet(Integer worksheetId, String templateName) throws Exception {
+    private Path fillPDFWorksheet(Integer worksheetId, String templateName, String userName) throws Exception {
         int i, j, formCapacity, diagramCapacity, pageNumber;
         AcroFields form;
         AnalysisViewDO aVDO;
@@ -435,8 +413,9 @@ public class WorksheetPrintReportBean {
         SampleDO sDO;
         SampleItemViewDO siVDO;
         SampleManager1 sMan;
-        String collectionDateTime, dirName, now;
+        String collectionDateTime, dirName, now, qcLink;
         StringBuilder aNotes, aQaevents, sNotes, sQaevents;
+        WorksheetAnalysisDO waDO1;
         WorksheetManager1 wMan;
         WorksheetViewDO wVDO;
 
@@ -551,7 +530,18 @@ public class WorksheetPrintReportBean {
                         pageNumber++;
 
                         form.setField("current_date_time", now);
+                        form.setField("username", userName);
                         form.setField("worksheet_description_1", wVDO.getDescription());
+                    }
+                    
+                    qcLink = "";
+                    if (waVDO.getWorksheetAnalysisId() != null) {
+                        try {
+                            waDO1 = worksheetAnalysis.fetchById(waVDO.getWorksheetAnalysisId());
+                            qcLink = waDO1.getAccessionNumber();
+                        } catch (Exception anyE) {
+                            log.log(Level.SEVERE, anyE.getMessage(), anyE);
+                        }
                     }
                     
                     form.setField("worksheet_id_"+(i), wVDO.getId().toString());
@@ -635,6 +625,7 @@ public class WorksheetPrintReportBean {
                         else
                             form.setField("well_label_"+(j), sDO.getAccessionNumber().toString());
                         form.setField("accession_number_"+(i), sDO.getAccessionNumber().toString());
+                        form.setField("qc_link_"+(i), qcLink);
                         if (sDO.getCollectionDate() != null) {
                             collectionDateTime = ReportUtil.toString(sDO.getCollectionDate(), Messages.get().datePattern());
                             if (sDO.getCollectionTime() != null) {
@@ -677,8 +668,10 @@ public class WorksheetPrintReportBean {
                     } else if (waVDO.getQcLotId() != null) {
                         qlVDO = qlMap.get(waVDO.getQcLotId());
                         form.setField("well_label_"+(j), qlVDO.getQcName());
+                        form.setField("qc_link_"+(i), qcLink);
                         form.setField("qc_name_"+(i), qlVDO.getQcName());
                         form.setField("qc_lot_"+(i), qlVDO.getLotNumber());
+                        form.setField("qc_usable_"+(i), ReportUtil.toString(qlVDO.getUsableDate(), Messages.get().dateTimePattern()));
                         form.setField("qc_expiration_"+(i), ReportUtil.toString(qlVDO.getExpireDate(), Messages.get().dateTimePattern()));
                         qaVDOs = qaVDOMap.get(qlVDO.getQcId());
                         if (qaVDOs != null && !qaVDOs.isEmpty())
@@ -730,11 +723,13 @@ public class WorksheetPrintReportBean {
         
         for (i = 1; i <= formCapacity; i++) {
             stamper.partialFormFlattening("current_date_time_page"+pageNumber);
+            stamper.partialFormFlattening("username_page"+pageNumber);
             stamper.partialFormFlattening("worksheet_id_"+i+"_page"+pageNumber);
             stamper.partialFormFlattening("created_date_"+i+"_page"+pageNumber);
             form.setFieldProperty("position_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("well_label_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("accession_number_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_link_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("collection_date_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("received_date_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("patient_last_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
@@ -757,6 +752,7 @@ public class WorksheetPrintReportBean {
             form.setFieldProperty("analysis_note_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("qc_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("qc_lot_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
+            form.setFieldProperty("qc_usable_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("qc_expiration_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("qc_expected_value_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
             form.setFieldProperty("reagent_media_name_"+i+"_page"+pageNumber, "setfflags", PdfFormField.FF_READ_ONLY, null);
