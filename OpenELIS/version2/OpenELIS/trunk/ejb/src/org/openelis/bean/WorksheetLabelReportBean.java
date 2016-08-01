@@ -191,7 +191,7 @@ public class WorksheetLabelReportBean {
             dilutionCol = -1;
             worksheetColumns = worksheetManager.getColumnNames(wMan.getWorksheet().getFormatId());
             for (i = 0; i < worksheetColumns.size(); i++) {
-                if ("dilut_factor".equals(worksheetColumns.get(i))) {
+                if ("dilut_factor".equals(worksheetColumns.get(i).getName())) {
                     dilutionCol = i;
                     break;
                 }
