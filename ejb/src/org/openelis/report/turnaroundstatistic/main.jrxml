@@ -8,7 +8,8 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<import value="org.openelis.utils.ReportUtil"/>
 	<import value="org.openelis.domain.TurnAroundReportViewVO"/>
 	<import value="org.openelis.domain.TurnAroundReportViewVO.StatisticType"/>
 	<reportFont name="FieldData" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -107,7 +108,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{TEST},", ",$F{METHOD})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{TEST},", ",$F{METHOD})]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="TestMethodGroupHeader" pattern="">
 				<reportElement x="117" y="0" width="520" height="12"/>
@@ -229,7 +230,7 @@
 	</columnHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
-			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="0" y="0" width="59" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>

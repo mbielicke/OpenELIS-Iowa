@@ -8,9 +8,11 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
 import org.openelis.domain.TurnAroundReportViewVO.Value;
+import org.openelis.utils.ReportUtil;
 
 public class TurnaroundDataSource implements JRDataSource {
 
@@ -60,7 +62,7 @@ public class TurnaroundDataSource implements JRDataSource {
     public Object getFieldValue(JRField field) throws JRException {
 
         if ("PLOT_DATE".equals(field.getName())) {
-            return value.getPlotDate().toString();
+            return ReportUtil.toString(value.getPlotDate(), Messages.get().datePattern());
         } else if ("TEST".equals(field.getName())) {
             return value.getTest();
         } else if ("METHOD".equals(field.getName())) {
