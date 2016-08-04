@@ -137,6 +137,9 @@ public class WorksheetPrintReportBean {
     private WorksheetAnalysisBean worksheetAnalysis;
     
     @EJB
+    private WorksheetItemBean     worksheetItem;
+    
+    @EJB
     private WorksheetManager1Bean worksheetManager;
 
     private static final Logger log = Logger.getLogger("openelis");
@@ -416,6 +419,7 @@ public class WorksheetPrintReportBean {
         String collectionDateTime, dirName, now, qcLink;
         StringBuilder aNotes, aQaevents, sNotes, sQaevents;
         WorksheetAnalysisDO waDO1;
+        WorksheetItemDO wiDO1;
         WorksheetManager1 wMan;
         WorksheetViewDO wVDO;
 
@@ -538,7 +542,8 @@ public class WorksheetPrintReportBean {
                     if (waVDO.getWorksheetAnalysisId() != null) {
                         try {
                             waDO1 = worksheetAnalysis.fetchById(waVDO.getWorksheetAnalysisId());
-                            qcLink = waDO1.getAccessionNumber();
+                            wiDO1 = worksheetItem.fetchById(waDO1.getWorksheetItemId());
+                            qcLink = waDO1.getAccessionNumber() + " (" + wiDO1.getPosition() + ")";
                         } catch (Exception anyE) {
                             log.log(Level.SEVERE, anyE.getMessage(), anyE);
                         }
