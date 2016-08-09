@@ -1,0 +1,214 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+  
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+  
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+  
+The Original Code is OpenELIS code.
+  
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+  
+Contributor(s): ______________________________________.
+  
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+             xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:q='urn:import:org.openelis.modules.report.dataView1.client'>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="30px">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+        <g:HorizontalPanel>
+          <w:Button css="{res.buttonPanel}" ui:field="getDataButton" leftIcon="{res.icon.findIcon}"
+                    text="{msg.qcChart_getData}"/>
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+          <w:Button css="{res.buttonPanel}" ui:field="plotDataButton" leftIcon="{res.icon.chartIcon}"
+                    text="{msg.qcChart_plotData}"/>
+<!--
+          <w:Button css="{res.buttonPanel}" ui:field="exportButton" leftIcon="{res.icon.NextPageButtonImage}"
+                    text="{msg.todo_exportToXl}"/>
+-->
+        </g:HorizontalPanel>
+      </g:AbsolutePanel>
+    </g:layer>
+    <g:layer top="30px" height="140px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Heading}" colspan="2">
+              <ui:text from="{msg.qcChart_useDateRange}"/>
+            </td>
+            <td width="30px">
+              <hr style="width:1px;height:7px;"/>
+            </td>
+            <td class="{res.style.Heading}" colspan="2">
+              <ui:text from="{msg.qcChart_mostRecentQc}"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_from}:"/>
+            </td>
+            <td>
+              <c:Calendar ui:field="fromDate" width="90px" begin="0" end="2"/>
+            </td>
+            <td class="{res.style.FormTitle}" width="30px">
+              <ui:text from="{msg.gen_or}"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.qcChart_numberToRetrieve}:"/>
+            </td>
+            <td>
+              <w:TextBox ui:field="numberToRetrieve" width="50px" case="UPPER" field="Integer"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_to}:"/>
+            </td>
+            <td>
+              <c:Calendar ui:field="toDate" width="90px" begin="0" end="2"/>
+            </td>
+            <td width="30px">
+              <hr style="width:1px;height:7px;"/>
+            </td>
+          </tr>
+        </table>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.qc_qcName}:"/>
+            </td>
+            <td>
+              <w:AutoComplete ui:field="qcName" width="230px" dropWidth="275px" case="LOWER" required="true">
+                <w:popup>
+                  <t:Table visibleRows="10" header="true">
+                    <t:Column width="175" label="{msg.gen_name}">
+                      <t:LabelCell/>
+                    </t:Column>
+                    <t:Column width="100" label="{msg.gen_type}">
+                      <t:DropdownCell>
+                        <w:Dropdown ui:field="qcType" width="70px" field="Integer"/>
+                      </t:DropdownCell>
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_location}:"/>
+            </td>
+            <td>
+              <w:Dropdown ui:field="location" width="75px" field="Integer" required="true"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.qcChart_plotUsing}:"/>
+            </td>
+            <td>
+              <w:Dropdown ui:field="plotType" width="175px" field="Integer" required="true"/>
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>    
+    <g:layer top="170px" bottom="25px">
+      <r:Tree ui:field="plotDataTree" header="true" styleName="{res.table.ScreenTableWithSides}" allowMultipleSelection="true">
+        <r:Column width="35" label="{msg.qcChart_plot}"/>
+        <r:Column width="315" label="{msg.gen_analyte} / {msg.sample_accessionNum}"/>
+        <r:Column width="150" label="{msg.gen_lotNum}"/>
+        <r:Column width="105" label="{msg.qcChart_creationDate}"/>
+        <r:Column width="50" label="{msg.qcChart_value1}"/>
+        <r:Column width="50" label="{msg.qcChart_value2}"/>
+        <r:Column width="50" label="{msg.qcChart_plotValue}"/>
+        <r:Leaf key="analyte">
+          <r:LeafColumn>
+<!--             <t:CheckBoxCell> -->
+<!--               <w:CheckBox/> -->
+<!--             </t:CheckBoxCell> -->
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+        </r:Leaf>
+        <r:Leaf key="data">
+          <r:LeafColumn>
+            <t:CheckBoxCell>
+              <w:CheckBox/>
+            </t:CheckBoxCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:CalendarCell>
+	          <c:Calendar width="110px" begin="0" end="4" />
+	        </t:CalendarCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell>
+              <w:Label/>
+            </t:LabelCell>
+          </r:LeafColumn>
+        </r:Leaf>
+      </r:Tree>
+    </g:layer>
+    <g:layer bottom="0px" height="25px">
+      <g:HorizontalPanel>
+        <w:Button ui:field="expandButton" leftIcon="{res.icon.expandButtonImage}"
+                  text="{msg.gen_expand}" />
+        <w:Button ui:field="collapseButton" leftIcon="{res.icon.collapseButtonImage}"
+                  text="{msg.gen_collapse}" />
+        <g:AbsolutePanel width="10px"/>
+        <w:Button ui:field="selectButton" leftIcon="{res.checkbox.Checked}"
+                  text="{msg.gen_select}"/>
+        <w:Button ui:field="unselectButton" leftIcon="{res.checkbox.Unchecked}"
+                  text="{msg.gen_unselect}"/>
+        <g:AbsolutePanel width="10px"/>
+        <w:Button ui:field="selectAllButton" leftIcon="{res.checkbox.Checked}"
+                  text="{msg.gen_selectAll}"/>
+        <w:Button ui:field="unselectAllButton" leftIcon="{res.checkbox.Unchecked}"
+                  text="{msg.gen_unselectAll}"/>
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
