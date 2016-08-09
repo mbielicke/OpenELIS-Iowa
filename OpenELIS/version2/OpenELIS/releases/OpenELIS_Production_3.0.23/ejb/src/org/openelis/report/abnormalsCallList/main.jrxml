@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="abnormalsCallList" pageWidth="791" pageHeight="612" orientation="Landscape" columnWidth="725" leftMargin="18" rightMargin="18" topMargin="36" bottomMargin="36">
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="java.text.SimpleDateFormat"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<import value="org.openelis.utils.ReportUtil"/>
+	<reportFont name="times" isDefault="false" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FROM_DATE" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO_DATE" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEST" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SECTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DOMAIN" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT o.id AS o_id, o.name AS o_name, adr.street_address, adr.city, adr.state, adr.zip_code,
+       s.id AS s_id, s.accession_number, s.collection_date, s.collection_time, s.client_reference, s.domain,
+       d2.entry AS type_of_sample, a.id AS a_id, t.description AS t_description,
+       an.name AS analyte, d1.system_name AS result_type, r.value AS r_value
+FROM   sample s
+       JOIN sample_organization so ON so.sample_id = s.id AND
+                                      so.type_id = (SELECT dictionary.id
+                                                    FROM   dictionary
+                                                    WHERE  dictionary.system_name = 'org_report_to')
+       JOIN organization o ON o.id = so.organization_id
+       JOIN address adr ON adr.id = o.address_id
+       JOIN sample_item si ON si.sample_id = s.id
+       JOIN dictionary d2 on d2.id = si.type_of_sample_id
+       JOIN analysis a ON a.sample_item_id = si.id AND
+                          a.status_id = (SELECT dictionary.id
+                                         FROM   dictionary
+                                         WHERE  dictionary.system_name = 'analysis_released') AND
+                          a.released_date BETWEEN $P{FROM_DATE} AND $P{TO_DATE} AND
+                          a.is_reportable = 'Y' and
+                          a.id not in (SELECT analysis_qaevent.analysis_id
+                                       FROM   analysis_qaevent
+                                       WHERE  analysis_qaevent.analysis_id = a.id AND
+                                              analysis_qaevent.type_id = (SELECT dictionary.id
+                                                                          FROM   dictionary
+                                                                          WHERE  dictionary.system_name = 'qaevent_override'))
+       JOIN test t ON t.id = a.test_id
+       JOIN result r ON r.analysis_id = a.id and
+                        r.is_column = 'N' and
+                        r.is_reportable = 'Y'
+       JOIN test_result tr on tr.test_id = t.id AND
+                              tr.id = r.test_result_id AND
+                              tr.flags_id in (SELECT dictionary.id
+                                              FROM   dictionary
+                                              WHERE  dictionary.system_name like 'rf_%a%')
+       JOIN dictionary d1 on d1.id = tr.type_id
+       JOIN analyte an on an.id = r.analyte_id
+WHERE  s.domain = 'C' AND
+       s.id not in (SELECT sample_qaevent.sample_id
+                    FROM   sample_qaevent
+                    WHERE  sample_qaevent.sample_id = s.id AND
+                           sample_qaevent.type_id = (SELECT dictionary.id
+                                                     FROM   dictionary
+                                                     WHERE  dictionary.system_name = 'qaevent_override'))
+       $P!{TEST} $P!{SECTION} $P!{DOMAIN}
+ORDER BY o_name, o_id, s.accession_number, t_description, a_id, analyte]]>
+	</queryString>
+	<field name="o_id" class="java.lang.Integer"/>
+	<field name="o_name" class="java.lang.String"/>
+	<field name="street_address" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="state" class="java.lang.String"/>
+	<field name="zip_code" class="java.lang.String"/>
+	<field name="s_id" class="java.lang.Integer"/>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="collection_date" class="java.sql.Date"/>
+	<field name="collection_time" class="java.sql.Time"/>
+	<field name="client_reference" class="java.lang.String"/>
+	<field name="domain" class="java.lang.String"/>
+	<field name="type_of_sample" class="java.lang.String"/>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="t_description" class="java.lang.String"/>
+	<field name="analyte" class="java.lang.String"/>
+	<field name="result_type" class="java.lang.String"/>
+	<field name="r_value" class="java.lang.String"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<group name="organization">
+		<groupExpression><![CDATA[$F{o_id}]]></groupExpression>
+		<groupHeader>
+			<band height="24">
+				<textField pattern="">
+					<reportElement key="orgName" mode="Opaque" x="0" y="0" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}.trim() + "(" + $F{o_id} + ")"]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="orgStreetAddress" mode="Opaque" x="252" y="0" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}.trim()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement key="orgPhone.label" mode="Opaque" x="504" y="0" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Phone:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement key="orgPhone" mode="Transparent" x="529" y="0" width="227" height="12"/>
+					<subreportParameter name="ORGANIZATION_ID">
+						<subreportParameterExpression><![CDATA[$F{o_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"orgPhone.jasper"]]></subreportExpression>
+				</subreport>
+				<rectangle>
+					<reportElement key="organization.spacer" x="0" y="12" width="252" height="12" backcolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="">
+					<reportElement key="orgCityStateZip" mode="Opaque" x="252" y="12" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{city}, ", ", DataBaseUtil.concatWithSeparator($F{state}, ", ", $F{zip_code}))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement key="orgFax.label" mode="Opaque" x="504" y="12" width="252" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Fax:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement key="orgFax" mode="Transparent" x="529" y="12" width="227" height="12"/>
+					<subreportParameter name="ORGANIZATION_ID">
+						<subreportParameterExpression><![CDATA[$F{o_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"orgFax.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12"/>
+		</groupFooter>
+	</group>
+	<group name="sample">
+		<groupExpression><![CDATA[$F{s_id}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<rectangle>
+					<reportElement key="sample.background" x="24" y="0" width="732" height="12" backcolor="#999999"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="">
+					<reportElement key="accessionNumber" mode="Transparent" x="24" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="collectionDateTime" mode="Transparent" x="124" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator(ReportUtil.toString($F{collection_date}, "yyyy-MM-dd"), " ", ReportUtil.toString($F{collection_time}, "HH:mm"))]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement key="clinicalDomain" isPrintRepeatedValues="false" mode="Transparent" x="324" y="0" width="432" height="12">
+						<printWhenExpression><![CDATA["C".equals($F{domain})]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SAMPLE_ID">
+						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"clinicalDomain.jasper"]]></subreportExpression>
+				</subreport>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="clientReference" mode="Transparent" x="224" y="0" width="100" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="analysis">
+		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<rectangle>
+					<reportElement key="analysis.background" x="65" y="0" width="690" height="12" backcolor="#CCCCCC"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="">
+					<reportElement key="testDescription" mode="Transparent" x="65" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_description}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement key="typeOfSample" mode="Transparent" x="226" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement key="analyte.header" mode="Transparent" x="410" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Analyte]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="result.header" mode="Transparent" x="571" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement>
+						<font reportFont="times" size="8"/>
+					</textElement>
+					<text><![CDATA[Result]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="36">
+			<textField pattern="MMM dd, yyyy">
+				<reportElement key="headerDate" x="0" y="0" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="title" x="265" y="0" width="227" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Abnormals Call List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement key="pageCount" x="618" y="0" width="116" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
+				<reportElement key="pageTotal" x="736" y="0" width="19" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement key="headerTime" x="0" y="13" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="dateRange" x="200" y="13" width="350" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Analyses released from " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{FROM_DATE}) + " to " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{TO_DATE})]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="username" x="662" y="13" width="93" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<textField pattern="">
+				<reportElement key="analyte" mode="Transparent" x="410" y="0" width="161" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font reportFont="times" size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="resultValue" mode="Transparent" x="571" y="0" width="184" height="12" forecolor="#000000" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{result_type})]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font reportFont="times" size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement key="resultDict" isPrintRepeatedValues="false" mode="Transparent" x="571" y="0" width="184" height="12">
+					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{result_type})]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="DICTIONARY_ID">
+					<subreportParameterExpression><![CDATA[$F{r_value}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"result.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
