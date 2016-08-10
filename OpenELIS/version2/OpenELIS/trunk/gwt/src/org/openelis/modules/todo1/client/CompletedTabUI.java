@@ -221,9 +221,11 @@ public class CompletedTabUI extends Screen {
 
         chartSeries = new Series[list.size()];
         for (DictionaryDO data : list) {
-            i = domains.get(data.getCode());
-            chartSeries[i] = chart.createSeries().setName(data.getEntry());
-            chart.addSeries(chartSeries[i]);
+            if ("Y".equals(data.getIsActive())) {
+                i = domains.get(data.getCode());
+                chartSeries[i] = chart.createSeries().setName(data.getEntry());
+                chart.addSeries(chartSeries[i]);
+            }
         }
 
         /*
@@ -318,10 +320,14 @@ public class CompletedTabUI extends Screen {
             perm = UserCache.getPermission();
 
             for (AnalysisViewVO a : analyses) {
+                /*
+                 * if this sample has patient info, the user must have the right
+                 * permission to see it; also, show this analysis only if
+                 * doesn't belong to a deactivated domain e.g. private well
+                 */
                 if ( (mySection && perm.getSection(a.getSectionName()) == null) ||
-                    !patientPermission.canViewSample(a))
+                    !patientPermission.canViewSample(a) || domains.get(a.getDomain()) == null)
                     continue;
-
                 row = new Row(a.getAccessionNumber(),
                               a.getPriority(),
                               a.getDomain(),

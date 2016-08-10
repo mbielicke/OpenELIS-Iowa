@@ -48,11 +48,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.utilcommon.TurnaroundUtil;
@@ -100,8 +102,10 @@ public class ToDoExcelHelperBean {
 
             domains = new HashMap<String, String>();
             for (DictionaryDO d : categoryCache.getBySystemName("sample_domain")
-                                               .getDictionaryList())
-                domains.put(d.getCode(), d.getEntry());
+                                               .getDictionaryList()) {
+                if ("Y".equals(d.getIsActive()))
+                    domains.put(d.getCode(), d.getEntry());
+            }
 
             statuses = new HashMap<Integer, String>();
             for (DictionaryDO d : categoryCache.getBySystemName("analysis_status")
@@ -175,9 +179,13 @@ public class ToDoExcelHelperBean {
                                    boolean mySection) {
         int r;
         SystemUserPermission perm;
+        ModulePermission modPerm;
         XSSFSheet sheet;
 
         perm = userCache.getPermission();
+        modPerm = perm.getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
 
         sheet = wb.createSheet(Messages.get().todo_loggedIn());
         r = 0;
@@ -198,7 +206,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (AnalysisViewVO a : list) {
-            if (mySection && perm.getSection(a.getSectionName()) == null)
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this analysis only if
+             * doesn't belong to a deactivated domain e.g. private well
+             */
+            if (mySection && perm.getSection(a.getSectionName()) == null ||
+                !canViewSample(a.getDomain(), modPerm) || domains.get(a.getDomain()) == null)
                 continue;
 
             addDataRow(sheet.createRow(r++ ),
@@ -231,10 +245,14 @@ public class ToDoExcelHelperBean {
                                     boolean mySection) {
         int r, initDays;
         SystemUserPermission perm;
+        ModulePermission modPerm;
         XSSFSheet sheet;
         Datetime now;
 
         perm = userCache.getPermission();
+        modPerm = perm.getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
         now = Datetime.getInstance();
         sheet = wb.createSheet(Messages.get().todo_initiated());
         r = 0;
@@ -253,7 +271,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (AnalysisViewVO a : list) {
-            if (mySection && perm.getSection(a.getSectionName()) == null)
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this analysis only if
+             * doesn't belong to a deactivated domain e.g. private well
+             */
+            if (mySection && perm.getSection(a.getSectionName()) == null ||
+                !canViewSample(a.getDomain(), modPerm) || domains.get(a.getDomain()) == null)
                 continue;
 
             initDays = 0;
@@ -321,9 +345,13 @@ public class ToDoExcelHelperBean {
                                     boolean mySection) {
         int r;
         SystemUserPermission perm;
+        ModulePermission modPerm;
         XSSFSheet sheet;
 
         perm = userCache.getPermission();
+        modPerm = perm.getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
 
         sheet = wb.createSheet(Messages.get().todo_completed());
         r = 0;
@@ -341,7 +369,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (AnalysisViewVO a : list) {
-            if (mySection && perm.getSection(a.getSectionName()) == null)
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this analysis only if
+             * doesn't belong to a deactivated domain e.g. private well
+             */
+            if (mySection && perm.getSection(a.getSectionName()) == null ||
+                !canViewSample(a.getDomain(), modPerm) || domains.get(a.getDomain()) == null)
                 continue;
 
             addDataRow(sheet.createRow(r++ ),
@@ -364,9 +398,13 @@ public class ToDoExcelHelperBean {
                                    boolean mySection) {
         int r;
         SystemUserPermission perm;
+        ModulePermission modPerm;
         XSSFSheet sheet;
 
         perm = userCache.getPermission();
+        modPerm = perm.getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
 
         sheet = wb.createSheet(Messages.get().todo_released());
         r = 0;
@@ -385,7 +423,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (AnalysisViewVO a : list) {
-            if (mySection && perm.getSection(a.getSectionName()) == null)
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this analysis only if
+             * doesn't belong to a deactivated domain e.g. private well
+             */
+            if (mySection && perm.getSection(a.getSectionName()) == null ||
+                !canViewSample(a.getDomain(), modPerm) || domains.get(a.getDomain()) == null)
                 continue;
 
             addDataRow(sheet.createRow(r++ ),
@@ -407,7 +451,11 @@ public class ToDoExcelHelperBean {
     private void fillToBeVerifiedSheet(XSSFWorkbook wb, ArrayList<ToDoSampleViewVO> list) {
         int r;
         XSSFSheet sheet;
-
+        ModulePermission modPerm;
+        
+        modPerm = userCache.getPermission().getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
         sheet = wb.createSheet(Messages.get().todo_toBeVerified());
         r = 0;
 
@@ -421,6 +469,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (ToDoSampleViewVO s : list) {
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this sample only if doesn't
+             * belong to a deactivated domain e.g. private well
+             */
+            if ( !canViewSample(s.getDomain(), modPerm) || domains.get(s.getDomain()) == null)
+                continue;
             addDataRow(sheet.createRow(r++ ),
                        s.getAccessionNumber(),
                        domains.get(s.getDomain()),
@@ -437,9 +492,13 @@ public class ToDoExcelHelperBean {
     private void fillOtherSheet(XSSFWorkbook wb, ArrayList<AnalysisViewVO> list, boolean mySection) {
         int r;
         SystemUserPermission perm;
+        ModulePermission modPerm;
         XSSFSheet sheet;
 
         perm = userCache.getPermission();
+        modPerm = perm.getModule("patient");
+        if (modPerm == null)
+            modPerm = new ModulePermission();
 
         sheet = wb.createSheet(Messages.get().todo_other());
         r = 0;
@@ -458,7 +517,13 @@ public class ToDoExcelHelperBean {
                      Messages.get().todo_reportTo());
 
         for (AnalysisViewVO a : list) {
-            if (mySection && perm.getSection(a.getSectionName()) == null)
+            /*
+             * if this sample has patient info, the user must have the right
+             * permission to see it; also, show this analysis only if doesn't
+             * belong to a deactivated domain e.g. private well
+             */
+            if (mySection && perm.getSection(a.getSectionName()) == null ||
+                !canViewSample(a.getDomain(), modPerm) || domains.get(a.getDomain()) == null)
                 continue;
 
             addDataRow(sheet.createRow(r++ ),
@@ -556,5 +621,17 @@ public class ToDoExcelHelperBean {
             }
         }
         return path;
+    }
+
+    /**
+     * Returns true if either the passed domain doesn't have patient data or the
+     * permission allows the user has permission to view patients; returns false otherwise
+     */
+    private boolean canViewSample(String domain, ModulePermission permission) {
+        if (Constants.domain().CLINICAL.equals(domain) ||
+            Constants.domain().NEONATAL.equals(domain))
+            return permission.hasSelectPermission();
+        else
+            return true;
     }
 }
