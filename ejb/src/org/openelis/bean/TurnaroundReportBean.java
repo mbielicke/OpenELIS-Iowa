@@ -265,8 +265,10 @@ public class TurnaroundReportBean {
         l.add(new OptionListItem("", ""));
         try {
             d = category.getBySystemName("sample_domain").getDictionaryList();
-            for (DictionaryDO n : d)
-                l.add(new OptionListItem(n.getCode(), n.getEntry()));
+            for (DictionaryDO n : d) {
+                if ("Y".equals(n.getIsActive()))
+                    l.add(new OptionListItem(n.getCode(), n.getEntry()));
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Fetching domains", e);
         }

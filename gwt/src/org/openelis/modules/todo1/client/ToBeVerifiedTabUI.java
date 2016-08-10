@@ -220,9 +220,11 @@ public class ToBeVerifiedTabUI extends Screen {
 
         chartSeries = new Series[list.size()];
         for (DictionaryDO data : list) {
-            i = domains.get(data.getCode());
-            chartSeries[i] = chart.createSeries().setName(data.getEntry());
-            chart.addSeries(chartSeries[i]);
+            if ("Y".equals(data.getIsActive())) {
+                i = domains.get(data.getCode());
+                chartSeries[i] = chart.createSeries().setName(data.getEntry());
+                chart.addSeries(chartSeries[i]);
+            }
         }
 
         /*
@@ -311,7 +313,12 @@ public class ToBeVerifiedTabUI extends Screen {
         model = new ArrayList<Row>();
         if (samples != null) {
             for (ToDoSampleViewVO s : samples) {
-                if (!patientPermission.canViewSample(s))
+                /*
+                 * if this sample has patient info, the user must have the right
+                 * permission to see it; also, show this sample only if it
+                 * doesn't belong to a deactivated domain e.g. private well
+                 */
+                if ( !patientPermission.canViewSample(s) || domains.get(s.getDomain()) == null)
                     continue;
                 row = new Row(s.getAccessionNumber(),
                               s.getDomain(),
