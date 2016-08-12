@@ -935,7 +935,7 @@ public class QcChartReport1Bean {
         String val;
 
         col = cell.getColumnIndex();
-        if (col > maxChars.size() - 1)
+        while (col > maxChars.size() - 1)
             maxChars.add(0);
         if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
             if (DateUtil.isCellDateFormatted(cell))
