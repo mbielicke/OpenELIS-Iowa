@@ -25,9 +25,9 @@
  */
 package org.openelis.modules.quickEntry.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -189,7 +189,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(entry, "entry", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 entry.setValue(null);
             }
 
@@ -202,7 +202,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? receivedDate : receivedDate;
+                return forward ? quickEntryTable : quickEntryTable;
             }
         });
 
@@ -230,31 +230,36 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                if (todaysDate.after(event.getValue())) {
-                    Exception ex = new Exception(Messages.get()
-                                                         .receivedDateNotTodayExceptionBody(event.getValue()
-                                                                                                 .toString()));
-                    receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                              Messages.get()
-                                                                      .receivedDateNotTodayExceptionTitle(),
-                                                              ex.getMessage(),
-                                                              "No",
-                                                              "Yes");
-                    receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                        public void onSelection(SelectionEvent<Integer> event) {
-                            switch (event.getSelectedItem().intValue()) {
-                                case 0:
-                                    receivedDate.setValue(null);
-                                    entry.setFocus(true);
-                                    break;
-                                case 1:
-                                    entry.setFocus(true);
-                                    break;
+                logger.log(Level.SEVERE, "event value "+ event.getValue());
+                try {
+                    if (event.getValue() != null && todaysDate.after(event.getValue())) {
+                        Exception ex = new Exception(Messages.get()
+                                                             .receivedDateNotTodayExceptionBody(event.getValue()
+                                                                                                     .toString()));
+                        receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                                  Messages.get()
+                                                                          .receivedDateNotTodayExceptionTitle(),
+                                                                  ex.getMessage(),
+                                                                  "No",
+                                                                  "Yes");
+                        receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                            public void onSelection(SelectionEvent<Integer> event) {
+                                switch (event.getSelectedItem().intValue()) {
+                                    case 0:
+                                        receivedDate.setValue(null);
+                                        entry.setFocus(true);
+                                        break;
+                                    case 1:
+                                        entry.setFocus(true);
+                                        break;
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    receivedDateNotTodayConfirm.show();
+                        receivedDateNotTodayConfirm.show();
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
 
