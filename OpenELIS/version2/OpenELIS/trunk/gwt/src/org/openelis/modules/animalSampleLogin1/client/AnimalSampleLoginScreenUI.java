@@ -262,7 +262,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
     @UiField(provided = true)
     protected AttachmentTabUI                           attachmentTab;
 
-    protected boolean                                   canEditSample, isBusy, closeLoginScreen,
+    protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen, revalidate, isFullLogin;
 
     protected ModulePermission                          samplePermission;
@@ -732,7 +732,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  accessionNumber.setEnabled(isState(QUERY) ||
-                                                            (canEditSample && isState(ADD, UPDATE)));
+                                                            (canEdit && isState(ADD, UPDATE)));
                                  accessionNumber.setQueryMode(isState(QUERY));
                              }
 
@@ -751,7 +751,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                orderId.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 orderId.setQueryMode(isState(QUERY));
             }
 
@@ -787,7 +787,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orderLookupButton.setEnabled(isState(DISPLAY) ||
-                                             (canEditSample && isState(ADD, UPDATE)));
+                                             (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -805,7 +805,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  collectionDate.setEnabled(isState(QUERY) ||
-                                                           (canEditSample && isState(ADD, UPDATE)));
+                                                           (canEdit && isState(ADD, UPDATE)));
                                  collectionDate.setQueryMode(isState(QUERY));
                              }
 
@@ -842,7 +842,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 collectionTime.setEnabled(canEditSample && isState(ADD, UPDATE));
+                                 collectionTime.setEnabled(canEdit && isState(ADD, UPDATE));
                                  collectionTime.setQueryMode(isState(QUERY));
                              }
 
@@ -879,7 +879,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                receivedDate.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                receivedDate.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 receivedDate.setQueryMode(isState(QUERY));
             }
 
@@ -936,7 +936,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  clientReference.setEnabled(isState(QUERY) ||
-                                                            (canEditSample && isState(ADD, UPDATE)));
+                                                            (canEdit && isState(ADD, UPDATE)));
                                  clientReference.setQueryMode(isState(QUERY));
                              }
 
@@ -975,7 +975,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  animalCommonName.setEnabled(isState(QUERY) ||
-                                                             (canEditSample && isState(ADD, UPDATE)));
+                                                             (canEdit && isState(ADD, UPDATE)));
                                  animalCommonName.setQueryMode(isState(QUERY));
                              }
 
@@ -1016,7 +1016,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  animalScientificName.setEnabled(isState(QUERY) ||
-                                                                 (canEditSample && isState(ADD,
+                                                                 (canEdit && isState(ADD,
                                                                                            UPDATE)));
                                  animalScientificName.setQueryMode(isState(QUERY));
                              }
@@ -1053,8 +1053,9 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                location.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
-                location.setQueryMode(isState(QUERY));
+                //location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                //location.setQueryMode(isState(QUERY));
+                location.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
@@ -1093,10 +1094,11 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressMultipleUnit.setEnabled(isState(QUERY) ||
-                                                                        (canEditSample && isState(ADD,
-                                                                                                  UPDATE)));
-                                 locationAddressMultipleUnit.setQueryMode(isState(QUERY));
+                                 //locationAddressMultipleUnit.setEnabled(isState(QUERY) ||
+                                   //                                     (canEdit && isState(ADD,
+                                     //                                                             UPDATE)));
+                                 //locationAddressMultipleUnit.setQueryMode(isState(QUERY));
+                                 locationAddressMultipleUnit.setEnabled(false);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -1135,10 +1137,11 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressStreetAddress.setEnabled(isState(QUERY) ||
-                                                                         (canEditSample && isState(ADD,
-                                                                                                   UPDATE)));
-                                 locationAddressStreetAddress.setQueryMode(isState(QUERY));
+                                 //locationAddressStreetAddress.setEnabled(isState(QUERY) ||
+                                   //                                      (canEdit && isState(ADD,
+                                     //                                                              UPDATE)));
+                                 //locationAddressStreetAddress.setQueryMode(isState(QUERY));
+                                 locationAddressStreetAddress.setEnabled(false);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -1175,10 +1178,11 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressCity.setEnabled(isState(QUERY) ||
-                                                                (canEditSample && isState(ADD,
-                                                                                          UPDATE)));
-                                 locationAddressCity.setQueryMode(isState(QUERY));
+                                 //locationAddressCity.setEnabled(isState(QUERY) ||
+                                   //                             (canEdit && isState(ADD,
+                                     //                                                     UPDATE)));
+                                 //locationAddressCity.setQueryMode(isState(QUERY));
+                                 locationAddressCity.setEnabled(false);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -1216,10 +1220,11 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressState.setEnabled(isState(QUERY) ||
-                                                                 (canEditSample && isState(ADD,
-                                                                                           UPDATE)));
-                                 locationAddressState.setQueryMode(isState(QUERY));
+                                 //locationAddressState.setEnabled(isState(QUERY) ||
+                                   //                              (canEdit && isState(ADD,
+                                     //                                                      UPDATE)));
+                                 //locationAddressState.setQueryMode(isState(QUERY));
+                                 locationAddressState.setEnabled(false);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -1258,10 +1263,11 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressZipCode.setEnabled( (isState(QUERY)) ||
-                                                                   (canEditSample && isState(ADD,
-                                                                                             UPDATE)));
-                                 locationAddressZipCode.setQueryMode(isState(QUERY));
+                                 //locationAddressZipCode.setEnabled( (isState(QUERY)) ||
+                                   //                                (canEdit && isState(ADD,
+                                     //                                                        UPDATE)));
+                                 //locationAddressZipCode.setQueryMode(isState(QUERY));
+                                 locationAddressZipCode.setEnabled(false);
                              }
 
                              public Widget onTab(boolean forward) {
@@ -1304,7 +1310,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  providerLastName.setEnabled(isState(QUERY) ||
-                                                             (canEditSample && isState(ADD, UPDATE)));
+                                                             (canEdit && isState(ADD, UPDATE)));
                                  providerLastName.setQueryMode(isState(QUERY));
                              }
 
@@ -1389,7 +1395,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  providerPhone.setEnabled(isState(QUERY) ||
-                                                          (canEditSample && isState(ADD, UPDATE)));
+                                                          (canEdit && isState(ADD, UPDATE)));
                                  providerPhone.setQueryMode(isState(QUERY));
                              }
 
@@ -1429,7 +1435,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                reportToName.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                reportToName.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 reportToName.setQueryMode(isState(QUERY));
             }
 
@@ -1488,7 +1494,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
         addScreenHandler(reportToButton, "reportToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 reportToButton.setEnabled(isState(DISPLAY) ||
-                                          (canEditSample && isState(ADD, UPDATE)));
+                                          (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -1507,7 +1513,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                billToName.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                billToName.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 billToName.setQueryMode(isState(QUERY));
             }
 
@@ -1565,7 +1571,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addScreenHandler(billToButton, "billToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
-                billToButton.setEnabled(isState(DISPLAY) || (canEditSample && isState(ADD, UPDATE)));
+                billToButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -3090,7 +3096,7 @@ public class AnimalSampleLoginScreenUI extends Screen implements CacheProvider {
      * Determines if the fields on the screen can be edited based on the data
      */
     private void evaluateEdit() {
-        canEditSample = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                                                   .getStatusId()));
     }
 

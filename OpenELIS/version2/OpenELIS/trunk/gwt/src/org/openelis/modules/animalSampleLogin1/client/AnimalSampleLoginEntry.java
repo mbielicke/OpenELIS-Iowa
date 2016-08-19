@@ -73,7 +73,7 @@ public class AnimalSampleLoginEntry implements EntryPoint, ShowScreenHandler {
         screen = new AnimalSampleLoginScreenUI(window);
         window.setName(Messages.get().sampleAnimal_login());
         window.setSize("770px", "700px");
-        window.setContent(new AnimalSampleLoginScreenUI(window));
+        window.setContent(screen);
         OpenELIS.getBrowser().addWindow(window, "animalSampleLogin");
 
         return screen;
