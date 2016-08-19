@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -65,23 +66,26 @@ public class SecondDataEntryBean {
         List<Object[]> list;
         ArrayList<String> userNameList;
         ArrayList<SecondDataEntryVO> returnList;
+        HashSet<Integer> userIds;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleMeta.ID + ", " + SampleMeta.ACCESSION_NUMBER + ", " +
-                          SampleMeta.DOMAIN + ", " + SampleMeta.HISTORY_SYSTEM_USER_ID);
+                          SampleMeta.DOMAIN + ", " + SampleMeta.HISTORY_ID + ", " +
+                          SampleMeta.HISTORY_SYSTEM_USER_ID);
         builder.constructWhere(fields);
-        builder.setOrderBy(SampleMeta.getAccessionNumber());
-
+        /*
+         * sort by history id so that the history records are returned in the
+         * order that the sample was added/updated
+         */
+        builder.setOrderBy(SampleMeta.ACCESSION_NUMBER + ", " + SampleMeta.HISTORY_ID);
         /*
          * fetched samples must be not-verified and not quick-entered anymore
          * i.e. they should have a particular domain
          */
         builder.addWhere(SampleMeta.STATUS_ID + " = " + Constants.dictionary().SAMPLE_NOT_VERIFIED);
         builder.addWhere(SampleMeta.DOMAIN + " != " + "'" + Constants.domain().QUICKENTRY + "'");
-
         builder.addWhere(SampleMeta.HISTORY_REFERENCE_TABLE_ID + " = " + Constants.table().SAMPLE);
-
         /*
          * fetch history records where the sample was either added or updated
          */
@@ -108,21 +112,29 @@ public class SecondDataEntryBean {
          * for each sample; so if a sample has been added/updated by multiple
          * users, their login names are combined into one VO
          */
+        userIds = null;
         for (Object[] o : list) {
             currSamId = (Integer)o[0];
             accession = (Integer)o[1];
             domain = (String)o[2];
-            userId = (Integer)o[3];
+            userId = (Integer)o[4];
 
             if ( !currSamId.equals(prevSamId)) {
+                userIds = new HashSet<Integer>();
                 userNameList = new ArrayList<String>();
                 data = new SecondDataEntryVO(currSamId, accession, domain, userNameList);
                 returnList.add(data);
             }
-            
-            if (userId != null)
+            /*
+             * the hashset makes sure that if a sample was added/updated
+             * multiple times by a user, the user's login name is shown only
+             * once for that sample
+             */
+            if (userId != null && !userIds.contains(userId)) {
                 userNameList.add(userCache.getSystemUser(userId).getLoginName());
-            
+                userIds.add(userId);
+            }
+
             prevSamId = currSamId;
         }
 

@@ -348,6 +348,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ATT_ITEM_REFERENCE_TABLE_ID = "_attachmentItem.referenceTableId",
                     ATT_ITEM_ATTACHMENT_ID = "_attachmentItem.attachmentId",
 
+                    HISTORY_ID = "_history.id",
                     HISTORY_REFERENCE_TABLE_ID = "_history.referenceTableId",
                     HISTORY_ACTIVITY_ID = "_history.activityId",
                     HISTORY_SYSTEM_USER_ID = "_history.systemUserId",
