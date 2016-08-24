@@ -513,15 +513,15 @@
                 <ui:text from="{msg.aux_data}:" />
               </td>
               <td colspan="5">
-                <g:LayoutPanel height="250px" width="560px">
+                <g:LayoutPanel height="250px" width="1080px">
                   <g:layer top="0px" bottom="0px">
                     <t:Table ui:field="auxDataTable" header="true"
                       styleName="{res.table.ScreenTableWithSides}"
                     >
-                      <t:Column width="160" label="{msg.gen_analyte}">
+                      <t:Column width="200" label="{msg.gen_analyte}">
                         <t:LabelCell />
                       </t:Column>
-                      <t:Column width="160" label="{msg.secondDataEntry_secondDataEntryHeading}">
+                      <t:Column width="400" label="{msg.secondDataEntry_secondDataEntryHeading}">
                         <s:ResultCell />
                       </t:Column>
                       <t:Column width="20" label="">
@@ -530,7 +530,7 @@
                       <t:Column width="20" label="">
                         <t:ImageCell />
                       </t:Column>
-                      <t:Column width="160" label="{msg.secondDataEntry_firstDataEntryHeading}">
+                      <t:Column width="400" label="{msg.secondDataEntry_firstDataEntryHeading}">
                         <s:ResultCell />
                       </t:Column>
                     </t:Table>
