@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.eclipse.jdt.internal.core.util.ReferenceInfoAdapter;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
@@ -720,7 +719,7 @@ public class FinalReportScreen extends Screen {
             /*
              * display the following data in the 
              * "Additional Information" column, if available:
-             * Environmental: Location and Location City
+             * Environmental: Location, Location Street Address, and Location City
              * Clinical: Provider and Org Name
              * SDWIS: Location and PWS Name, ID
              * Private Well: Location and Location City
@@ -730,6 +729,11 @@ public class FinalReportScreen extends Screen {
                 !DataBaseUtil.isDifferent(sample.getDomain(), "W")) {
                 if (sample.getLocation() != null) {
                     additional.append(sample.getLocation());
+                }
+                if (sample.getLocationStreetAddress() != null) {
+                    if (additional.length() > 0)
+                        additional.append("<br/>");
+                    additional.append(sample.getLocationStreetAddress());
                 }
                 if (sample.getLocationCity() != null) {
                     if (additional.length() > 0)
