@@ -72,7 +72,7 @@
 											<t:Column width="100"
 												label="{msg.emailNotification_filterValue}">
 												<t:TextBoxCell>
-													<w:TextBox case="MIXED" field="String" />
+													<w:TextBox case="LOWER" field="String" />
 												</t:TextBoxCell>
 											</t:Column>
 											<t:Column width="60" label="{msg.sample_received}">
