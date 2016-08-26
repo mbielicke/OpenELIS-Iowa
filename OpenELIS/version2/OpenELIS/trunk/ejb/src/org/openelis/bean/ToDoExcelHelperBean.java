@@ -411,7 +411,6 @@ public class ToDoExcelHelperBean {
 
         addHeaderRow(sheet.createRow(r++ ),
                      Messages.get().todo_accNum(),
-                     Messages.get().todo_accNum(),
                      Messages.get().todo_domain(),
                      Messages.get().todo_section(),
                      Messages.get().todo_test(),
