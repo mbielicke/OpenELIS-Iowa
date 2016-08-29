@@ -534,7 +534,7 @@ public class AirQualityExportBean {
                 try {
                     sms = sample.fetchByQuery(fields,
                                               0,
-                                              -1,
+                                              100000,
                                               SampleManager1.Load.AUXDATA,
                                               SampleManager1.Load.RESULT,
                                               SampleManager1.Load.QA);
