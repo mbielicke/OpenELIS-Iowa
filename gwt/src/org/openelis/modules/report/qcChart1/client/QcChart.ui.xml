@@ -96,15 +96,15 @@ UIRF Software License are applicable instead of those above.
               <ui:text from="{msg.qc_qcName}:"/>
             </td>
             <td>
-              <w:AutoComplete ui:field="qcName" width="230px" dropWidth="275px" case="LOWER" required="true">
+              <w:AutoComplete ui:field="qcName" width="175px" dropWidth="315px" case="LOWER" required="true">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
                     <t:Column width="175" label="{msg.gen_name}">
                       <t:LabelCell/>
                     </t:Column>
-                    <t:Column width="100" label="{msg.gen_type}">
+                    <t:Column width="125" label="{msg.gen_type}">
                       <t:DropdownCell>
-                        <w:Dropdown ui:field="qcType" width="70px" field="Integer"/>
+                        <w:Dropdown ui:field="qcType" width="95px" field="Integer"/>
                       </t:DropdownCell>
                     </t:Column>
                   </t:Table>

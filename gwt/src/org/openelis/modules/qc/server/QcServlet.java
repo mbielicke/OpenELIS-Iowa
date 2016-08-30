@@ -76,7 +76,7 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
         ArrayList<QcDO> list;
 
         try {
-            list = qc.fetchByName(search + "%", 10);
+            list = qc.fetchByName(search + "%", 100);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (Exception anyE) {

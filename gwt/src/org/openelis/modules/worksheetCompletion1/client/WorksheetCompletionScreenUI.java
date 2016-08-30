@@ -173,7 +173,8 @@ public class WorksheetCompletionScreenUI extends Screen {
                                                           lookupWorksheetButton,
                                                           loadResults, optionsButton,
                                                           exportToExcelButton, importFromExcelButton,
-                                                          transferResultsButton;
+                                                          transferResultsButton,
+                                                          setToDoneButton;
     @UiField
     protected Dropdown<Integer>                           formatId, statusId;
     @UiField
@@ -442,6 +443,20 @@ public class WorksheetCompletionScreenUI extends Screen {
                     transferResultsButton.setPressed(true);
                     transferResultsButton.lock();
                 }
+            }
+        });
+
+        addDataChangeHandler(new DataChangeEvent.Handler() {
+            public void onDataChange(DataChangeEvent event) {
+                setToDoneButton.setEnabled(isState(DISPLAY) && canEdit() &&
+                                           userPermission.hasUpdatePermission());
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                setToDoneButton.setEnabled(isState(DISPLAY) && canEdit() &&
+                                           userPermission.hasUpdatePermission());
             }
         });
 
@@ -1569,6 +1584,14 @@ public class WorksheetCompletionScreenUI extends Screen {
         }
 
         WorksheetService1.get().fetchForTransfer(manager.getWorksheet().getId(), fetchForTransferCall);
+    }
+    
+    @SuppressWarnings("unused")
+    @UiHandler("setToDoneButton")
+    protected void setToDone(ClickEvent event) {
+        update(null);
+        manager.getWorksheet().setStatusId(Constants.dictionary().WORKSHEET_COMPLETE);
+        commitUpdate(null);
     }
     
     protected void openFailedRunNote() {

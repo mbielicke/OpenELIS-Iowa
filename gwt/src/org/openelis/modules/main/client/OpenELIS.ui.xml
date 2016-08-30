@@ -134,6 +134,7 @@
                 </w:Menu>
                 <w:Menu display="{msg.reference}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="testReport" display="{msg.testReport}" />
+                  <w:MenuItem enabled="false" ui:field="qaListReport" display="{msg.qaList_qaListReport}" />
                   <w:MenuItem enabled="false" ui:field="instrumentBarcodeReport" display="{msg.instrumentBarcode_instrumentBarcodeReport}" />
                 </w:Menu>
                 <w:Menu display="{msg.summary}" enabled="true" showBelow="false">

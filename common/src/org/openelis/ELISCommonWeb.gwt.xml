@@ -31,5 +31,4 @@ UIRF Software License are applicable instead of those above.
   <source path="exception"/>
   <source path="meta"/>
   <source path="utilcommon"/>
-  <source path="stfu"/>
 </module>
