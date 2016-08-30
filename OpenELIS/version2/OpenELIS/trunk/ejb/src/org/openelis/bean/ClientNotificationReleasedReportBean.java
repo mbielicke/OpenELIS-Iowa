@@ -88,6 +88,7 @@ public class ClientNotificationReleasedReportBean {
         cal = Calendar.getInstance();
         now = cal.getTime();
         cal.add(Calendar.MINUTE, -1);
+        cal.set(Calendar.SECOND, 59);
         currentRunDate = cal.getTime();
 
         lastRun = null;

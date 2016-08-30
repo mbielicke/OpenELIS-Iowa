@@ -45,12 +45,11 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.constants.Messages;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -64,7 +63,7 @@ import org.openelis.utils.User;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class InstrumentBarcodeReportBean {
+public class QAListReportBean {
 
     @Resource
     private SessionContext      ctx;
@@ -78,38 +77,19 @@ public class InstrumentBarcodeReportBean {
     private static final Logger log = Logger.getLogger("openelis");
 
     /*
-     * Returns the prompts
+     * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> barcodeType, prn;
+        ArrayList<OptionListItem> prn;
         ArrayList<Prompt> p;
 
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("WORKSHEET_ID", Prompt.Type.INTEGER).setPrompt(Messages.get()
-                                                                                    .instrumentBarcode_worksheetId() +
-                                                                            ":")
-                                                                 .setWidth(150)
-                                                                 .setRequired(true)
-                                                                 .setDefaultValue(null));
-
-            barcodeType = new ArrayList<OptionListItem>();
-            barcodeType.add(0, new OptionListItem("P", "Position #"));
-            barcodeType.add(1, new OptionListItem("L", "Worksheet Lookup"));
-
-            p.add(new Prompt("BARCODE_TYPE", Prompt.Type.ARRAY).setPrompt(Messages.get()
-                                                                                  .instrumentBarcode_barcodeType() +
-                                                                          ":")
-                                                               .setWidth(150)
-                                                               .setOptionList(barcodeType)
-                                                               .setMultiSelect(false));
-
             prn = printers.getListByType("pdf");
+            prn.add(0, new OptionListItem("-xls-", "View in Excel"));
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
-            prn.add(0, new OptionListItem("-csv-", "View in CSV"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt(Messages.get().gen_printer() +
-                                                                     ":")
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
                                                           .setMultiSelect(false)
@@ -133,25 +113,21 @@ public class InstrumentBarcodeReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        Integer worksheetId;
-        String barcodeType, dir, printer, printstat, userName;
+        String printer, dir, printstat, userName;
+
         /*
          * push status into session so we can query it while the report is
          * running
          */
         status = new ReportStatus();
-        session.setAttribute("InstrumentBarcodeReport", status);
+        session.setAttribute("QAListReport", status);
 
         /*
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-
-        userName = User.getName(ctx);
-
-        worksheetId = ReportUtil.getIntegerParameter(param, "WORKSHEET_ID");
-        barcodeType = ReportUtil.getStringParameter(param, "BARCODE_TYPE");
         printer = ReportUtil.getStringParameter(param, "PRINTER");
+        userName = User.getName(ctx);
 
         /*
          * start the report
@@ -161,14 +137,12 @@ public class InstrumentBarcodeReportBean {
             status.setMessage("Initializing report");
 
             con = ReportUtil.getConnection(ctx);
-            url = ReportUtil.getResourceURL("org/openelis/report/instrumentBarcode/main.jasper");
+            url = ReportUtil.getResourceURL("org/openelis/report/qalist/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-            jparam.put("WORKSHEET_ID", worksheetId);
-            jparam.put("BARCODE_TYPE", barcodeType);
-            jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("USER_NAME", userName);
             jparam.put("printer", printer);
 
             status.setMessage("Outputing report").setPercentComplete(20);
@@ -198,7 +172,7 @@ public class InstrumentBarcodeReportBean {
                 if (con != null)
                     con.close();
             } catch (Exception e) {
-                // ignore
+                e.printStackTrace();
             }
         }
 
@@ -215,12 +189,12 @@ public class InstrumentBarcodeReportBean {
 
         out = null;
         try {
-            if ("-csv-".equals(printer)) {
-                jexport = new JRCsvExporter();
-                path = ReportUtil.createTempFile("instrumentBarcode", ".csv", systemVariableDirectory);
+            if ("-xls-".equals(printer)) {
+                jexport = new JRXlsExporter();
+                path = ReportUtil.createTempFile("qalist", ".xls", systemVariableDirectory);
             } else {
                 jexport = new JRPdfExporter();
-                path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+                path = ReportUtil.createTempFile("qalist", ".pdf", systemVariableDirectory);
             }
             out = Files.newOutputStream(path);
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
@@ -231,7 +205,7 @@ public class InstrumentBarcodeReportBean {
                 if (out != null)
                     out.close();
             } catch (Exception e) {
-                log.severe("Could not close outout stream for instrument barcode report");
+                log.severe("Could not close output stream for qa list report");
             }
         }
 

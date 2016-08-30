@@ -33,6 +33,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
@@ -583,8 +584,8 @@ public class TurnaroundStatisticReportBean {
         HashMap<String, Object> jparam;
         HashMap<String, ArrayList<Value>> map;
 
-        fromDate = data.getFromDate().toString();
-        toDate = data.getToDate().toString();
+        fromDate = ReportUtil.toString(data.getFromDate(), Messages.get().dateTimePattern());
+        toDate = ReportUtil.toString(data.getToDate(), Messages.get().dateTimePattern());
         printer = data.getPrinter();
 
         intervalType = dictionaryCache.getById(data.getIntervalId()).getEntry();

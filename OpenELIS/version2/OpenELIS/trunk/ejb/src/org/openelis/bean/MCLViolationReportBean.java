@@ -151,6 +151,7 @@ public class MCLViolationReportBean {
          * subtracting 1 minute from the current time for end date
          */
         cal.add(Calendar.MINUTE, -1);
+        cal.set(Calendar.SECOND, 59);
         currentRunDate = cal.getTime();
 
         lastRun = null;
