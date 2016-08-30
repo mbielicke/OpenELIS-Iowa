@@ -47,7 +47,7 @@ import org.openelis.ui.common.Datetime;
                                    + "domain, accessionNumber, sampleRevision, receivedDate, "
                                    + "collectionDate, collectionTime, sampleStatusId, clientReference, "
                                    + "sampleReleasedDate, reportToId, reportToName, collector, "
-                                   + "location, locationCity, projectId, projectName, pwsNumber0, "
+                                   + "location, locationStreetAddress, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
                                    + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
                                    + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
@@ -58,7 +58,7 @@ import org.openelis.ui.common.Datetime;
                                    + "domain, accessionNumber, sampleRevision, receivedDate, "
                                    + "collectionDate, collectionTime, sampleStatusId, clientReference, "
                                    + "sampleReleasedDate, reportToId, reportToName, collector, "
-                                   + "location, locationCity, projectId, projectName, pwsNumber0, "
+                                   + "location, locationStreetAddress, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
                                    + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
                                    + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
@@ -110,6 +110,9 @@ public class SampleView {
 
     @Column(name = "location")
     private String  location;
+
+    @Column(name = "location_street_address")
+    private String  locationStreetAddress;
 
     @Column(name = "location_city")
     private String  locationCity;
@@ -216,6 +219,10 @@ public class SampleView {
 
     public String getLocation() {
         return location;
+    }
+
+    public String getLocationStreetAddress() {
+        return locationStreetAddress;
     }
 
     public String getLocationCity() {

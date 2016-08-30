@@ -50,7 +50,9 @@ public class SampleViewMeta implements Meta, MetaMap {
                     RELEASED_DATE_TO = "_display.sampleReleasedDateTo",
                     REPORT_TO_ID = "_sampleView.reportToId",
                     REPORT_TO = "_sampleView.reportToName", COLLECTOR = "_sampleView.collector",
-                    LOCATION = "_sampleView.location", LOCATION_CITY = "_sampleView.locationCity",
+                    LOCATION = "_sampleView.location",
+                    LOCATION_STREET_ADDRESS = "_sampleView.locationStreetAddress",
+                    LOCATION_CITY = "_sampleView.locationCity",
                     PROJECT_ID = "_sampleView.projectId", PROJECT = "_sampleView.projectName",
                     PWS_NUMBER0 = "_sampleView.pwsNumber0", PWS_NAME = "_sampleView.pwsName",
                     SDWIS_FACILITY_ID = "_sampleView.sdwisFacilityId",
@@ -91,6 +93,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                                                   REPORT_TO,
                                                   COLLECTOR,
                                                   LOCATION,
+                                                  LOCATION_STREET_ADDRESS,
                                                   LOCATION_CITY,
                                                   PROJECT_ID,
                                                   PROJECT,
@@ -190,6 +193,10 @@ public class SampleViewMeta implements Meta, MetaMap {
 
     public static String getLocation() {
         return LOCATION;
+    }
+
+    public static String getLocationStreetAddress() {
+        return LOCATION_STREET_ADDRESS;
     }
 
     public static String getLocationCity() {
