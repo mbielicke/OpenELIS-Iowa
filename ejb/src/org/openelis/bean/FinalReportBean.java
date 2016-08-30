@@ -235,11 +235,12 @@ public class FinalReportBean {
                           SampleViewMeta.getReleasedDate() + ", " + SampleViewMeta.getReportToId() +
                           ", " + SampleViewMeta.getReportTo() + "," +
                           SampleViewMeta.getCollector() + ", " + SampleViewMeta.getLocation() +
-                          ", " + SampleViewMeta.getLocationCity() + ", " +
-                          SampleViewMeta.getProjectId() + ", " + SampleViewMeta.getProject() +
-                          ", " + SampleViewMeta.getPwsNumber0() + ", " +
-                          SampleViewMeta.getPwsName() + ", " + SampleViewMeta.getPatientLastName() +
-                          ", " + SampleViewMeta.getPatientFirstName() + ", " +
+                          ", " + SampleViewMeta.getLocationStreetAddress() + ", " +
+                          SampleViewMeta.getLocationCity() + ", " + SampleViewMeta.getProjectId() +
+                          ", " + SampleViewMeta.getProject() + ", " +
+                          SampleViewMeta.getPwsNumber0() + ", " + SampleViewMeta.getPwsName() +
+                          ", " + SampleViewMeta.getPatientLastName() + ", " +
+                          SampleViewMeta.getPatientFirstName() + ", " +
                           SampleViewMeta.getPatientBirthDate() + ", " +
                           SampleViewMeta.getProvider());
         range = getReleasedDateRange(fields);
@@ -277,16 +278,17 @@ public class FinalReportBean {
                                             (String)result[10],// org name
                                             (String)result[11],// collector
                                             (String)result[12],// location
-                                            (String)result[13],// location city
-                                            (Integer)result[14],// project id
-                                            (String)result[15],// project name
-                                            (String)result[16],// number0
-                                            (String)result[17],// pws name
+                                            (String)result[13],// location street address
+                                            (String)result[14],// location city
+                                            (Integer)result[15],// project id
+                                            (String)result[16],// project name
+                                            (String)result[17],// number0
+                                            (String)result[18],// pws name
                                             null,// facility id
-                                            (String)result[18],// patient last
-                                            (String)result[19],// patient first
-                                            (Date)result[20],// patient birth
-                                            (String)result[21],// provider
+                                            (String)result[19],// patient last
+                                            (String)result[20],// patient first
+                                            (Date)result[21],// patient birth
+                                            (String)result[22],// provider
                                             null,// analysis id
                                             null,// analysis revision
                                             null,// reportable
@@ -1197,7 +1199,7 @@ public class FinalReportBean {
             return range.replace("..", ":00' and '").concat(":00");
         return null;
     }
-    
+
     /**
      * adds an event log specifying which user ran the report and on which
      * samples
@@ -1217,8 +1219,8 @@ public class FinalReportBean {
                 text = DataBaseUtil.concatWithSeparator(text, ", ", o.getAccessionNumber());
             }
         }
-        source = Messages.get()
-                         .finalreport_eventLogMessage(userCache.getSystemUser().getLoginName());
+        source = Messages.get().finalreport_eventLogMessage(userCache.getSystemUser()
+                                                                     .getLoginName());
         try {
             eventLog.add(new EventLogDO(null,
                                         dictionaryCache.getIdBySystemName("log_type_report"),
