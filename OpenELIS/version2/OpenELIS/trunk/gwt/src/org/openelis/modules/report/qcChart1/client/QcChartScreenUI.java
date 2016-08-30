@@ -219,8 +219,11 @@ public class QcChartScreenUI extends Screen {
                     i = 0;
                     model = new ArrayList<Item<Integer>>();
                     matches = QcService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    for (QcDO item : matches)
-                        map.put(item.getName(), item.getTypeId());
+                    for (QcDO item : matches) {
+                        if (item.getTypeId() != null &&
+                            ("Y".equals(item.getIsActive()) || map.get(item.getName()) == null))
+                            map.put(item.getName(), item.getTypeId());
+                    }
                     for (Entry<String, Integer> entry : map.entrySet()) {
                         row = new Item<Integer>(2);
                         row.setKey(i++);

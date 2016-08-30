@@ -106,6 +106,8 @@
                         text="{msg.worksheet_importFromExcel}"/>
               <w:Button css="{res.buttonPanel}" ui:field="transferResultsButton" leftIcon="{res.icon.NextPageButtonImage}"
                         text="{msg.worksheet_transferResults}" toggles="true"/>
+              <w:Button css="{res.buttonPanel}" ui:field="setToDoneButton" leftIcon="{res.icon.CommitButtonImage}"
+                        text="{msg.worksheet_setToDone}"/>
             </g:HorizontalPanel>
           </g:AbsolutePanel>
         </g:layer>

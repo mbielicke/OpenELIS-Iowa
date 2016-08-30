@@ -2755,7 +2755,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * find out which domain's tab is to be shown
              */
             domain = sm.getSample().getDomain();
-            domainTab = null;
+            domainTab = Tabs.BLANK;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 domainTab = Tabs.ENVIRONMENTAL;
             else if (Constants.domain().SDWIS.equals(domain))

@@ -66,9 +66,9 @@ public class OpenELIS extends Screen {
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
-                    environmentalSampleLogin, sdwisSampleLogin,
-                    clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
-                    ptSampleLogin, secondDataEntry, project, provider, organization, worksheetBuilder,
+                    environmentalSampleLogin, sdwisSampleLogin, clinicalSampleLogin,
+                    neonatalScreeningSampleLogin, animalSampleLogin, ptSampleLogin,
+                    secondDataEntry, project, provider, organization, worksheetBuilder,
                     worksheetCompletion, addOrCancel, reviewAndRelease, toDo, secondaryLabelReport,
                     storage, QC, analyteParameter, internalOrder, vendorOrder, sendoutOrder,
                     fillOrder, shipping, buildKits, inventoryTransfer, inventoryReceipt,
@@ -81,8 +81,8 @@ public class OpenELIS extends Screen {
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment, tubeLabelReport,
-                    chlGcToCDCExport, abnormalsReport, abnormalsCallListReport, patientMerge;
+                    instrumentBarcodeReport, attachment, tubeLabelReport, chlGcToCDCExport,
+                    abnormalsReport, abnormalsCallListReport, patientMerge, qaListReport;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -612,6 +612,12 @@ public class OpenELIS extends Screen {
         addCommand(patientMerge, "patientmerge", new Command() {
             public void execute() {
                 showScreen(PATIENT_MERGE);
+            }
+        });
+
+        addCommand(qaListReport, "sampletracking", new Command() {
+            public void execute() {
+                showScreen(QA_LIST_REPORT);
             }
         });
     }

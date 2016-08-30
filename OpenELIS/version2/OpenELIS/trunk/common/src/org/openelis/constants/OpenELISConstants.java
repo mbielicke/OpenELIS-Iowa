@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -2689,13 +2689,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_selectAnalyteBeforeValue();
 
   /**
-   * Translated "Type is required.".
+   * Translated "Analyte ''{0}'': Type is required.".
    * 
-   * @return translated "Type is required."
+   * @return translated "Analyte ''{0}'': Type is required."
    */
-  @DefaultMessage("Type is required.")
+  @DefaultMessage("Analyte ''{0}'': Type is required.")
   @Key("aux.typeRequiredException")
-  String aux_typeRequiredException();
+  String aux_typeRequiredException(String arg0);
 
   /**
    * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid".
@@ -2707,13 +2707,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_valueInvalidException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Value ''{0}'': A value must not be specified for this type".
+   * Translated "Analyte ''{0}''- Value ''{1}'': A value must not be specified for this type".
    * 
-   * @return translated "Value ''{0}'': A value must not be specified for this type"
+   * @return translated "Analyte ''{0}''- Value ''{1}'': A value must not be specified for this type"
    */
-  @DefaultMessage("Value ''{0}'': A value must not be specified for this type")
+  @DefaultMessage("Analyte ''{0}''- Value ''{1}'': A value must not be specified for this type")
   @Key("aux.valuePresentForTypeException")
-  String aux_valuePresentForTypeException(String arg0);
+  String aux_valuePresentForTypeException(String arg0,  String arg1);
 
   /**
    * Translated "Value is required.".
@@ -7387,6 +7387,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_analytes();
 
   /**
+   * Translated "Available".
+   * 
+   * @return translated "Available"
+   */
+  @DefaultMessage("Available")
+  @Key("gen.available")
+  String gen_available();
+
+  /**
    * Translated "Barcode".
    * 
    * @return translated "Barcode"
@@ -7700,6 +7709,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Duplicate")
   @Key("gen.duplicateRecord")
   String gen_duplicateRecord();
+
+  /**
+   * Translated "Duplicate the current record".
+   * 
+   * @return translated "Duplicate the current record"
+   */
+  @DefaultMessage("Duplicate the current record")
+  @Key("gen.duplicateRecordDescription")
+  String gen_duplicateRecordDescription();
 
   /**
    * Translated "Edit Note".
@@ -14830,6 +14848,123 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String project();
 
   /**
+   * Translated "There is already an active project in the system with the same name".
+   * 
+   * @return translated "There is already an active project in the system with the same name"
+   */
+  @DefaultMessage("There is already an active project in the system with the same name")
+  @Key("project.activeException")
+  String project_activeException();
+
+  /**
+   * Translated "Project # {0,number,#0}: Completed Date is required".
+   * 
+   * @return translated "Project # {0,number,#0}: Completed Date is required"
+   */
+  @DefaultMessage("Project # {0,number,#0}: Completed Date is required")
+  @Key("project.completedDateRequiredException")
+  String project_completedDateRequiredException(Integer arg0);
+
+  /**
+   * Translated "Project cannot be deleted, one or more samples are still linked to it".
+   * 
+   * @return translated "Project cannot be deleted, one or more samples are still linked to it"
+   */
+  @DefaultMessage("Project cannot be deleted, one or more samples are still linked to it")
+  @Key("project.deleteException")
+  String project_deleteException();
+
+  /**
+   * Translated "Project # {0,number,#0}: End date must not be before begin date".
+   * 
+   * @return translated "Project # {0,number,#0}: End date must not be before begin date"
+   */
+  @DefaultMessage("Project # {0,number,#0}: End date must not be before begin date")
+  @Key("project.endDateAfterBeginDateException")
+  String project_endDateAfterBeginDateException(Integer arg0);
+
+  /**
+   * Translated "Project ''{0}'': A record with this value already exists. Please enter a unique value for this field".
+   * 
+   * @return translated "Project ''{0}'': A record with this value already exists. Please enter a unique value for this field"
+   */
+  @DefaultMessage("Project ''{0}'': A record with this value already exists. Please enter a unique value for this field")
+  @Key("project.fieldUniqueException")
+  String project_fieldUniqueException(String arg0);
+
+  /**
+   * Translated "History - Project".
+   * 
+   * @return translated "History - Project"
+   */
+  @DefaultMessage("History - Project")
+  @Key("project.history")
+  String project_history();
+
+  /**
+   * Translated "Project # {0,number,#0}: Is Active is required".
+   * 
+   * @return translated "Project # {0,number,#0}: Is Active is required"
+   */
+  @DefaultMessage("Project # {0,number,#0}: Is Active is required")
+  @Key("project.isActiveRequiredException")
+  String project_isActiveRequiredException(Integer arg0);
+
+  /**
+   * Translated "Project # {0,number,#0}: Name is required".
+   * 
+   * @return translated "Project # {0,number,#0}: Name is required"
+   */
+  @DefaultMessage("Project # {0,number,#0}: Name is required")
+  @Key("project.nameRequiredException")
+  String project_nameRequiredException(Integer arg0);
+
+  /**
+   * Translated "Operation".
+   * 
+   * @return translated "Operation"
+   */
+  @DefaultMessage("Operation")
+  @Key("project.operation")
+  String project_operation();
+
+  /**
+   * Translated "Owner".
+   * 
+   * @return translated "Owner"
+   */
+  @DefaultMessage("Owner")
+  @Key("project.owner")
+  String project_owner();
+
+  /**
+   * Translated "Project # {0,number,#0}: Owner is required".
+   * 
+   * @return translated "Project # {0,number,#0}: Owner is required"
+   */
+  @DefaultMessage("Project # {0,number,#0}: Owner is required")
+  @Key("project.ownerRequiredException")
+  String project_ownerRequiredException(Integer arg0);
+
+  /**
+   * Translated "Parameter".
+   * 
+   * @return translated "Parameter"
+   */
+  @DefaultMessage("Parameter")
+  @Key("project.parameter")
+  String project_parameter();
+
+  /**
+   * Translated "History - Project Parameter".
+   * 
+   * @return translated "History - Project Parameter"
+   */
+  @DefaultMessage("History - Project Parameter")
+  @Key("project.parameterHistory")
+  String project_parameterHistory();
+
+  /**
    * Translated "Project".
    * 
    * @return translated "Project"
@@ -14837,6 +14972,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Project")
   @Key("project.project")
   String project_project();
+
+  /**
+   * Translated "Reference To".
+   * 
+   * @return translated "Reference To"
+   */
+  @DefaultMessage("Reference To")
+  @Key("project.referenceTo")
+  String project_referenceTo();
+
+  /**
+   * Translated "Project # {0,number,#0}: Started Date is required".
+   * 
+   * @return translated "Project # {0,number,#0}: Started Date is required"
+   */
+  @DefaultMessage("Project # {0,number,#0}: Started Date is required")
+  @Key("project.startedDateRequiredException")
+  String project_startedDateRequiredException(Integer arg0);
 
   /**
    * Translated "There is already an active project in the system with the same name ".
@@ -15226,6 +15379,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qaEvents();
 
   /**
+   * Translated "QA List Report".
+   * 
+   * @return translated "QA List Report"
+   */
+  @DefaultMessage("QA List Report")
+  @Key("qaList.qaListReport")
+  String qaList_qaListReport();
+
+  /**
    * Translated "QA Events for Sample & Test".
    * 
    * @return translated "QA Events for Sample & Test"
@@ -15253,6 +15415,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qaeventTestComboUnique();
 
   /**
+   * Translated "QC".
+   * 
+   * @return translated "QC"
+   */
+  @DefaultMessage("QC")
+  @Key("qc.QC")
+  String qc_QC();
+
+  /**
+   * Translated "History - QC Analyte".
+   * 
+   * @return translated "History - QC Analyte"
+   */
+  @DefaultMessage("History - QC Analyte")
+  @Key("qc.analyteHistory")
+  String qc_analyteHistory();
+
+  /**
+   * Translated "Expected Value".
+   * 
+   * @return translated "Expected Value"
+   */
+  @DefaultMessage("Expected Value")
+  @Key("qc.expectedValue")
+  String qc_expectedValue();
+
+  /**
    * Translated "Expire Date".
    * 
    * @return translated "Expire Date"
@@ -15271,6 +15460,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qc_getData();
 
   /**
+   * Translated "History - QC".
+   * 
+   * @return translated "History - QC"
+   */
+  @DefaultMessage("History - QC")
+  @Key("qc.history")
+  String qc_history();
+
+  /**
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
@@ -15280,6 +15478,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qc_invalidValueException();
 
   /**
+   * Translated "History - QC Lot".
+   * 
+   * @return translated "History - QC Lot"
+   */
+  @DefaultMessage("History - QC Lot")
+  @Key("qc.lotHistory")
+  String qc_lotHistory();
+
+  /**
+   * Translated "Lot Information".
+   * 
+   * @return translated "Lot Information"
+   */
+  @DefaultMessage("Lot Information")
+  @Key("qc.lotInformation")
+  String qc_lotInformation();
+
+  /**
    * Translated "Lot Number ".
    * 
    * @return translated "Lot Number "
@@ -15287,6 +15503,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Lot Number ")
   @Key("qc.lotNumber")
   String qc_lotNumber();
+
+  /**
+   * Translated "QC # {0,number,#0}: Name is required".
+   * 
+   * @return translated "QC # {0,number,#0}: Name is required"
+   */
+  @DefaultMessage("QC # {0,number,#0}: Name is required")
+  @Key("qc.nameRequiredException")
+  String qc_nameRequiredException(Integer arg0);
 
   /**
    * Translated "You must first select a table row before clicking add".
@@ -15361,6 +15586,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String qc_qcName();
 
   /**
+   * Translated "QC # {0,number,#0}:".
+   * 
+   * @return translated "QC # {0,number,#0}:"
+   */
+  @DefaultMessage("QC # {0,number,#0}:")
+  @Key("qc.qcNumPrefix")
+  String qc_qcNumPrefix(Integer arg0);
+
+  /**
+   * Translated "Source".
+   * 
+   * @return translated "Source"
+   */
+  @DefaultMessage("Source")
+  @Key("qc.source")
+  String qc_source();
+
+  /**
+   * Translated "QC # {0,number,#0}: Source is required".
+   * 
+   * @return translated "QC # {0,number,#0}: Source is required"
+   */
+  @DefaultMessage("QC # {0,number,#0}: Source is required")
+  @Key("qc.sourceRequiredException")
+  String qc_sourceRequiredException(Integer arg0);
+
+  /**
+   * Translated "Trend".
+   * 
+   * @return translated "Trend"
+   */
+  @DefaultMessage("Trend")
+  @Key("qc.trendable")
+  String qc_trendable();
+
+  /**
    * Translated "Usable Date".
    * 
    * @return translated "Usable Date"
@@ -15368,6 +15629,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Usable Date")
   @Key("qc.usableDate")
   String qc_usableDate();
+
+  /**
+   * Translated "QC # {0,number,#0}: ID is required for Analyte ''{1,number,#0}''".
+   * 
+   * @return translated "QC # {0,number,#0}: ID is required for Analyte ''{1,number,#0}''"
+   */
+  @DefaultMessage("QC # {0,number,#0}: ID is required for Analyte ''{1,number,#0}''")
+  @Key("qcAnalyte.idRequiredException")
+  String qcAnalyte_idRequiredException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "QC # {0,number,#0}: Type is required for Analyte ''{1,number,#0}''".
+   * 
+   * @return translated "QC # {0,number,#0}: Type is required for Analyte ''{1,number,#0}''"
+   */
+  @DefaultMessage("QC # {0,number,#0}: Type is required for Analyte ''{1,number,#0}''")
+  @Key("qcAnalyte.typeRequiredException")
+  String qcAnalyte_typeRequiredException(Integer arg0,  Integer arg1);
 
   /**
    * Translated "History - QC Analyte".
@@ -19033,24 +19312,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String scriptlet_inhibin();
 
   /**
-   * Translated "NT".
-   * 
-   * @return translated "NT"
-   */
-  @DefaultMessage("NT")
-  @Key("scriptlet.nt")
-  String scriptlet_nt();
-
-  /**
-   * Translated "PAPP-A".
-   * 
-   * @return translated "PAPP-A"
-   */
-  @DefaultMessage("PAPP-A")
-  @Key("scriptlet.pappa")
-  String scriptlet_pappa();
-
-  /**
    * Translated "Define action scripts that can be assigned to different processes.".
    * 
    * @return translated "Define action scripts that can be assigned to different processes."
@@ -20338,6 +20599,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String storage();
 
   /**
+   * Translated "The item cannot be selected as it has been checked out".
+   * 
+   * @return translated "The item cannot be selected as it has been checked out"
+   */
+  @DefaultMessage("The item cannot be selected as it has been checked out")
+  @Key("storage.cantSelectItem")
+  String storage_cantSelectItem();
+
+  /**
+   * Translated "Current".
+   * 
+   * @return translated "Current"
+   */
+  @DefaultMessage("Current")
+  @Key("storage.current")
+  String storage_current();
+
+  /**
+   * Translated "Discard".
+   * 
+   * @return translated "Discard"
+   */
+  @DefaultMessage("Discard")
+  @Key("storage.discard")
+  String storage_discard();
+
+  /**
    * Translated "Check out date must not be before check in date".
    * 
    * @return translated "Check out date must not be before check in date"
@@ -20347,6 +20635,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String storage_invalidDateRangeException();
 
   /**
+   * Translated "Some items cannot be moved as they are already stored at the destination location".
+   * 
+   * @return translated "Some items cannot be moved as they are already stored at the destination location"
+   */
+  @DefaultMessage("Some items cannot be moved as they are already stored at the destination location")
+  @Key("storage.itemsCantBeMoved")
+  String storage_itemsCantBeMoved();
+
+  /**
    * Translated "Storage".
    * 
    * @return translated "Storage"
@@ -20354,6 +20651,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Storage")
   @Key("storage.storage")
   String storage_storage();
+
+  /**
+   * Translated "Storage Location/Item".
+   * 
+   * @return translated "Storage Location/Item"
+   */
+  @DefaultMessage("Storage Location/Item")
+  @Key("storage.storageLocationItem")
+  String storage_storageLocationItem();
+
+  /**
+   * Translated "Storage Location Name".
+   * 
+   * @return translated "Storage Location Name"
+   */
+  @DefaultMessage("Storage Location Name")
+  @Key("storage.storageLocationName")
+  String storage_storageLocationName();
 
   /**
    * Translated "Manage and track stored items in the laboratory by location.".
@@ -20390,6 +20705,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Storage Location")
   @Key("storageLocation")
   String storageLocation();
+
+  /**
+   * Translated "History - Storage Location".
+   * 
+   * @return translated "History - Storage Location"
+   */
+  @DefaultMessage("History - Storage Location")
+  @Key("storageLocation.history")
+  String storageLocation_history();
+
+  /**
+   * Translated "History - Sub Location".
+   * 
+   * @return translated "History - Sub Location"
+   */
+  @DefaultMessage("History - Sub Location")
+  @Key("storageLocation.subLocationHistory")
+  String storageLocation_subLocationHistory();
+
+  /**
+   * Translated "Storage Sub Unit".
+   * 
+   * @return translated "Storage Sub Unit"
+   */
+  @DefaultMessage("Storage Sub Unit")
+  @Key("storageLocation.subUnit")
+  String storageLocation_subUnit();
 
   /**
    * Translated "One or more storage locations cannot be deleted, other records are still linked to them".
@@ -20489,6 +20831,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Storage Unit")
   @Key("storageUnit")
   String storageUnit();
+
+  /**
+   * Translated "History - Storage Unit".
+   * 
+   * @return translated "History - Storage Unit"
+   */
+  @DefaultMessage("History - Storage Unit")
+  @Key("storageUnit.history")
+  String storageUnit_history();
+
+  /**
+   * Translated "Singular".
+   * 
+   * @return translated "Singular"
+   */
+  @DefaultMessage("Singular")
+  @Key("storageUnit.singular")
+  String storageUnit_singular();
 
   /**
    * Translated "Storage unit cannot be deleted, one or more storage locations are still linked to it".
@@ -23315,6 +23675,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Related Worksheet #")
   @Key("worksheet.relatedWorksheetNumber")
   String worksheet_relatedWorksheetNumber();
+
+  /**
+   * Translated "Set to Done".
+   * 
+   * @return translated "Set to Done"
+   */
+  @DefaultMessage("Set to Done")
+  @Key("worksheet.setToDone")
+  String worksheet_setToDone();
 
   /**
    * Translated "Transfer Results".

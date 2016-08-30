@@ -257,7 +257,7 @@ public abstract class Test {
         if (adjWeight == 0.0)
             throw new InconsistencyException(Messages.get().result_invalidAdjWeightOfZeroException());
         if (median == 0.0)
-            throw new InconsistencyException(Messages.get().result_noMedianForGestAgeException(ga));
+            throw new InconsistencyException(Messages.get().result_noMedianForMeasurementException(ga));
 
         mom = getResult() / median / adjWeight;
         if (isRaceBlack)
