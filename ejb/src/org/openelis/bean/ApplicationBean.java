@@ -91,13 +91,12 @@ public class ApplicationBean {
                         "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
                         "pos_last_of_run", "pos_last_of_subset_and_run", "pos_reagent_media",
                         "profile_order_in", "pt", "pt_sample", "qaevent_internal",
-                        "qaevent_override", "qaevent_warning", "qc_blank", "qc_duplicate",
-                        "qc_spike", "quick_entry", "receivable_reportto_email",
-                        "released_reportto_email", "org_hold_sample", "profile_air_string",
-                        "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
-                        "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
-                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
-                        "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "qaevent_override", "qaevent_warning", "qc_spike", "quick_entry",
+                        "receivable_reportto_email", "released_reportto_email", "org_hold_sample",
+                        "profile_air_string", "reflex_auto", "reflex_prompt", "reflex_auto_ndup",
+                        "reflex_prompt_ndup", "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n",
+                        "rf_h", "round_int", "round_int_sig_fig", "round_int_sig_fig_noe",
+                        "round_sig_fig", "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released", "sdwis",
                         "scriptlet_neonatal_domain", "scriptlet_pws_validate",
                         "sdwis_category_bacterial", "sdwis_category_chemical",
@@ -220,8 +219,6 @@ public class ApplicationBean {
         Constants.dictionary().QAEVENT_INTERNAL = dictId(map, "qaevent_internal");
         Constants.dictionary().QAEVENT_OVERRIDE = dictId(map, "qaevent_override");
         Constants.dictionary().QAEVENT_WARNING = dictId(map, "qaevent_warning");
-        Constants.dictionary().QC_BLANK = dictId(map, "qc_blank");
-        Constants.dictionary().QC_DUPLICATE = dictId(map, "qc_duplicate");
         Constants.dictionary().QC_SPIKE = dictId(map, "qc_spike");
         Constants.dictionary().QUICK_ENTRY = dictId(map, "quick_entry");
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");

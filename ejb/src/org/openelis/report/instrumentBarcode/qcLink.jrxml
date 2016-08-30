@@ -11,6 +11,9 @@
 	<parameter name="BARCODE_TYPE" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="printer" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT DISTINCT
       wav.accession_number, wi.position
@@ -39,7 +42,7 @@ WHERE wav.id = $P{WORKSHEET_ANALYSIS_ID}]]>
 			</textField>
 			<componentElement>
 				<reportElement key="accessionNumber.barcode" mode="Opaque" x="0" y="12" width="250" height="12">
-					<printWhenExpression><![CDATA["L".equals($P{BARCODE_TYPE})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[!"-csv-".equals($P{printer}) && "L".equals($P{BARCODE_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false">
 					<jr:codeExpression><![CDATA[$P{QC_CODE} != null ? DataBaseUtil.concatWithSeparator($F{accession_number}, "@", $P{QC_CODE}) : DataBaseUtil.concat($F{accession_number}, "@")]]></jr:codeExpression>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="791" pageHeight="612" orientation="Landscape" columnWidth="755" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.freeze.row" value="2"/>
+	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="printer" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select q.*, d1.entry as qa_type, t.name as test_name, m.name as method_name
+  from qaevent q
+       join dictionary d1 on d1.id = q.type_id
+       left join test t on t.id = q.test_id
+       left join method m on m.id = t.method_id
+order by t.name, m.name, q.name]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="test_id" class="java.lang.Integer"/>
+	<field name="type_id" class="java.lang.Integer"/>
+	<field name="is_billable" class="java.lang.String"/>
+	<field name="reporting_sequence" class="java.lang.Integer"/>
+	<field name="reporting_text" class="java.lang.String"/>
+	<field name="qa_type" class="java.lang.String"/>
+	<field name="test_name" class="java.lang.String"/>
+	<field name="method_name" class="java.lang.String"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<title>
+		<band height="12">
+			<printWhenExpression><![CDATA[Boolean.valueOf("-xls-".equals($P{printer}))]]></printWhenExpression>
+			<staticText>
+				<reportElement key="name.header" mode="Opaque" x="0" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="description.header" mode="Opaque" x="100" y="0" width="200" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="test.header" mode="Opaque" x="300" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Test]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="method.header" mode="Opaque" x="350" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Method]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="type.header" mode="Opaque" x="400" y="0" width="85" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="billable.header" mode="Opaque" x="485" y="0" width="35" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Billable]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="reportingText.header" mode="Opaque" x="520" y="0" width="235" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Text]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="36">
+			<printWhenExpression><![CDATA[Boolean.valueOf(!"-xls-".equals($P{printer}))]]></printWhenExpression>
+			<textField pattern="">
+				<reportElement key="headerLogname" x="662" y="13" width="93" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMM dd, yyyy">
+				<reportElement key="headerDate" x="0" y="0" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement key="headerTime" x="0" y="13" width="114" height="13"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
+				<reportElement key="headerPageNoLast" x="736" y="0" width="19" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="headerTitle1" x="264" y="0" width="227" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[QA Event List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement key="headerPageNo" x="620" y="0" width="116" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12">
+			<printWhenExpression><![CDATA[Boolean.valueOf(!"-xls-".equals($P{printer}))]]></printWhenExpression>
+			<staticText>
+				<reportElement key="name.header" mode="Opaque" x="0" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="description.header" mode="Opaque" x="100" y="0" width="200" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="test.header" mode="Opaque" x="300" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Test]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="method.header" mode="Opaque" x="350" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Method]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="type.header" mode="Opaque" x="400" y="0" width="85" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="billable.header" mode="Opaque" x="485" y="0" width="35" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Billable]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="reportingText.header" mode="Opaque" x="520" y="0" width="235" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Text]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="background" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="755" height="12" backcolor="#F5F5F5">
+					<printWhenExpression><![CDATA[Boolean.valueOf($V{REPORT_COUNT}.intValue()%2==0)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[null]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="name" positionType="Float" x="0" y="0" width="100" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="description" positionType="Float" x="100" y="0" width="200" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="test" positionType="Float" x="300" y="0" width="50" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{test_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="method" positionType="Float" x="350" y="0" width="50" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{method_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="type" positionType="Float" x="400" y="0" width="85" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{qa_type}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="billable" positionType="Float" x="485" y="0" width="35" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Y".equals($F{is_billable}) ? "Yes" : "No"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="reportingText" positionType="Float" x="520" y="0" width="235" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{reporting_text}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -34,7 +34,7 @@ FROM
 WHERE
      wav.worksheet_id = $P{WORKSHEET_ID}
 ORDER BY
-     wav.position, wav.id]]>
+     wav.position, wav.id, wr.result_row, wqr.sort_order]]>
 	</queryString>
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>
