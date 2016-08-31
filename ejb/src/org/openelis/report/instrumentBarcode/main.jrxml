@@ -55,6 +55,74 @@ ORDER BY 1,5;]]>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
+	<title>
+		<band height="12">
+			<printWhenExpression><![CDATA["-csv-".equals($P{printer})]]></printWhenExpression>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Position]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="50" y="0" width="137" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Worksheet Lookup]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="187" y="0" width="60" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Accession #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="247" y="0" width="70" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[QC Link]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="317" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Test / QC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="417" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Method / QC Lot #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="517" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[QC Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="617" y="0" width="60" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[QC Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="677" y="0" width="75" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Units]]></text>
+			</staticText>
+		</band>
+	</title>
 	<pageHeader>
 		<band height="48" splitType="Stretch">
 			<printWhenExpression><![CDATA[!"-csv-".equals($P{printer})]]></printWhenExpression>
@@ -146,6 +214,7 @@ ORDER BY 1,5;]]>
 	</pageHeader>
 	<columnHeader>
 		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA[!"-csv-".equals($P{printer})]]></printWhenExpression>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
