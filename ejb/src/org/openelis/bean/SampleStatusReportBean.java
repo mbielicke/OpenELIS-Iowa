@@ -210,6 +210,7 @@ public class SampleStatusReportBean {
                                             (String)result[9],// org name
                                             (String)result[10],// collector
                                             (String)result[11],// location
+                                            null,// location street address
                                             null,// location city
                                             null,// project id
                                             null,// project name
