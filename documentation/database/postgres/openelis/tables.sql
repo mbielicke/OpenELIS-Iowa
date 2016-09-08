@@ -805,10 +805,10 @@ create table sample_animal
     sample_id                      integer not null,
     animal_common_name_id          integer,
     animal_scientific_name_id      integer,
-    collector                      varchar(40),
-    collector_phone                varchar(21),
-    sampling_location              varchar(40),
-    address_id                     integer
+    location                       varchar(40),
+    location_address_id            integer,
+    provider_id                    integer,
+    provider_phone                 varchar(21)
 );
 
 create table sample_clinical

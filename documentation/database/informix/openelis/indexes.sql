@@ -651,7 +651,8 @@ alter table sample add constraint foreign key(status_id) references dictionary(i
 alter table sample_animal add constraint foreign key(sample_id) references sample(id) constraint sample_animal_1_fk;
 alter table sample_animal add constraint foreign key(animal_common_name_id) references dictionary(id) constraint sample_animal_2_fk;
 alter table sample_animal add constraint foreign key(animal_scientific_name_id) references dictionary(id) constraint sample_animal_3_fk;
-alter table sample_animal add constraint foreign key(address_id) references address(id) constraint sample_animal_4_fk;
+alter table sample_animal add constraint foreign key(location_address_id) references address(id) constraint sample_animal_4_fk;
+alter table sample_animal add constraint foreign key(provider_id) references provider(id) constraint sample_animal_5_fk;
 
 alter table sample_clinical add constraint foreign key(sample_id) references sample(id) constraint sample_clinical_1_fk;
 alter table sample_clinical add constraint foreign key(patient_id) references patient(id) constraint sample_clinical_2_fk;
