@@ -155,7 +155,7 @@ public class EOrderImportBean {
                 eorderLinkDO.setSubId(XMLUtil.getNodeText(eorderLinkItemElem, "sub_id"));
                 eorderLinkDO.setName(XMLUtil.getNodeText(eorderLinkItemElem, "name"));
                 eorderLinkDO.setValue(XMLUtil.getNodeText(eorderLinkItemElem, "value"));
-                if ("ORC-1".equals(eorderLinkDO.getName().trim()) &&
+                if ("ORC_1".equals(eorderLinkDO.getName().trim()) &&
                     "CA".equals(eorderLinkDO.getValue().trim())) {
                     organizationName = null;
                     nodes2 = eorderBodyElem.getElementsByTagName("organization");
