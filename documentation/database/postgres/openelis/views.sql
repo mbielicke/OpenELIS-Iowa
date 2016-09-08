@@ -61,6 +61,15 @@ create or replace view analysis_view as
                    when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || btrim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || btrim(san.location) || ' '
+                   else ''
+               end
            else null
        end as todo_description,
        case
@@ -108,6 +117,15 @@ create or replace view analysis_view as
                    when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || btrim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || btrim(san.location) || ' '
+                   else ''
+               end
            else null
        end as worksheet_description,
        case
@@ -136,6 +154,8 @@ create or replace view analysis_view as
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -179,9 +199,19 @@ create or replace view sample_view as
        case 
            when s.domain = 'E' then sen.location
            when s.domain = 'S' then ssd.location
+           when s.domain = 'A' then san.location
            else null
        end as location,
-       ead.city as location_city, p.id as project_id, p.name as project_name, pws.number0 as pws_number0,
+       case
+           when s.domain = 'E' then ead.street_address
+           else null
+       end as location_street_address,
+       case
+           when s.domain = 'E' then ead.city
+           when s.domain = 'A' then aad.city
+           else null
+       end as location_city,
+       p.id as project_id, p.name as project_name, pws.number0 as pws_number0,
        pws.name as pws_name, ssd.facility_id as sdwis_facility_id,
        case 
            when s.domain = 'C' then cpa.last_name
@@ -208,6 +238,15 @@ create or replace view sample_view as
                    when pv.first_name is not null then btrim(pv.first_name)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when apv.last_name is not null then btrim(apv.last_name) || ', '
+                   else ''
+               end ||
+               case
+                   when apv.first_name is not null then btrim(apv.first_name)
+                   else ''
+               end
            else null
        end as provider_name,
        a.id as analysis_id, a.revision as analysis_revision, a.is_reportable as analysis_is_reportable,
@@ -228,6 +267,9 @@ create or replace view sample_view as
        left join provider pv on scl.provider_id = pv.id
        left join sample_neonatal snn on s.id = snn.sample_id
        left join patient npa on snn.patient_id = npa.id
+       left join sample_animal san on s.id = san.sample_id
+       left join address aad on san.location_address_id = aad.id
+       left join provider apv on san.provider_id = apv.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -315,6 +357,15 @@ create or replace view todo_sample_view as
                    when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || btrim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || btrim(san.location) || ' '
+                   else ''
+               end
            else null
        end as description,
        s.status_id as sample_status_id,
@@ -339,6 +390,8 @@ create or replace view todo_sample_view as
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -416,6 +469,15 @@ create or replace view worksheet_analysis_view as
                            when si.container_reference is not null then '[cnt]' || btrim(si.container_reference)
                            else ''
                        end
+		           when s.domain = 'A' then
+		               case
+		                   when acn.entry is not null then '[acn]' || btrim(acn.entry) || ' '
+		                   else ''
+		               end ||
+		               case
+		                   when san.location is not null then '[loc]' || btrim(san.location) || ' '
+		                   else ''
+		               end
                    else null
                end
            when wa.qc_lot_id is not null then btrim(q.name) || ' (' || ql.lot_number || ')'
@@ -446,6 +508,8 @@ create or replace view worksheet_analysis_view as
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
