@@ -651,7 +651,8 @@ alter table sample add foreign key(status_id) references dictionary(id);
 alter table sample_animal add foreign key(sample_id) references sample(id);
 alter table sample_animal add foreign key(animal_common_name_id) references dictionary(id);
 alter table sample_animal add foreign key(animal_scientific_name_id) references dictionary(id);
-alter table sample_animal add foreign key(address_id) references address(id);
+alter table sample_animal add foreign key(location_address_id) references address(id);
+alter table sample_animal add foreign key(provider_id) references provider(id);
 
 alter table sample_clinical add foreign key(sample_id) references sample(id);
 alter table sample_clinical add foreign key(patient_id) references patient(id);
