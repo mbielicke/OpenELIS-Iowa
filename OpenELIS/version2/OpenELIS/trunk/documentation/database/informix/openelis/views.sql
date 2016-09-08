@@ -69,6 +69,15 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                    when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || trim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || trim(san.location) || ' '
+                   else ''
+               end
            else null
        end,
        case
@@ -116,6 +125,15 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
                    when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || trim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || trim(san.location) || ' '
+                   else ''
+               end
            else null
        end,
        case
@@ -144,6 +162,8 @@ create view analysis_view (sample_id, domain, accession_number, received_date,
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -177,9 +197,10 @@ create view sample_patient_view (sample_id, patient_id) as (
 create view sample_view (sample_id, domain, accession_number, sample_revision, received_date,
                          collection_date, collection_time, sample_status_id, client_reference,
                          sample_released_date, report_to_id, report_to_name, collector,
-                         location, location_city, project_id, project_name, pws_number0,
-                         pws_name, sdwis_facility_id, patient_last_name, patient_first_name,
-                         patient_birth_date, provider_name, analysis_id, analysis_revision, analysis_is_reportable,
+                         location, location_street_address, location_city, project_id,
+                         project_name, pws_number0, pws_name, sdwis_facility_id,
+                         patient_last_name, patient_first_name, patient_birth_date,
+                         provider_name, analysis_id, analysis_revision, analysis_is_reportable,
                          analysis_status_id, analysis_released_date, test_reporting_description,
                          method_reporting_description) as (
 
@@ -194,9 +215,19 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        case 
            when s.domain = 'E' then sen.location
            when s.domain = 'S' then ssd.location
+           when s.domain = 'A' then san.location
            else null
        end,
-       ead.city, p.id, p.name, pws.number0,
+       case 
+           when s.domain = 'E' then ead.street_address
+           else null
+       end,
+       case
+           when s.domain = 'E' then ead.city
+           when s.domain = 'A' then aad.city
+           else null
+       end,
+       p.id, p.name, pws.number0,
        pws.name, ssd.facility_id,
        case 
            when s.domain = 'C' then cpa.last_name
@@ -216,11 +247,20 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        case
            when s.domain = 'C' then
                case
-                   when pv.last_name is not null then trim(pv.last_name) || ', '
+                   when cpv.last_name is not null then trim(cpv.last_name) || ', '
                    else ''
                end ||
                case
-                   when pv.first_name is not null then trim(pv.first_name)
+                   when cpv.first_name is not null then trim(cpv.first_name)
+                   else ''
+               end
+           when s.domain = 'A' then
+               case
+                   when apv.last_name is not null then trim(apv.last_name) || ', '
+                   else ''
+               end ||
+               case
+                   when apv.first_name is not null then trim(apv.first_name)
                    else ''
                end
            else null
@@ -240,9 +280,12 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        left join pws on ssd.pws_id = pws.id
        left join sample_clinical scl on s.id = scl.sample_id
        left join patient cpa on scl.patient_id = cpa.id
-       left join provider pv on scl.provider_id = pv.id
+       left join provider cpv on scl.provider_id = cpv.id
        left join sample_neonatal snn on s.id = snn.sample_id
        left join patient npa on snn.patient_id = npa.id
+       left join sample_animal san on s.id = san.sample_id
+       left join address aad on san.location_address_id = aad.id
+       left join provider apv on san.provider_id = apv.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -336,6 +379,15 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
                    when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                    else ''
                end
+           when s.domain = 'A' then
+               case
+                   when acn.entry is not null then '[acn]' || trim(acn.entry) || ' '
+                   else ''
+               end ||
+               case
+                   when san.location is not null then '[loc]' || trim(san.location) || ' '
+                   else ''
+               end
            else null
        end,
        s.status_id,
@@ -361,6 +413,8 @@ create view todo_sample_view (sample_id, domain, accession_number, received_date
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
@@ -447,6 +501,15 @@ create view worksheet_analysis_view (id, worksheet_item_id, position, worksheet_
                            when si.container_reference is not null then '[cnt]' || trim(si.container_reference)
                            else ''
                        end
+		           when s.domain = 'A' then
+		               case
+		                   when acn.entry is not null then '[acn]' || trim(acn.entry) || ' '
+		                   else ''
+		               end ||
+		               case
+		                   when san.location is not null then '[loc]' || trim(san.location) || ' '
+		                   else ''
+		               end
                    else null
                end
            when wa.qc_lot_id is not null then trim(q.name) || ' (' || ql.lot_number || ')'
@@ -477,6 +540,8 @@ create view worksheet_analysis_view (id, worksheet_item_id, position, worksheet_
        left join patient pat on scl.patient_id = pat.id
        left join sample_pt spt on s.id = spt.sample_id
        left join dictionary ptp on spt.pt_provider_id = ptp.id
+       left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join sample_organization so on s.id = so.sample_id and
                                            so.type_id = (select d.id
                                                            from dictionary d
