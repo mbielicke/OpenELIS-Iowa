@@ -41,12 +41,12 @@ public class SampleSO extends ScriptletObject {
     private static final long serialVersionUID = 1L;
 
     public enum Action_Before {
-        NEW_DOMAIN, ANALYSIS, RESULT, AUX_DATA, QA, SAMPLE_ITEM, PATIENT, RECOMPUTE, UPDATE,
-        COMPLETE, RELEASE, UNRELEASE
+        NEW_DOMAIN, ANALYSIS, RESULT, AUX_DATA, QA, SAMPLE_ITEM_ADDED, SAMPLE_ITEM_CHANGED,
+        PATIENT, RECOMPUTE, UPDATE, COMPLETE, RELEASE, UNRELEASE
     }
 
     public enum Action_After {
-        SAMPLE_ITEM_ADDED, SAMPLE_ITEM_CHANGED
+        SAMPLE_ITEM_ADDED, SAMPLE_ITEM_CHANGED, QA_REMOVED, DOMAIN_CHANGED
     }
 
     protected EnumSet<Action_Before>  actionBefore;
@@ -67,7 +67,7 @@ public class SampleSO extends ScriptletObject {
          * in some cases e.g. when a patient field is changed, action_before is
          * not specified because it's clear from the key of the
          * field("changed"); it's intialized here to make sure that the
-         * scriptlets checking for it don't throw exceptions 
+         * scriptlets checking for it don't throw exceptions
          */
         actionBefore = EnumSet.noneOf(Action_Before.class);
     }
@@ -87,7 +87,7 @@ public class SampleSO extends ScriptletObject {
     public void addActionAfter(Action_After action) {
         if (actionAfter == null)
             actionAfter = EnumSet.noneOf(Action_After.class);
-        
+
         actionAfter.add(action);
     }
 
@@ -122,7 +122,7 @@ public class SampleSO extends ScriptletObject {
     public void addChangedUid(String uid) {
         if (changedUids == null)
             changedUids = new HashSet<String>();
-        
+
         changedUids.add(uid);
     }
 }
