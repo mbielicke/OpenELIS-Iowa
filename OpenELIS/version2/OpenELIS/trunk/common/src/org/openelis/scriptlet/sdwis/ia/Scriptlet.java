@@ -98,7 +98,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         if (data.getActionBefore().contains(NEW_DOMAIN)) {
             if (defaultNote != null)
                 addDefaultNote(data);
-        } else if (data.getActionBefore().contains(SAMPLE_ITEM)) {
+        } else if (data.getActionBefore().contains(SAMPLE_ITEM_ADDED)) {
             setSampleType(data);
         }
 
