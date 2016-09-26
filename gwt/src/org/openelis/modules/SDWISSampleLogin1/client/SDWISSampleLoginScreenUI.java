@@ -2034,7 +2034,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             @Override
             public void onSampleItemAdded(SampleItemAddedEvent event) {
                 if (screen != event.getSource())
-                    runScriptlets(event.getUid(), null, Action_Before.SAMPLE_ITEM);
+                    runScriptlets(event.getUid(), null, Action_Before.SAMPLE_ITEM_ADDED);
             }
         });
 

@@ -411,7 +411,7 @@ public class SampleItemTabUI extends Screen {
                                                       SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
         parentBus.fireEventFromSource(new RunScriptletEvent(displayedUid,
                                                             null,
-                                                            Action_Before.SAMPLE_ITEM),
+                                                            Action_Before.SAMPLE_ITEM_CHANGED),
                                       screen);
     }
 
