@@ -40,13 +40,15 @@ public class SampleViewVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Integer         sampleId, accessionNumber, sampleRevision, sampleStatusId,
-                    reportToId, projectId, analysisId, analysisRevision, analysisStatusId;
-    protected String          domain, clientReference, reportToName, collector, location,
-                    locationStreetAddress, locationCity, projectName, pwsNumber0, pwsName,
-                    sdwisFacilityId, patientLastName, patientFirstName, providerName,
-                    analysisIsReportable, testReportingDescription, methodReportingDescription;
+                              reportToId, projectId, analysisId, analysisRevision,
+                              analysisStatusId;
+    protected String          domain, clientReference, reportToName, collector,
+                              location, locationStreetAddress, locationCity, projectName,
+                              pwsNumber0, pwsName, sdwisFacilityId, patientLastName,
+                              patientFirstName, providerName, animalCommonName,
+                              analysisIsReportable, testReportingDescription, methodReportingDescription;
     protected Datetime        receivedDate, collectionDate, collectionTime, sampleReleasedDate,
-                    patientBirthDate, analysisReleasedDate;
+                              patientBirthDate, analysisReleasedDate;
 
     public SampleViewVO() {
     }
@@ -59,8 +61,8 @@ public class SampleViewVO implements Serializable {
                         String locationCity, Integer projectId, String projectName,
                         String pwsNumber0, String pwsName, String sdwisFacilityId,
                         String patientLastName, String patientFirstName, Date patientBirthDate,
-                        String providerName, Integer analysisId, Integer analysisRevision,
-                        String analysisIsReportable, Integer analysisStatusId,
+                        String providerName, String animalCommonName, Integer analysisId,
+                        Integer analysisRevision, String analysisIsReportable, Integer analysisStatusId,
                         Date analysisReleasedDate, String testReportingDescription,
                         String methodReportingDescription) {
         setSampleId(sampleId);
@@ -88,6 +90,7 @@ public class SampleViewVO implements Serializable {
         setPatientFirstName(patientFirstName);
         setPatientBirthDate(DataBaseUtil.toYD(patientBirthDate));
         setProviderName(providerName);
+        setAnimalCommonName(animalCommonName);
         setAnalysisId(analysisId);
         setAnalysisRevision(analysisRevision);
         setAnalysisIsReportable(analysisIsReportable);
@@ -295,6 +298,14 @@ public class SampleViewVO implements Serializable {
 
     public void setProviderName(String provider) {
         this.providerName = DataBaseUtil.trim(provider);
+    }
+
+    public String getAnimalCommonName() {
+        return animalCommonName;
+    }
+
+    public void setAnimalCommonName(String animalCommonName) {
+        this.animalCommonName = DataBaseUtil.trim(animalCommonName);
     }
 
     public Integer getAnalysisId() {
