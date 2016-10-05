@@ -200,9 +200,9 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
                          location, location_street_address, location_city, project_id,
                          project_name, pws_number0, pws_name, sdwis_facility_id,
                          patient_last_name, patient_first_name, patient_birth_date,
-                         provider_name, analysis_id, analysis_revision, analysis_is_reportable,
-                         analysis_status_id, analysis_released_date, test_reporting_description,
-                         method_reporting_description) as (
+                         provider_name, animal_common_name, analysis_id, analysis_revision,
+                         analysis_is_reportable, analysis_status_id, analysis_released_date,
+                         test_reporting_description, method_reporting_description) as (
 
    select s.id, s.domain, s.accession_number, s.revision, s.received_date,
        s.collection_date, s.collection_time, s.status_id,
@@ -265,6 +265,10 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
                end
            else null
        end,
+       case 
+           when s.domain = 'A' then acn.entry
+           else null
+       end,
        a.id, a.revision, a.is_reportable,
        a.status_id, a.released_date,
        t.reporting_description,
@@ -284,6 +288,7 @@ create view sample_view (sample_id, domain, accession_number, sample_revision, r
        left join sample_neonatal snn on s.id = snn.sample_id
        left join patient npa on snn.patient_id = npa.id
        left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join address aad on san.location_address_id = aad.id
        left join provider apv on san.provider_id = apv.id
        left join sample_organization so on s.id = so.sample_id and

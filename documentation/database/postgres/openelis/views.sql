@@ -249,6 +249,10 @@ create or replace view sample_view as
                end
            else null
        end as provider_name,
+       case
+           when s.domain = 'A' then acn.entry
+           else null
+       end as animal_common_name,
        a.id as analysis_id, a.revision as analysis_revision, a.is_reportable as analysis_is_reportable,
        a.status_id as analysis_status_id, a.released_date as analysis_released_date,
        t.reporting_description as test_reporting_description,
@@ -268,6 +272,7 @@ create or replace view sample_view as
        left join sample_neonatal snn on s.id = snn.sample_id
        left join patient npa on snn.patient_id = npa.id
        left join sample_animal san on s.id = san.sample_id
+       left join dictionary acn on san.animal_common_name_id = acn.id
        left join address aad on san.location_address_id = aad.id
        left join provider apv on san.provider_id = apv.id
        left join sample_organization so on s.id = so.sample_id and
