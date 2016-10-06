@@ -242,7 +242,8 @@ public class FinalReportBean {
                           ", " + SampleViewMeta.getPatientLastName() + ", " +
                           SampleViewMeta.getPatientFirstName() + ", " +
                           SampleViewMeta.getPatientBirthDate() + ", " +
-                          SampleViewMeta.getProvider());
+                          SampleViewMeta.getProvider() + ", " +
+                          SampleViewMeta.getAnimalCommonName());
         range = getReleasedDateRange(fields);
         builder.constructWhere(fields);
         if (range != null) {
@@ -278,7 +279,8 @@ public class FinalReportBean {
                                             (String)result[10],// org name
                                             (String)result[11],// collector
                                             (String)result[12],// location
-                                            (String)result[13],// location street address
+                                            (String)result[13],// location
+                                                               // street address
                                             (String)result[14],// location city
                                             (Integer)result[15],// project id
                                             (String)result[16],// project name
@@ -289,6 +291,8 @@ public class FinalReportBean {
                                             (String)result[20],// patient first
                                             (Date)result[21],// patient birth
                                             (String)result[22],// provider
+                                            (String)result[23],// animal common
+                                                               // name
                                             null,// analysis id
                                             null,// analysis revision
                                             null,// reportable

@@ -172,6 +172,7 @@ public class SampleStatusReportBean {
                           SampleViewMeta.getLocation() + "," + SampleViewMeta.getPwsNumber0() +
                           "," + SampleViewMeta.getPatientLastName() + "," +
                           SampleViewMeta.getPatientFirstName() + "," +
+                          SampleViewMeta.getAnimalCommonName() + "," +
                           SampleViewMeta.getAnalysisId() + ", " +
                           SampleViewMeta.getAnalysisStatusId() + ", " +
                           SampleViewMeta.getTestReportingDescription() + ", " +
@@ -221,14 +222,16 @@ public class SampleStatusReportBean {
                                             (String)result[14],// patient first
                                             null,// patient birth
                                             null,// provider
-                                            (Integer)result[15],// analysis id
+                                            (String)result[15],// animal common
+                                                               // name
+                                            (Integer)result[16],// analysis id
                                             null,// analysis revision
                                             null,// reportable
-                                            (Integer)result[16],// analysis
+                                            (Integer)result[17],// analysis
                                                                 // status
                                             null,// analysis released
-                                            (String)result[17],// test desc
-                                            (String)result[18]));// method desc
+                                            (String)result[18],// test desc
+                                            (String)result[19]));// method desc
         }
 
         return returnList;
