@@ -90,7 +90,9 @@
 								<w:MenuItem ui:field="providerHistory" description=""
 									enabled="false" display="{msg.provider_history}" />
 								<w:MenuItem ui:field="providerLocationHistory"
-									description="" enabled="false" display="{msg.provider_locationHistory}" />
+									description="" enabled="false" display="{msg.provider_locationHistory}"/> 
+                                <w:MenuItem ui:field="providerAnalyteHistory"
+                                    description="" enabled="false" display="{msg.provider_analyteHistory}" />
 							</w:Menu>
 						</g:HorizontalPanel>
 					</g:AbsolutePanel>
@@ -180,6 +182,16 @@
 								</g:layer>
 							</g:LayoutPanel>
 						</w:tab>
+                        <w:tab>
+                            <w:customHeader>
+                                <w:TabWidget text="{msg.gen_analyte}" />
+                            </w:customHeader>
+                            <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                                <g:layer>
+                                    <p:AnalyteTabUI ui:field="analyteTab" />
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </w:tab>
 					</w:TabLayoutPanel>
 				</g:layer>
 			</g:LayoutPanel>

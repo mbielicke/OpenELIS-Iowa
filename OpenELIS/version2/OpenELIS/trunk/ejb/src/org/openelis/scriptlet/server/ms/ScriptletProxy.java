@@ -26,14 +26,20 @@
 package org.openelis.scriptlet.server.ms;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QaEventDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AnalyteParameterManager1;
+import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.Load;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -56,6 +62,11 @@ public class ScriptletProxy implements org.openelis.scriptlet.ms.ScriptletProxy 
     @Override
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return EJBFactory.getDictionaryCache().getBySystemName(systemName);
+    }
+    
+    @Override
+    public SystemVariableDO fetchSystemVariableByName(String name) throws Exception {
+        return EJBFactory.getSystemVariable().fetchByName(name);
     }
 
     @Override
@@ -88,11 +99,27 @@ public class ScriptletProxy implements org.openelis.scriptlet.ms.ScriptletProxy 
             return null;
         
         if (calendar == null)
-            Calendar.getInstance();
+            calendar = Calendar.getInstance();
         
         date = (Date)dt.getDate().clone();
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, months);
         return new Datetime(dt.getStartCode(), dt.getEndCode(), calendar.getTime());
+    }
+
+    @Override
+    public SampleManager1 fetchByAccession(Integer accessionNumber, Load... elements) throws Exception {
+        return EJBFactory.getSampleManager1().fetchByAccession(accessionNumber, elements);
+    }
+
+    @Override
+    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                  Load... elements) throws Exception {
+        return EJBFactory.getSampleManager1().fetchByQuery(fields, first, max, elements);
+    }
+
+    @Override
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        return EJBFactory.getQaevent().fetchByNames(names);
     }
 }

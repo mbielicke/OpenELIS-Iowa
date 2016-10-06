@@ -100,6 +100,8 @@ public interface SampleServiceInt1 extends XsrfProtectedService {
     
     public SampleManager1 unrelease(SampleManager1 sm) throws Exception;
     
+    public SampleManager1 setAdditionalDomain(SampleManager1 sm, String additionalDomain) throws Exception;
+    
     public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
     
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;

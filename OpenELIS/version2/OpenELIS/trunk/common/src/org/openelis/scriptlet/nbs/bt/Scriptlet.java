@@ -93,7 +93,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         ArrayList<String> changes;
 
         proxy.log(Level.FINE, "In NbsBtScriptlet1.run", null);
-        
+
         changes = data.getChanges();
         ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
@@ -129,13 +129,13 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      */
     private void setInterpretion(SampleSO data, AnalysisViewDO ana) {
         int i, j;
+        boolean qaAdded;
         Integer interp;
         String bioVal, sysName;
         SampleManager1 sm;
         ResultViewDO res, resOver, resInter;
         DictionaryDO dict;
-        QaEventDO qa;
-        AnalysisQaEventViewDO aqa;
+        QaEventDO qa, transQA, transUQA;
         TestManager tm;
         ResultFormatter rf;
 
@@ -193,24 +193,35 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
             /*
              * find the qa event to be added to the analysis and add it if it's
-             * not already added
+             * not already added; otherwise, if condition for which a qa event
+             * was added is no longer true, make it internal; if
              */
+            qaAdded = false;
             qa = null;
+            transQA = nbsCache1.getQaEvent(Cache.QA_TRAN, ana.getTestId());
+            transUQA = nbsCache1.getQaEvent(Cache.QA_TRANU, ana.getTestId());
             if ("Y".equals(sm.getSampleNeonatal().getIsTransfused())) {
                 /*
                  * add "transfused" if the transfusion date has been specified,
                  * otherwise add "transfused unknown"
                  */
-                if (sm.getSampleNeonatal().getTransfusionDate() != null)
-                    qa = nbsCache1.getQaEvent(Cache.QA_TRAN, ana.getTestId());
-                else
-                    qa = nbsCache1.getQaEvent(Cache.QA_TRANU, ana.getTestId());
-
-                if ( !sm.qaEvent.hasName(ana, qa.getName())) {
-                    proxy.log(Level.FINE, "Adding the qa event: " + qa.getName(), null);
-                    aqa = sm.qaEvent.add(ana, qa);
-                    data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
+                if (sm.getSampleNeonatal().getTransfusionDate() != null) {
+                    setQAWarning(transQA, data, ana);
+                    setQAInternal(transUQA, data, ana);
+                    qa = transQA;
+                } else {
+                    setQAWarning(transUQA, data, ana);
+                    setQAInternal(transQA, data, ana);
+                    qa = transUQA;
                 }
+                qaAdded = true;
+            } else {
+                /*
+                 * make "transfused" internal if the transfusion date has not
+                 * been specified, otherwise make "transfused unknown" internal
+                 */
+                setQAInternal(transQA, data, ana);
+                setQAInternal(transUQA, data, ana);
             }
 
             /*
@@ -228,7 +239,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                 if (sm.qaEvent.hasType(Constants.dictionary().QAEVENT_OVERRIDE) ||
                     sm.qaEvent.hasType(Constants.dictionary().QAEVENT_WARNING)) {
                     interp = INTER_PQ;
-                } else if (qa != null) {
+                } else if (qaAdded) {
                     if (Cache.QA_TRAN.equals(qa.getName()))
                         interp = INTER_TRAN;
                     else if (Cache.QA_TRANU.equals(qa.getName()))
@@ -268,5 +279,37 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             return null;
 
         return proxy.getDictionaryById(Integer.valueOf(value));
+    }
+    
+    /**
+     * 
+     */
+    private void setQAWarning(QaEventDO qa, SampleSO data, AnalysisViewDO ana) {
+        AnalysisQaEventViewDO aqa;
+
+        aqa = data.getManager().qaEvent.getByName(ana, qa.getName());
+        if (aqa == null) {
+            proxy.log(Level.FINE, "Adding the qa event: " + qa.getName(), null);
+            aqa = data.getManager().qaEvent.add(ana, qa);
+            data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
+        } else if (Constants.dictionary().QAEVENT_INTERNAL.equals(aqa.getTypeId())) {
+            proxy.log(Level.FINE, "Changing the qa event: " + qa.getName() + " to warning", null);
+            setQAType(aqa, Constants.dictionary().QAEVENT_WARNING, data);
+        }
+    }
+
+    private void setQAInternal(QaEventDO qa, SampleSO data, AnalysisViewDO ana) {
+        AnalysisQaEventViewDO aqa;
+
+        aqa = data.getManager().qaEvent.getByName(ana, qa.getName());
+        if (aqa != null && Constants.dictionary().QAEVENT_WARNING.equals(aqa.getTypeId())) {
+            proxy.log(Level.FINE, "Changing the qa event: " + qa.getName() + " to internal", null);
+            setQAType(aqa, Constants.dictionary().QAEVENT_INTERNAL, data);
+        }
+    }
+
+    private void setQAType(AnalysisQaEventViewDO aqa, Integer typeId, SampleSO data) {
+        aqa.setTypeId(typeId);
+        data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
     }
 }

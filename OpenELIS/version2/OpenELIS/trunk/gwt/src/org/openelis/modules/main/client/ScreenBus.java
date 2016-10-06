@@ -94,7 +94,8 @@ public class ScreenBus extends SimpleEventBus {
                     ABNORMALS_CALL_LIST_REPORT = new ShowScreenType("Abnormals Call List Report"),
                     PATIENT_MERGE = new ShowScreenType("Patient Merge"),
                     SECOND_DATA_ENTRY = new ShowScreenType("Second Data Entry"),
-                    QA_LIST_REPORT = new ShowScreenType("QA List Report");
+                    QA_LIST_REPORT = new ShowScreenType("QA List Report"),
+                    MS_INTEGRATED_MATCH_REPORT = new ShowScreenType("MS Integrated Match Report");
 
     private ScreenBus() {
     }

@@ -1,13 +1,9 @@
 package org.openelis.modules.sampleTracking1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +19,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -62,6 +59,7 @@ import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample1.client.AccessionChangeEvent;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
+import org.openelis.modules.sample1.client.AdditionalDomainChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
@@ -75,6 +73,7 @@ import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
+import org.openelis.modules.sample1.client.QAEventRemovedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
@@ -245,7 +244,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     changeDomainPermission;
 
     protected PatientPermission                          patientPermission;
-    
+
     protected SampleTrackingScreenUI                     screen;
 
     protected TestSelectionLookupUI                      testSelectionLookup;
@@ -294,9 +293,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY,
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA, ATTACHMENT, BLANK
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY, SAMPLE_ITEM,
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
+        ATTACHMENT, BLANK
     };
 
     protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
@@ -1310,6 +1309,34 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 displayAttachment(event.getId(), event.getIsSameWindow());
             }
         });
+
+        bus.addHandler(AdditionalDomainChangeEvent.getType(),
+                       new AdditionalDomainChangeEvent.Handler() {
+                           @Override
+                           public void onAdditionalDomainChange(AdditionalDomainChangeEvent event) {
+                               try {
+                                   manager = SampleService1.get()
+                                                           .setAdditionalDomain(manager,
+                                                                                event.getAdditionalDomain());
+                                   managers.put(manager.getSample().getId(), manager);
+                                   setData();
+                                   evaluateEdit();
+                                   setState(state);
+                                   /*
+                                    * find the sample node for the currently
+                                    * selected node;reload the changed sample in
+                                    * the tree and refresh the tree
+                                    */
+                                   reloadSample(findAncestorByType(SAMPLE_LEAF));
+                                   nodeSelected(tree.getNodeAt(tree.getSelectedNode()));
+                                   if (manager.getSampleClinical() != null)
+                                       runScriptlets(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
+                               } catch (Exception e) {
+                                   Window.alert(e.getMessage());
+                                   logger.log(Level.SEVERE, e.getMessage(), e);
+                               }
+                           }
+                       });
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -2430,7 +2457,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * create the sciptlet object
          */
         data = new SampleSO();
-        data.addActionBefore(action);
+        if (action != null)
+            data.addActionBefore(action);
         data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
@@ -2440,7 +2468,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * run the scritplet and show the errors and the changed data
          */
         data = scriptletRunner.run(data);
-
+        clearStatus();
         if (data.getExceptions() != null && data.getExceptions().size() > 0) {
             errors = new ValidationErrorsList();
             for (Exception e : data.getExceptions())
@@ -2484,6 +2512,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
                         bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
                 }
+            } else if (obj instanceof AnalysisDO) {
+                /*
+                 * if analysis qa events were removed and any of them belong to
+                 * the analysis selected in the tree, refresh the qa event tab
+                 */
+                if (actionAfter.contains(Action_After.QA_REMOVED) && cuid.equals(selUid))
+                    bus.fireEventFromSource(new QAEventRemovedEvent(cuid), screen);
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
                  * if analysis qa events were added and if any of them belong to
@@ -2544,8 +2579,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
             if (hasEnvScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2573,8 +2607,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
             if (hasSDWISScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2602,8 +2635,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
             if (hasNeonatalScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2656,7 +2688,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         tasids = new HashMap<Integer, Integer>();
         /*
          * find out the tests and test analytes in the manager for which
-         * scriptlets need to be added
+         * scriptlets need  be added
          */
         for (i = 0; i < manager.analysis.count(); i++ ) {
             ana = manager.analysis.get(i);
@@ -2748,6 +2780,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
                     int i, index;
+                    boolean canView;
+                    SampleDO s;
                     UUID data;
                     Node root, first;
 
@@ -2757,7 +2791,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                      */
                     i = 0;
                     while (i < result.size()) {
-                        if ( !patientPermission.canViewSample(result.get(i).getSample()))
+                        s = result.get(i).getSample();
+                        if ( !Constants.domain().PT.equals(s.getDomain()))
+                            canView = patientPermission.canViewSample(s);
+                        else
+                            canView = patientPermission.canViewSample(result.get(i).getSamplePT());
+                        if ( !canView)
                             result.remove(i);
                         else
                             i++ ;
@@ -2981,6 +3020,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     private void loadSample(Node node, SampleManager1 sm) {
         int i, j;
         boolean validate;
+        String domain, addDomain;
         AnalysisViewDO ana;
         SampleItemViewDO item;
         SampleDO sample;
@@ -3008,9 +3048,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * patient
          */
         pat = null;
-        if (Constants.domain().CLINICAL.equals(sample.getDomain()))
+        domain = sample.getDomain();
+        addDomain = sm.getSamplePT() != null ? sm.getSamplePT().getAdditionalDomain() : null;
+        if (Constants.domain().CLINICAL.equals(domain) ||
+            Constants.domain().CLINICAL.equals(addDomain))
             pat = sm.getSampleClinical().getPatient();
-        else if (Constants.domain().NEONATAL.equals(sample.getDomain()))
+        else if (Constants.domain().NEONATAL.equals(domain) ||
+                 Constants.domain().NEONATAL.equals(addDomain))
             pat = sm.getSampleNeonatal().getPatient();
 
         if (pat != null)
@@ -3633,10 +3677,10 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * shows different tabs and loads them with the data related to the node
      */
     private void refreshTabs(Node selection) {
-        ArrayList<Tab> tabs;
         String domain;
         SelectedType type;
         UUID data;
+        ArrayList<Tab> tabs;
 
         type = SelectedType.NONE;
         tabs = new ArrayList<Tab>();
@@ -3649,23 +3693,27 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             tabs.add(Tab.SAMPLE);
 
             /*
-             * find out which domain's tab is to be shown
+             * find out which domain's tab is to be shown; for PT samples, show
+             * the tab for the additional domain as well, if applicable
              */
             domain = manager.getSample().getDomain();
-            if (Constants.domain().ENVIRONMENTAL.equals(domain))
+            if (Constants.domain().ENVIRONMENTAL.equals(domain)) {
                 tabs.add(Tab.ENVIRONMENTAL);
-            else if (Constants.domain().SDWIS.equals(domain))
+            } else if (Constants.domain().SDWIS.equals(domain)) {
                 tabs.add(Tab.SDWIS);
-            else if (Constants.domain().NEONATAL.equals(domain))
+            } else if (Constants.domain().NEONATAL.equals(domain)) {
                 tabs.add(Tab.NEONATAL);
-            else if (Constants.domain().CLINICAL.equals(domain))
+            } else if (Constants.domain().CLINICAL.equals(domain)) {
                 tabs.add(Tab.CLINICAL);
-            else if (Constants.domain().PT.equals(domain))
+            } else if (Constants.domain().PT.equals(domain)) {
                 tabs.add(Tab.PT);
-            else if (Constants.domain().ANIMAL.equals(domain))
+                if (Constants.domain().CLINICAL.equals(manager.getSamplePT().getAdditionalDomain()))
+                    tabs.add(Tab.CLINICAL);
+            } else if (Constants.domain().ANIMAL.equals(domain)) {
                 tabs.add(Tab.ANIMAL);
-            else if (Constants.domain().QUICKENTRY.equals(domain))
+            } else if (Constants.domain().QUICKENTRY.equals(domain)) {
                 tabs.add(Tab.QUICK_ENTRY);
+            }
         } else if (SAMPLE_ITEM_LEAF.equals(selection.getType())) {
             /*
              * show sample item

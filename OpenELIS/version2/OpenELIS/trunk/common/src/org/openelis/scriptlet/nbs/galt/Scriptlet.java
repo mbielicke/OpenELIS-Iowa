@@ -26,20 +26,25 @@
 package org.openelis.scriptlet.nbs.galt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.manager.AnalyteParameterManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.scriptlet.SampleSO;
 import org.openelis.scriptlet.SampleSO.Action_Before;
+import org.openelis.scriptlet.ms.Util;
 import org.openelis.scriptlet.nbs.Cache;
 import org.openelis.scriptlet.nbs.ScriptletProxy;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 import org.openelis.utilcommon.ResultFormatter;
@@ -52,13 +57,16 @@ import org.openelis.utilcommon.ResultHelper;
  */
 public class Scriptlet implements ScriptletInt<SampleSO> {
 
-    private ScriptletProxy proxy;
+    private ScriptletProxy           proxy;
 
-    private Integer            analysisId;
+    private Integer                  analysisId;
 
-    private static Integer     INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ, INTER_BORD;
+    private AnalyteParameterManager1 paramManager;
 
-    private Cache          nbsCache1;
+    private static Integer           INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ,
+                    INTER_BORD;
+
+    private Cache                    nbsCache1;
 
     public Scriptlet(ScriptletProxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -72,7 +80,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             INTER_TRAN = proxy.getDictionaryBySystemName("newborn_inter_tran").getId();
             INTER_TRANU = proxy.getDictionaryBySystemName("newborn_inter_tranu").getId();
             INTER_PQ = proxy.getDictionaryBySystemName("newborn_inter_pq").getId();
-            INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord").getId();
+            INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord_nr").getId();
         }
 
         if (nbsCache1 == null)
@@ -88,7 +96,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         ArrayList<String> changes;
 
         proxy.log(Level.FINE, "In NbsGaltScriptlet1.run", null);
-        
+
         changes = data.getChanges();
         ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
@@ -103,6 +111,12 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         if (data.getActionBefore().contains(Action_Before.RESULT)) {
             res = (ResultViewDO)data.getManager().getObject(data.getUid());
             if ( !analysisId.equals(res.getAnalysisId()))
+                return data;
+        } else if (data.getActionBefore().contains(Action_Before.COMPLETE) ||
+                   data.getActionBefore().contains(Action_Before.RELEASE) ||
+                   changes.contains(SampleMeta.getAnalysisStartedDate())) {
+            ana = (AnalysisViewDO)data.getManager().getObject(data.getUid());
+            if ( !analysisId.equals(ana.getId()))
                 return data;
         } else if ( !data.getActionBefore().contains(Action_Before.QA) &&
                    !changes.contains(SampleMeta.getNeonatalIsTransfused()) &&
@@ -135,6 +149,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         QaEventDO qa;
         TestManager tm;
         ResultFormatter rf;
+        HashMap<Integer, AnalyteParameterViewDO> paramMap;
 
         sm = data.getManager();
         galtVal = null;
@@ -169,6 +184,25 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             dict = getDictionaryByValue(overVal);
             if (dict == null || !"no".equals(dict.getSystemName()) || galtVal == null)
                 return;
+            
+            /*
+             * get this test's analyte parameters; they provide p-values for
+             * "Galactose 1 phosphate uridyl transferase"
+             */
+            if (paramManager == null) {
+                try {
+                    paramManager = proxy.fetchParameters(ana.getTestId(), Constants.table().TEST);
+                } catch (NotFoundException e) {
+                    /*
+                     * analyte parameters were not found; if this exception is
+                     * not handled here, an error with the message "null" is
+                     * shown, which is not very helpful; a more descriptive
+                     * error will be added later if some computation(s) can't be
+                     * done because of missing p-values
+                     */
+                }
+            }
+            paramMap = Util.getParameters(paramManager, data, ana);
 
             /*
              * the value of interpretation is "presumptive positive" if the

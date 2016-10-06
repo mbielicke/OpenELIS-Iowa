@@ -25,6 +25,8 @@
 */
 package org.openelis.scriptlet.ms.quad;
 
+import org.openelis.scriptlet.ms.Util;
+
 /**
  * The class that stores the data for SLOS risk 
  */
@@ -42,9 +44,9 @@ public class SLOS extends Risk {
     public void computeRisk(double[] mom, double apr) {
         double ordinalUA, ordinalDS;
         
-        ordinalUA = getOrdinal(mom, 3, 0.00001811,
+        ordinalUA = Util.getOrdinal(mom, 3, 0.00001811,
                                getMeanUA(), getConstUA());
-        ordinalDS = getOrdinal(mom, 3, 0.0001886,
+        ordinalDS = Util.getOrdinal(mom, 3, 0.0001886,
                                getMeanDS(), getConstDS());
         setRisk((int) Math.round(20000/(ordinalDS / ordinalUA)));
     }

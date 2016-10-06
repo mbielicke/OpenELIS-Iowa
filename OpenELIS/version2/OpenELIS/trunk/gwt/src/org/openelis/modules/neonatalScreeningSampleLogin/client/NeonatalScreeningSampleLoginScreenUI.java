@@ -46,6 +46,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -104,6 +105,7 @@ import org.openelis.modules.sample1.client.NextOfKinChangeEvent;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PatientChangeEvent;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
+import org.openelis.modules.sample1.client.QAEventRemovedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -330,7 +332,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
-    protected SystemVariableDO                          attachmentPatternVariable, genTRFPatternVariable;
+    protected SystemVariableDO                          attachmentPatternVariable,
+                    genTRFPatternVariable;
 
     protected Integer                                   domainScriptletId;
 
@@ -3721,8 +3724,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * this domain's TRFs
              */
             if (attachmentPatternVariable == null)
-                attachmentPatternVariable = SystemVariableService1Impl.INSTANCE
-                                                                 .fetchByExactName("attachment_pattern_neonatal");
+                attachmentPatternVariable = SystemVariableService1Impl.INSTANCE.fetchByExactName("attachment_pattern_neonatal");
             /*
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
@@ -3752,7 +3754,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
             };
             Scheduler.get().scheduleDeferred(cmd);
-            
+
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -4319,7 +4321,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void addScriptlets() throws Exception {
         SystemVariableDO sv;
-        
+
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
@@ -4436,7 +4438,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * run the scritplet and show the errors and the changed data
          */
         data = scriptletRunner.run(data);
-
+        clearStatus();
         if (data.getExceptions() != null && data.getExceptions().size() > 0) {
             errors = new ValidationErrorsList();
             for (Exception e : data.getExceptions())
@@ -4447,68 +4449,80 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager = data.getManager();
         evaluateEdit();
         setData();
-
-        if (data.getChangedUids() == null)
-            return;
-        /*
-         * go through the changed uids and fire appropriate events to refresh
-         * particular parts of the screen
-         */
-        selUid = sampleItemAnalysisTreeTab.getSelectedUid();
         actionAfter = data.getActionAfter();
-        for (String cuid : data.getChangedUids()) {
-            obj = manager.getObject(cuid);
-            if (obj instanceof ResultDO) {
-                /*
-                 * if any results were changed and if any of them belong to the
-                 * analysis selected in the tree then refresh the result tab,
-                 * otherwise don't
-                 */
-                res = (ResultViewDO)obj;
-                auid = Constants.uid().getAnalysis(res.getAnalysisId());
-                if (auid.equals(selUid))
-                    bus.fireEvent(new ResultChangeEvent(auid));
-            } else if (obj instanceof SampleItemDO) {
-                /*
-                 * if any sample items were changed or added then refresh the
-                 * tree and sample item tabs
-                 */
-                if (actionAfter != null) {
-                    if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
-                        bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
-                    else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
-                        bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
-                }
-            } else if (obj instanceof AnalysisQaEventDO) {
-                /*
-                 * if analysis qa events were changed was added and if any of
-                 * them belong to the analysis selected in the tree then refresh
-                 * the qa event tab, otherwise don't
-                 */
-                aqa = (AnalysisQaEventViewDO)obj;
-                auid = Constants.uid().getAnalysis(aqa.getAnalysisId());
-                if (auid.equals(selUid))
-                    bus.fireEventFromSource(new QAEventAddedEvent(auid), screen);
-            } else if (obj instanceof NoteDO) {
-                /*
-                 * find out whether the note was a sample or analysis note
-                 */
-                note = (NoteDO)obj;
-                if (Constants.table().ANALYSIS.equals(note.getReferenceTableId())) {
-                    auid = Constants.uid().getAnalysis(note.getReferenceId());
+        if (data.getChangedUids() != null) {
+            /*
+             * go through the changed uids and fire appropriate events to
+             * refresh particular parts of the screen
+             */
+            selUid = sampleItemAnalysisTreeTab.getSelectedUid();
+            for (String cuid : data.getChangedUids()) {
+                obj = manager.getObject(cuid);
+                if (obj instanceof ResultDO) {
                     /*
-                     * if the note belongs to the analysis selected in the tree
-                     * then refresh the note tab, otherwise don't
+                     * if any results were changed and if any of them belong to
+                     * the analysis selected in the tree then refresh the result
+                     * tab, otherwise don't
                      */
+                    res = (ResultViewDO)obj;
+                    auid = Constants.uid().getAnalysis(res.getAnalysisId());
                     if (auid.equals(selUid))
-                        bus.fireEvent(new NoteChangeEvent(auid));
-                } else {
+                        bus.fireEvent(new ResultChangeEvent(auid));
+                } else if (obj instanceof SampleItemDO) {
                     /*
-                     * refresh the note tab because it's sample note
+                     * if any sample items were changed or added then refresh
+                     * the tree and sample item tabs
                      */
-                    bus.fireEvent(new NoteChangeEvent(null));
+                    if (actionAfter != null) {
+                        if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
+                            bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
+                        else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
+                            bus.fireEvent(new SampleItemChangeEvent(cuid,
+                                                                    Action.SAMPLE_TYPE_CHANGED));
+                    }
+                } else if (obj instanceof AnalysisDO) {
+                    /*
+                     * if analysis qa events were removed and any of them belong to
+                     * the analysis selected in the tree, refresh the qa event tab
+                     */
+                    if (actionAfter.contains(Action_After.QA_REMOVED) && cuid.equals(selUid))
+                        bus.fireEventFromSource(new QAEventRemovedEvent(cuid), screen);
+                } else if (obj instanceof AnalysisQaEventDO) {
+                    /*
+                     * if analysis qa events were changed was added and if any
+                     * of them belong to the analysis selected in the tree then
+                     * refresh the qa event tab, otherwise don't
+                     */
+                    aqa = (AnalysisQaEventViewDO)obj;
+                    auid = Constants.uid().getAnalysis(aqa.getAnalysisId());
+                    if (auid.equals(selUid))
+                        bus.fireEventFromSource(new QAEventAddedEvent(auid), screen);
+                } else if (obj instanceof NoteDO) {
+                    /*
+                     * find out whether the note was a sample or analysis note
+                     */
+                    note = (NoteDO)obj;
+                    if (Constants.table().ANALYSIS.equals(note.getReferenceTableId())) {
+                        auid = Constants.uid().getAnalysis(note.getReferenceId());
+                        /*
+                         * if the note belongs to the analysis selected in the
+                         * tree then refresh the note tab, otherwise don't
+                         */
+                        if (auid.equals(selUid))
+                            bus.fireEvent(new NoteChangeEvent(auid));
+                    } else {
+                        /*
+                         * refresh the note tab because it's sample note
+                         */
+                        bus.fireEvent(new NoteChangeEvent(null));
+                    }
                 }
             }
+        }
+        
+        if (actionAfter != null && actionAfter.contains(Action_After.DOMAIN_CHANGED)) {
+            setState(state);
+            fireDataChange();
         }
     }
 
@@ -6333,8 +6347,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * for TRFs and can be used in java code for pattern matching
                  */
                 if (genTRFPatternVariable == null)
-                    genTRFPatternVariable = SystemVariableService1Impl.INSTANCE
-                                                                 .fetchByExactName("attachment_pattern_gen_java");
+                    genTRFPatternVariable = SystemVariableService1Impl.INSTANCE.fetchByExactName("attachment_pattern_gen_java");
             } catch (Throwable e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);

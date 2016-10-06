@@ -25,7 +25,6 @@
  */
 package org.openelis.scriptlet.ms.conf;
 
-import org.openelis.scriptlet.ms.conf.Constants.Sample_Type;
 import org.openelis.scriptlet.ms.quad.NTD;
 import org.openelis.scriptlet.ms.quad.Test;
 
@@ -34,8 +33,6 @@ import org.openelis.scriptlet.ms.quad.Test;
  * Fluid AFP) test
  */
 public class Compute extends org.openelis.scriptlet.ms.quad.Compute {    
-    private Sample_Type sampleType;
-    
     public Compute() {
         /*
          * instantiate tests and risks
@@ -43,10 +40,6 @@ public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
         tests = new Test[1];
         tests[0] = new AFP();
         ntd = new NTD();
-    }
-
-    public void setSampleType(Sample_Type sampleType) {
-        this.sampleType = sampleType;
     }
 
     /**
@@ -65,24 +58,20 @@ public class Compute extends org.openelis.scriptlet.ms.quad.Compute {
      * Returns the limit (cutoff) for NTD
      */
     public Double getLimitNTD() {
-        double limit;
-
         if ( !didCmpRisks)
             return null;
 
-        limit = 0.0d;
-        if (numFetus.intValue() == 1) {
-            if (Sample_Type.SERUM.equals(sampleType))
-                limit = (hasNTDHistory) ? 2.0d : 2.2d;
-            else
-                limit = 2.0d;
-        }
-        if (numFetus.intValue() == 2) {
-            if (Sample_Type.SERUM.equals(sampleType))
-                limit = (hasNTDHistory) ? 4.0d : 4.4d;
-            else
-                limit = 2.0d;
-        }
-        return limit;
+        return 2.0d;
+    }
+    
+    /**
+     * Computes NTD -- NA
+     */
+    protected void cmpNTD() {
+        if ( !super.didCmpMoMs())
+            return;
+        
+        ((NTD)ntd).computeRisk(null, 0.0);
+        didCmpRisks = true;
     }
 }

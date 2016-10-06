@@ -33,8 +33,10 @@ import java.util.logging.Level;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.manager.AnalyteParameterManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
+import org.openelis.modules.analyteParameter1.client.AnalyteParameterService1;
 import org.openelis.modules.qaevent.client.QaEventService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.test.client.TestService;
@@ -81,5 +83,11 @@ public class ScriptletProxy implements org.openelis.scriptlet.nbs.ScriptletProxy
     @Override
     public void log(Level level, String message, Exception e) {
         logger.log(level, message, e);
+    }
+
+    @Override
+    public AnalyteParameterManager1 fetchParameters(Integer referenceId, Integer referenceTableId) throws Exception {
+        return AnalyteParameterService1.get().fetchByReferenceIdReferenceTableId(referenceId,
+                                                                                 referenceTableId);
     }
 }

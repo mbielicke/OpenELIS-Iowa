@@ -325,6 +325,7 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLE_PROJECT_SAMPLE_ID = "_sampleProject.sampleId",
                     SAMPLE_PROJECT_PROJECT_ID = "_sampleProject.projectId",
                     SAMPLE_PROJECT_IS_PERMANENT = "_sampleProject.isPermanent",
+                    
 
                     // TODO remove this after converting the login screens to
                     // the new framework
@@ -336,6 +337,17 @@ public class SampleMeta implements Meta, MetaMap {
                     PROJECT_REFERENCE_TO = "_project.referenceTo",
                     PROJECT_OWNER_ID = "_project.ownerId",
                     PROJECT_SCRIPTLET_ID = "_project.scriptletId",
+                    
+                    RESULT_ID = "_result.id",
+                    RESULT_ANALYSIS_ID = "_result.analysisId",
+                    RESULT_TEST_ANALYTE_ID = "_result.testAnalyteId",
+                    RESULT_TEST_RESULT_ID = "_result.testResultId",
+                    RESULT_IS_COLUMN = "_result.isColumn",
+                    RESULT_SORT_ORDER = "_result.sortOrder",
+                    RESULT_IS_REPORTABLE = "_result.isReportable",
+                    RESULT_ANALYTE_ID = "_result.analyteId",
+                    RESULT_TYPE_ID = "_result.typeId",
+                    RESULT_VALUE = "_result.value",
 
                     AUX_DATA_ID = "_auxData.id", AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
                     AUX_DATA_REFERENCE_ID = "_auxData.referenceId",
@@ -372,6 +384,8 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_TEST_IS_ACTIVE = "_test.isActive",
 
                     ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
+                    
+                    RESULT_ANALYTE_EXTERNAL_ID = "_result.analyte.externalId",
 
                     ORG_PARAM_TYPE_ID = "_organizationParameter.typeId",
                     ORG_PARAM_VALUE = "_organizationParameter.value",
@@ -646,6 +660,16 @@ public class SampleMeta implements Meta, MetaMap {
                                                   PROJECT_REFERENCE_TO,
                                                   PROJECT_OWNER_ID,
                                                   PROJECT_SCRIPTLET_ID,
+                                                  RESULT_ID,
+                                                  RESULT_ANALYSIS_ID,
+                                                  RESULT_TEST_ANALYTE_ID,
+                                                  RESULT_TEST_RESULT_ID,
+                                                  RESULT_IS_COLUMN,
+                                                  RESULT_SORT_ORDER,
+                                                  RESULT_IS_REPORTABLE,
+                                                  RESULT_ANALYTE_ID,
+                                                  RESULT_TYPE_ID,
+                                                  RESULT_VALUE,
                                                   AUX_DATA_ID,
                                                   AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID,
@@ -672,6 +696,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_METHOD_ID,
                                                   ANALYSIS_TEST_IS_ACTIVE,
                                                   ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
+                                                  RESULT_ANALYTE_EXTERNAL_ID, 
                                                   ORG_PARAM_TYPE_ID,
                                                   ORG_PARAM_VALUE,
                                                   EORDER_PAPER_ORDER_VALIDATOR,
@@ -1727,6 +1752,46 @@ public class SampleMeta implements Meta, MetaMap {
         return PROJECT_SCRIPTLET_ID;
     }
 
+    public static String getResultId() {
+        return RESULT_ID;
+    }
+
+    public static String getResultAnalysisid() {
+        return RESULT_ANALYSIS_ID;
+    }
+
+    public static String getResultTestAnalyteId() {
+        return RESULT_TEST_ANALYTE_ID;
+    }
+
+    public static String getResultTestResultId() {
+        return RESULT_TEST_RESULT_ID;
+    }
+
+    public static String getResultIsColumn() {
+        return RESULT_IS_COLUMN;
+    }
+
+    public static String getResultSortOrder() {
+        return RESULT_SORT_ORDER;
+    }
+
+    public static String getResultIsReportable() {
+        return RESULT_IS_REPORTABLE;
+    }
+
+    public static String getResultAnalyteId() {
+        return RESULT_ANALYTE_ID;
+    }
+
+    public static String getResultTypeId() {
+        return RESULT_TYPE_ID;
+    }
+
+    public static String getResultValue() {
+        return RESULT_VALUE;
+    }
+
     public static String getAuxDataId() {
         return AUX_DATA_ID;
     }
@@ -1830,7 +1895,11 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAnalysisResultTestResultFlagsId() {
         return ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID;
     }
-
+    
+    public static String getResultAnalyteExternalId() {
+        return RESULT_ANALYTE_EXTERNAL_ID;
+    }
+    
     public static String getOrgParamTypeId() {
         return ORG_PARAM_TYPE_ID;
     }
@@ -2001,12 +2070,16 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("method.") > -1)
             from += ", IN (_test.method) _method ";
+        
+        if (where.indexOf("result.") > -1)
+            from += ", IN (_analysis.result) _result ";
 
         if (where.indexOf("testResult.") > -1) {
-            from += ", IN (_analysis.result) _result ";
+            if (where.indexOf("result.") < 0)
+                from += ", IN (_analysis.result) _result ";
             from += ", IN (_result.testResult) _testResult ";
         }
-
+        
         if (where.indexOf("sampleQaevent.") > -1 || where.indexOf("sQaevent.") > -1)
             from += ", IN(_sample.sampleQAEvent) _sampleQaevent";
 

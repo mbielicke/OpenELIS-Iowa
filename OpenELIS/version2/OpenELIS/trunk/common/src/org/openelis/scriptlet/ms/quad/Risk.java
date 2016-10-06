@@ -34,9 +34,6 @@ public abstract class Risk {
     private double  meanUA[], meanDS[], constUA[], constDS[];
     private int risk;
 
-    protected Risk() {
-    }
-
     protected Risk(double meanUA[], double meanDS[], double constUA[], double constDS[]) {
         this.meanUA = meanUA;
         this.meanDS = meanDS;
@@ -47,64 +44,47 @@ public abstract class Risk {
     /**
      * Returns the unaffected mean
      */
-    public double[] getMeanUA() {
+    protected double[] getMeanUA() {
         return meanUA;
     }
 
     /**
      * Returns the Disease mean
      */
-    public double[] getMeanDS() {
+    protected double[] getMeanDS() {
         return meanDS;
     }
 
     /**
      * Returns the unaffected constant multiplier
      */
-    public double[] getConstUA() {
+    protected double[] getConstUA() {
         return constUA;
     }
 
     /**
      * Returns the disease constant multiplier
      */
-    public double[] getConstDS() {
+    protected double[] getConstDS() {
         return constDS;
     }
 
     /**
      * Returns the computed risk
      */
-    public int getRisk() {
+    protected int getRisk() {
         return risk;
     }
 
     /**
      * Sets the risk
      */
-    public void setRisk(int risk) {
+    protected void setRisk(int risk) {
         this.risk = risk;
     }
 
     /**
      * Computes the risk based on passed MoMs and apriori risk
      */
-    public abstract void computeRisk(double mom[], double apr);
-
-    /**
-     * Computes and returns an ordinal value using passed parameters
-     */
-    protected double getOrdinal(double mom[], int dimension, double discriminant, double logMean[],
-                                double constant[]) {
-        int i, j, n;
-        double ordinal;
-
-        ordinal = 0.0;
-        for (i = 0, n = 0; i < dimension; i++ )
-            for (j = 0; j < dimension; j++ , n++ )
-                ordinal += (constant[n] * (Math.log10(mom[i]) - logMean[i]) * (Math.log10(mom[j]) - logMean[j]));
-
-        return Math.pow(2.0 * Math.PI, -dimension / 2) * (1 / Math.sqrt(discriminant)) *
-               Math.exp( -0.5 * ordinal);
-    }
+    protected abstract void computeRisk(double mom[], double apr);
 }

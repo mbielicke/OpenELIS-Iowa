@@ -404,6 +404,16 @@
             </g:layer>
           </g:LayoutPanel>
         </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_clinical}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:ClinicalTabUI ui:field="clinicalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
       </w:TabLayoutPanel>
     </g:layer>
   </g:LayoutPanel>

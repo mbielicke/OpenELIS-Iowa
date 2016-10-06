@@ -1,13 +1,9 @@
 package org.openelis.modules.completeRelease1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +20,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -65,6 +62,7 @@ import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample1.client.AccessionChangeEvent;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
+import org.openelis.modules.sample1.client.AdditionalDomainChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
@@ -78,6 +76,7 @@ import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
+import org.openelis.modules.sample1.client.QAEventRemovedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -95,6 +94,7 @@ import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingEntry;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
@@ -212,7 +212,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected PTTabUI                          ptTab;
-    
+
     @UiField(provided = true)
     protected AnimalTabUI                      animalTab;
 
@@ -250,8 +250,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1> managers;
 
-    protected boolean                          isBusy, hasEnvScriptlet, hasNeonatalScriptlet,
-                    hasSDWISScriptlet;
+    protected boolean                          isBusy, fetchEnvScriptlet, fetchNeonatalScriptlet,
+                    fetchSDWISScriptlet;
 
     protected ModulePermission                 samplePermission;
 
@@ -299,9 +299,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROVIDER};
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY,
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA, ATTACHMENT, BLANK
+        SAMPLE, ENVIRONMENTAL, SDWIS, NEONATAL, CLINICAL, PT, ANIMAL, QUICK_ENTRY, SAMPLE_ITEM,
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
+        ATTACHMENT, BLANK
     };
 
     protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_scriptlet",
@@ -449,9 +449,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         initialize();
         manager = null;
         managers = null;
-        hasEnvScriptlet = true;
-        hasSDWISScriptlet = true;
-        hasNeonatalScriptlet = true;
+        fetchEnvScriptlet = true;
+        fetchSDWISScriptlet = true;
+        fetchNeonatalScriptlet = true;
         showTabs(Tabs.BLANK);
         setData();
         setState(DEFAULT);
@@ -899,7 +899,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        environmentalTab.setCanQuery(false);        // query not allowed on this screen
+        environmentalTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -914,7 +914,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        sdwisTab.setCanQuery(false);                // query not allowed on this screen
+        sdwisTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -951,7 +951,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        clinicalTab.setCanQuery(false);         // query not allowed on this screen
+        clinicalTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -966,7 +966,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        ptTab.setCanQuery(false);               // query not allowed on this screen
+        ptTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(animalTab, "animalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -989,7 +989,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        animalTab.setCanQuery(false);   // query not allowed on this screen
+        animalTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1020,7 +1020,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        sampleItemTab.setCanQuery(false);   // query not allowed on this screen
+        sampleItemTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1141,7 +1141,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        auxDataTab.setCanQuery(false);          // query not allowed on this screen
+        auxDataTab.setCanQuery(false); // query not allowed on this screen
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent<Object> event) {
@@ -1156,7 +1156,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return attachmentTab.getQueryFields();
             }
         });
-        attachmentTab.setCanQuery(false);       // query not allowed on this screen
+        attachmentTab.setCanQuery(false); // query not allowed on this screen
 
         /*
          * handlers for the events fired by the tabs
@@ -1262,6 +1262,37 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 displayAttachment(event.getId(), event.getIsSameWindow());
             }
         });
+
+        bus.addHandler(AdditionalDomainChangeEvent.getType(),
+                       new AdditionalDomainChangeEvent.Handler() {
+                           @Override
+                           public void onAdditionalDomainChange(AdditionalDomainChangeEvent event) {
+                               try {
+                                   UUID data;
+                                   
+                                   manager = SampleService1.get()
+                                                           .setAdditionalDomain(manager,
+                                                                                event.getAdditionalDomain());
+                                   managers.put(manager.getSample().getId(), manager);
+                                   setData();
+                                   setState(state);
+                                   /*
+                                    * find the sample node for the currently
+                                    * selected node;reload the changed sample in
+                                    * the tree and refresh the tree
+                                    */
+                                   data = table.getRowAt(table.getSelectedRow()).getData();
+                                   refreshTabs(data, true);
+                                   if (manager.getSampleClinical() != null)
+                                       runScriptlets(null,
+                                                     SampleMeta.getClinicalPatientId(),
+                                                     Action_Before.PATIENT);
+                               } catch (Exception e) {
+                                   Window.alert(e.getMessage());
+                                   logger.log(Level.SEVERE, e.getMessage(), e);
+                               }
+                           }
+                       });
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -2023,17 +2054,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("details")
     protected void details(ClickEvent event) {
-        org.openelis.ui.widget.Window window;
         final SampleTrackingScreenUI trackingScreen;
         ScheduledCommand cmd;
+        SampleTrackingEntry entry;
 
         try {
-            window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().sampleTracking_tracking());
-            window.setSize("1074px", "435px");
-            trackingScreen = new SampleTrackingScreenUI(window);
-            window.setContent(trackingScreen);
-            OpenELIS.getBrowser().addWindow(window, "tracking");
+            entry = new SampleTrackingEntry();
+            trackingScreen = entry.addScreen();
             cmd = new ScheduledCommand() {
                 @Override
                 public void execute() {
@@ -2285,7 +2312,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * create the sciptlet object
          */
         data = new SampleSO();
-        data.addActionBefore(action);
+        if (action != null)
+            data.addActionBefore(action);
         data.setChange(changed);
         data.setUid(uid);
         data.setManager(manager);
@@ -2295,7 +2323,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * run the scritplet and show the errors and the changed data
          */
         data = scriptletRunner.run(data);
-
+        clearStatus();
         if (data.getExceptions() != null && data.getExceptions().size() > 0) {
             errors = new ValidationErrorsList();
             for (Exception e : data.getExceptions())
@@ -2339,6 +2367,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
                         bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
                 }
+            } else if (obj instanceof AnalysisDO) {
+                /*
+                 * if analysis qa events were removed and any of them belong to
+                 * the analysis selected in the tree, refresh the qa event tab
+                 */
+                if (actionAfter.contains(Action_After.QA_REMOVED) && cuid.equals(selUid))
+                    bus.fireEventFromSource(new QAEventRemovedEvent(cuid), screen);
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
                  * if analysis qa events were added and if any of them belong to
@@ -2373,7 +2408,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Runs the scriptlet for the neonatal domain
+     * Runs the scriptlet for the current domain
      */
     private void runDomainScriptlet(Action_Before operation) throws Exception {
         Integer id;
@@ -2397,10 +2432,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * found the first time because the scriptlet is optional
          */
         if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
-            if (hasEnvScriptlet) {
+            if (fetchEnvScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2422,14 +2456,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
-                hasEnvScriptlet = false;
+                fetchEnvScriptlet = false;
             }
             return envScriptletId;
         } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
-            if (hasSDWISScriptlet) {
+            if (fetchSDWISScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2451,14 +2484,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
-                hasSDWISScriptlet = false;
+                fetchSDWISScriptlet = false;
             }
             return sdwisScriptletId;
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
-            if (hasNeonatalScriptlet) {
+            if (fetchNeonatalScriptlet) {
                 try {
-                    data = SystemVariableService1Impl.INSTANCE
-                                                .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                    data = SystemVariableService1Impl.INSTANCE.fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -2480,7 +2512,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
-                hasNeonatalScriptlet = false;
+                fetchNeonatalScriptlet = false;
             }
             return neonatalScriptletId;
         }
@@ -2738,7 +2770,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void refreshTabs(UUID data, boolean forceReloadResults) {
         String uid, domain;
-        Tabs domainTab;
+        Tabs domainTab, addDomainTab;
         SelectedType type;
         AnalysisViewDO ana;
         SampleManager1 sm;
@@ -2756,23 +2788,28 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             domain = sm.getSample().getDomain();
             domainTab = Tabs.BLANK;
-            if (Constants.domain().ENVIRONMENTAL.equals(domain))
+            addDomainTab = Tabs.BLANK;
+            if (Constants.domain().ENVIRONMENTAL.equals(domain)) {
                 domainTab = Tabs.ENVIRONMENTAL;
-            else if (Constants.domain().SDWIS.equals(domain))
+            } else if (Constants.domain().SDWIS.equals(domain)) {
                 domainTab = Tabs.SDWIS;
-            else if (Constants.domain().NEONATAL.equals(domain))
+            } else if (Constants.domain().NEONATAL.equals(domain)) {
                 domainTab = Tabs.NEONATAL;
-            else if (Constants.domain().CLINICAL.equals(domain))
+            } else if (Constants.domain().CLINICAL.equals(domain)) {
                 domainTab = Tabs.CLINICAL;
-            else if (Constants.domain().PT.equals(domain))
+            } else if (Constants.domain().PT.equals(domain)) {
                 domainTab = Tabs.PT;
-            else if (Constants.domain().ANIMAL.equals(domain))
+                if (Constants.domain().CLINICAL.equals(manager.getSamplePT().getAdditionalDomain()))
+                    addDomainTab = Tabs.CLINICAL;
+            } else if (Constants.domain().ANIMAL.equals(domain)) {
                 domainTab = Tabs.ANIMAL;
-            else if (Constants.domain().QUICKENTRY.equals(domain))
+            } else if (Constants.domain().QUICKENTRY.equals(domain)) {
                 domainTab = Tabs.QUICK_ENTRY;
+            }
 
             showTabs(Tabs.SAMPLE,
                      domainTab,
+                     addDomainTab,
                      Tabs.SAMPLE_ITEM,
                      Tabs.ANALYSIS,
                      Tabs.TEST_RESULT,

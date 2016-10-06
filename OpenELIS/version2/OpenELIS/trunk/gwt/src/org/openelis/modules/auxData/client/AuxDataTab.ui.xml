@@ -34,9 +34,9 @@
             <w:Check />
           </t:CheckBoxCell>
         </t:Column>
-        <t:Column width="130" label="{msg.gen_name}">
+        <t:Column width="200" label="{msg.gen_name}">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="analyte" width = "130px" dropWidth = "280px">
+            <w:AutoComplete ui:field="analyte" width = "200px" dropWidth = "280px">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="130" label="{msg.gen_analyte}">

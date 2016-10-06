@@ -30,8 +30,8 @@ import com.google.gwt.event.shared.GwtEvent;
 
 /**
  * The event is used to inform the handler that a qa event was removed from
- * either the sample or an analysis. The unique identifier for the qa event is
- * specified through uid.
+ * either the sample or an analysis. If an analysis qa event was removed, the
+ * unique identifier for the analysis is specified through uid.
  */
 public class QAEventRemovedEvent extends GwtEvent<QAEventRemovedEvent.Handler> {
 

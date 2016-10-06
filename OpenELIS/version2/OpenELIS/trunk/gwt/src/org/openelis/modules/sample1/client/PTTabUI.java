@@ -37,6 +37,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.event.DataChangeEvent;
@@ -72,33 +73,36 @@ public class PTTabUI extends Screen {
     private static PTTabUIBinder uiBinder = GWT.create(PTTabUIBinder.class);
 
     @UiField
-    protected Dropdown<Integer>             ptProvider;
+    protected Dropdown<Integer>  ptProvider;
 
     @UiField
-    protected Calendar                      dueDate;
+    protected Calendar           dueDate;
 
     @UiField
-    protected TextBox<String>               series;
+    protected TextBox<String>    series;
 
     @UiField
-    protected AutoComplete                  receivedByName;
+    protected AutoComplete       receivedByName;
 
     @UiField
-    protected Dropdown<String>              additionalDomain;
+    protected Dropdown<String>   additionalDomain;
 
-    protected SampleManager1                manager;
+    protected SampleManager1     manager;
 
-    protected Screen                        parentScreen;
+    protected Screen             parentScreen;
 
-    protected EventBus                      parentBus;
+    protected EventBus           parentBus;
 
-    protected boolean                       canEdit, isBusy, isVisible, redraw, canQuery;
+    protected boolean            canEdit, isBusy, isVisible, redraw, canQuery;
+
+    protected PatientPermission  patientPermission;
 
     public PTTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
         this.window = parentScreen.getWindow();
         initWidget(uiBinder.createAndBindUi(this));
+        patientPermission = new PatientPermission();
         initialize();
 
         manager = null;
@@ -111,7 +115,7 @@ public class PTTabUI extends Screen {
         ArrayList<Item<String>> stmodel;
 
         addScreenHandler(ptProvider, SampleMeta.getPTPTProviderId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 ptProvider.setValue(getPTProviderId());
             }
 
@@ -131,7 +135,7 @@ public class PTTabUI extends Screen {
         });
 
         addScreenHandler(series, SampleMeta.getPTSeries(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 series.setValue(getSeries());
             }
 
@@ -151,7 +155,7 @@ public class PTTabUI extends Screen {
         });
 
         addScreenHandler(dueDate, SampleMeta.getPTDueDate(), new ScreenHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Datetime> event) {
                 dueDate.setValue(getDueDate());
             }
 
@@ -173,7 +177,7 @@ public class PTTabUI extends Screen {
         addScreenHandler(additionalDomain,
                          SampleMeta.getPTAdditionalDomain(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  additionalDomain.setValue(getAdditionalDomain());
                              }
 
@@ -182,7 +186,8 @@ public class PTTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 additionalDomain.setEnabled( (isState(QUERY) && canQuery));
+                                 additionalDomain.setEnabled(isState(QUERY) ||
+                                                             (canEdit && isState(ADD, UPDATE)));
                                  additionalDomain.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
@@ -194,7 +199,7 @@ public class PTTabUI extends Screen {
         addScreenHandler(receivedByName,
                          SampleMeta.getReceivedById(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  try {
                                      receivedByName.setValue(getReceivedById(), getReceivedByName());
                                  } catch (Exception e) {
@@ -281,8 +286,15 @@ public class PTTabUI extends Screen {
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_domain")) {
             if (Constants.domain().CLINICAL.equals(d.getCode()) ||
                 Constants.domain().NEONATAL.equals(d.getCode())) {
+                /*
+                 * don't enable an additional domain if the user doesn't have
+                 * permission to view patients; disable neonatal until it's
+                 * fully implemented in OpenELIS
+                 */
                 strow = new Item<String>(d.getCode(), d.getEntry());
-                strow.setEnabled( ("Y".equals(d.getIsActive())));
+                strow.setEnabled( ("Y".equals(d.getIsActive())) &&
+                                 patientPermission.canViewSample(d) &&
+                                 Constants.domain().CLINICAL.equals(d.getCode()));
                 stmodel.add(strow);
             }
         }
@@ -398,7 +410,7 @@ public class PTTabUI extends Screen {
      * Sets the additional domain
      */
     private void setAdditionalDomain(String additionalDomain) {
-        manager.getSamplePT().setAdditionalDomain(additionalDomain);
+        parentBus.fireEvent(new AdditionalDomainChangeEvent(additionalDomain));
     }
 
     /**

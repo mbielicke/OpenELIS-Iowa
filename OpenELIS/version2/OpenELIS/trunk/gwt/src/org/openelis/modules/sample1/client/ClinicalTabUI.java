@@ -42,6 +42,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.provider1.client.ProviderService1;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
@@ -141,7 +142,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientId,
                          SampleMeta.getClinicalPatientId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientId.setValue(getPatientId());
                              }
 
@@ -188,7 +189,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientLastName,
                          SampleMeta.getClinicalPatientLastName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientLastName.setValue(getPatientLastName());
                              }
 
@@ -196,6 +197,7 @@ public class ClinicalTabUI extends Screen {
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientLastName);
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -213,7 +215,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientFirstName,
                          SampleMeta.getClinicalPatientFirstName(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientFirstName.setValue(getPatientFirstName());
                              }
 
@@ -221,6 +223,7 @@ public class ClinicalTabUI extends Screen {
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientFirstName);
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientFirstName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -238,12 +241,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientBirthDate,
                          SampleMeta.getClinicalPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  patientBirthDate.setValue(getPatientBirthDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthDate(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientBirthDate(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -261,7 +265,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientNationalId,
                          SampleMeta.getClinicalPatientNationalId(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientNationalId.setValue(getPatientNationalId());
                              }
 
@@ -269,6 +273,7 @@ public class ClinicalTabUI extends Screen {
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
                                      patientQueryChanged(patientNationalId);
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientNationalId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -286,12 +291,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrMultipleUnit,
                          SampleMeta.getClinicalPatientAddrMultipleUnit(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressMultipleUnit(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrMultipleUnit(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -310,12 +316,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrStreetAddress,
                          SampleMeta.getClinicalPatientAddrStreetAddress(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressStreetAddress(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrStreetAddress(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -334,12 +341,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrCity,
                          SampleMeta.getClinicalPatientAddrCity(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrCity.setValue(getPatientAddressCity());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressCity(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrCity(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -357,12 +365,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrState,
                          SampleMeta.getClinicalPatientAddrState(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrState.setValue(getPatientAddressState());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressState(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrState(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -380,12 +389,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrZipCode,
                          SampleMeta.getClinicalPatientAddrZipCode(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrZipCode.setValue(getPatientAddressZipCode());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressZipCode(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrZipCode(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -404,12 +414,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientAddrHomePhone,
                          SampleMeta.getClinicalPatientAddrHomePhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                              }
 
                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setPatientAddressHomePhone(event.getValue());                                 
+                                 setPatientAddressHomePhone(event.getValue());            
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientAddrHomePhone(), null);
                              }
 
                             public void onStateChange(StateChangeEvent event) {
@@ -427,12 +438,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientGender.setValue(getPatientGenderId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientGenderId(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientGenderId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -450,12 +462,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientRace,
                          SampleMeta.getClinicalPatientRaceId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientRace.setValue(getPatientRaceId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientRaceId(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientRaceId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -473,12 +486,13 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(patientEthnicity,
                          SampleMeta.getClinicalPatientEthnicityId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  patientEthnicity.setValue(getPatientEthnicityId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientEthnicityId(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getClinicalPatientEthnicityId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -510,13 +524,15 @@ public class ClinicalTabUI extends Screen {
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
+                
+                fireScriptletEvent(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
             }
         });
 
         addScreenHandler(providerLastName,
                          SampleMeta.getClinicalProviderLastName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  providerLastName.setValue(getProviderId(), getProviderLastName());
                              }
 
@@ -527,6 +543,7 @@ public class ClinicalTabUI extends Screen {
                                  if (event.getValue() != null)
                                      data = (ProviderDO)event.getValue().getData();
                                  setProvider(data);
+                                 fireScriptletEvent(null, SampleMeta.getClinicalProviderLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -577,7 +594,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(providerFirstName,
                          SampleMeta.getClinicalProviderFirstName(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  providerFirstName.setValue(getProviderFirstName());
                              }
 
@@ -595,7 +612,7 @@ public class ClinicalTabUI extends Screen {
         addScreenHandler(providerPhone,
                          SampleMeta.getClinicalProviderPhone(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  providerPhone.setValue(getProviderPhone());
                              }
 
@@ -810,6 +827,9 @@ public class ClinicalTabUI extends Screen {
                                       this);
     }
 
+    /**
+     * refreshes the tab to show the latest data if the tab is visible
+     */
     private void displaySampleClinical() {
         if ( !isVisible)
             return;
@@ -818,6 +838,13 @@ public class ClinicalTabUI extends Screen {
             redraw = false;
             fireDataChange();
         }
+    }
+    
+    /**
+     * fires a RunScriptletEvent to the parent screen
+     */
+    private void fireScriptletEvent(String uid, String changed, Action_Before operation) {
+        parentBus.fireEventFromSource(new RunScriptletEvent(uid, changed, operation), screen);
     }
 
     /**

@@ -33,22 +33,22 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleItemViewDO;
+import org.openelis.manager.AnalyteParameterManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.scriptlet.SampleSO;
 import org.openelis.scriptlet.SampleSO.Action_Before;
+import org.openelis.scriptlet.ms.Constants.Gest_Age_Method;
+import org.openelis.scriptlet.ms.Constants.Interpretation;
 import org.openelis.scriptlet.ms.ScriptletProxy;
 import org.openelis.scriptlet.ms.Util;
-import org.openelis.scriptlet.ms.conf.Constants.Sample_Type;
-import org.openelis.scriptlet.ms.quad.Constants.Gest_Age_Method;
-import org.openelis.scriptlet.ms.quad.Constants.Interpretation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorCaution;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 import org.openelis.utilcommon.ResultFormatter;
@@ -58,7 +58,7 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
 
 /**
- * The scriptlet for "ms ntd (Maternal NTD Screen)" test. It uses a compute
+ * The scriptlet for "ms conf (Amniotic Fluid AFP)" test. It uses a compute
  * engine to compute the MoMs for AFP and risk and interpretation for NTD. The
  * computations are done based on patient information and results entered by the
  * analyst. If the results are overridden, the MoM, risk and interpretation are
@@ -73,17 +73,18 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     private Compute                                        compute;
 
-    private static DateTimeFormat                          dateFormatter;
-
     private ArrayList<String>                              changes;
 
     private HashMap<String, HashMap<String, ResultViewDO>> resultMap;
 
+    private AnalyteParameterManager1                       paramManager;
+
+    private static DateTimeFormat                          dateFormatter;
+
     private static boolean                                 initialized;
 
-    private static Integer                                 YES, NO, GEST_AGE_LMP, GEST_AGE_US,
-                    INT_POSITIVE, INT_NEGATIVE, ACTION_US_AMN, ACTION_SEE_ACHE, ACTION_NO_ACTION,
-                    SAM_TYPE_SERUM, SAM_TYPE_AMNIOTIC_FLUID;
+    private static Integer                                 YES, UNIT_MM, UNIT_YEARS, GEST_AGE_LMP,
+                    GEST_AGE_US, INT_POSITIVE, INT_NEGATIVE, ACTION_SEE_ACHE, ACTION_NO_ACTION;
 
     private static String                                  YES_STR;
 
@@ -95,16 +96,13 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         try {
             if ( !initialized) {
                 initialized = true;
-                SAM_TYPE_SERUM = proxy.getDictionaryBySystemName("sample_type_serum").getId();
-                SAM_TYPE_AMNIOTIC_FLUID = proxy.getDictionaryBySystemName("sample_type_amniotic_fluid")
-                                               .getId();
                 YES = proxy.getDictionaryBySystemName("yes").getId();
-                NO = proxy.getDictionaryBySystemName("no").getId();
+                UNIT_MM = proxy.getDictionaryBySystemName("millimeters").getId();
+                UNIT_YEARS = proxy.getDictionaryBySystemName("years_local").getId();
                 GEST_AGE_LMP = proxy.getDictionaryBySystemName("gest_age_date_type_lmp").getId();
                 GEST_AGE_US = proxy.getDictionaryBySystemName("gest_age_date_type_us").getId();
                 INT_POSITIVE = proxy.getDictionaryBySystemName("positive").getId();
                 INT_NEGATIVE = proxy.getDictionaryBySystemName("negative").getId();
-                ACTION_US_AMN = proxy.getDictionaryBySystemName("ms_rec_action_us_amn").getId();
                 ACTION_SEE_ACHE = proxy.getDictionaryBySystemName("ms_rec_action_see_ache_res")
                                        .getId();
                 ACTION_NO_ACTION = proxy.getDictionaryBySystemName("ms_rec_action_no_action")
@@ -118,7 +116,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                                                    new DefaultDateTimeFormatInfo()) {
                 };
             }
-            compute = new Compute();
             proxy.log(Level.FINE, "Initialized MSConfScriptlet1", null);
         } catch (Exception e) {
             initialized = false;
@@ -128,9 +125,9 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
+        Integer accession;
         SampleManager1 sm;
         AnalysisViewDO ana;
-        SampleItemViewDO item;
         ResultViewDO res;
 
         proxy.log(Level.FINE, "In MSConfScriptlet1.run", null);
@@ -145,22 +142,18 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
         /*
          * manage result changed, the risks needing to be recomputed, the
-         * analysis getting completed or released, sample type changed, a qa
-         * event added/removed or collection date, patient's birth date or
-         * patient's race changed
+         * analysis getting completed or released, a qa event added/removed or
+         * collection date, patient's birth date or patient's race changed
          */
         if (data.getActionBefore().contains(Action_Before.RESULT)) {
             res = (ResultViewDO)sm.getObject(data.getUid());
             if ( !analysisId.equals(res.getAnalysisId()))
                 return data;
         } else if (data.getActionBefore().contains(Action_Before.COMPLETE) ||
-                   data.getActionBefore().contains(Action_Before.RELEASE)) {
+                   data.getActionBefore().contains(Action_Before.RELEASE) ||
+                   changes.contains(SampleMeta.getAnalysisStartedDate())) {
             ana = (AnalysisViewDO)sm.getObject(data.getUid());
             if ( !analysisId.equals(ana.getId()))
-                return data;
-        } else if (data.getActionBefore().contains(Action_Before.SAMPLE_ITEM)) {
-            item = (SampleItemViewDO)sm.getObject(data.getUid());
-            if ( !item.getId().equals(ana.getSampleItemId()))
                 return data;
         } else if ( !data.getActionBefore().contains(Action_Before.QA) &&
                    !data.getActionBefore().contains(Action_Before.PATIENT) &&
@@ -169,6 +162,25 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                    !changes.contains(SampleMeta.getCollectionDate()) &&
                    !changes.contains(SampleMeta.getClinicalPatientBirthDate()) &&
                    !changes.contains(SampleMeta.getClinicalPatientRaceId())) {
+            return data;
+        }
+
+        /*
+         * patient must be present for doing computations; it may not be present
+         * if, for example, this test is added to a PT sample
+         */
+        if (sm.getSampleClinical() == null || sm.getSampleClinical().getPatientId() == null) {
+            accession = sm.getSample().getAccessionNumber();
+            /*
+             * for display
+             */
+            if (accession == null)
+                accession = 0;
+            data.setStatus(Status.FAILED);
+            data.addException(new FormErrorException(Messages.get()
+                                                             .analysis_patientRequiredForComputeException(accession,
+                                                                                                          ana.getTestName(),
+                                                                                                          ana.getMethodName())));
             return data;
         }
 
@@ -187,15 +199,15 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         Integer accession;
         Exception lastEx;
 
+        proxy.log(Level.FINE, "In MSConfScriptlet1.setRisks", null);
         try {
             initializeResultMap(data, ana);
             setBirthDate(data, ana);
-            setMaternalWeight(data, ana);
-            setRaceBlack(data, ana);
             setComputeValues(data, ana);
             compute.compute();
             setResultValues(data, ana);
             formatValues(data, ana);
+            setUnits(data, ana);
             /*
              * if the compute engine encountered an error, make it available to
              * be shown to the user; add the accession number to the error
@@ -303,79 +315,14 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             bd = sm.getSampleClinical().getPatient().getBirthDate();
             setValue(resBirth, bd, rf, false, data, ana);
         }
-    }
-
-    /**
-     * Validates the maternal weight entered and converts it to lbs from kgs if
-     * it contains "k"
-     */
-    private void setMaternalWeight(SampleSO data, AnalysisViewDO ana) throws Exception {
-        String value;
-        Double weight;
-        ResultViewDO res;
-        TestManager tm;
-
         /*
-         * do something only if a result was changed, that result was maternal
-         * weight and its value is not null
+         * if the result value for birth date doesn't match the patient's birth
+         * date, add a caution to inform the user
          */
-        if (data.getActionBefore().contains(Action_Before.RESULT)) {
-            res = (ResultViewDO)data.getManager().getObject(data.getUid());
-            value = res.getValue();
-            if ("weight".equals(res.getAnalyteExternalId()) && value != null) {
-                proxy.log(Level.FINE, "Formatting and resetting maternal weight", null);
-                /*
-                 * convert from kgs to lbs if weight contains "k"
-                 */
-                tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
-                try {
-                    if (value.endsWith("k")) {
-                        value = value.substring(0, value.length() - 1);
-                        weight = new Double(value) * 2.204;
-                    } else {
-                        weight = new Double(value);
-                    }
-                    setValue(res, weight, tm.getFormatter(), false, data, ana);
-                } catch (NumberFormatException e) {
-                    throw getValueInvalidException(res, data.getManager(), ana);
-                }
-            }
-        }
-    }
-
-    /**
-     * Sets the value of "Maternal Race Black" to "Yes" if the patient's race is
-     * black even if it's mixed race; otherwise sets the value to "No"
-     */
-    private void setRaceBlack(SampleSO data, AnalysisViewDO ana) throws Exception {
-        Integer value, raceId;
-        DictionaryDO dict;
-        ResultViewDO res;
-        TestManager tm;
-        SampleManager1 sm;
-
-        sm = data.getManager();
-        /*
-         * don't do anything if either the patient's race wasn't changed or if
-         * the analyte's value is already set
-         */
-        res = getResult("race_black");
-        if (changes.contains(SampleMeta.getClinicalPatientRaceId()) && res.getValue() == null) {
-            proxy.log(Level.FINE, "Setting 'maternal race black' from the sample", null);
-            /*
-             * race is black if the system name contains a "b" e.g. "race_b" or
-             * "race_wb", otherwise not
-             */
-            raceId = sm.getSampleClinical().getPatient().getRaceId();
-            value = NO;
-            if (raceId != null) {
-                dict = proxy.getDictionaryById(raceId);
-                if (dict.getSystemName() != null && dict.getSystemName().contains("b"))
-                    value = YES;
-            }
-            tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
-            setValue(res, value, tm.getFormatter(), true, data, ana);
-        }
+        if (DataBaseUtil.isDifferentYD(getDateValue(resBirth), sm.getSampleClinical()
+                                                                 .getPatient()
+                                                                 .getBirthDate()))
+            addResultNotMatchCaution(resBirth.getAnalyte(), data, ana);
     }
 
     /**
@@ -383,12 +330,9 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      * results of specific analytes and analyte parameters
      */
     private void setComputeValues(SampleSO data, AnalysisViewDO ana) throws Exception {
-        Integer gestAgeMethodId;
         SampleManager1 sm;
-        SampleItemViewDO item;
         AnalyteParameterViewDO ap;
-        AFP t;
-        Sample_Type sampleType;
+        AFP afp;
         HashMap<Integer, AnalyteParameterViewDO> paramMap;
 
         proxy.log(Level.FINE, "Setting values in the compute engine", null);
@@ -396,53 +340,49 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
          * set sample/analysis level info
          */
         sm = data.getManager();
+        compute = new Compute();
         compute.setIsOverridden(sm.qaEvent.hasType(Constants.dictionary().QAEVENT_OVERRIDE) ||
                                 sm.qaEvent.hasType(ana, Constants.dictionary().QAEVENT_OVERRIDE));
         compute.setEnteredDate(sm.getSample().getEnteredDate());
         compute.setCollectionDate(sm.getSample().getCollectionDate());
-        compute.setIsReleased(Constants.dictionary().SAMPLE_RELEASED.equals(sm.getSample()
-                                                                              .getStatusId()) ||
-                              Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()));
+        compute.setBeenReleased(ana.getRevision() > 0);
         /*
          * set patient info
          */
-        compute.setIsRaceBlack(YES_STR.equals(getValue("race_black")));
-        compute.setIsDiabetic(YES_STR.equals(getValue("insulin")));
-        compute.setHasHistoryOfNTD(YES_STR.equals(getValue("history_ntd")));
+        compute.setIsDiabetic(YES_STR.equals(getValue("insulin_dep_diabetic")));
         compute.setBirthDate(getDateValue(getValue("birth")));
         compute.setLMPDate(getDateValue(getValue("lmp")));
         compute.setUltrasoundDate(getDateValue(getValue("ultrasound")));
-        compute.setNumFetus(getIntegerValue(getResult("multiple_fetuses"), sm, ana));
-        compute.setWeight(getDoubleValue(getResult("weight"), sm, ana, false));
         compute.setCRL(getIntegerValue(getResult("crl"), sm, ana));
         compute.setBPD(getIntegerValue(getResult("bpd"), sm, ana));
         compute.setWeeksDays(getDoubleValue(getResult("weeks_days"), sm, ana, false));
-        /*
-         * set the method by which gestational age was initially computed
-         */
-        gestAgeMethodId = getIntegerValue(getResult("gest_age_init", "determined_by"), sm, ana);
-        if (GEST_AGE_LMP.equals(gestAgeMethodId))
-            compute.setGestAgeInitMethod(Gest_Age_Method.LMP);
-        else if (GEST_AGE_US.equals(gestAgeMethodId))
-            compute.setGestAgeInitMethod(Gest_Age_Method.US);
 
-        item = (SampleItemViewDO)sm.getObject(Constants.uid().getSampleItem(ana.getSampleItemId()));
-        sampleType = getSampleType(item.getTypeOfSampleId());
-        compute.setSampleType(sampleType);
         /*
          * get the analyte parameters for this analysis' test
          */
-        paramMap = Util.getParameters(ana.getTestId(), Constants.table().TEST, proxy, data, ana);
+        if (paramManager == null) {
+            try {
+                paramManager = proxy.fetchParameters(ana.getTestId(), Constants.table().TEST);
+            } catch (NotFoundException e) {
+                /*
+                 * the analyte parameters have not been defined; if this
+                 * exception is not handled here, an error with the message
+                 * "null" is shown, which is not very helpful; a more
+                 * descriptive error for missing p-values will be added later if
+                 * some computation can't be done without them
+                 */
+            }
+        }
+        paramMap = Util.getParameters(paramManager, data, ana);
         /*
          * set p-values and result from the intrument for AFP
          */
-        ap = paramMap != null ? paramMap.get(getAnalyteId("afp")) : null;
-        t = (AFP)compute.getAFP();
-        t.setP1(getP1(ap));
-        t.setP2(getP2(ap));
-        t.setP3(getP3(ap));
-        t.setResult(getDoubleValue(getResult("afp", "result"), sm, ana, true));
-        t.setSampleType(sampleType);
+        ap = paramMap != null ? paramMap.get(getAnalyteId("afp_mom")) : null;
+        afp = (AFP)compute.getAFP();
+        afp.setP1(getP1(ap));
+        afp.setP2(getP2(ap));
+        afp.setP3(getP3(ap));
+        afp.setResult(getDoubleValue(getResult("afp_mom", "result"), sm, ana, true));
     }
 
     /**
@@ -450,45 +390,36 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      * results from the compute engine
      */
     private void setResultValues(SampleSO data, AnalysisViewDO ana) throws Exception {
+        String gaCurr;
         Object value;
         TestManager tm;
-        SampleItemViewDO item;
         ResultFormatter rf;
 
         proxy.log(Level.FINE, "Setting values in the results from the compute engine", null);
         tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         rf = tm.getFormatter();
-        setValue(getResult("age_delivery"), compute.getMothersDueAge(), rf, false, data, ana);
+        setValue(getResult("mat_age_at_delivery"), compute.getMothersDueAge(), rf, false, data, ana);
         /*
          * MoM
          */
-        setValue(getResult("afp"), compute.getAFP().getMomFinal(), rf, false, data, ana);
+        setValue(getResult("afp_mom"), compute.getAFP().getMomFinal(), rf, false, data, ana);
         /*
          * risks, screening cutoffs(limits), interpretations, recommended
          * actions; ntd
          */
         value = null;
-        item = (SampleItemViewDO)data.getManager()
-                                     .getObject(Constants.uid()
-                                                         .getSampleItem(ana.getSampleItemId()));
         if (compute.getLimitNTD() != null)
             value = DataBaseUtil.concatWithSeparator("NTD >=",
                                                      " ",
                                                      Util.format(compute.getLimitNTD(), 1, proxy));
-        setValue(getResult("afp", "screen_cutoff"), value, rf, false, data, ana);
-        setInterpretation("afp", compute.getInterpretationNTD(), rf, data, ana);
-        setRecommendedAction("afp",
-                             compute.getInterpretationNTD(),
-                             getSampleType(item.getTypeOfSampleId()),
-                             rf,
-                             data,
-                             ana);
+        setValue(getResult("afp_mom", "screen_cutoff"), value, rf, false, data, ana);
+        setInterpretation("afp_mom", compute.getInterpretationNTD(), rf, data, ana);
+        setRecommendedAction("afp_mom", compute.getInterpretationNTD(), rf, data, ana);
         /*
          * gestational ages, methods
          */
-        setValue(getResult("init_gest_age"), compute.getGestAgeInit(), rf, false, data, ana);
-        setGestAgeMethod("init_gest_age", compute.getGestAgeInitMethod(), rf, ana, data);
-        setValue(getResult("gest_age"), compute.getGestAgeCurr(), rf, false, data, ana);
+        gaCurr = Util.getWeeksAndDays(compute.getGestAgeCurr());
+        setValue(getResult("gest_age"), gaCurr, rf, false, data, ana);
         setGestAgeMethod("gest_age", compute.getGestAgeCurrMethod(), rf, ana, data);
     }
 
@@ -502,16 +433,33 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         proxy.log(Level.FINE, "Formatting result values", null);
         tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         /*
-         * egg's age, weight and weeks & days have one fractional digit
+         * age at delivery, egg's age weeks & days have one fractional digit
          */
+        formatValue(getResult("mat_age_at_delivery"), 1, tm.getFormatter(), false, data, ana);
         formatValue(getResult("eggs_age"), 1, tm.getFormatter(), false, data, ana);
-        formatValue(getResult("weight"), 1, tm.getFormatter(), false, data, ana);
         formatValue(getResult("weeks_days"), 1, tm.getFormatter(), true, data, ana);
         /*
          * test MoMs and instrument results have two fractional digit
          */
-        formatValue(getResult("afp"), 2, tm.getFormatter(), false, data, ana);
-        formatValue(getResult("afp", "result"), 2, tm.getFormatter(), true, data, ana);
+        formatValue(getResult("afp_mom"), 2, tm.getFormatter(), false, data, ana);
+        formatValue(getResult("afp_mom", "result"), 2, tm.getFormatter(), true, data, ana);
+    }
+
+    /**
+     * Sets the values in the "Unit" column for various row analytes such as
+     * "Maternal Age At Delivery", "CRL" etc; sets the unit as null if the row
+     * analyte's value is null
+     */
+    private void setUnits(SampleSO data, AnalysisViewDO ana) throws Exception {
+        ResultFormatter rf;
+        TestManager tm;
+
+        tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
+        rf = tm.getFormatter();
+        setUnit("eggs_age", UNIT_YEARS, rf, data, ana);
+        setUnit("mat_age_at_delivery", UNIT_YEARS, rf, data, ana);
+        setUnit("crl", UNIT_MM, rf, data, ana);
+        setUnit("bpd", UNIT_MM, rf, data, ana);
     }
 
     /**
@@ -567,6 +515,29 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
     }
 
     /**
+     * Adds a caution to inform the user that the value for passed analyte e.g.
+     * "Race" doesn't match the patient's value; a caution is used here because
+     * it's just a warning to the user; the sample doesn't need to go to error
+     * status and update doesn't need to fail
+     */
+    private void addResultNotMatchCaution(String analyteName, SampleSO data, AnalysisViewDO ana) throws Exception {
+        Integer accession;
+
+        /*
+         * for display
+         */
+        accession = data.getManager().getSample().getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+        data.setStatus(Status.FAILED);
+        data.addException(new FormErrorCaution(Messages.get()
+                                                       .result_resultNotMatchPatientCaution(accession,
+                                                                                            ana.getTestName(),
+                                                                                            ana.getMethodName(),
+                                                                                            analyteName)));
+    }
+
+    /**
      * Returns the id for the row analyte whose external id is the passed value
      */
     private Integer getAnalyteId(String rowExtId) {
@@ -574,22 +545,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
         res = getResult(rowExtId);
         return res != null ? res.getAnalyteId() : null;
-    }
-
-    /**
-     * Returns an element of the enum Sample_Type based on the passed sample
-     * type id
-     */
-    private Sample_Type getSampleType(Integer sampleTypeId) {
-        if (sampleTypeId == null)
-            return null;
-
-        if (SAM_TYPE_SERUM.equals(sampleTypeId))
-            return Sample_Type.SERUM;
-        else if (SAM_TYPE_AMNIOTIC_FLUID.equals(sampleTypeId))
-            return Sample_Type.AMNIOTIC_FLUID;
-
-        return null;
     }
 
     /**
@@ -605,6 +560,14 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         } catch (NumberFormatException e) {
             throw getValueInvalidException(res, sm, ana);
         }
+    }
+
+    /**
+     * Returns the passed results's value converted to a Datetime; returns null
+     * if the result or value is null
+     */
+    private Datetime getDateValue(ResultViewDO res) throws Exception {
+        return res != null ? getDateValue(res.getValue()) : null;
     }
 
     /**
@@ -625,16 +588,28 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      */
     private Double getDoubleValue(ResultViewDO res, SampleManager1 sm, AnalysisViewDO ana,
                                   boolean allowLessThan) throws Exception {
-        String value;
-
-        if (res == null || res.getValue() == null)
-            return null;
-        value = allowLessThan ? res.getValue().replaceAll("<", "") : res.getValue();
-        try {
-            return Double.valueOf(value);
-        } catch (NumberFormatException e) {
-            throw getValueInvalidException(res, sm, ana);
+        if (res != null) {
+            try {
+                return getDoubleValue(res.getValue(), allowLessThan);
+            } catch (NumberFormatException e) {
+                throw getValueInvalidException(res, sm, ana);
+            }
         }
+        return null;
+    }
+
+/**
+     * Returns the passed value converted to a Double; returns null if
+     * the value is null; if the boolean flag is true, treats a value with a "<"
+     * as valid; otherwise throws an exception if the value contains any non-numeric
+     * characters such as "<" or ">"
+     */
+    private Double getDoubleValue(String value, boolean allowLessThan) throws Exception {
+        if (value != null) {
+            value = allowLessThan ? value.replaceAll("<", "") : value;
+            return new Double(value);
+        }
+        return null;
     }
 
     /**
@@ -657,6 +632,21 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                                                                             ana.getMethodName(),
                                                                             res.getAnalyte(),
                                                                             res.getValue()));
+    }
+
+    /**
+     * Sets the value in the "Unit" column for a row analyte such as
+     * "Maternal Age At Delivery", "CRL" etc; sets the unit as null if the row
+     * analyte's value is null
+     */
+    private void setUnit(String externalId, Integer unitId, ResultFormatter rf, SampleSO data,
+                         AnalysisViewDO ana) throws Exception {
+        Object value;
+        ResultViewDO res;
+
+        res = getResult(externalId);
+        value = (res != null && res.getValue() != null) ? unitId : null;
+        setValue(getResult(externalId, "unit"), value, rf, true, data, ana);
     }
 
     /**
@@ -712,9 +702,8 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      * recommended action e.g. "Offer amniocentesis"; the action depends on the
      * passed interpretation e.g. "Positive"
      */
-    private void setRecommendedAction(String externalId, Interpretation interp,
-                                      Sample_Type sampleType, ResultFormatter rf, SampleSO data,
-                                      AnalysisViewDO ana) throws Exception {
+    private void setRecommendedAction(String externalId, Interpretation interp, ResultFormatter rf,
+                                      SampleSO data, AnalysisViewDO ana) throws Exception {
         Integer value;
 
         value = null;
@@ -725,14 +714,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                     break;
                 case PRES_POS:
                 case PRES_POS_AS:
-                    switch (sampleType) {
-                        case SERUM:
-                            value = ACTION_US_AMN;
-                            break;
-                        case AMNIOTIC_FLUID:
-                            value = ACTION_SEE_ACHE;
-                            break;
-                    }
+                    value = ACTION_SEE_ACHE;
                     break;
             }
         }

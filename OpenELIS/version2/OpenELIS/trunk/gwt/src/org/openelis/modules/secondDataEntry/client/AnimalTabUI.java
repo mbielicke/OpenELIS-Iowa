@@ -38,6 +38,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.secondDataEntry.client.field.AccessionNumber;
 import org.openelis.modules.secondDataEntry.client.field.AniAnimalCommonNameId;
 import org.openelis.modules.secondDataEntry.client.field.AniAnimalScientificNameId;
@@ -147,7 +148,7 @@ public class AnimalTabUI extends VerificationScreen {
 
     protected SampleManager1                     manager;
 
-    protected Screen                             parentScreen;
+    protected Screen                             parentScreen, screen;
 
     protected EventBus                           parentBus;
 
@@ -182,6 +183,8 @@ public class AnimalTabUI extends VerificationScreen {
         int i, prev, next;
         VerificationField field;
         ArrayList<VerificationField> tabs;
+        
+        screen = this;
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             ScheduledCommand cmd;
@@ -509,6 +512,20 @@ public class AnimalTabUI extends VerificationScreen {
                 execute(Operation.VALUE_CHANGED);
             }
         }, (char)99, CTRL);
+        
+        /*
+         * handle the RunScriptletEvent fired by the fields on this tab
+         */
+        bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
+            @Override
+            public void onRunScriptlet(RunScriptletEvent event) {
+                if (screen != event.getSource())
+                    parentBus.fireEventFromSource(new RunScriptletEvent(event.getUid(),
+                                                                        event.getChanged(),
+                                                                        event.getOperation()),
+                                                  screen);
+            }
+        });
     }
 
     public void setData(SampleManager1 manager) {

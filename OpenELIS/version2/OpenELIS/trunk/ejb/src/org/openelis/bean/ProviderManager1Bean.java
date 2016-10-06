@@ -2,8 +2,10 @@ package org.openelis.bean;
 
 import static org.openelis.manager.ProviderManager1Accessor.addLocation;
 import static org.openelis.manager.ProviderManager1Accessor.addNote;
+import static org.openelis.manager.ProviderManager1Accessor.addAnalyte;
 import static org.openelis.manager.ProviderManager1Accessor.getLocations;
 import static org.openelis.manager.ProviderManager1Accessor.getNotes;
+import static org.openelis.manager.ProviderManager1Accessor.getAnalytes;
 import static org.openelis.manager.ProviderManager1Accessor.getProvider;
 import static org.openelis.manager.ProviderManager1Accessor.getRemoved;
 import static org.openelis.manager.ProviderManager1Accessor.setProvider;
@@ -23,6 +25,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ProviderAnalyteViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.manager.ProviderManager1;
@@ -36,16 +39,19 @@ import org.openelis.ui.common.data.QueryData;
 public class ProviderManager1Bean {
 
     @EJB
-    LockBean             lock;
+    private LockBean             lock;
 
     @EJB
-    ProviderBean         provider;
+    private ProviderBean         provider;
 
     @EJB
-    ProviderLocationBean providerLocation;
+    private ProviderLocationBean providerLocation;
 
     @EJB
-    NoteBean             note;
+    private NoteBean             note;
+
+    @EJB
+    private ProviderAnalyteBean  providerAnalyte;
 
     public ProviderManager1 getInstance() throws Exception {
         ProviderManager1 pm;
@@ -117,6 +123,11 @@ public class ProviderManager1Bean {
         for (ProviderLocationDO data : providerLocation.fetchByProviderIds(ids1)) {
             pm = map.get(data.getProviderId());
             addLocation(pm, data);
+        }
+        
+        for (ProviderAnalyteViewDO data : providerAnalyte.fetchByProviderIds(ids1)) {
+            pm = map.get(data.getProviderId());
+            addAnalyte(pm, data);
         }
 
         return pms;
@@ -204,6 +215,7 @@ public class ProviderManager1Bean {
     @RolesAllowed({"provider-add", "provider-update"})
     public ArrayList<ProviderManager1> update(ArrayList<ProviderManager1> pms,
                                               boolean ignoreWarnings) throws Exception {
+        Integer so;
         HashSet<Integer> ids;
         ArrayList<Integer> locks;
 
@@ -234,6 +246,8 @@ public class ProviderManager1Bean {
                         providerLocation.delete( ((ProviderLocationDO)data));
                     else if (data instanceof NoteViewDO)
                         note.delete( ((NoteViewDO)data));
+                    else if (data instanceof ProviderAnalyteViewDO)
+                        providerAnalyte.delete( ((ProviderAnalyteViewDO)data));
                     else
                         throw new Exception("ERROR: DataObject passed for removal is of unknown type");
                 }
@@ -266,7 +280,19 @@ public class ProviderManager1Bean {
                     }
                 }
             }
-
+            
+            so = 0;
+            if (getAnalytes(pm) != null) {
+                for (ProviderAnalyteViewDO data : getAnalytes(pm)) {
+                    data.setSortOrder( ++so);
+                    if (data.getId() == null) {
+                        data.setProviderId(getProvider(pm).getId());
+                        providerAnalyte.add(data);
+                    } else {
+                        providerAnalyte.update(data);
+                    }
+                }
+            }
         }
 
         if (locks != null)
@@ -304,6 +330,16 @@ public class ProviderManager1Bean {
                 for (ProviderLocationDO data : getLocations(pm)) {
                     try {
                         providerLocation.validate(data);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+                }
+            }
+
+            if (getAnalytes(pm) != null) {
+                for (ProviderAnalyteViewDO data : getAnalytes(pm)) {
+                    try {
+                        providerAnalyte.validate(data);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }

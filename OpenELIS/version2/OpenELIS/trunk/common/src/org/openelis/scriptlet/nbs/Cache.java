@@ -29,7 +29,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.manager.AnalyteParameterManager1;
+import org.openelis.manager.AnalyteParameterManager1.AnalyteCombo;
+import org.openelis.scriptlet.SampleSO;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 
 /**
  * This class provides quick access to the data used by neonatal scriptlets e.g.
@@ -111,5 +118,45 @@ public class Cache {
             qa = tmap.get(null);
 
         return qa;
+    }
+    
+    /**
+     * Returns a map created from the passed analyte parameter manager; the
+     * map's key is analyte id and value is the most recent analyte parameter
+     * for that analyte that's active for the passed analysis' started date and
+     * for the passed sample type
+     */
+    public static HashMap<Integer, AnalyteParameterViewDO> getParameters(AnalyteParameterManager1 apm,
+                                                                         SampleSO data,
+                                                                         AnalysisViewDO ana,
+                                                                         Integer sampleTypeId) {
+        int i, j;
+        Datetime sd;
+        AnalyteCombo ac;
+        AnalyteParameterViewDO ap;
+        HashMap<Integer, AnalyteParameterViewDO> paramMap;
+
+        sd = ana.getStartedDate();
+        if (apm == null || sd == null)
+            return null;
+
+        paramMap = new HashMap<Integer, AnalyteParameterViewDO>();
+        /*
+         * find the most recent analyte parameters defined for the passed sample
+         * type and whose active range contains the analysis' started date
+         */
+        for (i = 0; i < apm.analyte.count(); i++ ) {
+            ac = apm.analyte.get(i);
+            for (j = 0; j < apm.analyteParameter.count(ac.getId()); j++ ) {
+                ap = apm.analyteParameter.get(ac.getId(), j);
+                if (DataBaseUtil.isSame(sampleTypeId, ap.getTypeOfSampleId()) &&
+                    (ap.getActiveBegin().compareTo(sd) <= 0) &&
+                    ap.getActiveEnd().compareTo(sd) >= 0) {
+                    paramMap.put(ap.getAnalyteId(), ap);
+                    break;
+                }
+            }
+        }
+        return paramMap;
     }
 }

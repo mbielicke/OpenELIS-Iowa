@@ -26,6 +26,7 @@
 package org.openelis.scriptlet.nbs.cah;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -65,12 +66,14 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     private ScriptletProxy proxy;
 
-    private Integer            analysisId;
+    private Integer        analysisId;
 
-    private static Integer     INTER_N, INTER_PP_NR, INTER_EC, INTER_UE, INTER_U, INTER_ECU,
-                    INTER_PQ, INTER_BORD;
+    private static Integer INTER_N, INTER_PP_NR, INTER_EC, INTER_UE, INTER_U, INTER_ECU, INTER_PQ,
+                    INTER_BORD;
 
     private Cache          nbsCache1;
+    
+    private HashSet<String> qaNames;
 
     public Scriptlet(ScriptletProxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -91,6 +94,14 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
         if (nbsCache1 == null)
             nbsCache1 = Cache.getInstance(proxy);
+        
+        if (qaNames == null) {
+            qaNames = new HashSet<String>();
+            qaNames.add(Cache.QA_U);
+            qaNames.add(Cache.QA_UE);
+            qaNames.add(Cache.QA_EC);
+            qaNames.add(Cache.QA_ECU);
+        }
 
         proxy.log(Level.FINE, "Initialized NbsCahScriptlet1", null);
     }
@@ -102,7 +113,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         ArrayList<String> changes;
 
         proxy.log(Level.FINE, "In NbsCahScriptlet1.run", null);
-        
+
         changes = data.getChanges();
         ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
@@ -139,6 +150,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      */
     private void setInterpretation(SampleSO data, AnalysisViewDO ana) {
         int i, j;
+        String qaName;
         Integer interp, colAge;
         Double cahVal;
         String val;
@@ -146,8 +158,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         SampleManager1 sm;
         ResultViewDO res, resOver, resInter;
         DictionaryDO dict;
-        QaEventDO qa;
-        AnalysisQaEventViewDO aqa;
         TestManager tm;
         ResultFormatter rf;
 
@@ -233,16 +243,19 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
              * find the qa event to be added to the analysis and add it if it's
              * not already added
              */
-            qa = null;
+            //qa = null;
+            qaName = null;
             if (sn.getWeight() == null) {
                 /*
                  * add "unknown weight" or "unknown weight elevated" based on
                  * the value of 17-Hydroxyprogesterone
                  */
                 if (cahVal < 30.0)
-                    qa = nbsCache1.getQaEvent(Cache.QA_U, ana.getTestId());
+                    qaName = Cache.QA_U;
+                    //qa = nbsCache1.getQaEvent(Cache.QA_U, ana.getTestId());
                 else
-                    qa = nbsCache1.getQaEvent(Cache.QA_UE, ana.getTestId());
+                    qaName = Cache.QA_UE;
+                    //qa = nbsCache1.getQaEvent(Cache.QA_UE, ana.getTestId());
             } else {
                 colAge = sn.getCollectionAge();
                 if (colAge != null && (colAge / 60) < 24) {
@@ -254,17 +267,20 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                      */
                     if (sm.getSample().getCollectionTime() != null ||
                         sn.getPatient().getBirthTime() != null)
-                        qa = nbsCache1.getQaEvent(Cache.QA_EC, ana.getTestId());
+                        qaName = Cache.QA_EC;
+                        //qa = nbsCache1.getQaEvent(Cache.QA_EC, ana.getTestId());
                     else
-                        qa = nbsCache1.getQaEvent(Cache.QA_ECU, ana.getTestId());
+                        qaName = Cache.QA_ECU;
+                        //qa = nbsCache1.getQaEvent(Cache.QA_ECU, ana.getTestId());
                 }
             }
-
-            if (qa != null && !sm.qaEvent.hasName(ana, qa.getName())) {
+            setQAEvents(qaName, data, ana);
+            
+            /*if (qa != null && !sm.qaEvent.hasName(ana, qa.getName())) {
                 proxy.log(Level.FINE, "Adding the qa event: " + qa.getName(), null);
                 aqa = sm.qaEvent.add(ana, qa);
                 data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
-            }
+            }*/
 
             /*
              * if the initial interpretation is not "presumptive positive" then
@@ -284,10 +300,10 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
                     sm.qaEvent.hasType(Constants.dictionary().QAEVENT_WARNING)) {
                     interp = INTER_PQ;
                 } else if ( !INTER_U.equals(interp) && !INTER_UE.equals(interp) &&
-                           !INTER_BORD.equals(interp) && qa != null) {
-                    if (Cache.QA_EC.equals(qa.getName()))
+                           !INTER_BORD.equals(interp) && qaName != null) {
+                    if (Cache.QA_EC.equals(qaName))
                         interp = INTER_EC;
-                    else if (Cache.QA_ECU.equals(qa.getName()))
+                    else if (Cache.QA_ECU.equals(qaName))
                         interp = INTER_ECU;
                 }
             }
@@ -313,5 +329,58 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             data.setStatus(Status.FAILED);
             data.addException(e);
         }
+    }
+
+    private void setQAEvents(String qaName, SampleSO data, AnalysisViewDO ana) {
+        int i;
+        boolean found;
+        AnalysisQaEventViewDO aqa;
+        SampleManager1 sm;
+
+        sm = data.getManager();
+        aqa = null;
+        found = false;
+        for (i = 0; i < sm.qaEvent.count(ana); i++ ) {
+            aqa = sm.qaEvent.get(ana, i);
+            if (aqa.getQaEventName().equals(qaName)) {
+                setQAWarning(aqa, qaName, data, ana);
+                found = true;
+            } else if (qaNames.contains(aqa.getQaEventName())) {
+                setQAInternal(aqa, qaName, data);
+            }
+        }
+        
+        if (!found && qaName != null)
+            setQAWarning(null, qaName, data, ana);
+    }
+
+    /**
+     * 
+     */
+    private void setQAWarning(AnalysisQaEventViewDO aqa, String qaName, SampleSO data,
+                              AnalysisViewDO ana) {
+        QaEventDO qa;
+
+        qa = nbsCache1.getQaEvent(qaName, ana.getTestId());
+        if (aqa == null) {
+            proxy.log(Level.FINE, "Adding the qa event: " + qa.getName(), null);
+            aqa = data.getManager().qaEvent.add(ana, qa);
+            data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
+        } else if (Constants.dictionary().QAEVENT_INTERNAL.equals(aqa.getTypeId())) {
+            proxy.log(Level.FINE, "Changing the qa event: " + qa.getName() + " to warning", null);
+            setQAType(aqa, Constants.dictionary().QAEVENT_WARNING, data);
+        }
+    }
+
+    private void setQAInternal(AnalysisQaEventViewDO aqa, String qaName, SampleSO data) {
+        if (aqa != null && Constants.dictionary().QAEVENT_WARNING.equals(aqa.getTypeId())) {
+            proxy.log(Level.FINE, "Changing the qa event: " + qaName + " to internal", null);
+            setQAType(aqa, Constants.dictionary().QAEVENT_INTERNAL, data);
+        }
+    }
+
+    private void setQAType(AnalysisQaEventViewDO aqa, Integer typeId, SampleSO data) {
+        aqa.setTypeId(typeId);
+        data.addChangedUid(Constants.uid().getAnalysisQAEvent(aqa.getId()));
     }
 }

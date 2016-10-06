@@ -595,6 +595,25 @@ public class SampleManager1 implements Serializable {
         }
 
         /**
+         * Returns the qa event with specified name if it's been added to the
+         * passed analysis; otherwise returns null
+         */
+        public AnalysisQaEventViewDO getByName(AnalysisViewDO analysis, String name) {
+            ArrayList<AnalysisQaEventViewDO> l;
+
+            if (analysisQAs != null) {
+                localmapBuild();
+                l = localmap.get(analysis.getId());
+                if (l != null) {
+                    for (AnalysisQaEventViewDO data : l)
+                        if (name.equals(data.getQaEventName()))
+                            return data;
+                }
+            }
+            return null;
+        }
+
+        /**
          * Returns true if sample has any not billable qa events
          */
         public boolean hasNonBillable() {

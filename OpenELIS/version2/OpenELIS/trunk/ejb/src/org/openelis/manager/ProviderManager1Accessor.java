@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ProviderAnalyteViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
 
@@ -67,6 +68,20 @@ public class ProviderManager1Accessor {
 
     public static void setNotes(ProviderManager1 pm, ArrayList<NoteViewDO> notes) {
         pm.notes = notes;
+    }
+
+    public static ArrayList<ProviderAnalyteViewDO> getAnalytes(ProviderManager1 pm) {
+        return pm.analytes;
+    }
+
+    public static void setAnalytes(ProviderManager1 pm, ArrayList<ProviderAnalyteViewDO> analytes) {
+        pm.analytes = analytes;
+    }
+
+    public static void addAnalyte(ProviderManager1 pm, ProviderAnalyteViewDO analyte) {
+        if (pm.analytes == null)
+            pm.analytes = new ArrayList<ProviderAnalyteViewDO>();
+        pm.analytes.add(analyte);
     }
 
     public static void addNote(ProviderManager1 pm, NoteViewDO note) {

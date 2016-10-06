@@ -60,7 +60,14 @@ public class ProviderMeta implements Meta, MetaMap {
                                   LOC_ADDR_CELL_PHONE = "_providerLocation.address.cellPhone",
                                   LOC_ADDR_FAX_PHONE = "_providerLocation.address.faxPhone",
                                   LOC_ADDR_EMAIL = "_providerLocation.address.email",
-                                  LOC_ADDR_COUNTRY = "_providerLocation.address.country";
+                                  LOC_ADDR_COUNTRY = "_providerLocation.address.country",
+                                  
+                                  ANA_ID = "_providerAnalyte.id",
+                                  ANA_PROVIDER_ID = "_providerAnalyte.providerId",
+                                  ANA_SORT_ORDER = "_providerAnalyte.sortOrder",
+                                  ANA_ANALYTE_ID = "_providerAnalyte.analyteId",
+                                  
+                                  ANA_ANALYTE_NAME = "_providerAnalyte.analyte.name";
 
     private static HashSet<String> names;
     
@@ -72,7 +79,9 @@ public class ProviderMeta implements Meta, MetaMap {
                                                   LOC_ADDR_CITY, LOC_ADDR_STATE, LOC_ADDR_ZIP_CODE,
                                                   LOC_ADDR_WORK_PHONE, LOC_ADDR_HOME_PHONE, 
                                                   LOC_ADDR_CELL_PHONE, LOC_ADDR_FAX_PHONE, 
-                                                  LOC_ADDR_EMAIL, LOC_ADDR_COUNTRY));
+                                                  LOC_ADDR_EMAIL, LOC_ADDR_COUNTRY,
+                                                  ANA_ID, ANA_PROVIDER_ID, ANA_SORT_ORDER, ANA_ANALYTE_ID,
+                                                  ANA_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -174,6 +183,26 @@ public class ProviderMeta implements Meta, MetaMap {
     public static String getProviderLocationAddressCountry() {
         return LOC_ADDR_COUNTRY;
     }
+    
+    public static String getProviderAnalyteId() {
+        return ANA_ID;
+    }
+
+    public static String getProviderAnalyteProviderId() {
+        return ANA_PROVIDER_ID;
+    }
+
+    public static String getProviderAnalyteSortOrder() {
+        return ANA_SORT_ORDER;
+    }
+
+    public static String getProviderAnalyteAnalyteId() {
+        return ANA_ANALYTE_ID;
+    }
+    
+    public static String getProviderAnalyteAnalyteName() {
+        return ANA_ANALYTE_NAME;
+    }
 
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -185,6 +214,8 @@ public class ProviderMeta implements Meta, MetaMap {
         from = "Provider _provider ";
         if (where.indexOf("providerLocation.") > -1)
             from += ",IN (_provider.providerLocation) _providerLocation ";
+        if (where.indexOf("providerAnalyte.") > -1)
+            from += ",IN (_provider.providerAnalyte) _providerAnalyte ";
 
         return from;
     }

@@ -441,6 +441,15 @@ public class QAEventTabUI extends Screen {
                 displayQAEvents();
             }
         });
+        
+        parentBus.addHandler(QAEventRemovedEvent.getType(), new QAEventRemovedEvent.Handler() {
+            @Override
+            public void onQAEventRemoved(QAEventRemovedEvent event) {
+                redraw = true;
+                analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                displayQAEvents();
+            }
+        });
 
         // qa event type dropdown
         model = new ArrayList<Item<Integer>>();

@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.PTSampleLogin1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.FLAGGED;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -45,6 +41,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -94,8 +91,11 @@ import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
+import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
+import org.openelis.modules.sample1.client.PatientPermission;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
+import org.openelis.modules.sample1.client.QAEventRemovedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -264,10 +264,15 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     @UiField(provided = true)
     protected AttachmentTabUI                           attachmentTab;
 
+    @UiField(provided = true)
+    protected ClinicalTabUI                             clinicalTab;
+
     protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen, isFullLogin;
 
     protected ModulePermission                          samplePermission;
+
+    protected PatientPermission                         patientPermission;
 
     protected PTSampleLoginScreenUI                     screen;
 
@@ -301,6 +306,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     protected SystemVariableDO                          attachmentPatternVariable,
                     genTRFPatternVariable;
 
+    protected PageDirection                             pageDirection;
+
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
@@ -310,8 +317,12 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA, ATTACHMENT
+        AUX_DATA, ATTACHMENT, CLINICAL
     };
+
+    protected enum PageDirection {
+        PREV, NEXT
+    }
 
     private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
@@ -324,10 +335,12 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         if (UserCache.getPermission().getModule("samplept") == null)
             throw new PermissionException(Messages.get()
                                                   .screenPermException("PT Sample Login Screen"));
-        
+
         samplePermission = UserCache.getPermission().getModule("sample");
         if (samplePermission == null)
             samplePermission = new ModulePermission();
+
+        patientPermission = new PatientPermission();
 
         try {
             CategoryCache.getBySystemNames("sample_status",
@@ -435,6 +448,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 manager.attachment.remove(i);
             }
         };
+        clinicalTab = new ClinicalTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -491,7 +505,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && samplePermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) &&
+                               samplePermission.hasAddPermission());
                 if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
@@ -502,7 +517,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && samplePermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) &&
+                                  samplePermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
@@ -524,6 +540,18 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             }
         });
         addShortcut(abort, 'o', CTRL);
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                /*
+                 * pageDirection keeps track of whether the previous or next
+                 * page (sample) is to be fetched; so it's set to null when the
+                 * previous and next buttons are disabled
+                 */
+                if ( !isState(DISPLAY))
+                    pageDirection = null;
+            }
+        });
 
         /*
          * option menu items
@@ -780,7 +808,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                      */
                     if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
                         orderId.setValue(prevOrdId);
-                        setOrderId(prevOrdId);                        
+                        setOrderId(prevOrdId);
                     }
                     screen.focusNextWidget((Focusable)orderId, true);
                     event.preventDefault();
@@ -1034,7 +1062,8 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 ptAdditionalDomain.setEnabled(isState(QUERY));
+                                 ptAdditionalDomain.setEnabled(isState(QUERY) ||
+                                                               (canEdit && isState(ADD, UPDATE)));
                                  ptAdditionalDomain.setQueryMode(isState(QUERY));
                              }
 
@@ -1367,11 +1396,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 return sampleItemTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
@@ -1493,11 +1517,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         auxDataTab.setCanQuery(true);
 
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
@@ -1513,12 +1532,25 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 return attachmentTab.getQueryFields();
             }
         });
-
-        /*
-         * querying by this tab is allowed on this screen, but not on all
-         * screens
-         */
         attachmentTab.setCanQuery(true);
+
+        addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                clinicalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                tabPanel.setTabVisible(Tabs.CLINICAL.ordinal(),
+                                       isState(QUERY) ||
+                                                       (manager != null && manager.getSampleClinical() != null));
+                clinicalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return clinicalTab.getQueryFields();
+            }
+        });
+        clinicalTab.setCanQuery(true);
 
         /*
          * add shortcuts to select the tabs on the screen by using the Ctrl key
@@ -1693,8 +1725,20 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         }
 
                         public void lastPage() {
-                            setQueryResult(null);
-                            setError(Messages.get().gen_noMoreRecordInDir());
+                            /*
+                             * if the last page is reached in query state
+                             * instead of display state, it means that no
+                             * samples returned by the query can be shown to the
+                             * user, because they contain patient data and the
+                             * user can't view patients; that case is treated
+                             * the same as when the query returns no samples
+                             */
+                            if (isState(QUERY)) {
+                                notFound();
+                            } else {
+                                setQueryResult(null);
+                                setError(Messages.get().gen_noMoreRecordInDir());
+                            }
                         }
 
                         public void failure(Throwable e) {
@@ -1713,7 +1757,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                                       QueryData.Type.STRING,
                                       Constants.domain().PT);
                 query.setFields(field);
-                query.setRowsPerPage(5);
+                query.setRowsPerPage(1);
                 SampleService1.get().query(query, queryCall);
             }
 
@@ -1930,8 +1974,15 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_domain")) {
             if (Constants.domain().CLINICAL.equals(d.getCode()) ||
                 Constants.domain().NEONATAL.equals(d.getCode())) {
+                /*
+                 * don't enable an additional domain if the user doesn't have
+                 * permission to view patients; disable neonatal until it's
+                 * fully implemented in OpenELIS
+                 */
                 strow = new Item<String>(d.getCode(), d.getEntry());
-                strow.setEnabled( ("Y".equals(d.getIsActive())));
+                strow.setEnabled( ("Y".equals(d.getIsActive())) &&
+                                 patientPermission.canViewSample(d) &&
+                                 Constants.domain().CLINICAL.equals(d.getCode()));
                 stmodel.add(strow);
             }
         }
@@ -1967,6 +2018,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("previous")
     protected void previous(ClickEvent event) {
+        pageDirection = PageDirection.PREV;
         nav.previous();
     }
 
@@ -1975,6 +2027,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("next")
     protected void next(ClickEvent event) {
+        pageDirection = PageDirection.NEXT;
         nav.next();
     }
 
@@ -2394,8 +2447,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
              * this domain's TRFs
              */
             if (attachmentPatternVariable == null)
-                attachmentPatternVariable = SystemVariableService1Impl.INSTANCE
-                                                                 .fetchByExactName("attachment_pattern_pt");
+                attachmentPatternVariable = SystemVariableService1Impl.INSTANCE.fetchByExactName("attachment_pattern_pt");
 
             /*
              * the user checked the checkbox for showing attachment screen, so
@@ -2426,7 +2478,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             };
             Scheduler.get().scheduleDeferred(cmd);
-            
+
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -2458,7 +2510,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
 
         try {
             entry = new OrderEntry();
-            orderScreen = entry.addSendoutOrderScreen();           
+            orderScreen = entry.addSendoutOrderScreen();
             cmd = new ScheduledCommand() {
                 @Override
                 public void execute() {
@@ -2473,9 +2525,9 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Overridden because the patient fields can be enabled or disabled several
-     * times in Add or Update states, based on factors such as whether the
-     * patient is locked
+     * Overridden because the some parts of the screen e.g. clinical tab can be
+     * enabled or disabled several times in Add or Update states, based on
+     * factors such as the additional domain changed
      */
     public void setState(State state) {
         this.state = state;
@@ -2666,9 +2718,34 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
             if (fetchByIdCall == null) {
                 fetchByIdCall = new AsyncCallbackUI<SampleManager1>() {
                     public void success(SampleManager1 result) {
+                        /*
+                         * this sample can be shown to the user only if it
+                         * doesn't contain patient data or if the user has
+                         * permission to view patients; if it can't be shown,
+                         * fetch the previous or next sample in the system
+                         * (depending upon the direction of paging), so that it
+                         * can be shown if possible
+                         */
+                        if ( !patientPermission.canViewSample(result.getSamplePT())) {
+                            if (pageDirection == null)
+                                pageDirection = PageDirection.NEXT;
+                            clearStatus();
+                            switch (pageDirection) {
+                                case PREV:
+                                    nav.previous();
+                                    break;
+                                case NEXT:
+                                    nav.next();
+                                    break;
+                            }
+                            return;
+                        }
+
                         manager = result;
                         setData();
                         setState(DISPLAY);
+                        fireDataChange();
+                        clearStatus();
                     }
 
                     public void notFound() {
@@ -2682,11 +2759,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                         Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         nav.clearSelection();
-                    }
-
-                    public void finish() {
-                        fireDataChange();
-                        clearStatus();
                     }
                 };
             }
@@ -2707,6 +2779,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
         qaEventTab.setData(manager);
+        clinicalTab.setData(manager);
     }
 
     /**
@@ -2890,7 +2963,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
          * run the scritplet and show the errors and the changed data
          */
         data = scriptletRunner.run(data);
-
+        clearStatus();
         if (data.getExceptions() != null && data.getExceptions().size() > 0) {
             errors = new ValidationErrorsList();
             for (Exception e : data.getExceptions())
@@ -2933,6 +3006,13 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                     else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
                         bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
                 }
+            } else if (obj instanceof AnalysisDO) {
+                /*
+                 * if analysis qa events were removed and any of them belong to
+                 * the analysis selected in the tree, refresh the qa event tab
+                 */
+                if (actionAfter.contains(Action_After.QA_REMOVED) && cuid.equals(selUid))
+                    bus.fireEventFromSource(new QAEventRemovedEvent(cuid), screen);
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
                  * if analysis qa events were changed was added and if any of
@@ -3498,10 +3578,23 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Sets the additional domain
+     * Calls the service method to set the additional domain and add or remove
+     * the domain data for it
      */
     private void setAdditionalDomain(String additionalDomain) {
-        manager.getSamplePT().setAdditionalDomain(additionalDomain);
+        try {
+            manager = SampleService1.get().setAdditionalDomain(manager, additionalDomain);
+            setData();
+            setState(state);
+            fireDataChange();
+            if (manager.getSampleClinical() != null) {
+                tabPanel.selectTab(Tabs.CLINICAL.ordinal());
+                runScriptlets(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     /**
@@ -3803,8 +3896,7 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
                  * for TRFs and can be used in java code for pattern matching
                  */
                 if (genTRFPatternVariable == null)
-                    genTRFPatternVariable = SystemVariableService1Impl.INSTANCE
-                                                                 .fetchByExactName("attachment_pattern_gen_java");
+                    genTRFPatternVariable = SystemVariableService1Impl.INSTANCE.fetchByExactName("attachment_pattern_gen_java");
             } catch (Throwable e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);

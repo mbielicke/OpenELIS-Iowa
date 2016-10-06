@@ -23,6 +23,7 @@ import org.openelis.modules.order1.client.OrderEntry;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization1.client.OrganizationService1Impl;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
@@ -214,6 +215,7 @@ public class SampleTabUI extends Screen {
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setCollectionDate(event.getValue());
+                                 fireScriptletEvent(null, SampleMeta.getCollectionDate(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -241,7 +243,7 @@ public class SampleTabUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  collectionTime.setEnabled(canEdit && isState(ADD, UPDATE));
                              }
-                             
+
                              public Object getQuery() {
                                  /*
                                   * since this field is not set in query mode,
@@ -268,6 +270,7 @@ public class SampleTabUI extends Screen {
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 setReceivedDate(event.getValue());
+                fireScriptletEvent(null, SampleMeta.getReceivedDate(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -320,7 +323,7 @@ public class SampleTabUI extends Screen {
                                  return forward ? releasedDate : status;
                              }
                          });
-        
+
         addScreenHandler(releasedDate, SampleMeta.getReleasedDate(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent<Datetime> event) {
                 releasedDate.setValue(getReleasedDate());
@@ -335,7 +338,7 @@ public class SampleTabUI extends Screen {
                 return forward ? revision : clientReference;
             }
         });
-        
+
         addScreenHandler(revision, SampleMeta.getRevision(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent<Integer> event) {
                 revision.setValue(getRevision());
@@ -423,7 +426,7 @@ public class SampleTabUI extends Screen {
 
                                  return qds;
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? projectTable : revision;
                              }
@@ -613,7 +616,7 @@ public class SampleTabUI extends Screen {
 
                 return qds;
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? accessionNumber : organizationTable;
             }
@@ -705,7 +708,7 @@ public class SampleTabUI extends Screen {
         projectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 SampleProjectViewDO data;
-                
+
                 data = manager.project.add();
                 projectTable.setValueAt(event.getIndex(), 2, data.getIsPermanent());
                 removeProjectButton.setEnabled(true);
@@ -836,11 +839,10 @@ public class SampleTabUI extends Screen {
         domain = manager.getSample().getDomain();
 
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)||
-            Constants.domain().PT.equals(domain)) {
+            Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)) {
             try {
                 entry = new OrderEntry();
-                orderScreen = entry.addSendoutOrderScreen();           
+                orderScreen = entry.addSendoutOrderScreen();
                 cmd = new ScheduledCommand() {
                     @Override
                     public void execute() {
@@ -907,6 +909,9 @@ public class SampleTabUI extends Screen {
                                                                                             .getStatusId()));
     }
 
+    /**
+     * refreshes the tab to show the latest data if the tab is visible
+     */
     private void displaySample() {
         if ( !isVisible)
             return;
@@ -917,6 +922,17 @@ public class SampleTabUI extends Screen {
         }
     }
 
+    /**
+     * fires a RunScriptletEvent to the parent screen
+     */
+    private void fireScriptletEvent(String uid, String changed, Action_Before operation) {
+        parentBus.fireEventFromSource(new RunScriptletEvent(uid, changed, operation), screen);
+    }
+
+    /**
+     * opens the E-Order lookup screen to show the details for the e-order that
+     * has the passed paper order validator
+     */
     private void showEOrderLookup(String pov) {
         ModalWindow modal;
 
@@ -1002,8 +1018,7 @@ public class SampleTabUI extends Screen {
         domain = manager.getSample().getDomain();
         orderId = null;
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain) ||
-            Constants.domain().PT.equals(domain)) {
+            Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)) {
             orderId = DataBaseUtil.toString(manager.getSample().getOrderId());
         } else if (Constants.domain().CLINICAL.equals(domain)) {
             orderId = manager.getSampleClinical().getPaperOrderValidator();
@@ -1093,7 +1108,7 @@ public class SampleTabUI extends Screen {
     private void setClientReference(String clientReference) {
         manager.getSample().setClientReference(clientReference);
     }
-    
+
     /**
      * returns the released date or null if the manager is null
      */
@@ -1102,7 +1117,7 @@ public class SampleTabUI extends Screen {
             return null;
         return manager.getSample().getReleasedDate();
     }
-    
+
     /**
      * returns the revision or null if the manager is null
      */

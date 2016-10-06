@@ -88,6 +88,7 @@ public class ClinProviderLastName extends SingleField<AutoComplete> {
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
                 valueChanged();
                 parentScreen.setTabFocusLostWidget(null);
+                fireScriptletEvent();
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -154,6 +155,7 @@ public class ClinProviderLastName extends SingleField<AutoComplete> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
             operation = 1;
+            fireScriptletEvent();
         }
     }
 
@@ -182,6 +184,7 @@ public class ClinProviderLastName extends SingleField<AutoComplete> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
             operation = 2;
+            fireScriptletEvent();
         }
     }
 

@@ -38,6 +38,8 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample1.client.PatientChangeEvent;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.secondDataEntry.client.field.AccessionNumber;
 import org.openelis.modules.secondDataEntry.client.field.AuxData;
 import org.openelis.modules.secondDataEntry.client.field.ClientReference;
@@ -64,6 +66,7 @@ import org.openelis.modules.secondDataEntry.client.field.SampleOrganization;
 import org.openelis.modules.secondDataEntry.client.field.SampleProject;
 import org.openelis.modules.secondDataEntry.client.field.SampleQAEvent;
 import org.openelis.modules.secondDataEntry.client.field.VerificationField;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.ShortcutHandler;
 import org.openelis.ui.event.StateChangeEvent;
@@ -169,7 +172,7 @@ public class ClinicalTabUI extends VerificationScreen {
 
     protected SampleManager1                     manager;
 
-    protected Screen                             parentScreen;
+    protected Screen                             parentScreen, screen;
 
     protected EventBus                           parentBus;
 
@@ -205,6 +208,8 @@ public class ClinicalTabUI extends VerificationScreen {
         VerificationField field;
         ArrayList<VerificationField> tabs;
 
+        screen = this;
+        
         addStateChangeHandler(new StateChangeEvent.Handler() {
             ScheduledCommand cmd;
 
@@ -599,6 +604,21 @@ public class ClinicalTabUI extends VerificationScreen {
                 execute(Operation.VALUE_CHANGED);
             }
         }, (char)99, CTRL);
+        
+        bus.addHandler(PatientChangeEvent.getType(), new PatientChangeEvent.Handler() {
+            @Override
+            public void onPatientChange(PatientChangeEvent event) {
+                fireScriptletEvent(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
+            }
+        });
+        
+        bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
+            @Override
+            public void onRunScriptlet(RunScriptletEvent event) {
+                if (screen != event.getSource())
+                    fireScriptletEvent(event.getUid(), event.getChanged(), event.getOperation());
+            }
+        });
     }
 
     public void setData(SampleManager1 manager) {
@@ -731,5 +751,13 @@ public class ClinicalTabUI extends VerificationScreen {
                     break;
             }
         }
+    }
+    
+    /**
+     * Fires an event, for the passed uid and operation, to the parent screen to
+     * inform it that some field was changed and scriptlets may need to be run
+     */
+    protected void fireScriptletEvent(String uid, String changed, Action_Before operation) {
+        parentBus.fireEventFromSource(new RunScriptletEvent(uid, changed, operation), screen);
     }
 }

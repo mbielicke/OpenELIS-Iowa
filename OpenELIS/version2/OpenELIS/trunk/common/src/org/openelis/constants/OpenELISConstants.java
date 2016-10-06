@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -898,6 +898,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_cantUnreleaseCarrierException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
+   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - A released {3}, {4} on sample(s) # ''{5}'' is linked to this sample".
+   * 
+   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - A released {3}, {4} on sample(s) # ''{5}'' is linked to this sample"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - A released {3}, {4} on sample(s) # ''{5}'' is linked to this sample")
+  @Key("analysis.cantUnreleaseMS1stIntegException")
+  String analysis_cantUnreleaseMS1stIntegException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4,  String arg5);
+
+  /**
    * Translated "An analysis can not be its own prep analysis".
    * 
    * @return translated "An analysis can not be its own prep analysis"
@@ -941,6 +950,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
   String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - 1st and 2nd Trimester tests cannot be on the same sample".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - 1st and 2nd Trimester tests cannot be on the same sample"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - 1st and 2nd Trimester tests cannot be on the same sample")
+  @Key("analysis.firstSecTriNotOnSameSampleException")
+  String analysis_firstSecTriNotOnSameSampleException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Analysis Id".
@@ -1123,6 +1141,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_partAccCantBeSameAsIndException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Patient required for computations".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Patient required for computations"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Patient required for computations")
+  @Key("analysis.patientRequiredForComputeException")
+  String analysis_patientRequiredForComputeException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
@@ -1141,6 +1168,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_printed();
 
   /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - QA Event ''{3}'' not found in the system".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - QA Event ''{3}'' not found in the system"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - QA Event ''{3}'' not found in the system")
+  @Key("analysis.qaEventNotFoundException")
+  String analysis_qaEventNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
    * Translated "Analysis QA Events ".
    * 
    * @return translated "Analysis QA Events "
@@ -1148,6 +1184,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Analysis QA Events ")
   @Key("analysis.qaEvents")
   String analysis_qaEvents();
+
+  /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - No recent related {3}, {4} found".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - No recent related {3}, {4} found"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - No recent related {3}, {4} found")
+  @Key("analysis.relatedFirstTriNotFoundException")
+  String analysis_relatedFirstTriNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Analysis Released Date".
@@ -11527,6 +11572,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String moveUp();
 
   /**
+   * Translated "MS Integrated Match Report ".
+   * 
+   * @return translated "MS Integrated Match Report "
+   */
+  @DefaultMessage("MS Integrated Match Report ")
+  @Key("msIntegratedMatch.msIntegratedMatchReport")
+  String msIntegratedMatch_msIntegratedMatchReport();
+
+  /**
    * Translated "More than one active QC Lot was found matching ''{0}'' at row {1}".
    * 
    * @return translated "More than one active QC Lot was found matching ''{0}'' at row {1}"
@@ -14144,6 +14198,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient")
   @Key("patient.patient")
   String patient_patient();
+
+  /**
+   * Translated "Patient ''{0}, {1}'' not found".
+   * 
+   * @return translated "Patient ''{0}, {1}'' not found"
+   */
+  @DefaultMessage("Patient ''{0}, {1}'' not found")
+  @Key("patient.patientNotFoundException")
+  String patient_patientNotFoundException(String arg0,  String arg1);
 
   /**
    * Translated "Patient Phone Number".
@@ -16873,6 +16936,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
+   * Translated "{0,number,#0} days ({1,number,#0}w{2,number,#0}d)".
+   * 
+   * @return translated "{0,number,#0} days ({1,number,#0}w{2,number,#0}d)"
+   */
+  @DefaultMessage("{0,number,#0} days ({1,number,#0}w{2,number,#0}d)")
+  @Key("result.gestAgeWeeksAndDays")
+  String result_gestAgeWeeksAndDays(Integer arg0,  Integer arg1,  Integer arg2);
+
+  /**
    * Translated "An analysis needs to be selected to view current result history".
    * 
    * @return translated "An analysis needs to be selected to view current result history"
@@ -16880,15 +16952,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("An analysis needs to be selected to view current result history")
   @Key("result.historyException")
   String result_historyException();
-
-  /**
-   * Translated "Invalid adjusted weight of 0.0".
-   * 
-   * @return translated "Invalid adjusted weight of 0.0"
-   */
-  @DefaultMessage("Invalid adjusted weight of 0.0")
-  @Key("result.invalidAdjWeightOfZeroException")
-  String result_invalidAdjWeightOfZeroException();
 
   /**
    * Translated "{0} >= 3, change test to 1st Tri Only".
@@ -16900,22 +16963,22 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_invalidIntegNTResultException(String arg0);
 
   /**
-   * Translated "Invalid number of fetus".
+   * Translated "Invalid number of fetuses".
    * 
-   * @return translated "Invalid number of fetus"
+   * @return translated "Invalid number of fetuses"
    */
-  @DefaultMessage("Invalid number of fetus")
+  @DefaultMessage("Invalid number of fetuses")
   @Key("result.invalidNumFetusException")
   String result_invalidNumFetusException();
 
   /**
-   * Translated "Invalid result of 0.0".
+   * Translated "Missing 1st trimester gestational age".
    * 
-   * @return translated "Invalid result of 0.0"
+   * @return translated "Missing 1st trimester gestational age"
    */
-  @DefaultMessage("Invalid result of 0.0")
-  @Key("result.invalidResultOfZeroException")
-  String result_invalidResultOfZeroException();
+  @DefaultMessage("Missing 1st trimester gestational age")
+  @Key("result.missing1stTriGAException")
+  String result_missing1stTriGAException();
 
   /**
    * Translated "Missing birth date".
@@ -16945,6 +17008,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_missingEnteredDateException();
 
   /**
+   * Translated "Missing or invalid {0} result".
+   * 
+   * @return translated "Missing or invalid {0} result"
+   */
+  @DefaultMessage("Missing or invalid {0} result")
+  @Key("result.missingInvalidResultException")
+  String result_missingInvalidResultException(String arg0);
+
+  /**
+   * Translated "Missing maternal weight".
+   * 
+   * @return translated "Missing maternal weight"
+   */
+  @DefaultMessage("Missing maternal weight")
+  @Key("result.missingMaternalWeightException")
+  String result_missingMaternalWeightException();
+
+  /**
+   * Translated "Missing Ultrasound gestational age".
+   * 
+   * @return translated "Missing Ultrasound gestational age"
+   */
+  @DefaultMessage("Missing Ultrasound gestational age")
+  @Key("result.missingUSGAException")
+  String result_missingUSGAException();
+
+  /**
    * Translated "Missing Ultrasound and LMP gestational age".
    * 
    * @return translated "Missing Ultrasound and LMP gestational age"
@@ -16954,13 +17044,22 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_missingUSLMPGAException();
 
   /**
-   * Translated "No median for measurement: {0,number,#0}".
+   * Translated "No median for gestational age: {0,number,#0}".
    * 
-   * @return translated "No median for measurement: {0,number,#0}"
+   * @return translated "No median for gestational age: {0,number,#0}"
    */
-  @DefaultMessage("No median for measurement: {0,number,#0}")
-  @Key("result.noMedianForMeasurementException")
-  String result_noMedianForMeasurementException(Integer arg0);
+  @DefaultMessage("No median for gestational age: {0,number,#0}")
+  @Key("result.noMedianForGestAgeException")
+  String result_noMedianForGestAgeException(Integer arg0);
+
+  /**
+   * Translated "Observation: NT {0} 3.0 mm".
+   * 
+   * @return translated "Observation: NT {0} 3.0 mm"
+   */
+  @DefaultMessage("Observation: NT {0} 3.0 mm")
+  @Key("result.ntInterpretation")
+  String result_ntInterpretation(String arg0);
 
   /**
    * Translated "Result(s) Overridden".
@@ -16997,6 +17096,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Result")
   @Key("result.result")
   String result_result();
+
+  /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - {3} does not match the patient".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} does not match the patient"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} does not match the patient")
+  @Key("result.resultNotMatchPatientCaution")
+  String result_resultNotMatchPatientCaution(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid".
@@ -19310,6 +19418,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Inhibin")
   @Key("scriptlet.inhibin")
   String scriptlet_inhibin();
+
+  /**
+   * Translated "NT".
+   * 
+   * @return translated "NT"
+   */
+  @DefaultMessage("NT")
+  @Key("scriptlet.nt")
+  String scriptlet_nt();
+
+  /**
+   * Translated "PAPP-A".
+   * 
+   * @return translated "PAPP-A"
+   */
+  @DefaultMessage("PAPP-A")
+  @Key("scriptlet.pappa")
+  String scriptlet_pappa();
 
   /**
    * Translated "Define action scripts that can be assigned to different processes.".

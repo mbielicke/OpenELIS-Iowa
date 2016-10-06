@@ -43,6 +43,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.TestMethodVO;
@@ -53,6 +54,7 @@ import org.openelis.manager.AnalyteParameterManager1.AnalyteCombo;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.AnalyteParameterMeta;
+import org.openelis.modules.provider1.client.ProviderService1;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -340,7 +342,9 @@ public class AnalyteParameterScreenUI extends Screen {
                         else if (Constants.table().QC.equals(entry.getReferenceTableId()))
                             name = getQcLabel(entry.getReferenceId(), entry.getReferenceName());
                         else if (Constants.table().PROVIDER.equals(entry.getReferenceTableId()))
-                            name = "";
+                            name = getProviderLabel(entry.getReferenceId(),
+                                                    entry.getReferenceName(),
+                                                    entry.getReferenceDescription());
 
                         model.add(new Item<Integer>(entry.getReferenceId(),
                                                     entry.getReferenceTableId(),
@@ -555,7 +559,7 @@ public class AnalyteParameterScreenUI extends Screen {
                         }
                     }
                 }
-                
+
                 /*
                  * this makes sure that if an error is not supposed to be shown
                  * on clicking a cell, any previously shown error gets removed,
@@ -563,7 +567,7 @@ public class AnalyteParameterScreenUI extends Screen {
                  */
                 if (isState(ADD))
                     setDone(Messages.get().gen_enterInformationPressCommit());
-                else 
+                else
                     clearStatus();
             }
         });
@@ -1341,7 +1345,7 @@ public class AnalyteParameterScreenUI extends Screen {
         else if (Constants.table().QC.equals(refTableId))
             field.setKey(AnalyteParameterMeta.getQcName());
         else if (Constants.table().PROVIDER.equals(refTableId))
-            field.setKey(AnalyteParameterMeta.getProviderName());
+            field.setKey(AnalyteParameterMeta.getProviderLastName());
 
         /*
          * create a field for reference table, because that dropdown is not in
@@ -1441,18 +1445,12 @@ public class AnalyteParameterScreenUI extends Screen {
         ArrayList<TestMethodVO> tests;
 
         model = new ArrayList<Item<Integer>>();
-        try {
-            tests = TestService.get().fetchActiveByName(search);
-            for (TestMethodVO data : tests)
-                model.add(new Item<Integer>(data.getTestId(),
-                                            DataBaseUtil.concatWithSeparator(data.getTestName(),
-                                                                             ", ",
-                                                                             data.getMethodName())));
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
+        tests = TestService.get().fetchActiveByName(search);
+        for (TestMethodVO data : tests)
+            model.add(new Item<Integer>(data.getTestId(),
+                                        DataBaseUtil.concatWithSeparator(data.getTestName(),
+                                                                         ", ",
+                                                                         data.getMethodName())));
         return model;
     }
 
@@ -1468,9 +1466,27 @@ public class AnalyteParameterScreenUI extends Screen {
         return model;
     }
 
-    private ArrayList<Item<Integer>> getProviderMatches(String search) {
-        // TODO Auto-generated method stub
-        return null;
+    private ArrayList<Item<Integer>> getProviderMatches(String search) throws Exception {
+        ArrayList<Item<Integer>> model;
+        //Item<Integer> row;
+        
+        model = new ArrayList<Item<Integer>>();
+        for (ProviderDO data : ProviderService1.get().fetchByLastNameNpiExternalId(search)) {
+            model.add(new Item<Integer>(data.getId(), getProviderLabel(data.getId(),
+                                                                       data.getLastName(),
+                                                                       data.getFirstName())));
+            /*row = new Item<Integer>(4);
+
+            row.setKey(data.getId());
+            row.setData(data);
+            row.setCell(0, data.getLastName());
+            row.setCell(1, data.getFirstName());
+            row.setCell(2, data.getMiddleName());
+            row.setCell(3, data.getNpi());
+
+            model.add(row);*/
+        }
+        return model;
     }
 
     private Node getRoot() {
@@ -1524,19 +1540,38 @@ public class AnalyteParameterScreenUI extends Screen {
         return node;
     }
 
-    private String getQcLabel(Integer qcId, String qcName) {
+    private String getQcLabel(Integer id, String name) {
         StringBuilder sb;
 
-        if (qcId == null || DataBaseUtil.isEmpty(qcName))
+        if (id == null || DataBaseUtil.isEmpty(name))
             return null;
 
         sb = new StringBuilder();
 
-        sb.append(qcName);
-        sb.append(" ");
-        sb.append("(");
-        sb.append(qcId.toString());
-        sb.append(")");
+        sb.append(name)
+          .append(" ")
+          .append("(")
+          .append(id)
+          .append(")");
+
+        return sb.toString();
+    }
+
+    private String getProviderLabel(Integer id, String lastName, String firstName) {
+        StringBuilder sb;
+
+        if (id == null || DataBaseUtil.isEmpty(lastName))
+            return null;
+
+        sb = new StringBuilder();
+
+        sb.append(lastName)
+          .append(", ")
+          .append(firstName)
+          .append(" ")
+          .append("(")
+          .append(id)
+          .append(")");
 
         return sb.toString();
     }

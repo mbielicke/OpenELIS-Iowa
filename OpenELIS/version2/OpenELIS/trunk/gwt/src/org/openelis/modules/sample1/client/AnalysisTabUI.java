@@ -63,6 +63,7 @@ import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
@@ -184,7 +185,7 @@ public class AnalysisTabUI extends Screen {
         screen = this;
 
         addScreenHandler(test, SampleMeta.getAnalysisTestName(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 test.setValue(getTestName());
             }
 
@@ -201,7 +202,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(method,
                          SampleMeta.getAnalysisMethodName(),
                          new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<AutoCompleteValue> event) {
                                  method.setValue(getMethodId(), getMethodName());
                              }
 
@@ -252,7 +253,7 @@ public class AnalysisTabUI extends Screen {
         });
 
         addScreenHandler(status, SampleMeta.getAnalysisStatusId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 status.setValue(getStatusId());
             }
 
@@ -290,7 +291,7 @@ public class AnalysisTabUI extends Screen {
         });
 
         addScreenHandler(type, SampleMeta.getAnalysisTypeId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 type.setValue(getTypeId());
             }
 
@@ -311,7 +312,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(isReportable,
                          SampleMeta.getAnalysisIsReportable(),
                          new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<String> event) {
                                  isReportable.setValue(getIsReportable());
                              }
 
@@ -331,7 +332,7 @@ public class AnalysisTabUI extends Screen {
                          });
 
         addScreenHandler(section, SampleMeta.getAnalysisSectionId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 /*
                  * For all states other than Display and Query, the model
                  * depends on the analysis showing in the tab, which is known
@@ -368,7 +369,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(unitOfMeasure,
                          SampleMeta.getAnalysisUnitOfMeasureId(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  /*
                                   * For all states other than Display and Query,
                                   * the model depends on the analysis showing in
@@ -408,7 +409,7 @@ public class AnalysisTabUI extends Screen {
                          });
 
         addScreenHandler(panel, SampleMeta.getAnalysisPanelId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 panel.setValue(getPanelId());
             }
 
@@ -429,7 +430,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(samplePrep,
                          SampleMeta.getAnalysisSamplePrep(),
                          new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Integer> event) {
                                  /*
                                   * set the model created from all analyses in
                                   * the manager except the displayed one in the
@@ -470,12 +471,15 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(startedDate,
                          SampleMeta.getAnalysisStartedDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  startedDate.setValue(getStartedDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setStartedDate(event.getValue());
+                                 fireScriptletEvent(Constants.uid().get(analysis),
+                                                    SampleMeta.getAnalysisStartedDate(),
+                                                    null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -492,7 +496,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(completedDate,
                          SampleMeta.getAnalysisCompletedDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  completedDate.setValue(getCompletedDate());
                              }
 
@@ -514,7 +518,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(releasedDate,
                          SampleMeta.getAnalysisReleasedDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  releasedDate.setValue(getReleasedDate());
                              }
 
@@ -535,7 +539,7 @@ public class AnalysisTabUI extends Screen {
         addScreenHandler(printedDate,
                          SampleMeta.getAnalysisPrintedDate(),
                          new ScreenHandler<Datetime>() {
-                             public void onDataChange(DataChangeEvent event) {
+                             public void onDataChange(DataChangeEvent<Datetime> event) {
                                  printedDate.setValue(getPrintedDate());
                              }
 
@@ -554,7 +558,7 @@ public class AnalysisTabUI extends Screen {
                          });
 
         addScreenHandler(revision, SampleMeta.getAnalysisRevision(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 revision.setValue(getRevision());
             }
 
@@ -569,7 +573,7 @@ public class AnalysisTabUI extends Screen {
         });
 
         addScreenHandler(worksheetTable, "worksheetTable", new ScreenHandler<Item<Integer>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Item<Integer>> event) {
                 worksheetTable.setModel(getWorksheetTableModel());
             }
 
@@ -605,7 +609,7 @@ public class AnalysisTabUI extends Screen {
         });
 
         addScreenHandler(userTable, "userTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<ArrayList<Row>> event) {
                 userTable.setModel(getUserTableModel());
             }
 
@@ -1456,6 +1460,13 @@ public class AnalysisTabUI extends Screen {
             throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
 
         return ((CacheProvider)parentScreen).get(testId, TestManager.class);
+    }
+
+    /**
+     * fires a RunScriptletEvent to the parent screen
+     */
+    private void fireScriptletEvent(String uid, String changed, Action_Before operation) {
+        parentBus.fireEventFromSource(new RunScriptletEvent(uid, changed, operation), screen);
     }
 
     private ArrayList<Row> getWorksheetTableModel() {

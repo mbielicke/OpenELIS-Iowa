@@ -43,6 +43,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ProviderAnalyteViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.manager.ProviderManager1;
@@ -125,7 +126,7 @@ public class ProviderScreenUI extends Screen {
 
     @UiField
     protected MenuItem                                      providerHistory,
-                    providerLocationHistory;
+                    providerLocationHistory, providerAnalyteHistory;
 
     @UiField
     protected TabLayoutPanel                                tabPanel;
@@ -135,6 +136,9 @@ public class ProviderScreenUI extends Screen {
 
     @UiField(provided = true)
     protected NoteTabUI                                     noteTab;
+
+    @UiField(provided = true)
+    protected AnalyteTabUI                                  analyteTab;
 
     protected AsyncCallbackUI<ArrayList<IdFirstLastNameVO>> queryCall;
 
@@ -158,6 +162,7 @@ public class ProviderScreenUI extends Screen {
 
         locationTab = new LocationTabUI(this);
         noteTab = new NoteTabUI(this);
+        analyteTab = new AnalyteTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -254,7 +259,7 @@ public class ProviderScreenUI extends Screen {
         // screen fields
         //
         addScreenHandler(id, ProviderMeta.getId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 id.setValue(getId());
             }
 
@@ -273,7 +278,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(lastName, ProviderMeta.getLastName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 lastName.setValue(getLastName());
             }
 
@@ -292,7 +297,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(typeId, ProviderMeta.getTypeId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 typeId.setValue(getTypeId());
             }
 
@@ -311,7 +316,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(firstName, ProviderMeta.getFirstName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 firstName.setValue(getFirstName());
             }
 
@@ -330,7 +335,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(npi, ProviderMeta.getNpi(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 npi.setValue(getNpi());
             }
 
@@ -349,7 +354,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(middleName, ProviderMeta.getMiddleName(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<String> event) {
                 middleName.setValue(getMiddleName());
             }
 
@@ -368,7 +373,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(source, ProviderMeta.getReferenceSourceId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Integer> event) {
                 source.setValue(getReferenceSourceId());
             }
 
@@ -392,7 +397,7 @@ public class ProviderScreenUI extends Screen {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(locationTab, "locationTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 locationTab.onDataChange();
             }
 
@@ -406,7 +411,7 @@ public class ProviderScreenUI extends Screen {
         });
 
         addScreenHandler(noteTab, "noteTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
+            public void onDataChange(DataChangeEvent<Object> event) {
                 noteTab.onDataChange();
             }
 
@@ -416,6 +421,20 @@ public class ProviderScreenUI extends Screen {
 
             public Object getQuery() {
                 return null;
+            }
+        });
+        
+        addScreenHandler(analyteTab, "analyteTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent<Object> event) {
+                analyteTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                analyteTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return analyteTab.getQueryFields();
             }
         });
 
@@ -523,6 +542,19 @@ public class ProviderScreenUI extends Screen {
             }
         });
 
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                providerAnalyteHistory.setEnabled(isState(DISPLAY));
+            }
+        });
+        
+        providerAnalyteHistory.addCommand(new Command() {
+            @Override
+            public void execute() {
+                providerAnalyteHistory();
+            }
+        });
+        
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 boolean enable;
@@ -821,7 +853,7 @@ public class ProviderScreenUI extends Screen {
             name = data.getLastName();
 
         hist = new IdNameVO(data.getId(), name);
-        HistoryScreen.showHistory(Messages.get().providerHistory(),
+        HistoryScreen.showHistory(Messages.get().provider_history(),
                                   Constants.table().PROVIDER,
                                   hist);
     }
@@ -844,8 +876,31 @@ public class ProviderScreenUI extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(Messages.get().providerLocationHistory(),
+        HistoryScreen.showHistory(Messages.get().provider_locationHistory(),
                                   Constants.table().PROVIDER_LOCATION,
+                                  refVoList);
+    }
+    
+    protected void providerAnalyteHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        ProviderAnalyteViewDO data;
+
+        try {
+            count = manager.analyte.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.analyte.get(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().provider_analyteHistory(),
+                                  Constants.table().PROVIDER_ANALYTE,
                                   refVoList);
     }
 
@@ -900,6 +955,7 @@ public class ProviderScreenUI extends Screen {
     private void setData() {
         locationTab.setData(manager);
         noteTab.setData(manager);
+        analyteTab.setData(manager);
     }
 
     private void fetchById(Integer id) {

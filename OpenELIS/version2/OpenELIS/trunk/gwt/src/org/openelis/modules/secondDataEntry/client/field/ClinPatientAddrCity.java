@@ -149,6 +149,7 @@ public class ClinPatientAddrCity extends SingleField<TextBox<String>> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
             operation = 1;
+            fireScriptletEvent();
         }
     }
 
@@ -174,6 +175,7 @@ public class ClinPatientAddrCity extends SingleField<TextBox<String>> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
             operation = 2;
+            fireScriptletEvent();
         }
     }
 

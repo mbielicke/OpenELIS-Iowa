@@ -62,4 +62,9 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
 
         return super.getMedianforAge(ga);
     }
+    
+    @Override
+    protected boolean didCmpMoM() {
+        return getMomCurr() != null;
+    }
 }

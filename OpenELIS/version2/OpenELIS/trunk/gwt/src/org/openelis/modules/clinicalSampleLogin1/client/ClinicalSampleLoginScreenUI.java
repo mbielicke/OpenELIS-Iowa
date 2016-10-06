@@ -45,6 +45,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -102,6 +103,7 @@ import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PatientChangeEvent;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
+import org.openelis.modules.sample1.client.QAEventRemovedEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -921,6 +923,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 setReceivedDate(event.getValue());
+                runScriptlets(null, SampleMeta.getReceivedDate(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1408,6 +1411,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 revalidate(patientLastName);
                 revalidate(patientFirstName);
                 revalidate(patientBirthDate);
+                runScriptlets(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
             }
         });
 
@@ -3526,10 +3530,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         data.setCache(cache);
 
         /*
-         * run the scritplet and show the errors and the changed data
+         * run the scriptlet and show the errors and the changed data
          */
         data = scriptletRunner.run(data);
-
+        clearStatus();
         if (data.getExceptions() != null && data.getExceptions().size() > 0) {
             errors = new ValidationErrorsList();
             for (Exception e : data.getExceptions())
@@ -3572,11 +3576,17 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
                         bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
                 }
+            } else if (obj instanceof AnalysisDO) {
+                /*
+                 * if analysis qa events were removed and any of them belong to
+                 * the analysis selected in the tree, refresh the qa event tab
+                 */
+                if (actionAfter.contains(Action_After.QA_REMOVED) && cuid.equals(selUid))
+                    bus.fireEventFromSource(new QAEventRemovedEvent(cuid), screen);
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
-                 * if analysis qa events were changed was added and if any of
-                 * them belong to the analysis selected in the tree then refresh
-                 * the qa event tab, otherwise don't
+                 * analysis qa events were added; if any of them belong to the
+                 * analysis selected in the tree, refresh the qa event tab
                  */
                 aqa = (AnalysisQaEventViewDO)obj;
                 auid = Constants.uid().getAnalysis(aqa.getAnalysisId());
@@ -4482,9 +4492,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         }
         manager.getSampleClinical().setPatientId(data.getId());
         manager.getSampleClinical().setPatient(data);
-
-        runScriptlets(null, SampleMeta.getClinicalPatientId(), Action_Before.PATIENT);
-
         evaluateEdit();
         setData();
         setState(state);
