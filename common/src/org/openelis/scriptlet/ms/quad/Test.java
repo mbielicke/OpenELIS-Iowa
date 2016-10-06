@@ -29,83 +29,6 @@ public abstract class Test {
         this.maxDay = maxDay;
         this.analyteName = analyteName;
     }
-
-    /**
-     * Returns race correction factor for MoM
-     */
-    public Double getRace() {
-        return race;
-    }
-
-    /**
-     * Returns insulin correction factor for MoM
-     */
-    public Double getInsuline() {
-        return insuline;
-    }
-
-    /**
-     * Returns truncation limits for NTD
-     */
-    public Double[] getNTD() {
-        return ntd;
-    }
-
-    /**
-     * Returns truncation limits for Downs
-     */
-    public Double[] getDowns() {
-        return downs;
-    }
-
-    /**
-     * Returns truncation limits for T18
-     */
-    public Double[] getT18() {
-        return t18;
-    }
-
-    /**
-     * Returns truncation limits for SLOS
-     */
-    public Double[] getSLOS() {
-        return slos;
-    }
-
-    /**
-     * Returns min gestational age
-     */
-    public int getMinDay() {
-        return minDay;
-    }
-
-    /**
-     * Returns max gestational age
-     */
-    public int getMaxDay() {
-        return maxDay;
-    }
-
-    /**
-     * Returns the value from the intrument for this test
-     */
-    public Double getResult() {
-        return result;
-    }
-    
-    /**
-     * Sets the value from the intrument for this test
-     */
-    public void setResult(Double result) {
-        this.result = result;
-    }
-
-    /**
-     * Returns p1
-     */
-    public Double getP1() {
-        return p1;
-    }
     
     /**
      * Sets p1
@@ -127,14 +50,7 @@ public abstract class Test {
     public void setP2(Double p2) {
         this.p2 = p2;
     }
-
-    /**
-     * Returns p3
-     */
-    public Double getP3() {
-        return p3;
-    }
-
+    
     /**
      * Sets p3
      */
@@ -143,46 +59,109 @@ public abstract class Test {
     }
 
     /**
-     * Returns MoM computed using initial gestational age
-     */
-    public Double getMomInit() {
-        return momInit;
-    }
-
-    /**
-     * Sets MoM computed using initial gestational age
-     */
-    public void setMomInit(Double momInit) {
-        this.momInit = momInit;
-    }
-
-    /**
-     * Returns MoM computed using current gestational age
-     */
-    public Double getMomCurr() {
-        return momCurr;
-    }
-
-    /**
-     * Sets MoM computed using current gestational age
-     */
-    public void setMomCurr(Double momCurr) {
-        this.momCurr = momCurr;
-    }
-    
-    /**
      * Returns the final computed MoM to be shown to the user
      */
     public Double getMomFinal() {
-        if (momCurr == null || momInit == null)
+        if (!didCmpMoM())
             return null;
         return momCurr;
     }
-   
+    
+    /**
+     * Sets the value from the intrument for this test
+     */
+    public void setResult(Double result) {
+        this.result = result;
+    }
+
+    /**
+     * Returns race correction factor for MoM
+     */
+    protected Double getRace() {
+        return race;
+    }
+
+    /**
+     * Returns insulin correction factor for MoM
+     */
+    protected Double getInsuline() {
+        return insuline;
+    }
+
+    /**
+     * Returns truncation limits for NTD
+     */
+    protected Double[] getNTD() {
+        return ntd;
+    }
+
+    /**
+     * Returns truncation limits for Downs
+     */
+    protected Double[] getDowns() {
+        return downs;
+    }
+
+    /**
+     * Returns truncation limits for T18
+     */
+    protected Double[] getT18() {
+        return t18;
+    }
+
+    /**
+     * Returns truncation limits for SLOS
+     */
+    protected Double[] getSLOS() {
+        return slos;
+    }
+
+    /**
+     * Returns min gestational age
+     */
+    protected int getMinDay() {
+        return minDay;
+    }
+
+    /**
+     * Returns max gestational age
+     */
+    protected int getMaxDay() {
+        return maxDay;
+    }
+
+    /**
+     * Returns the value from the intrument for this test
+     */
+    protected Double getResult() {
+        return result;
+    }
+
+    /**
+     * Returns p1
+     */
+    protected Double getP1() {
+        return p1;
+    }
+
+    /**
+     * Returns p3
+     */
+    protected Double getP3() {
+        return p3;
+    }
+    
+    /**
+     * Returns the name of the analyte for this test such as "AFP"
+     */
+    protected String getAnalyteName() {
+        return analyteName;
+    }
+
     /**
      * Computes Multiple of Medians for the test
      */
-    public void computeMoms(int gestAgeInit, int gestAgeCurr, Datetime entered, Double weight,
+    protected void computeMoms(int gestAgeInit, int gestAgeCurr, Datetime entered, Double weight,
                             boolean isRaceBlack, boolean isDiabetic) throws Exception {
         double mom;
 
@@ -198,6 +177,34 @@ public abstract class Test {
                 throw indE;
             }
         }
+    }
+
+    /**
+     * Returns MoM computed using initial gestational age
+     */
+    protected Double getMomInit() {
+        return momInit;
+    }
+
+    /**
+     * Sets MoM computed using initial gestational age
+     */
+    protected void setMomInit(Double momInit) {
+        this.momInit = momInit;
+    }
+
+    /**
+     * Returns MoM computed using current gestational age
+     */
+    protected Double getMomCurr() {
+        return momCurr;
+    }
+
+    /**
+     * Sets MoM computed using current gestational age
+     */
+    protected void setMomCurr(Double momCurr) {
+        this.momCurr = momCurr;
     }
 
     /**
@@ -252,12 +259,12 @@ public abstract class Test {
         else
             median = getMedianforAge(ga);
 
-        if (getResult() == 0.0)
-            throw new InconsistencyException(Messages.get().result_invalidResultOfZeroException());
+        if (getResult() == null || getResult() == 0.0)
+            throw new InconsistencyException(Messages.get().result_missingInvalidResultException(analyteName));
         if (adjWeight == 0.0)
-            throw new InconsistencyException(Messages.get().result_invalidAdjWeightOfZeroException());
+            throw new InconsistencyException(Messages.get().result_missingMaternalWeightException());
         if (median == 0.0)
-            throw new InconsistencyException(Messages.get().result_noMedianForMeasurementException(ga));
+            throw new InconsistencyException(Messages.get().result_noMedianForGestAgeException(ga));
 
         mom = getResult() / median / adjWeight;
         if (isRaceBlack)
@@ -266,5 +273,12 @@ public abstract class Test {
             mom /= getInsuline();
         
         return mom;
+    }
+    
+    /**
+     * Returns true if the MoM was computed; returns false otherwise
+     */
+    protected boolean didCmpMoM() {
+        return momCurr != null && momInit != null;
     }
 }

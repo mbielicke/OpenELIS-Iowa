@@ -27,14 +27,23 @@ package org.openelis.modules.scriptlet.client.ms;
 
 import static org.openelis.modules.main.client.Logger.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QaEventDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AnalyteParameterManager1;
+import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.Load;
 import org.openelis.modules.analyteParameter1.client.AnalyteParameterService1;
+import org.openelis.modules.qaevent.client.QaEventService;
+import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.systemvariable1.client.SystemVariableService1Impl;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -53,6 +62,11 @@ public class ScriptletProxy implements org.openelis.scriptlet.ms.ScriptletProxy 
     @Override
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return DictionaryCache.getBySystemName(systemName);
+    }
+    
+    @Override
+    public SystemVariableDO fetchSystemVariableByName(String name) throws Exception {
+        return SystemVariableService1Impl.INSTANCE.fetchByExactName(name);
     }
 
     @Override
@@ -83,5 +97,21 @@ public class ScriptletProxy implements org.openelis.scriptlet.ms.ScriptletProxy 
         date = (Date)dt.getDate().clone();
         CalendarUtil.addMonthsToDate(date, months);
         return new Datetime(dt.getStartCode(), dt.getEndCode(), date);
+    }
+    
+    @Override
+    public SampleManager1 fetchByAccession(Integer accessionNumber, Load... elements) throws Exception {
+        return SampleService1.get().fetchByAccession(accessionNumber, elements);
+    }
+
+    @Override
+    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                  Load... elements) throws Exception {
+        return SampleService1.get().fetchByQuery(fields, first, max, elements);
+    }
+
+    @Override
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        return QaEventService.get().fetchByNames(names);
     }
 }

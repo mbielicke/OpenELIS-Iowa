@@ -110,6 +110,9 @@ public interface SampleServiceInt1Async {
 
     public void unrelease(SampleManager1 sm, AsyncCallback<SampleManager1> callback);
 
+    public void setAdditionalDomain(SampleManager1 sm, String additionalDomain,
+                                    AsyncCallback<SampleManager1> callback);
+
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
                              AsyncCallback<SampleTestReturnVO> callback);
 

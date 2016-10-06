@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import static org.openelis.manager.AnalyteParameterManager1Accessor.*;
+import static org.openelis.manager.ProviderManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,12 +40,15 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.ProviderAnalyteViewDO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.AnalyteParameterManager1;
 import org.openelis.manager.AnalyteParameterManager1.AnalyteCombo;
+import org.openelis.manager.ProviderManager1;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.TestManager;
 import org.openelis.ui.common.DataBaseUtil;
@@ -72,6 +76,9 @@ public class AnalyteParameterManager1Bean {
     @EJB
     private DictionaryCacheBean  dictionaryCache;
 
+    @EJB
+    private ProviderManager1Bean providerManager1;
+
     /**
      * Returns analyte parameter manager for specified reference id and
      * reference table id; if both arguments are not null then the manager
@@ -85,9 +92,11 @@ public class AnalyteParameterManager1Bean {
         StringBuilder sb;
         TestViewDO test;
         QcViewDO qc;
+        QcAnalyteViewDO qca;
+        ProviderDO prov;
         TestManager tm;
         QcManager qcm;
-        QcAnalyteViewDO qca;
+        ProviderManager1 pm;
         AnalyteParameterManager1 apm;
         HashSet<Integer> analyteIds;
 
@@ -103,6 +112,7 @@ public class AnalyteParameterManager1Bean {
          */
         tm = null;
         qcm = null;
+        pm = null;
         if (Constants.table().TEST.equals(referenceTableId)) {
             tm = testManager.fetchById(referenceId);
             test = tm.getTest();
@@ -125,6 +135,18 @@ public class AnalyteParameterManager1Bean {
 
             setReferenceName(apm, sb.toString());
         } else if (Constants.table().PROVIDER.equals(referenceTableId)) {
+            pm = providerManager1.fetchById(referenceId);
+            prov = pm.getProvider();
+
+            sb = new StringBuilder();
+            sb.append(prov.getLastName())
+              .append(", ")
+              .append(prov.getFirstName())
+              .append(" ")
+              .append("(")
+              .append(prov.getId())
+              .append(")");
+            setReferenceName(apm, sb.toString());
         }
 
         /*
@@ -162,6 +184,18 @@ public class AnalyteParameterManager1Bean {
                                                      null,
                                                      null));
                 analyteIds.add(qca.getAnalyteId());
+            }
+        } else if (pm != null && getAnalytes(pm) != null) {
+            for (ProviderAnalyteViewDO data : getAnalytes(pm)) {
+                if (analyteIds.contains(data.getAnalyteId()))
+                    continue;
+                addCombination(apm, new AnalyteCombo(apm.getNextUID(),
+                                                     data.getAnalyteId(),
+                                                     data.getAnalyteName(),
+                                                     null,
+                                                     null,
+                                                     null));
+                analyteIds.add(data.getAnalyteId());
             }
         }
 

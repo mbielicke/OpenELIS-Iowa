@@ -75,14 +75,15 @@ public class OpenELIS extends Screen {
                     inventoryAdjustment, inventoryItem, verificationReport, orderRequestForm,
                     holdRefuseOrganization, testReport, sampleInhouseReport, volumeReport,
                     toDoAnalyteReport, sampleDataExport, QASummaryReport, testCountByFacility,
-                    turnaround, turnAroundStatisticReport, kitTrackingReport, airQualityExport,
-                    sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
-                    finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection,
-                    analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
-                    exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
-                    storageLocation, instrument, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment, tubeLabelReport, chlGcToCDCExport,
-                    abnormalsReport, abnormalsCallListReport, patientMerge, qaListReport;
+                    msIntegratedMatchReport, turnaround, turnAroundStatisticReport,
+                    kitTrackingReport, airQualityExport, sdwisUnloadReport, dataView, qcChart,
+                    finalReport, finalReportBatch, finalReportBatchReprint, sampleQc, test, method,
+                    panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
+                    exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
+                    trailerForTest, storageUnit, storageLocation, instrument, systemVariable, pws,
+                    cron, logs, instrumentBarcodeReport, attachment, tubeLabelReport,
+                    chlGcToCDCExport, abnormalsReport, abnormalsCallListReport, patientMerge,
+                    qaListReport;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -143,7 +144,7 @@ public class OpenELIS extends Screen {
                 showScreen(QUICK_ENTRY);
             }
         });
-        
+
         addCommand(verification, "verification", new Command() {
             public void execute() {
                 showScreen(VERIFICATION);
@@ -575,13 +576,19 @@ public class OpenELIS extends Screen {
                 showScreen(ATTACHMENT);
             }
         });
-        
+
         addCommand(tubeLabelReport, "r_tubelabel", new Command() {
             public void execute() {
                 showScreen(TUBE_LABEL_REPORT);
             }
         });
-
+        
+        addCommand(msIntegratedMatchReport, "patient", new Command() {
+            public void execute() {
+                showScreen(MS_INTEGRATED_MATCH_REPORT);
+            }
+        });
+        
         /*
          * this screen is restricted to a few people from IT because it's used
          * for creating and attaching final reports for private well samples and

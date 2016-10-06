@@ -987,22 +987,18 @@ public class DataViewReportBean {
      */
     private void buildWhereForAux(QueryBuilderV2 builder, DataView1VO data, String moduleName,
                                   List<Integer> sampleIds, String analyteClause) throws Exception {
+        boolean addAnalysisClause;
+
         builder.constructWhere(data.getQueryFields());
         /*
          * if moduleName is not null then this query is being executed for the
          * web
          */
+        addAnalysisClause = false;
         if (moduleName != null) {
             buildWhereForWeb(builder, moduleName);
-
-            /*
-             * this is done so that the alias for "sampleItem" gets added to the
-             * query, otherwise the query will not execute
-             */
-            builder.addWhere(SampleWebMeta.getItemId() + "=" +
-                             SampleWebMeta.getAnalysisSampleItemId());
+            addAnalysisClause = true;
         }
-
         /*
          * the user wants to see only reportable aux data
          */
@@ -1016,7 +1012,6 @@ public class DataViewReportBean {
          */
         builder.addWhere(SampleWebMeta.getAuxDataAuxFieldId() + "=" +
                          SampleWebMeta.getAuxDataFieldId());
-
         /*
          * Add the clause for limiting the aux data by analytes only if the user
          * selected some specific analytes and not all of them. This eliminates
@@ -1031,7 +1026,16 @@ public class DataViewReportBean {
                              DataBaseUtil.concatWithSeparator(sampleIds, ",") + ")");
             builder.addWhere(SampleWebMeta.getAuxDataReferenceTableId() + "=" +
                              Constants.table().SAMPLE);
+        } else {
+            addAnalysisClause = true;
         }
+        /*
+         * this is done so that the alias for "sampleItem" gets added to the
+         * query, otherwise the query will not execute
+         */
+        if (addAnalysisClause)
+            builder.addWhere(SampleWebMeta.getItemId() + "=" +
+                             SampleWebMeta.getAnalysisSampleItemId());
     }
 
     /**
@@ -1277,13 +1281,6 @@ public class DataViewReportBean {
         ArrayList<Integer> ids, range;
         List<DataViewResultVO> auxiliary;
 
-        builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
-                          SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + "," +
-                          SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
-                          SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
-                          SampleWebMeta.getAuxDataTypeId() + ", " +
-                          SampleWebMeta.getAuxDataValue() + ") ");
-
         /*
          * add the clause for limiting the aux data by analytes only if the user
          * selected some specific analytes and not all of them. This eliminates
@@ -1295,10 +1292,19 @@ public class DataViewReportBean {
             analyteClause = getAnalyteClause(auxFieldValueMap.keySet(), unselAnalyteIds);
 
         /*
-         * if results were fetched, limit the aux data to only the samples that
-         * the results belong to
+         * if results were fetched (sampleIds is not empty), limit the aux data
+         * to only the samples that the results belong to; otherwise, fetch
+         * sample item and analysis data as well so that it can be shown with
+         * aux data even if results are excluded; if results are not excluded,
+         * that data is shown with results only
          */
         if (sampleIds != null && sampleIds.size() > 0) {
+            builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
+                              SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() +
+                              "," + SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
+                              SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
+                              SampleWebMeta.getAuxDataTypeId() + ", " +
+                              SampleWebMeta.getAuxDataValue() + ") ");
             /*
              * the list of sample ids is broken into subsets and the query is
              * executed for each subset; the "where" clause is rebuilt for each
@@ -1329,6 +1335,15 @@ public class DataViewReportBean {
              */
             Collections.sort(auxiliary, new DataViewComparator());
         } else {
+            builder.setSelect("distinct new org.openelis.domain.DataViewResultVO(" +
+                              SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() +
+                              "," + SampleWebMeta.getItemId() + "," +
+                              SampleWebMeta.getAnalysisId() + "," + SampleWebMeta.getAuxDataId() +
+                              "," + SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
+                              SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
+                              SampleWebMeta.getAuxDataTypeId() + ", " +
+                              SampleWebMeta.getAuxDataValue() + ") ");
+
             builder.clearWhereClause();
             buildWhereForAux(builder, data, moduleName, null, analyteClause);
             builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
@@ -1537,7 +1552,6 @@ public class DataViewReportBean {
             status.setPercentComplete(100 * (resIndex + auxIndex + noResAuxIndex) /
                                       (numRes + numAux + numNoResAux));
             res = null;
-            addRow = true;
             anaValMap = null;
             value = null;
             if (excludeRes && excludeAux) {
@@ -1602,8 +1616,10 @@ public class DataViewReportBean {
                 }
             }
 
-            if (samOverridden && excludeOverride)
+            if (samOverridden && excludeOverride) {
+                prevSamId = samId;
                 continue;
+            }
 
             /*
              * don't show any data for this analysis if it's overridden and such
@@ -1611,33 +1627,38 @@ public class DataViewReportBean {
              * checked even if such analyses are not excluded because overridden
              * values are not shown in the report
              */
-            if (anaId != null && !anaId.equals(prevAnaId)) {
-                anaOverridden = false;
-                if ( (getAnalysisQAs(sm) != null)) {
-                    for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
-                        if (aqa.getAnalysisId().equals(anaId) &&
-                            Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
-                            anaOverridden = true;
-                            if (excludeOverride) {
-                                addRow = false;
-                                prevAnaId = anaId;
+            if (anaId != null) {
+                if ( !anaId.equals(prevAnaId)) {
+                    anaOverridden = false;
+                    if ( (getAnalysisQAs(sm) != null)) {
+                        for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
+                            if (aqa.getAnalysisId().equals(anaId) &&
+                                Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
+                                anaOverridden = true;
+                                if (excludeOverride)
+                                    break;
                             }
-                            break;
                         }
                     }
                 }
+                if (anaOverridden && excludeOverride) {
+                    prevSamId = samId;
+                    prevAnaId = anaId;
+                    continue;
+                }
             }
 
-            if ( !addRow) {
-                continue;
-            } else if (anaValMap != null) {
+            if (anaValMap != null) {
                 /*
-                 * show this result or aux data only if its value was not
-                 * selected by the user
+                 * show this result or aux data only if its value was selected
+                 * by the user
                  */
                 value = getValue(anaValMap, res.getAnalyteId(), res.getValue(), res.getTypeId());
-                if (value == null)
+                if (value == null) {
+                    prevSamId = samId;
+                    prevAnaId = anaId;
                     continue;
+                }
             }
 
             currRow = sheet.createRow(rowIndex++ );
@@ -1664,7 +1685,7 @@ public class DataViewReportBean {
                 setCellValue(cell, res.getAnalyteName(), null);
                 setMaxChars(cell.getColumnIndex(), res.getAnalyteName(), maxChars, null);
                 cell = currRow.createCell(currRow.getPhysicalNumberOfCells());
-                if (anaId != null) {
+                if (anaId != null && !excludeRes) {
                     /*
                      * this row is for a result; show the value only if the
                      * analysis and sample are not overridden
@@ -1675,69 +1696,74 @@ public class DataViewReportBean {
 
                     /*
                      * if this analyte has column analytes, show them in the
-                     * header and their values in the columns
+                     * header and their values in the columns; results for a
+                     * sample can be null if it has no results with values but
+                     * has aux data with values and aux data is not excluded
                      */
                     smResults = getResults(sm);
-                    for (i = 0; i < smResults.size(); i++ ) {
-                        rowRes = smResults.get(i);
-                        if ( !res.getId().equals(rowRes.getId()))
-                            continue;
-                        j = i + 1;
-                        if (j < smResults.size() && "Y".equals(smResults.get(j).getIsColumn())) {
-                            /*
-                             * this analyte has column analytes; "lastCol" is
-                             * the right-most column in the workbook; if an
-                             * analyte doesn't have a column yet, that column
-                             * will be added after "lastCol"; "currCol" keeps
-                             * track of the current column
-                             */
-                            if (lastCol == 0)
-                                lastCol = currRow.getPhysicalNumberOfCells();
-
-                            currCol = currRow.getPhysicalNumberOfCells();
-                            while (j < smResults.size()) {
-                                colRes = smResults.get(j++ );
-                                if ("N".equals(colRes.getIsColumn()))
-                                    break;
-                                if (showReportableColumnsOnly &&
-                                    "N".equals(colRes.getIsReportable()))
-                                    continue;
-                                anaIndex = colAnaMap.get(colRes.getAnalyte());
-
+                    if (smResults != null) {
+                        for (i = 0; i < smResults.size(); i++ ) {
+                            rowRes = smResults.get(i);
+                            if ( !res.getId().equals(rowRes.getId()))
+                                continue;
+                            j = i + 1;
+                            if (j < smResults.size() && "Y".equals(smResults.get(j).getIsColumn())) {
                                 /*
-                                 * if this column analyte's name is not found in
-                                 * the map, create a new column and start adding
-                                 * values in it; set the value in this cell if
-                                 * the analyte is shown in this column; if the
-                                 * analyte is not shown in this column, find the
-                                 * column in which it is shown and set the value
+                                 * this analyte has column analytes; "lastCol"
+                                 * is the right-most column in the workbook; if
+                                 * an analyte doesn't have a column yet, that
+                                 * column will be added after "lastCol";
+                                 * "currCol" keeps track of the current column
                                  */
-                                if (anaIndex == null) {
-                                    anaIndex = lastCol++ ;
-                                    colAnaMap.put(colRes.getAnalyte(), anaIndex);
-                                    headers.add(colRes.getAnalyte());
+                                if (lastCol == 0)
+                                    lastCol = currRow.getPhysicalNumberOfCells();
+
+                                currCol = currRow.getPhysicalNumberOfCells();
+                                while (j < smResults.size()) {
+                                    colRes = smResults.get(j++ );
+                                    if ("N".equals(colRes.getIsColumn()))
+                                        break;
+                                    if (showReportableColumnsOnly &&
+                                        "N".equals(colRes.getIsReportable()))
+                                        continue;
+                                    anaIndex = colAnaMap.get(colRes.getAnalyte());
+
+                                    /*
+                                     * if this column analyte's name is not
+                                     * found in the map, create a new column and
+                                     * start adding values in it; set the value
+                                     * in this cell if the analyte is shown in
+                                     * this column; if the analyte is not shown
+                                     * in this column, find the column in which
+                                     * it is shown and set the value
+                                     */
+                                    if (anaIndex == null) {
+                                        anaIndex = lastCol++ ;
+                                        colAnaMap.put(colRes.getAnalyte(), anaIndex);
+                                        headers.add(colRes.getAnalyte());
+                                        setMaxChars(cell.getColumnIndex(),
+                                                    colRes.getAnalyte(),
+                                                    maxChars,
+                                                    null);
+                                        cell = currRow.createCell(anaIndex);
+                                    } else if (anaIndex == currCol) {
+                                        cell = currRow.createCell(currCol++ );
+                                    } else {
+                                        cell = currRow.createCell(anaIndex);
+                                    }
+
+                                    /*
+                                     * set the value if the analysis and sample
+                                     * are not overridden
+                                     */
+                                    if ( !anaOverridden && !samOverridden)
+                                        setCellValue(cell, getValue(colRes.getValue(),
+                                                                    colRes.getTypeId()), null);
                                     setMaxChars(cell.getColumnIndex(),
-                                                colRes.getAnalyte(),
+                                                cell.getStringCellValue(),
                                                 maxChars,
                                                 null);
-                                    cell = currRow.createCell(anaIndex);
-                                } else if (anaIndex == currCol) {
-                                    cell = currRow.createCell(currCol++ );
-                                } else {
-                                    cell = currRow.createCell(anaIndex);
                                 }
-
-                                /*
-                                 * set the value if the analysis and sample are
-                                 * not overridden
-                                 */
-                                if ( !anaOverridden && !samOverridden)
-                                    setCellValue(cell, getValue(colRes.getValue(),
-                                                                colRes.getTypeId()), null);
-                                setMaxChars(cell.getColumnIndex(),
-                                            cell.getStringCellValue(),
-                                            maxChars,
-                                            null);
                             }
                         }
                     }
@@ -3144,9 +3170,9 @@ public class DataViewReportBean {
                     value = s.getReceivedById() != null ? userCache.getSystemUser(s.getReceivedById())
                                                                    .getLoginName()
                                                        : null;
-                /*
-                 * animal fields
-                 */
+                    /*
+                     * animal fields
+                     */
                 case SampleWebMeta.ANI_ANIMAL_COMMON_NAME_ID:
                     value = getDictionaryLabel(sa != null ? sa.getAnimalCommonNameId() : null);
                     break;
@@ -3178,7 +3204,7 @@ public class DataViewReportBean {
                 case SampleWebMeta.ANI_PROVIDER_FIRST_NAME:
                     if (sa != null)
                         value = sa.getProvider() != null ? sa.getProvider().getFirstName() : null;
-                     break;    
+                    break;
                 case SampleWebMeta.ANI_PROVIDER_PHONE:
                     value = sa != null ? sa.getProviderPhone() : null;
                     break;

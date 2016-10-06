@@ -25,9 +25,11 @@
  */
 package org.openelis.scriptlet.ms.quad;
 
+import org.openelis.scriptlet.ms.Util;
+
 /**
  * The class that stores data such as means and constant multipliers for Trisomy
- * 18; it also computes the disorder's risk
+ * 18 for the ms quad test; it also computes the disorder's risk
  */
 public class Trisomy18 extends Risk {
     public Trisomy18() {
@@ -43,8 +45,8 @@ public class Trisomy18 extends Risk {
     public void computeRisk(double[] mom, double apr) {
         double ordinalUA, ordinalDS;
 
-        ordinalUA = getOrdinal(mom, 3, 0.0000279099, getMeanUA(), getConstUA());
-        ordinalDS = getOrdinal(mom, 3, 0.000447477, getMeanDS(), getConstDS());
+        ordinalUA = Util.getOrdinal(mom, 3, 0.0000279099, getMeanUA(), getConstUA());
+        ordinalDS = Util.getOrdinal(mom, 3, 0.000447477, getMeanDS(), getConstDS());
         setRisk((int)Math.round(apr / (ordinalDS / ordinalUA)));
     }
 }

@@ -167,6 +167,7 @@ public class ClinPatientAddrState extends SingleField<Dropdown<String>> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowLeftImage());
             isVerified = true;
             operation = 1;
+            fireScriptletEvent();
         }
     }
 
@@ -192,6 +193,7 @@ public class ClinPatientAddrState extends SingleField<Dropdown<String>> {
             copyImage.setResource(OpenELISResources.INSTANCE.arrowRightImage());
             isVerified = true;
             operation = 2;
+            fireScriptletEvent();
         }
     }
 

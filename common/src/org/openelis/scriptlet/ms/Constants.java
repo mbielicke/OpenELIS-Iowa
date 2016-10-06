@@ -23,13 +23,39 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.scriptlet.ms.conf;
+package org.openelis.scriptlet.ms;
 
 /**
  * The class for storing the constants used for calculating various risks for
- * the ms conf (Maternal NTD Screen) test
+ * the maternal screening tests
  */
-public class Constants extends org.openelis.scriptlet.ms.quad.Constants {
+public class Constants {
+    
+    public static final String QA_EST_MOM =  "estriol < 0.25 mom", QA_PAPP_A_MOM = "papp-a < 0.1 mom", 
+                    QA_TWINS = "twins", QA_LESS_THAN_15 = "< 15 years old";
+    public static final double EST_LIMIT = 0.25, PAPP_A_LIMIT = 0.1;
+
+    /**
+     * Risk interpretations
+     */
+    public enum Interpretation {
+        NORMAL, PRES_POS, PRES_POS_AS, UNKNOWN
+    }
+    
+    /**
+     * Apriori risk types
+     */
+    public enum Apr_Risk {
+        T1, T2, TERM
+    }
+
+    /**
+     * Gestational age determined by method
+     */
+    public enum Gest_Age_Method {
+        LMP, US
+    }
+    
     /**
      *  The sample type set for the analysis
      */

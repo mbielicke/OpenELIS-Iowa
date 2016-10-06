@@ -367,8 +367,24 @@ public class AnalyteParameterBean {
     }
 
     private List providerQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
-                               int max) {
-        // TODO Auto-generated method stub
-        return new ArrayList();
+                               int max) throws Exception {
+        Query query;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ReferenceIdTableIdNameVO(" +
+                          AnalyteParameterMeta.getReferenceId() + ", " +
+                          AnalyteParameterMeta.getReferenceTableId() + ", " +
+                          AnalyteParameterMeta.getProviderLastName() + ", " +
+                          AnalyteParameterMeta.getProviderFirstName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(AnalyteParameterMeta.getProviderLastName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        return query.getResultList();
     }
 }

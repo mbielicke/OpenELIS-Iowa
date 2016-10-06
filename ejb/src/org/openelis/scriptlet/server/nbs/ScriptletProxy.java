@@ -31,19 +31,20 @@ import java.util.logging.Logger;
 
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.manager.AnalyteParameterManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.EJBFactory;
 
 /**
- * This class is used for providing the back-end functionality for the
- *  newborn screening scriptlets
+ * This class is used for providing the back-end functionality for the newborn
+ * screening scriptlets
  */
 public class ScriptletProxy implements org.openelis.scriptlet.nbs.ScriptletProxy {
-    
-    private static final Logger          log = Logger.getLogger("openelis");
-    
+
+    private static final Logger log = Logger.getLogger("openelis");
+
     @Override
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
@@ -55,7 +56,7 @@ public class ScriptletProxy implements org.openelis.scriptlet.nbs.ScriptletProxy
     public ArrayList<TestManager> fetchTestManagersByIds(ArrayList<Integer> ids) throws Exception {
         return EJBFactory.getTestManager().fetchByIds(ids);
     }
-    
+
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return EJBFactory.getDictionaryCache().getById(id);
@@ -65,12 +66,12 @@ public class ScriptletProxy implements org.openelis.scriptlet.nbs.ScriptletProxy
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return EJBFactory.getDictionaryCache().getBySystemName(systemName);
     }
-    
+
     @Override
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         return EJBFactory.getSampleManager1().removeAnalysis(sm, analysisId);
     }
-    
+
     @Override
     public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
         return EJBFactory.getQaevent().fetchByNames(names);
@@ -79,5 +80,11 @@ public class ScriptletProxy implements org.openelis.scriptlet.nbs.ScriptletProxy
     @Override
     public void log(Level level, String message, Exception e) {
         log.log(level, message, e);
+    }
+
+    @Override
+    public AnalyteParameterManager1 fetchParameters(Integer referenceId, Integer referenceTableId) throws Exception {
+        return EJBFactory.getAnalyteParameterManager1()
+                         .fetchByReferenceIdReferenceTableId(referenceId, referenceTableId);
     }
 }

@@ -25,9 +25,10 @@
  */
 package org.openelis.modules.secondDataEntry.client.field;
 
-import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.resources.OpenELISResources;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.secondDataEntry.client.VerificationScreen;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 
 import com.google.gwt.core.client.Scheduler;
@@ -82,8 +83,7 @@ public abstract class SingleField<T> implements VerificationField<T> {
     }
 
     public String getLogText() {
-        return operation != null ? DataBaseUtil.concatWithSeparator(operation, "-", key)
-                                    : null;
+        return operation != null ? DataBaseUtil.concatWithSeparator(operation, "-", key) : null;
     }
 
     /**
@@ -104,8 +104,7 @@ public abstract class SingleField<T> implements VerificationField<T> {
     }
 
     /**
-     * Creates the command that makes the focus get set to the editable widget
-     * as soon as it loses focus
+     * Makes the focus get set to this widget as soon as it loses focus
      */
     protected void refocus() {
         if (focusCommand == null) {
@@ -117,5 +116,21 @@ public abstract class SingleField<T> implements VerificationField<T> {
             };
         }
         Scheduler.get().scheduleDeferred(focusCommand);
+    }
+
+    /**
+     * Fires an event to the parent screen to inform it that this field was
+     * changed and scriptlets may need to be run
+     */
+    protected void fireScriptletEvent() {
+        fireScriptletEvent(null, null);
+    }
+
+    /**
+     * Fires an event, for the passed uid and operation, to the parent screen to
+     * inform it that this field was changed and scriptlets may need to be run
+     */
+    protected void fireScriptletEvent(String uid, Action_Before operation) {
+        parentScreen.getEventBus().fireEvent(new RunScriptletEvent(uid, key, operation));
     }
 }

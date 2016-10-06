@@ -25,66 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisExternalNote;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisInternalNote;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
-import static org.openelis.manager.SampleManager1Accessor.addAttachment;
-import static org.openelis.manager.SampleManager1Accessor.addAuxiliary;
-import static org.openelis.manager.SampleManager1Accessor.addItem;
-import static org.openelis.manager.SampleManager1Accessor.addOrganization;
-import static org.openelis.manager.SampleManager1Accessor.addProject;
-import static org.openelis.manager.SampleManager1Accessor.addResult;
-import static org.openelis.manager.SampleManager1Accessor.addSampleInternalNote;
-import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
-import static org.openelis.manager.SampleManager1Accessor.addStorage;
-import static org.openelis.manager.SampleManager1Accessor.addUser;
-import static org.openelis.manager.SampleManager1Accessor.addWorksheet;
-import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
-import static org.openelis.manager.SampleManager1Accessor.getAnalysisExternalNotes;
-import static org.openelis.manager.SampleManager1Accessor.getAnalysisInternalNotes;
-import static org.openelis.manager.SampleManager1Accessor.getAnalysisQAs;
-import static org.openelis.manager.SampleManager1Accessor.getAttachments;
-import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
-import static org.openelis.manager.SampleManager1Accessor.getItems;
-import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
-import static org.openelis.manager.SampleManager1Accessor.getPostProcessing;
-import static org.openelis.manager.SampleManager1Accessor.getProjects;
-import static org.openelis.manager.SampleManager1Accessor.getRemoved;
-import static org.openelis.manager.SampleManager1Accessor.getResults;
-import static org.openelis.manager.SampleManager1Accessor.getSample;
-import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
-import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
-import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
-import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
-import static org.openelis.manager.SampleManager1Accessor.getSamplePT;
-import static org.openelis.manager.SampleManager1Accessor.getSampleAnimal;
-import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
-import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
-import static org.openelis.manager.SampleManager1Accessor.getStorages;
-import static org.openelis.manager.SampleManager1Accessor.getUsers;
-import static org.openelis.manager.SampleManager1Accessor.setAnalysisInternalNotes;
-import static org.openelis.manager.SampleManager1Accessor.setAnalysisQAs;
-import static org.openelis.manager.SampleManager1Accessor.setAttachments;
-import static org.openelis.manager.SampleManager1Accessor.setAuxiliary;
-import static org.openelis.manager.SampleManager1Accessor.setOrganizations;
-import static org.openelis.manager.SampleManager1Accessor.setPostProcessing;
-import static org.openelis.manager.SampleManager1Accessor.setProjects;
-import static org.openelis.manager.SampleManager1Accessor.setRemoved;
-import static org.openelis.manager.SampleManager1Accessor.setResults;
-import static org.openelis.manager.SampleManager1Accessor.setSample;
-import static org.openelis.manager.SampleManager1Accessor.setSampleClinical;
-import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.setSampleExternalNote;
-import static org.openelis.manager.SampleManager1Accessor.setSampleInternalNotes;
-import static org.openelis.manager.SampleManager1Accessor.setSampleNeonatal;
-import static org.openelis.manager.SampleManager1Accessor.setSamplePT;
-import static org.openelis.manager.SampleManager1Accessor.setSampleAnimal;
-import static org.openelis.manager.SampleManager1Accessor.setSampleQAs;
-import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
-import static org.openelis.manager.SampleManager1Accessor.setStorages;
-import static org.openelis.manager.SampleManager1Accessor.setUsers;
-import static org.openelis.manager.SampleManager1Accessor.setWorksheets;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,6 +219,9 @@ public class SampleManager1Bean {
 
     private static final Logger          log = Logger.getLogger("openelis");
 
+    private static final String          FIRST_TRI_TEST_NAME = "ms 1st integ",
+                    SECOND_TRI_TEST_NAME = "ms integrate", METHOD_NAME = "eia";
+
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
      * other structures.
@@ -376,8 +320,7 @@ public class SampleManager1Bean {
 
             ids1.add(data.getId()); // for fetch
             map1.put(data.getId(), sm); // for linking
-            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) ||
-                  Constants.domain().NEONATAL.equals(data.getDomain())) &&
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
                 data.getOrderId() != null)
                 ids3.add(data.getOrderId());
         }
@@ -734,8 +677,7 @@ public class SampleManager1Bean {
         for (SampleDO data : sample.fetchByIds(ids1)) {
             sm = map1.get(data.getId());
             setSample(sm, data);
-            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) ||
-                  Constants.domain().NEONATAL.equals(data.getDomain())) &&
+            if ( (Constants.domain().CLINICAL.equals(data.getDomain()) || Constants.domain().NEONATAL.equals(data.getDomain())) &&
                 data.getOrderId() != null)
                 ids3.add(data.getOrderId());
         }
@@ -1421,7 +1363,7 @@ public class SampleManager1Bean {
             /*
              * go through remove list and delete all the unwanted records
              */
-            if (getRemoved(sm) != null) {         
+            if (getRemoved(sm) != null) {
                 /*
                  * we need to remove objects in the correct order so that
                  * referential integrity is maintained
@@ -1491,7 +1433,11 @@ public class SampleManager1Bean {
                 sample.update(getSample(sm));
             }
 
-            // add/update sample domain
+            /*
+             * add/update sample domain; if-else is not used to check the domain
+             * because PT samples can have 2 domain DOs, one for PT and one for
+             * additional domain
+             */
             if (getSampleEnvironmental(sm) != null) {
                 if (getSampleEnvironmental(sm).getId() == null) {
                     getSampleEnvironmental(sm).setSampleId(getSample(sm).getId());
@@ -1499,35 +1445,40 @@ public class SampleManager1Bean {
                 } else {
                     sampleEnvironmental.update(getSampleEnvironmental(sm));
                 }
-            } else if (getSampleSDWIS(sm) != null) {
+            }
+            if (getSampleSDWIS(sm) != null) {
                 if (getSampleSDWIS(sm).getId() == null) {
                     getSampleSDWIS(sm).setSampleId(getSample(sm).getId());
                     sampleSDWIS.add(getSampleSDWIS(sm));
                 } else {
                     sampleSDWIS.update(getSampleSDWIS(sm));
                 }
-            } else if (getSampleNeonatal(sm) != null) {
+            }
+            if (getSampleNeonatal(sm) != null) {
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
                     sampleNeonatal.add(getSampleNeonatal(sm));
                 } else {
                     sampleNeonatal.update(getSampleNeonatal(sm));
                 }
-            } else if (getSampleClinical(sm) != null) {
+            }
+            if (getSampleClinical(sm) != null) {
                 if (getSampleClinical(sm).getId() == null) {
                     getSampleClinical(sm).setSampleId(getSample(sm).getId());
                     sampleClinical.add(getSampleClinical(sm));
                 } else {
                     sampleClinical.update(getSampleClinical(sm));
                 }
-            } else if (getSamplePT(sm) != null) {
+            }
+            if (getSamplePT(sm) != null) {
                 if (getSamplePT(sm).getId() == null) {
                     getSamplePT(sm).setSampleId(getSample(sm).getId());
                     samplePT.add(getSamplePT(sm));
                 } else {
                     samplePT.update(getSamplePT(sm));
                 }
-            } else if (getSampleAnimal(sm) != null) {
+            }
+            if (getSampleAnimal(sm) != null) {
                 if (getSampleAnimal(sm).getId() == null) {
                     getSampleAnimal(sm).setSampleId(getSample(sm).getId());
                     sampleAnimal.add(getSampleAnimal(sm));
@@ -2066,26 +2017,33 @@ public class SampleManager1Bean {
         setDefaults(getSample(sm));
 
         /*
-         * sample level data
+         * sample level data; if-else is not used here to check the domain
+         * because PT samples can have two domain DOs, one for PT and another
+         * for additional domain
          */
         if (getSampleEnvironmental(sm) != null) {
             getSampleEnvironmental(sm).setId(null);
             getSampleEnvironmental(sm).setSampleId(null);
             if (getSampleEnvironmental(sm).getLocationAddress() != null)
                 getSampleEnvironmental(sm).getLocationAddress().setId(null);
-        } else if (getSampleSDWIS(sm) != null) {
+        }
+        if (getSampleSDWIS(sm) != null) {
             getSampleSDWIS(sm).setId(null);
             getSampleSDWIS(sm).setSampleId(null);
-        } else if (getSampleNeonatal(sm) != null) {
+        }
+        if (getSampleNeonatal(sm) != null) {
             getSampleNeonatal(sm).setId(null);
             getSampleNeonatal(sm).setSampleId(null);
-        } else if (getSampleClinical(sm) != null) {
+        }
+        if (getSampleClinical(sm) != null) {
             getSampleClinical(sm).setId(null);
             getSampleClinical(sm).setSampleId(null);
-        } else if (getSamplePT(sm) != null) {
+        }
+        if (getSamplePT(sm) != null) {
             getSamplePT(sm).setId(null);
             getSamplePT(sm).setSampleId(null);
-        } else if (getSampleAnimal(sm) != null) {
+        }
+        if (getSampleAnimal(sm) != null) {
             getSampleAnimal(sm).setId(null);
             getSampleAnimal(sm).setSampleId(null);
             if (getSampleAnimal(sm).getLocationAddress() != null)
@@ -2661,6 +2619,59 @@ public class SampleManager1Bean {
     }
 
     /**
+     * Sets the passed additional domain e.g. clinical, in the passed manager;
+     * if additional domain is not null, sets its corresponding domain data in
+     * the manager as well; if it is null, removes any additional domain data
+     * set previously; doesn't do anything if passed manager's domain is not PT
+     */
+    public SampleManager1 setAdditionalDomain(SampleManager1 sm, String additionalDomain) throws Exception {
+        SamplePTDO sp;
+        SampleClinicalViewDO sc;
+        SampleNeonatalViewDO sn;
+        ArrayList<DataObject> removed;
+
+        sp = getSamplePT(sm);
+        if (sp == null)
+            return sm;
+        sp.setAdditionalDomain(additionalDomain);
+        /*
+         * set the domain DO if additional domain is not null; if it is null,
+         * remove any domain DO set previously
+         */
+        sc = getSampleClinical(sm);
+        sn = getSampleNeonatal(sm);
+        if (Constants.domain().CLINICAL.equals(additionalDomain) && sc == null) {
+            sc = new SampleClinicalViewDO();
+            sc.setPatient(new PatientDO());
+            sc.setProvider(new ProviderDO());
+            setSampleClinical(sm, sc);
+        } else if (Constants.domain().NEONATAL.equals(additionalDomain) && sn == null) {
+            sn = new SampleNeonatalViewDO();
+            sn.setPatient(new PatientDO());
+            sn.setNextOfKin(new PatientDO());
+            sn.setProvider(new ProviderDO());
+            setSampleNeonatal(sm, sn);
+        } else if (additionalDomain == null && (sn != null || sc != null)) {
+            removed = getRemoved(sm);
+            if (removed == null) {
+                removed = new ArrayList<DataObject>();
+                setRemoved(sm, removed);
+            }
+            if (sc != null) {
+                if (sc.getId() != null)
+                    removed.add(sc);
+                setSampleClinical(sm, null);
+            } else if (sn != null) {
+                if (sn.getId() != null)
+                    removed.add(sn);
+                setSampleNeonatal(sm, null);
+            }
+        }
+
+        return sm;
+    }
+
+    /**
      * Adds aux groups with the passed ids to the sample
      */
     public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
@@ -2975,6 +2986,141 @@ public class SampleManager1Bean {
         analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
         return sm;
     }
+
+    /**
+     * TODO change comment Fetches the 1st trimester sample(s) for the passed
+     * sample's patient; the fetched samples must have a released 1st trimester
+     * integrated analysis and must have been received before the passed sample;
+     * returns the most recent of those samples; returns null if the passed
+     * sample doesn't have a patient linked yet
+     /
+    public SampleManager1 fetchFirstTriSample(Integer ftAccession, SampleManager1 sm) throws Exception {
+        int i, j;
+        Integer accession;
+        Datetime startDT, endDT;
+        QueryData field;
+        AnalysisViewDO tmpAna, ftAna;
+        SampleManager1 ftSm;
+        DateTimeFormat formatter;
+        ArrayList<QueryData> fields;
+        ArrayList<SampleManager1> ftSms;
+
+        if (sm.getSampleClinical().getPatientId() == null)
+            return null;
+
+        if (ftAccession != null && ftAccession.equals(sm.getSample().getAccessionNumber()))
+            throw new FormErrorException(Messages.get()
+                                                 .analysis_firstSecTriNotOnSameSampleException(ftAccession,
+                                                                                               SECOND_TRI_TEST_NAME,
+                                                                                               METHOD_NAME));
+        
+        fields = new ArrayList<QueryData>();
+
+        field = new QueryData();
+        field.setKey(SampleMeta.getClinicalPatientId());
+        field.setType(QueryData.Type.INTEGER);
+        field.setQuery(sm.getSampleClinical().getPatientId().toString());
+        fields.add(field);
+        
+        if (ftAccession != null) {
+            field.setQuery(ftAccession.toString());
+            field = new QueryData();
+            field.setKey(SampleMeta.getAccessionNumber());
+            field.setType(QueryData.Type.INTEGER);
+            fields.add(field);
+        }
+        
+        field = new QueryData();
+        field.setKey(SampleMeta.getAnalysisTestName());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(FIRST_TRI_TEST_NAME +"|"+ SECOND_TRI_TEST_NAME);
+        fields.add(field);
+
+        field = new QueryData();
+        field.setKey(SampleMeta.getAnalysisMethodName());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(METHOD_NAME);
+        fields.add(field);
+
+        field = new QueryData();
+        field.setKey(SampleMeta.getAnalysisStatusId());
+        field.setType(QueryData.Type.INTEGER);
+        field.setQuery("!="+Constants.dictionary().ANALYSIS_CANCELLED.toString());
+        fields.add(field);
+
+        /*
+         * make sure that the samples to be fetched were received at the most 90
+         * days before the current(passed) sample
+         /
+        endDT = sm.getSample().getReceivedDate() != null ? sm.getSample().getReceivedDate()
+                                                        : sm.getSample().getEnteredDate();
+        startDT = endDT.add( -90);
+
+        formatter = new DateTimeFormat(Messages.get().dateTimePattern(),
+                                       new DefaultDateTimeFormatInfo()) {
+        };
+        
+        field = new QueryData();
+        field.setKey(SampleMeta.getReceivedDate());
+        field.setType(QueryData.Type.DATE);
+        field.setQuery(format(formatter, startDT) + ".." + format(formatter, endDT));
+        fields.add(field);
+
+        ftSms = fetchByQuery(fields, 0, 1000, SampleManager1.Load.QA, SampleManager1.Load.RESULT);
+        
+        /*
+         * find the released and not overridden 1st trimester integrated
+         * analysis on the most recent of the fetched samples; the samples are
+         * in ascending order of received date, so to find the most recent,
+         * start from the end of the list; add an error if such an analysis was
+         * not found; set the 1st trimester values in the passed analysis from
+         * the 1st trimester sample and analysis
+         /
+        ftSm = null;
+        ftAna = null;
+        if (ftSms != null) {
+            for (i = ftSms.size() - 1; i >= 0; i-- ) {
+                ftSm = ftSms.get(i);
+                if ( !ftSm.qaEvent.hasType(Constants.dictionary().QAEVENT_OVERRIDE)) {
+                    for (j = 0; j < ftSm.analysis.count(); j++ ) {
+                        tmpAna = ftSm.analysis.get(j);
+                        if (FIRST_TRI_TEST_NAME.equals(tmpAna.getTestName()) &&
+                            METHOD_NAME.equals(tmpAna.getMethodName()) &&
+                            Constants.dictionary().ANALYSIS_RELEASED.equals(tmpAna.getStatusId()) &&
+                            !ftSm.qaEvent.hasType(tmpAna, Constants.dictionary().QAEVENT_OVERRIDE)) {
+                            ftAna = tmpAna;
+                            break;
+                        }
+                    }
+                    if (ftAna != null)
+                        break;
+                }
+            }
+        }
+        if (ftAna == null) {
+            /*
+             * for display
+             /
+            accession = sm.getSample().getAccessionNumber();
+            if (accession == null)
+                accession = 0;
+            data.setStatus(Status.FAILED);
+            data.addException(new FormErrorException(Messages.get()
+                                                             .analysis_relatedFirstTriNotFoundException(accession,
+                                                                                                        ana.getTestName(),
+                                                                                                        ana.getMethodName(),
+                                                                                                        INTEG_TEST_NAME,
+                                                                                                        METHOD_NAME)));
+        }
+        return sms;
+    }
+    
+    /**
+     * Returns the passed Datetime's date formatted using the passed formatter
+     /
+    private String format(DateTimeFormat formatter, Datetime dt) throws Exception {
+        return dt != null ? formatter.format(dt.getDate()) : null;
+    }*/
 
     /**
      * Sets default values in the fields essential for a new sample

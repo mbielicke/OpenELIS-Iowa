@@ -25,6 +25,8 @@
  */
 package org.openelis.scriptlet.ms.quad;
 
+import org.openelis.scriptlet.ms.Util;
+
 /**
  * The class that stores data such as means and constant multipliers for Downs
  * determined by LMP; it also computes the disorder's risk
@@ -45,8 +47,8 @@ public class DownsLMP extends Risk {
     public void computeRisk(double mom[], double apr) {
         double ordinalUA, ordinalDS;
 
-        ordinalUA = getOrdinal(mom, 4, 0.000000531883, getMeanUA(), getConstUA());
-        ordinalDS = getOrdinal(mom, 4, 0.000000996054, getMeanDS(), getConstDS());
+        ordinalUA = Util.getOrdinal(mom, 4, 0.000000531883, getMeanUA(), getConstUA());
+        ordinalDS = Util.getOrdinal(mom, 4, 0.000000996054, getMeanDS(), getConstDS());
         setRisk((int) (apr / (ordinalDS / ordinalUA)));
     }
 }

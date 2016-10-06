@@ -155,7 +155,7 @@ public class Constants implements Serializable {
                         CASE_RESULT = 125, CASE_TAG = 126, CASE_CONTACT = 127,
                         CASE_CONTACT_LOCATION = 128, EORDER = 129, EORDER_BODY = 130,
                         EORDER_LINK = 131, SAMPLE_PT = 132, CASE_SAMPLE = 133,
-                        ATTACHMENT_ISSUE = 134;
+                        ATTACHMENT_ISSUE = 134, PROVIDER_ANALYTE = 135;
     }
 
     /**

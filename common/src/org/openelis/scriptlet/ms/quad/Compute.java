@@ -25,13 +25,11 @@
  */
 package org.openelis.scriptlet.ms.quad;
 
-import java.util.Date;
-
 import org.openelis.constants.Messages;
 import org.openelis.scriptlet.ms.Util;
-import org.openelis.scriptlet.ms.quad.Constants.Apr_Risk;
-import org.openelis.scriptlet.ms.quad.Constants.Gest_Age_Method;
-import org.openelis.scriptlet.ms.quad.Constants.Interpretation;
+import org.openelis.scriptlet.ms.Constants.Apr_Risk;
+import org.openelis.scriptlet.ms.Constants.Gest_Age_Method;
+import org.openelis.scriptlet.ms.Constants.Interpretation;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 
@@ -42,7 +40,7 @@ import org.openelis.ui.common.InconsistencyException;
 public class Compute {
 
     protected Datetime        birthDate, // date of birth
-                               collected, // date sample collected
+                               collectedDate, // date sample collected
                                enteredDate, // date sample record was entered
                                lmpDate, // date of last menstrual period
                                usDate;  // date of ultrasound
@@ -127,10 +125,10 @@ public class Compute {
     }
 
     /**
-     * Sets whether the sample and/or analysis has been released
+     * Sets whether the analysis was previously released
      */
-    public void setIsReleased(boolean isReleased) {
-        this.beenReleased = isReleased;
+    public void setBeenReleased(boolean beenReleased) {
+        this.beenReleased = beenReleased;
     }
 
     /**
@@ -144,7 +142,7 @@ public class Compute {
      * Sets the sample's collection date
      */
     public void setCollectionDate(Datetime collectionDate) {
-        this.collected = collectionDate;
+        this.collectedDate = collectionDate;
     }
 
     /**
@@ -209,6 +207,34 @@ public class Compute {
     public void setGestAgeInitMethod(Gest_Age_Method gestAgeInitBy) {
         this.gestAgeInitBy = gestAgeInitBy;
     }
+    
+    /**
+     * Returns the object for AFP
+     */
+    public Test getAFP() {
+        return tests[0];
+    }
+
+    /**
+     * Returns the object for Estriol
+     */
+    public Test getEST() {
+        return tests[1];
+    }
+
+    /**
+     * Returns the object for HCG
+     */
+    public Test getHCG() {
+        return tests[2];
+    }
+
+    /**
+     * Returns the object for Inhibin
+     */
+    public Test getInhibin() {
+        return tests[3];
+    }
 
     /**
      * Computes various values such as gestational and due ages, MoMs and risks
@@ -230,34 +256,6 @@ public class Compute {
      */
     public Exception getLastException() {
         return lastException;
-    }
-
-    /**
-     * Sets p-values and intrument result for AFP
-     */
-    public Test getAFP() {
-        return tests[0];
-    }
-
-    /**
-     * Sets p-values and intrument result for estriol
-     */
-    public Test getEST() {
-        return tests[1];
-    }
-
-    /**
-     * Sets p-values and intrument result for HCG
-     */
-    public Test getHCG() {
-        return tests[2];
-    }
-
-    /**
-     * Sets p-values and intrument result for Inhibin
-     */
-    public Test getInhibin() {
-        return tests[3];
     }
 
     /**
@@ -375,8 +373,7 @@ public class Compute {
             (numFetus != null && numFetus.intValue() > 1))
             return null;
         risk = (Gest_Age_Method.LMP.equals(gestAgeCurrBy)) ? downsLMP.getRisk() : downsUS.getRisk();
-        risk = (int)setPrecision(Math.max(10.0, Math.min(99000.0, (double)risk)), 2);
-        return risk;
+        return (int)Util.setPrecision(Math.max(10.0, Math.min(99000.0, (double)risk)), 2);
     }
 
     /**
@@ -441,8 +438,8 @@ public class Compute {
             (numFetus != null && numFetus.intValue() > 1))
             return null;
 
-        risk0 = (int)setPrecision(Math.max(10.0, Math.min(99000.0, (double)slos.getRisk())), 2);
-        risk1 = (int)setPrecision(Math.max(10.0, Math.min(99000.0, (double)t18.getRisk())), 2);
+        risk0 = (int)Util.setPrecision(Math.max(10.0, Math.min(99000.0, (double)slos.getRisk())), 2);
+        risk1 = (int)Util.setPrecision(Math.max(10.0, Math.min(99000.0, (double)t18.getRisk())), 2);
         /*
          * The SLOS computation is poor indicator for SLOS and no longer being
          * reported as SLOS risk. However, at the risk of 1 in 50 or greater a
@@ -501,9 +498,8 @@ public class Compute {
         if (dueAgeInit == null || dueAgeCurr == null )
             return null;
 
-        risk = getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
-        risk = (int)setPrecision(risk, 2);
-        return (int)risk;
+        risk = Util.getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
+        return (int)Util.setPrecision(risk, 2);
     }
 
     /**
@@ -516,7 +512,7 @@ public class Compute {
         /*
          * check for required vars
          */
-        if (collected == null) {
+        if (collectedDate == null) {
             lastException = new InconsistencyException(Messages.get()
                                                                .result_missingCollectedDateException());
             return;
@@ -530,9 +526,9 @@ public class Compute {
             /*
              * base it first on CRL, second on BPD and last on weeks.days
              */
-            days = getAgeforCRL();
+            days = Util.getAgeforCRL(crl);
             if (days == 0)
-                days = getAgeforBPD();
+                days = Util.getAgeforBPD(bpd);
             /*
              * weeksDays in a float with the fraction being number of days and
              * not fraction of a week. Thus 10.5 is 10w 5d and not 10w 3.5d.
@@ -543,7 +539,7 @@ public class Compute {
              * gest age = collected - (us - (baby's age_days))
              */
             if (days != 0)
-                usGA = getIntervalDays(collected.getDate(), usDate.getDate()) + days;
+                usGA = Util.getIntervalDays(collectedDate.getDate(), usDate.getDate()) + days;
         }
 
         /*
@@ -551,7 +547,7 @@ public class Compute {
          */
         lmpGA = 0;
         if (lmpDate != null)
-            lmpGA = getIntervalDays(collected.getDate(), lmpDate.getDate());
+            lmpGA = Util.getIntervalDays(collectedDate.getDate(), lmpDate.getDate());
         /*
          * 1) use most accurate method to compute gest age for unreleased. us
          * first, lmp next 2) use the original method to compute gest age for
@@ -629,7 +625,7 @@ public class Compute {
                                                                .result_missingBirthDateException());
             return dueAge;
         }
-        if (collected == null) {
+        if (collectedDate == null) {
             lastException = new InconsistencyException(Messages.get()
                                                                .result_missingCollectedDateException());
             return dueAge;
@@ -638,7 +634,7 @@ public class Compute {
         /*
          * compute mothers age at delivery using gestational age
          */
-        due = collected.add(40 * 7 - gestAge); // 40 weeks max gest
+        due = collectedDate.add(40 * 7 - gestAge); // 40 weeks max gest
         dueAge = (due.getDate().getTime() - birthDate.getDate().getTime()) / 31536000000.0d;
         dueAge = Util.trunc(dueAge + 0.05, 1);
         return dueAge;
@@ -669,8 +665,9 @@ public class Compute {
      * Computes NTD -- NA
      */
     protected void cmpNTD() {
-        if (tests[0].getMomCurr() == null || tests[0].getMomInit() == null)
+        if (!didCmpMoMs())
             return;
+        
         if (numFetus == null || numFetus.intValue() < 1 || numFetus.intValue() > 2) {
             lastException = new InconsistencyException(Messages.get()
                                                                .result_invalidNumFetusException());
@@ -691,7 +688,7 @@ public class Compute {
         if (!didCmpMoMs())
             return;
         
-        apr = getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
+        apr = Util.getAPrioriRisk(dueAgeCurr, Apr_Risk.T2);
         /*
          * truncate all the test moms for DOWNS
          */
@@ -720,7 +717,7 @@ public class Compute {
          * apr risk for t18 is 10 less than apr risk for downs. So 1 in 200
          * changes to 1 in 2000
          */
-        apr = getAPrioriRisk(dueAgeInit, Apr_Risk.TERM) * 10.0;
+        apr = Util.getAPrioriRisk(dueAgeInit, Apr_Risk.TERM) * 10.0;
         /*
          * truncate all the test moms for T18
          */
@@ -759,90 +756,12 @@ public class Compute {
      * Returns true if MoMs for all tests have been computed; returns false
      * otherwise
      */
-    private boolean didCmpMoMs() {
+    protected boolean didCmpMoMs() {
         for (Test t : tests) {
-            if (t.getMomCurr() == null || t.getMomInit() == null)
+            if (!t.didCmpMoM())
                 return false;
         }
 
         return true;
-    }
-
-    /**
-     * Returns mother's apriori risk based on maternal age.
-     */
-    private double getAPrioriRisk(double dueAge, Apr_Risk aprRisk) {
-        double risk;
-
-        dueAge = Math.min(50, Math.max(15, dueAge));
-        // computes term risk
-        risk = Math.exp(7.33 - 4.211 / (1.0 + Math.exp( -0.2815 * (dueAge - 0.5) + 10.480245)));
-        switch (aprRisk) {
-            case T1:
-                risk *= 0.57;
-                break;
-            case T2:
-                risk *= 0.77;
-                break;
-        }
-        return risk;
-    }
-
-    /**
-     * Truncates a double to given decimal digits
-     */
-    private double setPrecision(double value, int sd) {
-        int mag, factor;
-
-        mag = (int) (Math.floor(Math.log10(value)) - sd + 1.0);
-        if (mag < 0)
-            return value;
-        factor = (int)Math.pow(10, mag);
-        return Math.floor( (value / factor) + 0.9) * factor;
-    }
-
-    /**
-     * Returns the interval in days between two date objects
-     */
-    private int getIntervalDays(Date a, Date b) {
-        double days;
-
-        days = (a.getTime() - b.getTime()) / 86400000.0;
-        /*
-         * add a fudge factor to cancel the spring/fall clock changes.
-         */
-        return (int)Math.floor(days + 0.25);
-    }
-
-    /**
-     * Returns the infant age associated with Biparietal diameter or 0 if not
-     * found.
-     */
-    private int getAgeforBPD() {
-        double x;
-
-        if (bpd == null)
-            return 0;
-        /*
-         * change mm to cm
-         */
-        x = bpd.intValue() / 10.0;
-        return (int) ( (9.54 + 1.482 * x + 0.1676 * (x * x)) * 7.0);
-    }
-
-    /**
-     * Returns the gestational age in days associated with crown rump length
-     */
-    private int getAgeforCRL() {
-        double x;
-
-        if (crl == null)
-            return 0;
-        /*
-         * change mm to cm
-         */
-        x = crl.intValue() / 10.0;
-        return (int) (Math.exp(1.684969 + 0.315646 * x - 0.049306 * x * x + 0.004057 * x * x * x -
-                               0.000120456 * x * x * x * x) * 7.0);
     }
 }

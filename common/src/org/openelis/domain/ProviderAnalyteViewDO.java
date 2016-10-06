@@ -23,32 +23,37 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.scriptlet.ms.quad;
+package org.openelis.domain;
+
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * The class for storing the constants used for calculating various risks for
- * the ms quad (Maternal Quad Screen) test
+ * The class extends provider analyte DO and carries a commonly used field
+ * analyte name. The additional field is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
-public class Constants {
 
-    /**
-     * Risk interpretations
-     */
-    public enum Interpretation {
-        NORMAL, PRES_POS, PRES_POS_AS, UNKNOWN
-    }
-    
-    /**
-     * Apriori risk types
-     */
-    public enum Apr_Risk {
-        T1, T2, TERM
+public class ProviderAnalyteViewDO extends ProviderAnalyteDO {
+
+    private static final long serialVersionUID = 1L;
+
+    protected String          analyteName;
+
+    public ProviderAnalyteViewDO() {
     }
 
-    /**
-     * Gestational age determined by method
-     */
-    public enum Gest_Age_Method {
-        LMP, US
+    public ProviderAnalyteViewDO(Integer id, Integer providerId, Integer sortOrder,
+                                 Integer analyteId, String analyteName) {
+        super(id, providerId, sortOrder, analyteId);
+        setAnalyteName(analyteName);
+    }
+
+    public String getAnalyteName() {
+        return analyteName;
+    }
+
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = DataBaseUtil.trim(analyteName);
     }
 }

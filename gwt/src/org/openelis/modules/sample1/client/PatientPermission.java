@@ -28,7 +28,9 @@ package org.openelis.modules.sample1.client;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SamplePTDO;
 import org.openelis.domain.SecondDataEntryVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.ui.common.ModulePermission;
@@ -47,35 +49,53 @@ public class PatientPermission {
     }
 
     /**
-     * Returns true if either the sample doesn't contain patient data or the
-     * user has permission to view patients; returns false otherwise
+     * Returns true if either the passed sample doesn't contain patient data or
+     * the user has permission to view patients; returns false otherwise
      */
     public boolean canViewSample(SampleDO data) {
         return canViewSample(data.getDomain());
     }
 
     /**
-     * Returns true if either the sample doesn't contain patient data or the
-     * user has permission to view patients; returns false otherwise
+     * Returns true if either the passed PT sample doesn't contain patient data
+     * or the user has permission to view patients; returns false otherwise
+     */
+    public boolean canViewSample(SamplePTDO data) {
+        return canViewSample(data.getAdditionalDomain());
+    }
+
+    /**
+     * Returns true if either the passed sample doesn't contain patient data or
+     * the user has permission to view patients; returns false otherwise
      */
     public boolean canViewSample(SecondDataEntryVO data) {
         return canViewSample(data.getSampleDomain());
     }
 
     /**
-     * Returns true if either the sample doesn't contain patient data or the
-     * user has permission to view patients; returns false otherwise
+     * Returns true if either the passed sample doesn't contain patient data or
+     * the user has permission to view patients; returns false otherwise
      */
     public boolean canViewSample(ToDoSampleViewVO data) {
         return canViewSample(data.getDomain());
     }
 
     /**
-     * Returns true if either the analysis' sample doesn't contain patient data
-     * or the user has permission to view patients; returns false otherwise
+     * Returns true if either the passed analysis' sample doesn't contain
+     * patient data or the user has permission to view patients; returns false
+     * otherwise
      */
     public boolean canViewSample(AnalysisViewVO data) {
         return canViewSample(data.getDomain());
+    }
+
+    /**
+     * Returns true if either the domain specified by the passed dictionary
+     * entry's code doesn't contain patient data or the user has permission to
+     * view patients; returns false otherwise
+     */
+    public boolean canViewSample(DictionaryDO data) {
+        return canViewSample(data.getCode());
     }
 
     private boolean canViewSample(String domain) {

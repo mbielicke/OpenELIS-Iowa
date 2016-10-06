@@ -26,7 +26,6 @@
 package org.openelis.scriptlet.ms.conf;
 
 import org.openelis.constants.Messages;
-import org.openelis.scriptlet.ms.conf.Constants.Sample_Type;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 
@@ -36,42 +35,20 @@ import org.openelis.ui.common.InconsistencyException;
  * different than the default AFP computations
  */
 public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
-    private Sample_Type sampleType;
-
     /**
-     * Returns the sample type
+     * Overridden because for this test, min gestational age is different from
+     * the one used for quad test
      */
-    public Sample_Type getSampleType() {
-        return sampleType;
-    }
-    
-    /**
-     * Sets the sample type
-     */
-    public void setSampleType(Sample_Type sampleType) {
-        this.sampleType = sampleType;
-    }
-    
-    /**
-     * Overriden because for this test, min gestational age depends on sample
-     * type
-     */
-    public int getMinDay() {
-        if (Sample_Type.AMNIOTIC_FLUID.equals(sampleType))
-            return 96;
-        else
-            return super.getMinDay();
+    protected int getMinDay() {
+        return 96;
     }
 
     /**
-     * Overriden because for this test, max gestational age depends on sample
-     * type on sample type
+     * Overridden because for this test, max gestational age is different from
+     * the one used for quad test
      */
-    public int getMaxDay() {
-        if (Sample_Type.AMNIOTIC_FLUID.equals(sampleType))
-            return 168;
-        else
-            return super.getMaxDay();
+    protected int getMaxDay() {
+        return 168;
     }
 
     /**
@@ -87,16 +64,7 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
         /*
          * the weight adjustment factor
          */
-        if (Sample_Type.AMNIOTIC_FLUID.equals(sampleType)) {
-            adjWeight = 1.0;
-        } else if (weight == null) {
-            adjWeight = 0.0;
-        } else {
-            adjWeight = Math.max(90.0, Math.min(350.0, weight.doubleValue()));
-            if (Sample_Type.SERUM.equals(sampleType))
-                adjWeight = getAdjWeight(adjWeight);
-        }
-
+        adjWeight = 1.0;
         /*
          * the median for gestational age
          */
@@ -105,17 +73,12 @@ public class AFP extends org.openelis.scriptlet.ms.quad.AFP {
         else
             median = getMedianforAge(ga);
 
-        if (getResult() == 0.0)
-            throw new InconsistencyException(Messages.get().result_invalidResultOfZeroException());
-        if (adjWeight == 0.0)
-            throw new InconsistencyException(Messages.get()
-                                                     .result_invalidAdjWeightOfZeroException());
+        if (getResult() == null || getResult() == 0.0)
+            throw new InconsistencyException(Messages.get().result_missingInvalidResultException(getAnalyteName()));
         if (median == 0.0)
-            throw new InconsistencyException(Messages.get().result_noMedianForMeasurementException(ga));
+            throw new InconsistencyException(Messages.get().result_noMedianForGestAgeException(ga));
 
         mom = getResult() / median / adjWeight;
-        if (isRaceBlack && Sample_Type.SERUM.equals(sampleType))
-            mom /= getRace();
         if (isDiabetic)
             mom /= getInsuline();
 

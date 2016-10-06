@@ -6,14 +6,15 @@ import java.util.HashMap;
 
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ProviderAnalyteViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
 
 /**
  * This class encapsulates a provider and all its related information including
- * locations and notes. Although the class provides some basic functions
- * internally, it is designed to interact with EJB methods to provide majority
- * of the operations needed to manage a provider.
+ * locations, notes and analytes. Although the class provides some basic
+ * functions internally, it is designed to interact with EJB methods to provide
+ * majority of the operations needed to manage a provider.
  */
 public class ProviderManager1 implements Serializable {
     private static final long                     serialVersionUID = 1L;
@@ -21,11 +22,13 @@ public class ProviderManager1 implements Serializable {
     protected ProviderDO                          provider;
     protected ArrayList<ProviderLocationDO>       locations;
     protected ArrayList<NoteViewDO>               notes;
+    protected ArrayList<ProviderAnalyteViewDO>    analytes;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID          = -1;
 
     transient public final ProviderLocation       location         = new ProviderLocation();
     transient public final Note                   note             = new Note();
+    transient public final ProviderAnalyte        analyte          = new ProviderAnalyte();
     transient private HashMap<String, DataObject> uidMap;
 
     /**
@@ -170,5 +173,52 @@ public class ProviderManager1 implements Serializable {
             removed = new ArrayList<DataObject>();
         if (id != null)
             removed.add(data);
+    }
+
+    /**
+     * Class to manage Provider Analyte information
+     */
+    public class ProviderAnalyte {
+        /**
+         * Returns the analyte at specified index.
+         */
+        public ProviderAnalyteViewDO get(int i) {
+            return analytes.get(i);
+        }
+
+        public ProviderAnalyteViewDO add() {
+            ProviderAnalyteViewDO data;
+
+            data = new ProviderAnalyteViewDO();
+            if (analytes == null)
+                analytes = new ArrayList<ProviderAnalyteViewDO>();
+            analytes.add(data);
+
+            return data;
+        }
+
+        /**
+         * Removes an analyte from the list
+         */
+        public void remove(int i) {
+            ProviderAnalyteViewDO data;
+
+            data = analytes.remove(i);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        public void remove(ProviderAnalyteViewDO data) {
+            analytes.remove(data);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        /**
+         * Returns the number of analytes associated with this provider
+         */
+        public int count() {
+            if (analytes != null)
+                return analytes.size();
+            return 0;
+        }
     }
 }

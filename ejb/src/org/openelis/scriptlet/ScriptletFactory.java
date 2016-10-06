@@ -69,7 +69,8 @@ public class ScriptletFactory {
                                                                          managedId);
                 break;
             case "scriptlet_pws_validate1":
-                script = (T)new org.openelis.scriptlet.pws.validate.Scriptlet(new org.openelis.scriptlet.server.pws.ScriptletProxy(), managedId);
+                script = (T)new org.openelis.scriptlet.pws.validate.Scriptlet(new org.openelis.scriptlet.server.pws.ScriptletProxy(),
+                                                                              managedId);
                 break;
             case "scriptlet_cf_carrier1":
                 script = (T)new org.openelis.scriptlet.cf.carrier.Scriptlet(new org.openelis.scriptlet.server.cf.ScriptletProxy(),
@@ -96,7 +97,19 @@ public class ScriptletFactory {
                 break;
             case "scriptlet_ms_conf1":
                 script = (T)new org.openelis.scriptlet.ms.conf.Scriptlet(new org.openelis.scriptlet.server.ms.ScriptletProxy(),
-                                                                        managedId);
+                                                                         managedId);
+                break;
+            case "scriptlet_ms_1st_tri1":
+                script = (T)new org.openelis.scriptlet.ms.firstTri.Scriptlet(new org.openelis.scriptlet.server.ms.ScriptletProxy(),
+                                                                             managedId);
+                break;
+            case "scriptlet_ms_1st_integ1":
+                script = (T)new org.openelis.scriptlet.ms.firstInteg.Scriptlet(new org.openelis.scriptlet.server.ms.ScriptletProxy(),
+                                                                             managedId);
+                break;
+            case "scriptlet_ms_integrate1":
+                script = (T)new org.openelis.scriptlet.ms.integrate.Scriptlet(new org.openelis.scriptlet.server.ms.ScriptletProxy(),
+                                                                             managedId);
                 break;
         }
 

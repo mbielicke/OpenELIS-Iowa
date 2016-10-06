@@ -25,11 +25,16 @@
  */
 package org.openelis.scriptlet.ms;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QaEventDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AnalyteParameterManager1;
+import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.data.QueryData;
 
 /**
  * This interface is implemented by the proxies for the "ms (Maternal Screening)"
@@ -39,6 +44,8 @@ public interface ScriptletProxy {
     public DictionaryDO getDictionaryById(Integer id) throws Exception;
 
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
+    
+    public SystemVariableDO fetchSystemVariableByName(String name) throws Exception;
 
     public void log(Level level, String message, Exception e);
 
@@ -46,5 +53,12 @@ public interface ScriptletProxy {
     
     public AnalyteParameterManager1 fetchParameters(Integer referenceId, Integer referenceTableId) throws Exception;
     
-    public Datetime addMonthsToDate(Datetime dt, int months); 
+    public Datetime addMonthsToDate(Datetime dt, int months);
+    
+    public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                  SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception;
 }

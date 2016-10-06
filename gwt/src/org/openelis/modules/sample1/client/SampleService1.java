@@ -422,6 +422,20 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     public void unrelease(SampleManager1 sm, AsyncCallback<SampleManager1> callback) {
         service.unrelease(sm, callback);
     }
+
+    @Override
+    public SampleManager1 setAdditionalDomain(SampleManager1 sm, String additionalDomain) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.setAdditionalDomain(sm, additionalDomain, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void setAdditionalDomain(SampleManager1 sm, String additionalDomain, AsyncCallback<SampleManager1> callback) {
+        service.setAdditionalDomain(sm, additionalDomain, callback);
+    }
     
     @Override
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,

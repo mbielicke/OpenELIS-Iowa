@@ -97,6 +97,18 @@ public class ScriptletFactory {
                 script = (T)new org.openelis.scriptlet.ms.conf.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
                                                                         managedId);
                 break;
+            case "scriptlet_ms_1st_tri1":
+                script = (T)new org.openelis.scriptlet.ms.firstTri.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
+                                                                        managedId);
+                break;
+            case "scriptlet_ms_1st_integ1":
+                script = (T)new org.openelis.scriptlet.ms.firstInteg.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
+                                                                        managedId);
+                break;
+            case "scriptlet_ms_integrate1":
+                script = (T)new org.openelis.scriptlet.ms.integrate.Scriptlet(new org.openelis.modules.scriptlet.client.ms.ScriptletProxy(),
+                                                                        managedId);
+                break;
         }
 
         return script;

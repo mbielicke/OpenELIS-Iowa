@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="1435" pageHeight="612" orientation="Landscape" columnWidth="1435" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="com.jasperassistant.designer.DataSource" value="phims_demo"/>
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="139"/>
+	<property name="ireport.y" value="0"/>
+	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="LOGNAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="printer" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select s1.accession_number, p.last_name, p.first_name, o.name organization_name, ad.city, pr.last_name provider_last_name, pr.first_name provider_first_name, sc1.provider_phone,
+       s1.collection_date, to_number(substr(r1.value, 0, 3)) gestational_age, date(s1.collection_date - to_number(substr(r1.value, 0, 3)) units day + 146 units day) days146
+  from sample s1
+       join sample_clinical sc1 on sc1.sample_id = s1.id
+       join patient p on p.id = sc1.patient_id
+       join sample_organization so on so.sample_id = s1.id and
+                                      so.type_id = (select id from dictionary where system_name = 'org_report_to')
+       join organization o on o.id = so.organization_id
+       join address ad on ad.id = o.address_id
+       join provider pr on pr.id = sc1.provider_id
+       join sample_item si1 on si1.sample_id = s1.id
+       join analysis a1 on a1.sample_item_id = si1.id and
+                           a1.status_id = (select id from dictionary where system_name = 'analysis_released') and
+                           a1.id not in (select aq.analysis_id from analysis_qaevent aq
+                                          where aq.analysis_id = a1.id and aq.type_id = (select id from dictionary where system_name = 'qaevent_override'))
+       join test t1 on t1.id = a1.test_id and
+                       t1.name = 'ms 1st integ'
+       join method m1 on m1.id = t1.method_id and
+                         m1.name = 'eia'
+       join result r1 on r1.analysis_id = a1.id
+       join analyte an1 on an1.id = r1.analyte_id and
+                           an1.external_id = 'gest_age'
+where s1.entered_date > extend(TODAY - 70 units day, year to minute) and
+       date(s1.collection_date - to_number(substr(r1.value, 0, 3)) units day + 146 units day) between TODAY and TODAY + 20 units day and
+       s1.id not in (select sq.sample_id from sample_qaevent sq
+                      where sq.sample_id = s1.id and sq.type_id = (select id from dictionary where system_name = 'qaevent_override')) and
+       s1.accession_number not in (select to_number(r2.value)
+                                     from sample s2
+                                          join sample_clinical sc2 on sc2.sample_id = s2.id and
+                                                                      sc2.patient_id = p.id
+                                          join sample_item si2 on si2.sample_id = s2.id
+                                          join analysis a2 on a2.sample_item_id = si2.id
+                                          join test t2 on t2.id = a2.test_id and
+                                                          t2.name = 'ms integrate'
+                                          join method m2 on m2.id = t2.method_id and
+                                                            m2.name = 'eia'
+                                          join result r2 on r2.analysis_id = a2.id
+                                          join analyte an2 on an2.id = r2.analyte_id and
+                                                              an2.external_id = 'accession_1st_tri')
+order by 10]]>
+	</queryString>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="last_name" class="java.lang.String"/>
+	<field name="first_name" class="java.lang.String"/>
+	<field name="organization_name" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="provider_last_name" class="java.lang.String"/>
+	<field name="provider_first_name" class="java.lang.String"/>
+	<field name="provider_phone" class="java.lang.String"/>
+	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="gestational_age" class="java.math.BigDecimal"/>
+	<field name="days146" class="java.sql.Date"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<columnHeader>
+		<band height="12" splitType="Prevent">
+			<staticText>
+				<reportElement key="labNumber.header" mode="Opaque" x="0" y="0" width="55" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Acc #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="lastName.header" mode="Opaque" x="55" y="0" width="150" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Last Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="firstName.header" mode="Opaque" x="205" y="0" width="150" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[First Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="facilityName.header" mode="Opaque" x="355" y="0" width="300" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Organization Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="facilityCity.header" mode="Opaque" x="655" y="0" width="150" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Organization City]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="providerName.header" mode="Opaque" x="805" y="0" width="200" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Provider Last Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="providerPhone.header" mode="Opaque" x="1205" y="0" width="80" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Provider Phone]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="collected.header" mode="Opaque" x="1285" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Collected]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="gestationalAge.header" mode="Opaque" x="1335" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Gest. Age]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="days146.header" mode="Opaque" x="1385" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Days 146]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="providerName.header" mode="Opaque" x="1005" y="0" width="200" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Provider First Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Prevent">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="background" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="1235" height="12" backcolor="#F5F5F5">
+					<printWhenExpression><![CDATA[Boolean.valueOf($V{REPORT_COUNT}.intValue()%2==0)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[null]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="accessionNumber" positionType="Float" x="0" y="0" width="55" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="lastName" positionType="Float" x="55" y="0" width="150" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{last_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="firstName" positionType="Float" x="205" y="0" width="150" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{first_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="organizationName" positionType="Float" x="355" y="0" width="300" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="organizationCity" positionType="Float" x="655" y="0" width="150" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{city}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="providerLastName" positionType="Float" x="805" y="0" width="200" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{provider_last_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="providerFirstName" positionType="Float" x="1004" y="0" width="200" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{provider_first_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###/###-####.####">
+				<reportElement key="providerPhone" positionType="Float" x="1205" y="0" width="80" height="12"/>
+				<textElement markup="none">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{provider_phone}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd">
+				<reportElement key="collected" positionType="Float" x="1285" y="0" width="50" height="12"/>
+				<textElement markup="none">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{collection_date}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement key="gestationalAge" positionType="Float" x="1335" y="0" width="50" height="12"/>
+				<textElement markup="none">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{gestational_age}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd">
+				<reportElement key="days146" positionType="Float" x="1385" y="0" width="50" height="12"/>
+				<textElement markup="none">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{days146}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

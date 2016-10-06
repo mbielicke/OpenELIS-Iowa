@@ -38,7 +38,7 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
                                    REFERENCE_TABLE_ID = "_analyteParameter.referenceTableId",
                                    ANALYTE_ID = "_analyteParameter.analyteId",
                                    TYPE_OF_SAMPLE_ID = "_analyteParameter.typeOfSampleId",
-                                   IS_ACTIVE = "_analyteParameter.isActive",
+                                   UNIT_OF_MEASURE_ID = "_analyteParameter.unitOfMeasureId",
                                    ACTIVE_BEGIN = "_analyteParameter.activeBegin",
                                    ACTIVE_END = "_analyteParameter.activeEnd",
                                    P1 = "_analyteParameter.p1",
@@ -48,7 +48,8 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
                                    TEST_NAME = "_test.name",
                                    TEST_METHOD_NAME = "_test.method.name",
                                    QC_NAME = "_qc.name",
-                                   PROVIDER_NAME = "_provider.name",
+                                   PROVIDER_LAST_NAME = "_provider.lastName",
+                                   PROVIDER_FIRST_NAME = "_provider.firstName",
                                    ANALYTE_NAME = "_analyte.name";
 
     private static HashSet<String> names;
@@ -56,10 +57,11 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(ID, REFERENCE_ID, REFERENCE_TABLE_ID,
                                                   ANALYTE_ID, TYPE_OF_SAMPLE_ID,
-                                                  IS_ACTIVE, ACTIVE_BEGIN, ACTIVE_END,
+                                                  UNIT_OF_MEASURE_ID, ACTIVE_BEGIN, ACTIVE_END,
                                                   P1, P2, P3, REFERENCE_NAME, TEST_NAME,
                                                   TEST_METHOD_NAME, QC_NAME,
-                                                  PROVIDER_NAME, ANALYTE_NAME));
+                                                  PROVIDER_LAST_NAME, PROVIDER_FIRST_NAME,
+                                                  ANALYTE_NAME));
     }
     
     public static String getId() {
@@ -70,26 +72,6 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
         return REFERENCE_ID;
     }
     
-    public static String getReferenceName() {
-        return REFERENCE_NAME;
-    }
-    
-    public static String getTestName() {
-       return TEST_NAME;
-    }
-    
-    public static String getTestMethodName() {
-        return TEST_METHOD_NAME;
-    }
-    
-    public static String getQcName() {
-        return QC_NAME;
-    }
-    
-    public static String getProviderName() {
-        return PROVIDER_NAME;
-    }
-    
     public static String getReferenceTableId() {
         return REFERENCE_TABLE_ID;
     }
@@ -98,16 +80,12 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
         return ANALYTE_ID;
     }
     
-    public static String getAnalyteName() {
-        return ANALYTE_NAME;
-    }
-    
     public static String getTypeOfSampleId() {
         return TYPE_OF_SAMPLE_ID;
     }
     
-    public static String getIsActive() {
-        return IS_ACTIVE;
+    public static String getUnitOfMeasureId() {
+        return UNIT_OF_MEASURE_ID;
     }
     
     public static String getActiveBegin() {
@@ -128,6 +106,34 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
     
     public static String getP3() {
         return P3;
+    }
+    
+    public static String getReferenceName() {
+        return REFERENCE_NAME;
+    }
+    
+    public static String getTestName() {
+       return TEST_NAME;
+    }
+    
+    public static String getTestMethodName() {
+        return TEST_METHOD_NAME;
+    }
+    
+    public static String getQcName() {
+        return QC_NAME;
+    }
+    
+    public static String getProviderLastName() {
+        return PROVIDER_LAST_NAME;
+    }
+    
+    public static String getProviderFirstName() {
+        return PROVIDER_FIRST_NAME;
+    }
+    
+    public static String getAnalyteName() {
+        return ANALYTE_NAME;
     }
 
     public boolean hasColumn(String columnName) {

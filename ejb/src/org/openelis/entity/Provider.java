@@ -99,6 +99,10 @@ public class Provider implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id", insertable = false, updatable = false)
     private Collection<ProviderLocation> providerLocation;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id", insertable = false, updatable = false)
+    private Collection<ProviderAnalyte> providerAnalyte;
 
     @Transient
     private Provider                     original;
@@ -180,6 +184,14 @@ public class Provider implements Auditable, Cloneable {
 
     public void setProviderLocation(Collection<ProviderLocation> providerLocation) {
         this.providerLocation = providerLocation;
+    }
+
+    public Collection<ProviderAnalyte> getProviderAnalyte() {
+        return providerAnalyte;
+    }
+
+    public void setProviderAnalyte(Collection<ProviderAnalyte> providerAnalyte) {
+        this.providerAnalyte = providerAnalyte;
     }
 
     public void setClone() {

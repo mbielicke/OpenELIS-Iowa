@@ -246,6 +246,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
+    
+    public SampleManager1 setAdditionalDomain(SampleManager1 sm, String additionalDomain) throws Exception {
+        try {
+            return sampleManager1.setAdditionalDomain(sm, additionalDomain);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         try {

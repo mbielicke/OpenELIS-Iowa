@@ -114,7 +114,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
-        String changed;
         SampleNeonatalViewDO sn;
         SampleManager1 sm;
 
@@ -153,9 +152,9 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         if ( !data.getActionBefore().contains(NEW_DOMAIN) || sn.getPatientId() == null)
             return data;
 
-        //TODO fix before going live
+        // TODO fix before going live
         try {
-            if ( changes.size() > 0)
+            if (changes.size() > 0)
                 /*
                  * set this sample as repeat if there's another sample entered
                  * previously for its patient
@@ -194,13 +193,15 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
     /**
      * Calculates and resets the collection age as the difference between the
-     * collection date-time and patient birth date-time
+     * collection date-time and patient birth date-time; also resets collection
+     * valid based on whether the age is less than or greater than 24 hours
      */
     private void resetCollectionAge(SampleSO data) {
+        String valid;
         Datetime cdt, ct, bdt, bt;
         Date cd, bd;
         Long diff;
-        Integer age;
+        Integer ageMin, ageHour;
         SampleManager1 sm;
         SampleNeonatalViewDO sn;
 
@@ -213,9 +214,9 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         ct = sm.getSample().getCollectionTime();
         bdt = sn.getPatient().getBirthDate();
         bt = sn.getPatient().getBirthTime();
-
+        ageHour = 0;
         if (cdt == null || bdt == null) {
-            age = null;
+            ageMin = null;
         } else {
             /*
              * combine collection date and time
@@ -244,14 +245,38 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
             bdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, bd);
 
             /*
-             * calculate the collection age in minutes
+             * calculate the collection age in minutes and hours
              */
             diff = ( (cdt.getDate().getTime() - bdt.getDate().getTime()) / 60000);
-            age = diff.intValue();
+            ageMin = diff.intValue();
+            ageHour = ageMin / 60;
+        }
+        if (DataBaseUtil.isDifferent(ageMin, sn.getCollectionAge())) {
+            sn.setCollectionAge(ageMin);
+            data.setChanges(SampleMeta.getNeonatalCollectionAge());
+            data.addActionAfter(Action_After.DOMAIN_CHANGED);
         }
 
-        sn.setCollectionAge(age);
-        data.setChanges(SampleMeta.getNeonatalCollectionAge());
+        /*
+         * if collection age is > 24 hours, collection is valid; if it's <= 24
+         * hours, collection is invalid if both birth time and collection time
+         * are specified; if one or more of them isn't specified, it's "Unknown"
+         * if collection is valid
+         */
+        valid = null;
+        if (ageHour > 24) {
+            valid = "Y";
+        } else {
+            // TODO implement using dictionary and have a case for times being
+            // null
+            // if (bt != null && ct != null)
+            valid = "N";
+        }
+        if (DataBaseUtil.isDifferent(valid, sn.getIsCollectionValid())) {
+            sn.setIsCollectionValid(valid);
+            data.setChanges(SampleMeta.getNeonatalIsCollectionValid());
+            data.addActionAfter(Action_After.DOMAIN_CHANGED);
+        }
     }
 
     /**
@@ -308,7 +333,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      * previosuly entered for its patient
      */
     private void setRepeat(SampleSO data) throws Exception {
-        String changed;
         SampleNeonatalViewDO sn;
         SampleManager1 sm;
 
@@ -321,7 +345,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
          * neonatal domain has changed, the sample is not marked as repeat and
          * the patient is an existing one
          */
-      //TODO fix before going live
+        // TODO fix before going live
         if (previousManager != null &&
             (changes.get(0).startsWith("_sampleNeonatal") || changes.get(0).startsWith("_neonatal")) &&
             "N".equals(sn.getIsRepeat())) {
