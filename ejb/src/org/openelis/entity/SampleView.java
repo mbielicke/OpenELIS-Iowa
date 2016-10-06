@@ -49,7 +49,7 @@ import org.openelis.ui.common.Datetime;
                                    + "sampleReleasedDate, reportToId, reportToName, collector, "
                                    + "location, locationStreetAddress, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
-                                   + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
+                                   + "patientBirthDate, providerName, animalCommonName, analysisId, analysisRevision, analysisIsReportable, "
                                    + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
                                    + " from SampleView where sampleId = :id"
                                    + " order by accessionNumber, testReportingDescription, methodReportingDescription"),
@@ -60,7 +60,7 @@ import org.openelis.ui.common.Datetime;
                                    + "sampleReleasedDate, reportToId, reportToName, collector, "
                                    + "location, locationStreetAddress, locationCity, projectId, projectName, pwsNumber0, "
                                    + "pwsName, sdwisFacilityId, patientLastName, patientFirstName, "
-                                   + "patientBirthDate, providerName, analysisId, analysisRevision, analysisIsReportable, "
+                                   + "patientBirthDate, providerName, animalCommonName, analysisId, analysisRevision, analysisIsReportable, "
                                    + "analysisStatusId, analysisReleasedDate, testReportingDescription, methodReportingDescription)"
                                    + " from SampleView where sampleId in (:ids)"
                                    + " order by accessionNumber, testReportingDescription, methodReportingDescription")})
@@ -144,6 +144,9 @@ public class SampleView {
     @Column(name = "provider_name")
     private String  providerName;
 
+    @Column(name = "animal_common_name")
+    private String  animalCommonName;
+    
     @Column(name = "analysis_id")
     private Integer analysisId;
 
@@ -263,6 +266,10 @@ public class SampleView {
 
     public String getProviderName() {
         return providerName;
+    }
+    
+    public String getAnimalCommonName() {
+        return animalCommonName;
     }
 
     public Integer getAnalysisId() {

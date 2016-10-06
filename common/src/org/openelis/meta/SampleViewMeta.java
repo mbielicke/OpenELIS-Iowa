@@ -62,6 +62,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                     PATIENT_BIRTH_DATE_FROM = "_display.patientBirthDateFrom",
                     PATIENT_BIRTH_DATE_TO = "_display.patientBirthDateTo",
                     PROVIDER_NAME = "_sampleView.providerName",
+                    ANIMAL_COMMON_NAME = "_sampleView.animalCommonName",
                     ANALYSIS_ID = "_sampleView.analysisId",
                     ANALYSIS_REVISION = "_sampleView.analysisRevision",
                     ANALYSIS_IS_REPORTABLE = "_sampleView.analysisIsReportable",
@@ -106,6 +107,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                                                   PATIENT_BIRTH_DATE_FROM,
                                                   PATIENT_BIRTH_DATE_TO,
                                                   PROVIDER_NAME,
+                                                  ANIMAL_COMMON_NAME,
                                                   ANALYSIS_ID,
                                                   ANALYSIS_REVISION,
                                                   ANALYSIS_IS_REPORTABLE,
@@ -245,6 +247,10 @@ public class SampleViewMeta implements Meta, MetaMap {
 
     public static String getProvider() {
         return PROVIDER_NAME;
+    }
+
+    public static String getAnimalCommonName() {
+        return ANIMAL_COMMON_NAME;
     }
 
     public static String getAnalysisId() {
