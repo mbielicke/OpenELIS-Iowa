@@ -631,6 +631,14 @@ create table provider
     npi                            varchar(10)
 );
 
+create table provider_analyte
+(
+    id                             serial not null,
+    provider_id                    integer not null,
+    sort_order                     integer not null,
+    analyte_id                     integer not null
+);
+
 create table provider_location
 (
     id                             serial not null,

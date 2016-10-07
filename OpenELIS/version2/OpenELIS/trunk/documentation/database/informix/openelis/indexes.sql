@@ -185,6 +185,9 @@ create unique index provider_1_idx on provider(id);
 create        index provider_2_idx on provider(last_name);
 create        index provider_3_idx on provider(npi);
 
+create unique index provider_analyte_1_idx on provider_analyte(id);
+create        index provider_analyte_2_idx on provider_analyte(provider_id);
+
 create unique index provider_location_1_idx on provider_location(id);
 create        index provider_location_2_idx on provider_location(provider_id);
 
@@ -412,6 +415,7 @@ alter table patient_relation add constraint primary key(id) constraint patient_r
 alter table project add constraint primary key(id) constraint project_pk;
 alter table project_parameter add constraint primary key(id) constraint project_parameter_pk;
 alter table provider add constraint primary key(id) constraint provider_pk;
+alter table provider_analyte add constraint primary key(id) constraint provider_analyte_pk;
 alter table provider_location add constraint primary key(id) constraint provider_location_pk;
 alter table pws add constraint primary key(id) constraint pws_pk;
 alter table pws_address add constraint primary key(tinwslec_is_number, tinlgent_is_number) constraint pws_address_pk;
@@ -620,6 +624,9 @@ alter table project_parameter add constraint foreign key(project_id) references 
 alter table project_parameter add constraint foreign key(operation_id) references dictionary(id) constraint project_parameter_2_fk;
 
 alter table provider add constraint foreign key(type_id) references dictionary(id) constraint provider_1_fk;
+
+alter table provider_analyte add constraint foreign key(provider_id) references provider(id) constraint provider_analyte_1_fk;
+alter table provider_analyte add constraint foreign key(analyte_id) references analyte(id) constraint provider_analyte_2_fk;
 
 alter table provider_location add constraint foreign key(provider_id) references provider(id) constraint provider_location_1_fk;
 alter table provider_location add constraint foreign key(address_id) references address(id) constraint provider_location_2_fk;
