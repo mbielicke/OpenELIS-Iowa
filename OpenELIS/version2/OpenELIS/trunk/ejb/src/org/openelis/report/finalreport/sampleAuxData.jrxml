@@ -42,30 +42,68 @@ WHERE
 ORDER BY sort_order]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
-	<field name="analyte_name" class="java.lang.String"/>
-	<field name="aux_data_value" class="java.lang.String"/>
+	<field name="analyte_name0" class="java.lang.String"/>
+	<field name="aux_data_value0" class="java.lang.String"/>
+	<field name="aux_data_value1" class="java.lang.String"/>
+	<field name="analyte_name1" class="java.lang.String"/>
 	<title>
 		<band height="12"/>
 	</title>
 	<detail>
 		<band height="12" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="150" height="12"/>
-				<textElement textAlignment="Right">
+			<line>
+				<reportElement positionType="Float" x="0" y="1" width="270" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" forecolor="#969696">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} != 1]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line>
+				<reportElement positionType="Float" x="275" y="1" width="275" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" forecolor="#969696">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} != 1]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name0}.trim()]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="160" y="0" width="390" height="12"/>
-				<textElement>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="85" y="0" width="190" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{aux_data_value} != null && $F{aux_data_value}.length() > 0) ? $F{aux_data_value} : "Not provided"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{aux_data_value0} != null && $F{aux_data_value0}.length() > 0) ? $F{aux_data_value0} : "Not provided"]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="155" y="0" width="1" height="12"/>
+				<reportElement stretchType="RelativeToBandHeight" x="80" y="0" width="1" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToBandHeight" x="275" y="0" width="75" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{analyte_name1} != null && $F{analyte_name1}.length() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name1}.trim()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="360" y="0" width="190" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{analyte_name1} != null && $F{analyte_name1}.length() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Top">
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{aux_data_value1} != null && $F{aux_data_value1}.length() > 0) ? $F{aux_data_value1} : "Not provided"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement stretchType="RelativeToBandHeight" x="355" y="0" width="1" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{analyte_name1} != null && $F{analyte_name1}.length() > 0]]></printWhenExpression>
+				</reportElement>
 			</line>
 		</band>
 	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
 </jasperReport>
