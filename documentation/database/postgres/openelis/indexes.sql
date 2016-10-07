@@ -185,6 +185,9 @@ create unique index provider_1_idx on provider(id);
 create        index provider_2_idx on provider(last_name);
 create        index provider_3_idx on provider(npi);
 
+create unique index provider_analyte_1_idx on provider_analyte(id);
+create        index provider_analyte_2_idx on provider_analyte(provider_id);
+
 create unique index provider_location_1_idx on provider_location(id);
 create        index provider_location_2_idx on provider_location(provider_id);
 
@@ -412,6 +415,7 @@ alter table patient_relation add primary key(id);
 alter table project add primary key(id);
 alter table project_parameter add primary key(id);
 alter table provider add primary key(id);
+alter table provider_analyte add primary key(id);
 alter table provider_location add primary key(id);
 alter table pws add primary key(id);
 alter table pws_address add primary key(tinwslec_is_number, tinlgent_is_number);
@@ -620,6 +624,9 @@ alter table project_parameter add foreign key(project_id) references project(id)
 alter table project_parameter add foreign key(operation_id) references dictionary(id);
 
 alter table provider add foreign key(type_id) references dictionary(id);
+
+alter table provider_analyte add foreign key(provider_id) references provider(id);
+alter table provider_analyte add foreign key(analyte_id) references analyte(id);
 
 alter table provider_location add foreign key(provider_id) references provider(id);
 alter table provider_location add foreign key(address_id) references address(id);
