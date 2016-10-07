@@ -4,6 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="240"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
+	<import value="org.openelis.report.finalreport.SampleAuxDataDataSource"/>
 	<import value="org.openelis.report.finalreport.NoteDataSource"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
@@ -228,14 +229,14 @@
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_REFERENCE_TABLE_ID">
 					<subreportParameterExpression><![CDATA[8]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
+				<dataSourceExpression><![CDATA[org.openelis.report.finalreport.SampleAuxDataDataSource.getInstance($F{sample_id})]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleAuxData.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
