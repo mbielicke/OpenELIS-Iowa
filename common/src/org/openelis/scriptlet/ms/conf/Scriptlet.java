@@ -273,7 +273,7 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
      * birth date
      */
     private void setBirthDate(SampleSO data, AnalysisViewDO ana) throws Exception {
-        ResultViewDO res, resAge, resBirth;
+        ResultViewDO resBirth;
         ResultFormatter rf;
         TestManager tm;
         SampleManager1 sm;
@@ -286,29 +286,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
         resBirth = getResult("birth");
         tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         rf = tm.getFormatter();
-        /*
-         * find out if egg's age was changed or egg donor was changed from "Yes"
-         * to "No" or vice-versa
-         */
-        if (data.getActionBefore().contains(Action_Before.RESULT)) {
-            res = (ResultViewDO)sm.getObject(data.getUid());
-            if ("eggs_age".equals(res.getAnalyteExternalId()) ||
-                "egg_donor".equals(res.getAnalyteExternalId())) {
-                /*
-                 * if it's an egg donor, compute and set birth date from egg's
-                 * age; otherwise wipe egg's age; set birth date value as either
-                 * the computed value or the patient's birth date
-                 */
-                resAge = getResult("eggs_age");
-                if (YES_STR.equals(getValue("egg_donor"))) {
-                    bd = Util.getBirthDate(getDoubleValue(resAge, sm, ana, false), proxy, data, ana);
-                } else {
-                    bd = null;
-                    setValue(resAge, null, rf, false, data, ana);
-                }
-                setValue(resBirth, bd, rf, false, data, ana);
-            }
-        }
 
         if (resBirth.getValue() == null &&
             sm.getSampleClinical().getPatient().getBirthDate() != null) {
@@ -436,7 +413,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
          * age at delivery, egg's age weeks & days have one fractional digit
          */
         formatValue(getResult("mat_age_at_delivery"), 1, tm.getFormatter(), false, data, ana);
-        formatValue(getResult("eggs_age"), 1, tm.getFormatter(), false, data, ana);
         formatValue(getResult("weeks_days"), 1, tm.getFormatter(), true, data, ana);
         /*
          * test MoMs and instrument results have two fractional digit
@@ -456,7 +432,6 @@ public class Scriptlet implements ScriptletInt<SampleSO> {
 
         tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         rf = tm.getFormatter();
-        setUnit("eggs_age", UNIT_YEARS, rf, data, ana);
         setUnit("mat_age_at_delivery", UNIT_YEARS, rf, data, ana);
         setUnit("crl", UNIT_MM, rf, data, ana);
         setUnit("bpd", UNIT_MM, rf, data, ana);
